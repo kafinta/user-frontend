@@ -4,7 +4,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'Bookplaze | Official Website',
+    title: 'Kafinta | Home Decor Made Easy',
     htmlAttrs: {
       lang: 'en',
     },
@@ -24,9 +24,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    '~/plugins/vuex-init.client.js',
-    '~/plugins/dark-mode.client.js',
-    '~/plugins/directives.client.js'
+
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -116,30 +114,8 @@ export default {
           },
 
           colors: {
-            accent1: {
-              '50': '#e6ebff',
-              '100': '#d1daff',
-              '200': '#9aa4d0',
-              '300': '#838bb0',
-              '400': '#69708d',
-              '500': '#51566c',
-              '600': '#3e4259',
-              '700': '#2a2e43',
-              '800': '#181b2c',
-              '900': '#080b1a'
-            },
-            accent2: {
-              '50': '#fffdf8',
-              '100': '#fffaee',
-              '200': '#fff3da',
-              '300': '#ffedc4',
-              '400': '#ffe3a6',
-              '500': '#ffd780',
-              '600': '#ffc952',
-              '700': '#dca836',
-              '800': '#ab7b11',
-              '900': '#724e00'
-            },
+            'primary': '#C9B14F',
+            'secondary': '#333333'
           },
 
           transitionProperty: {
