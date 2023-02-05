@@ -1,5 +1,5 @@
 <template>
-  <div class="flex mx-auto items-center justify-between px-6 md:px-8 lg:px-10 py-4 bg-white md:bg-opacity-75 max-w-7xl ">
+  <div class="flex mx-auto items-center max-h-fit justify-between px-6 md:px-8 lg:px-10 py-4 bg-white md:bg-opacity-75 max-w-7xl w-full">
     <div class="w-36">
       <NavigationLogo @logoClicked="reloadPage()"></NavigationLogo>
     </div>

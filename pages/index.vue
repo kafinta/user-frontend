@@ -85,8 +85,6 @@
 
 <script>
 export default {
-  layout: 'false',
-
   data(){
     return {
       searchBox: false,
