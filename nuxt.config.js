@@ -20,17 +20,19 @@ export default {
     ],
     
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.svg' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
+    './assets/css/main.css',
+    'vue-slick-carousel/dist/vue-slick-carousel.css'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [
-  ],
+  plugins: [{ src: './plugins/vue-slick-carousel.js' }],
+
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -49,7 +51,7 @@ export default {
   ],
 
   axios: {
-    baseURL : 'http://added.apis.micakin.com',
+    baseURL : 'http://127.0.0.1:8000',
     credentials: true,
 
   },

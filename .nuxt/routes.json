@@ -3,42 +3,36 @@
     "name": "forgot",
     "path": "/forgot",
     "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user\\\\pages\\\\forgot.vue",
-    "chunkName": "pages/forgot",
-    "_name": "_013ea5eb"
+    "chunkName": "pages/forgot"
   },
   {
     "name": "login",
     "path": "/login",
     "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user\\\\pages\\\\login.vue",
-    "chunkName": "pages/login",
-    "_name": "_47b3145e"
+    "chunkName": "pages/login"
   },
   {
     "name": "signup",
     "path": "/signup",
     "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user\\\\pages\\\\signup.vue",
-    "chunkName": "pages/signup",
-    "_name": "_15fb9d40"
+    "chunkName": "pages/signup"
   },
   {
     "name": "users",
     "path": "/users",
     "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user\\\\pages\\\\users\\\\index.vue",
-    "chunkName": "pages/users/index",
-    "_name": "_22aa3992"
+    "chunkName": "pages/users/index"
   },
   {
     "name": "verify",
     "path": "/verify",
     "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user\\\\pages\\\\verify.vue",
-    "chunkName": "pages/verify",
-    "_name": "_543e9f7e"
+    "chunkName": "pages/verify"
   },
   {
     "name": "index",
     "path": "/",
     "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user\\\\pages\\\\index.vue",
-    "chunkName": "pages/index",
-    "_name": "_127ed2ba"
+    "chunkName": "pages/index"
   }
 ]

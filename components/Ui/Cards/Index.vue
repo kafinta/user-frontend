@@ -20,8 +20,7 @@ export default {
 
 <style>
   .background {
-    min-height: 16rem !important;
-    max-height: 16rem !important;
+    height: 16rem;
     width: 14rem;
     background-position: center center !important;
     background-size: cover !important;

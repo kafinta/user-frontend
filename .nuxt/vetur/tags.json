@@ -1,4 +1,13 @@
 {
+  "FormButton": {
+    "description": "Auto imported from components/Form/Button.vue"
+  },
+  "FormInput": {
+    "description": "Auto imported from components/Form/Input.vue"
+  },
+  "FormToggle": {
+    "description": "Auto imported from components/Form/Toggle.vue"
+  },
   "CarouselsMarketplace": {
     "description": "Auto imported from components/Carousels/Marketplace.vue"
   },
@@ -13,15 +22,6 @@
   },
   "NavigationMenu": {
     "description": "Auto imported from components/Navigation/Menu.vue"
-  },
-  "FormButton": {
-    "description": "Auto imported from components/Form/Button.vue"
-  },
-  "FormInput": {
-    "description": "Auto imported from components/Form/Input.vue"
-  },
-  "FormToggle": {
-    "description": "Auto imported from components/Form/Toggle.vue"
   },
   "Search": {
     "description": "Auto imported from components/Search/Index.vue"

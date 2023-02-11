@@ -1,13 +1,16 @@
 <template>
-  <div :pauseAutoplayOnHover="true" :snapAlign="'center'" :itemsToShow="1" :wrapAround="true" :autoplay="1000" :breakpoints="breakpoints" class="mt-5 lg:mt-8 overflow-x-hidden px-0">
-    <div v-for="professional in professionals" :key="professional.id">
-      <UiCards :pauseAutoplayOnHover="true" :title="professional.title" :backgroundImagePath="professional.backgroundImagePath" :urlPath="professional.urlPath" />
-    </div>
+  <div class="mt-5 lg:mt-8 overflow-x-hidden px-0">
+    <VueSlickCarousel v-bind="settings">
+      <UiCards v-for="professional in professionals" :key="professional.id" :title="professional.title" :backgroundImagePath="professional.backgroundImagePath" :urlPath="professional.urlPath" class="flex items-center gap-5" />
+    </VueSlickCarousel>
   </div>
 </template>
 
 <script>
-export default {
+  import VueSlickCarousel from 'vue-slick-carousel'
+  // optional style for arrows & dots
+  import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
+  export default {
   data() {
     return {
       professionals: [
@@ -68,51 +71,54 @@ export default {
         },
       ],
 
-      breakpoints: {
-        425: {
-          itemsToShow: 1.6,
-          snapAlign: 'center',
-        },
-
-        480: {
-          itemsToShow: 1.8,
-          snapAlign: 'center',
-        },
-
-        525: {
-          itemsToShow: 2,
-          snapAlign: 'center',
-        },
-
-        625: {
-          itemsToShow: 2.3,
-          snapAlign: 'center',
-        },
-
-        768: {
-          itemsToShow: 3,
-          snapAlign: 'center',
-        },
-
-        820: {
-          itemsToShow: 3.5,
-          snapAlign: 'center',
-        },
-
-        1024: {
-          itemsToShow: 4,
-          snapAlign: 'center',
-        },
-
-        1150: {
-          itemsToShow: 5,
-          snapAlign: 'center',
-        },
-      },
+      settings :{
+        "arrows": true,
+        "infinite": true,
+        "slidesToShow": 1,
+        "slidesToScroll": 1,
+        "autoplay": true,
+        "speed": 2000,
+        "autoplaySpeed": 2000,
+        "centerMode": true,
+        "cssEase": "linear",
+        "responsive": [
+          {
+            "breakpoint": 2560,
+            "settings": {
+              "slidesToShow": 4.5,
+            }
+          },
+          {
+            "breakpoint": 1180,
+            "settings": {
+              "slidesToShow": 3.5,
+            }
+          },
+          {
+            "breakpoint": 768,
+            "settings": {
+              "slidesToShow": 2.5,
+            }
+          },
+          {
+            "breakpoint": 600,
+            "settings": {
+              "slidesToShow": 2,
+            }
+          },          
+          {
+            "breakpoint": 480,
+            "settings": {
+              "slidesToShow": 1.5,
+            }
+          },          
+        ]
+      }
     }
   },
 
   components: {
+    VueSlickCarousel 
   },
 }
 </script>

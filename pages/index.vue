@@ -88,7 +88,7 @@ export default {
   data(){
     return {
       searchBox: false,
-      search_button_hovered: false
+      search_button_hovered: false,
     }
   },
 
@@ -98,7 +98,6 @@ export default {
       this.search_button_hovered = !this.search_button_hovered
     }
   },
-
 }
 </script>
 

@@ -1,12 +1,20 @@
 <template>
-  <div :pauseAutoplayOnHover="true" :snapAlign="'center'" :itemsToShow="1" :wrapAround="true" :autoplay="1000" :breakpoints="breakpoints" class="mt-5 lg:mt-8 overflow-x-hidden px-0">
-    <div v-for="item in marketplace" :key="item.id">
-      <UiCards  :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" />
-    </div>
-  </div>
+  <carousel :per-page="1" 
+  :autoplay="true" 
+  :paginationEnabled="false"
+  :perPageCustom="[[425, 1.6], [480, 1.8], [525, 2], [625, 2.3], [768, 3], [820, 3.5], [1030, 4], [1150, 5]]"
+  :navigation-enabled="true"
+  navigation-next-label="nextLabel"
+  navigation-prev-label="prevLabel"
+  :loop="true" :centerMode="true" class="mt-5 lg:mt-8 overflow-x-hidden px-0">
+    <slide v-for="item in marketplace" :key="item.id" class="flex gap-5">
+      <UiCards :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" />
+    </slide>
+  </carousel>
 </template>
 
 <script>
+import { Carousel, Slide } from 'vue-carousel';
 export default {
   data() {
     return {
@@ -67,61 +75,16 @@ export default {
           urlPath: 'outdoors'
         },
       ],
-
-      breakpoints: {
-        425: {
-          itemsToShow: 1.6,
-          snapAlign: 'center',
-        },
-
-        480: {
-          itemsToShow: 1.8,
-          snapAlign: 'center',
-        },
-
-        525: {
-          itemsToShow: 2,
-          snapAlign: 'center',
-        },
-
-        625: {
-          itemsToShow: 2.3,
-          snapAlign: 'center',
-        },
-
-        768: {
-          itemsToShow: 3,
-          snapAlign: 'center',
-        },
-
-        820: {
-          itemsToShow: 3.5,
-          snapAlign: 'center',
-        },
-
-        1024: {
-          itemsToShow: 4,
-          snapAlign: 'center',
-        },
-
-        1150: {
-          itemsToShow: 5,
-          snapAlign: 'center',
-        },
-      },
     }
   },
 
   components: {
-  },
+    Carousel,
+    Slide
+  }
 }
 </script>
 
 <style>
-.carousel__prev,
-.carousel__next {
-	background-color: white;
-  color: #333333;
-  border-radius: 100%;
-}
+
 </style>

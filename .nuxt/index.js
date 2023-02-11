@@ -16,6 +16,7 @@ import { createStore } from './store.js'
 import nuxt_plugin_plugin_65ca5ab3 from 'nuxt_plugin_plugin_65ca5ab3' // Source: .\\components\\plugin.js (mode: 'all')
 import nuxt_plugin_axios_62460356 from 'nuxt_plugin_axios_62460356' // Source: .\\axios.js (mode: 'all')
 import nuxt_plugin_toast_2e765005 from 'nuxt_plugin_toast_2e765005' // Source: .\\toast.js (mode: 'client')
+import nuxt_plugin_vueslickcarousel_d8b69d56 from 'nuxt_plugin_vueslickcarousel_d8b69d56' // Source: ..\\plugins\\vue-slick-carousel.js (mode: 'all')
 
 // Component: <ClientOnly>
 Vue.component(ClientOnly.name, ClientOnly)
@@ -80,7 +81,7 @@ async function createApp(ssrContext, config = {}) {
   // here we inject the router and store to all child components,
   // making them available everywhere as `this.$router` and `this.$store`.
   const app = {
-    head: {"title":"Kafinta | Home decor made easy","htmlAttrs":{"lang":"en"},"meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"hid":"description","name":"description","content":"Creative digital agency"},{"name":"format-detection","content":"telephone=no"}],"link":[{"rel":"icon","type":"image\u002Fx-icon","href":"\u002Ffavicon.svg"}],"style":[],"script":[]},
+    head: {"title":"Kafinta | Home decor made easy","htmlAttrs":{"lang":"en"},"meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"hid":"description","name":"description","content":"Creative digital agency"},{"name":"format-detection","content":"telephone=no"}],"link":[{"rel":"icon","type":"image\u002Fx-icon","href":"\u002Ffavicon.ico"}],"style":[],"script":[]},
 
     store,
     router,
@@ -219,6 +220,10 @@ async function createApp(ssrContext, config = {}) {
 
   if (process.client && typeof nuxt_plugin_toast_2e765005 === 'function') {
     await nuxt_plugin_toast_2e765005(app.context, inject)
+  }
+
+  if (typeof nuxt_plugin_vueslickcarousel_d8b69d56 === 'function') {
+    await nuxt_plugin_vueslickcarousel_d8b69d56(app.context, inject)
   }
 
   // Lock enablePreview in context
