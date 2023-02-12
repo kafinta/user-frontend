@@ -1,7 +1,7 @@
 <template>
   <nuxt-link to="" class="cursor-pointer group">
     <div class="">
-      <div class="image-bg rounded-t-2xl transform ease-in-out duration-500" :style="{ background:`url(${backgroundImagePath})`}"></div>
+      <div style="height: 12rem; width: 14rem;" class="image-bg rounded-t-2xl transform ease-in-out duration-500" :style="{ background:`url(${backgroundImagePath})`}"></div>
 
       <div class="p-2 px-5 bg-secondary bg-opacity-5 rounded-b-2xl h-14 flex gap-3 items-center">
         <div v-if="profileImagePath" class="profile_background rounded-full transform ease-in-out duration-500" :style="{ background:`url(${profileImagePath})`}"></div>
@@ -54,8 +54,6 @@ export default {
 
 <style>
   .image-bg {
-    height: 12rem;
-    width: 16rem;
     background-position: center center !important;
     background-size: cover !important;
     background-repeat: no-repeat !important;
