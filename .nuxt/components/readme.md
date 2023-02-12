@@ -6,12 +6,13 @@ You can directly use them in pages and other components without the need to impo
 
 **Tip:** If a component is conditionally rendered with `v-if` and is big, it is better to use `Lazy` or `lazy-` prefix to lazy load.
 
-- `<FormButton>` | `<form-button>` (components/Form/Button.vue)
-- `<FormInput>` | `<form-input>` (components/Form/Input.vue)
-- `<FormToggle>` | `<form-toggle>` (components/Form/Toggle.vue)
+- `<SsrCarousel>` | `<ssr-carousel>` (node_modules/vue-ssr-carousel/index.js)
 - `<CarouselsMarketplace>` | `<carousels-marketplace>` (components/Carousels/Marketplace.vue)
 - `<CarouselsProfessionals>` | `<carousels-professionals>` (components/Carousels/Professionals.vue)
 - `<CarouselsProjects>` | `<carousels-projects>` (components/Carousels/Projects.vue)
+- `<FormButton>` | `<form-button>` (components/Form/Button.vue)
+- `<FormInput>` | `<form-input>` (components/Form/Input.vue)
+- `<FormToggle>` | `<form-toggle>` (components/Form/Toggle.vue)
 - `<NavigationFooter>` | `<navigation-footer>` (components/Navigation/Footer.vue)
 - `<NavigationMenu>` | `<navigation-menu>` (components/Navigation/Menu.vue)
 - `<Search>` | `<search>` (components/Search/Index.vue)

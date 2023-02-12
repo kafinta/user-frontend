@@ -12,6 +12,8 @@ import '..\\assets\\css\\main.css'
 
 import '..\\node_modules\\vue-slick-carousel\\dist\\vue-slick-carousel.css'
 
+import '..\\node_modules\\vue-ssr-carousel\\index.css'
+
 import _2d2a8cc1 from '..\\layouts\\user.vue'
 import _6f6c098b from './layouts/default.vue'
 

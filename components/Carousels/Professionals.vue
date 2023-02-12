@@ -7,9 +7,6 @@
 </template>
 
 <script>
-  import VueSlickCarousel from 'vue-slick-carousel'
-  // optional style for arrows & dots
-  import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
   export default {
   data() {
     return {
@@ -77,7 +74,7 @@
         "slidesToShow": 1,
         "slidesToScroll": 1,
         "autoplay": true,
-        "speed": 2000,
+        "speed": 300,
         "autoplaySpeed": 2000,
         "centerMode": true,
         "cssEase": "linear",
@@ -89,9 +86,27 @@
             }
           },
           {
+            "breakpoint": 1250,
+            "settings": {
+              "slidesToShow": 4,
+            }
+          },
+          {
             "breakpoint": 1180,
             "settings": {
-              "slidesToShow": 3.5,
+              "slidesToShow": 4,
+            }
+          },
+          {
+            "breakpoint": 1024,
+            "settings": {
+              "slidesToShow": 3,
+            }
+          },
+          {
+            "breakpoint": 820,
+            "settings": {
+              "slidesToShow": 2.5,
             }
           },
           {
@@ -101,24 +116,39 @@
             }
           },
           {
+            "breakpoint": 670,
+            "settings": {
+              "slidesToShow": 1.8,
+            }
+          }, 
+          {
             "breakpoint": 600,
             "settings": {
-              "slidesToShow": 2,
+              "slidesToShow": 1.4,
             }
           },          
           {
             "breakpoint": 480,
             "settings": {
-              "slidesToShow": 1.5,
+              "slidesToShow": 1.1,
             }
-          },          
+          },
+          {
+            "breakpoint": 375,
+            "settings": {
+              "slidesToShow": 0.9,
+            }
+          },
+          {
+            "breakpoint": 320,
+            "settings": {
+              "slidesToShow": 0.7,
+              "centerMode": true,
+            }
+          }, 
         ]
       }
     }
-  },
-
-  components: {
-    VueSlickCarousel 
   },
 }
 </script>

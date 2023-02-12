@@ -1,20 +1,14 @@
 <template>
-  <carousel :per-page="1" 
-  :autoplay="true" 
-  :paginationEnabled="false"
-  :perPageCustom="[[425, 1.6], [480, 1.8], [525, 2], [625, 2.3], [768, 3], [820, 3.5], [1030, 4], [1150, 5]]"
-  :navigation-enabled="true"
-  navigation-next-label="nextLabel"
-  navigation-prev-label="prevLabel"
-  :loop="true" :centerMode="true" class="mt-5 lg:mt-8 overflow-x-hidden px-0">
-    <slide v-for="item in marketplace" :key="item.id" class="flex gap-5">
-      <UiCards :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" />
-    </slide>
-  </carousel>
+  <div class="mt-5 lg:mt-8 overflow-x-hidden px-0">
+    <VueSlickCarousel v-bind="settings">
+      <UiCards v-for="item in marketplace" :key="item.id" :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" />
+    </VueSlickCarousel>
+  </div>
 </template>
 
 <script>
-import { Carousel, Slide } from 'vue-carousel';
+import SsrCarousel from 'vue-ssr-carousel'
+import ssrCarouselCss from 'vue-ssr-carousel/index.css'
 export default {
   data() {
     return {
@@ -75,12 +69,92 @@ export default {
           urlPath: 'outdoors'
         },
       ],
+
+      settings :{
+        "arrows": true,
+        "infinite": true,
+        "slidesToShow": 1,
+        "slidesToScroll": 1,
+        "autoplay": true,
+        "speed": 300,
+        "autoplaySpeed": 2000,
+        "centerMode": true,
+        "cssEase": "linear",
+        "responsive": [
+          {
+            "breakpoint": 2560,
+            "settings": {
+              "slidesToShow": 4.5,
+            }
+          },
+          {
+            "breakpoint": 1250,
+            "settings": {
+              "slidesToShow": 4,
+            }
+          },
+          {
+            "breakpoint": 1180,
+            "settings": {
+              "slidesToShow": 4,
+            }
+          },
+          {
+            "breakpoint": 1024,
+            "settings": {
+              "slidesToShow": 3,
+            }
+          },
+          {
+            "breakpoint": 820,
+            "settings": {
+              "slidesToShow": 2.5,
+            }
+          },
+          {
+            "breakpoint": 768,
+            "settings": {
+              "slidesToShow": 2.5,
+            }
+          },
+          {
+            "breakpoint": 670,
+            "settings": {
+              "slidesToShow": 1.8,
+            }
+          }, 
+          {
+            "breakpoint": 600,
+            "settings": {
+              "slidesToShow": 1.4,
+            }
+          },          
+          {
+            "breakpoint": 480,
+            "settings": {
+              "slidesToShow": 1.1,
+            }
+          },
+          {
+            "breakpoint": 375,
+            "settings": {
+              "slidesToShow": 0.9,
+            }
+          },
+          {
+            "breakpoint": 320,
+            "settings": {
+              "slidesToShow": 0.7,
+              "centerMode": true,
+            }
+          }, 
+        ]
+      }
     }
   },
 
   components: {
-    Carousel,
-    Slide
+    SsrCarousel
   }
 }
 </script>
