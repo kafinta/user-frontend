@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-5 lg:mt-8 overflow-x-hidden px-0">
+  <div class="mt-5 overflow-x-hidden px-0">
     <VueSlickCarousel v-bind="settings" >
       <UiCardsSecondary v-for="item in projects" :key="item.id" :title="item.title" :artisan="item.artisan" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" />
     </VueSlickCarousel>

@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-5 lg:mt-8 overflow-x-hidden px-0">
+  <div class="mt-5 overflow-x-hidden px-0">
     <VueSlickCarousel v-bind="settings">
       <UiCards v-for="professional in professionals" :key="professional.id" :title="professional.title" :backgroundImagePath="professional.backgroundImagePath" :urlPath="professional.urlPath" class="flex items-center gap-5" />
     </VueSlickCarousel>

@@ -1,7 +1,14 @@
 <template>
-  <div class="mt-5 lg:mt-8 overflow-x-hidden px-0">
+  <div class="mt-5 overflow-x-hidden px-0">
     <VueSlickCarousel v-bind="settings">
       <UiCards v-for="item in marketplace" :key="item.id" :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" />
+
+      <template #prevArrow>
+        <div class="custom-arrow">
+          <i arrowOption class="fa-solid fa-play"></i>
+          <!-- {{ arrowOption.currentSlide }}/{{ arrowOption.slideCount }} -->
+        </div>
+      </template>
     </VueSlickCarousel>
   </div>
 </template>
