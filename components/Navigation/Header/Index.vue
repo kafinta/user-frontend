@@ -24,7 +24,7 @@
         <UiButtonsSecondary>Find Artisans</UiButtonsSecondary>
       </li>
       <li>
-        <UiButtonsSecondary @click="toLogin()">Sign In</UiButtonsSecondary>
+        <UiButtonsSecondary @clicked="toLogin()">Sign In</UiButtonsSecondary>
       </li>
       <li>
         <UiButtonsPrimary @click="toSignUp()">Sign Up</UiButtonsPrimary>
@@ -52,27 +52,15 @@ export default {
       this.menu_revealed = !this.menu_revealed
     },
 
-    reloadPage(){
-      return navigateTo('/')
-    },
-
-    toLogin(){
-      return navigateTo('/login')
-    },
-
-    toSignUp(){
-      return navigateTo('/signup')
-    },
-
     toggleSearchBox(){
       this.toggleMenu()
       this.$emit("toggleSearchBox")
-    }
-  },
+    },
 
-  // created(){
-  //   console.log(this.)
-  // }
+    toLogin(){
+      this.$router.push({to: 'login'})
+    }
+  }
 }
 </script>
 

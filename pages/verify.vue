@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-row-reverse select-none">
-    <div class="hidden lg:flex w-2/3 image-bg py-5 px-10 relative flex-col justify-between">
+    <div style="" class="background hidden lg:flex w-2/3 bg-cover bg-center py-5 px-10 relative flex-col justify-between">
       <div class="flex justify-end">
         <NavigationLogoOneColor @click="returnHome()"  class="w-36 cursor-pointer text-white" />
       </div>
@@ -62,11 +62,8 @@ export default {
   },
 }
 </script>
-
 <style>
-.image-bg {
-  background: url('../assets/images/verify.jpg') !important;
-  background-position: center;
-  background-size: cover;
+.background {
+  background: url('../assets/images/verify.jpg');
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-row-reverse select-none">
-    <div class="hidden lg:flex w-2/3 image-bg py-5 px-10 relative flex-col justify-between">
+    <div class="background hidden lg:flex w-2/3 bg-cover bg-center py-5 px-10 relative flex-col justify-between">
       <div class="flex justify-end">
         <NavigationLogoOneColor @click="returnHome()"  class="w-36 cursor-pointer text-white" />
       </div>
@@ -23,12 +23,12 @@
 
         <div class="mb-6">
           <div class="mt-10 flex gap-5 items-center">
-            <NuxtLink class="hover:-translate-y-1 duration-300 ease-in-out flex gap-3 items-center justify-center w-full border rounded-md border-secondary border-opacity-20 py-3">
+            <NuxtLink to="" class="hover:-translate-y-1 duration-300 ease-in-out flex gap-3 items-center justify-center w-full border rounded-md border-secondary border-opacity-20 py-3">
               <img src="@/assets/images/logos/facebook.svg" class="w-7" alt="">
               Facebook
             </NuxtLink>
 
-            <NuxtLink class="hover:-translate-y-1 duration-300 ease-in-out flex gap-3 items-center justify-center w-full border rounded-md border-secondary border-opacity-20 py-3">
+            <NuxtLink to="" class="hover:-translate-y-1 duration-300 ease-in-out flex gap-3 items-center justify-center w-full border rounded-md border-secondary border-opacity-20 py-3">
               <img src="@/assets/images/logos/google.svg" class="w-7" alt="">
               Google
             </NuxtLink>
@@ -92,11 +92,8 @@ export default {
   },
 }
 </script>
-
 <style>
-.image-bg {
-  background: url('../assets/images/register.jpg') !important;
-  background-position: center;
-  background-size: cover;
+.background {
+  background-image: url('../assets/images/register.jpg');
 }
 </style>

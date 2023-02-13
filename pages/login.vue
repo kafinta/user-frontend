@@ -1,6 +1,6 @@
 <template>
   <div class="flex select-none">
-    <div class="hidden lg:flex w-2/3 image-bg py-5 px-10 relative flex-col justify-between">
+    <div class="background hidden lg:flex w-2/3 bg-cover bg-center py-5 px-10 relative flex-col justify-between">
       <NavigationLogoOneColor @click="returnHome()" class="w-36 cursor-pointer text-secondary" />
 
       <div class="bg-white rounded-md bg-opacity-80 p-5 bottom-5 w-full">
@@ -21,12 +21,12 @@
 
         <div class="mb-6">
           <div class="mt-10 flex gap-5 items-center">
-            <NuxtLink class="hover:-translate-y-1 duration-300 ease-in-out flex gap-3 items-center justify-center w-full border rounded-md border-secondary border-opacity-20 py-3">
+            <NuxtLink to="" class="hover:-translate-y-1 duration-300 ease-in-out flex gap-3 items-center justify-center w-full border rounded-md border-secondary border-opacity-20 py-3">
               <img src="@/assets/images/logos/facebook.svg" class="w-7" alt="">
               Facebook
             </NuxtLink>
 
-            <NuxtLink class="hover:-translate-y-1 duration-300 ease-in-out flex gap-3 items-center justify-center w-full border rounded-md border-secondary border-opacity-20 py-3">
+            <NuxtLink to="" class="hover:-translate-y-1 duration-300 ease-in-out flex gap-3 items-center justify-center w-full border rounded-md border-secondary border-opacity-20 py-3">
               <img src="@/assets/images/logos/google.svg" class="w-7" alt="">
               Google
             </NuxtLink>
@@ -42,13 +42,13 @@
           <FormInput label="Email" v-model="form.email" placeholder="Enter your email address"></FormInput>
           <div>
             <FormInput :error="error_state" label="Password" type="password" v-model="form.password" placeholder="Enter your password"></FormInput>
-            <NuxtLink to="/forgot" :class="error_state ? 'hidden' : 'block'" class="text-sm text-secondary text-opacity-50 flex justify-end w-full hover:text-opacity-100 duration-500 ease-in-out mt-2">Forgot password?</NuxtLink>
+            <nuxt-link to="/forgot" :class="error_state ? 'hidden' : 'block'" class="text-sm text-secondary text-opacity-50 flex justify-end w-full hover:text-opacity-100 duration-500 ease-in-out mt-2">Forgot password?</nuxt-link>
             <p :class="error_state ? 'opacity-100' : 'opacity-0'" class="text-sm text-red-600 mt-2">Wrong username or password</p>
           </div>
 
           <FormButton :loading="loadingState" class="-mt-3">Sign In</FormButton>
         </div>
-        <p class="text-sm w-fit mx-auto mt-2 text-secondary text-center">Not a member yet? <NuxtLink to="/signup" class="duration-500 ease-in-out hover:text-primary">Create Account</NuxtLink></p>
+        <p class="text-sm w-fit mx-auto mt-2 text-secondary text-center">Not a member yet? <nuxt-link to="/signup" class="duration-500 ease-in-out hover:text-primary">Create Account</nuxt-link></p>
       </form>
     </div>
   </div>
@@ -75,12 +75,7 @@ export default {
       setTimeout(() => {
         return navigateTo('/users')
       }, 2000);
-    },
-
-    returnHome(){
-      return navigateTo('/')
-    }
-  },
+    },  },
   
   created(){
     if (process.client && window.innerWidth <= 320) {
@@ -89,11 +84,8 @@ export default {
   },
 }
 </script>
-
 <style>
-.image-bg {
-  background: url('../assets/images/login.jpg') !important;
-  background-position: center;
-  background-size: cover;
+.background {
+  background: url('../assets/images/login.jpg');
 }
 </style>

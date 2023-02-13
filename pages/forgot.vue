@@ -1,6 +1,6 @@
 <template>
   <div class="flex select-none">
-    <div class="hidden lg:flex w-2/3 image-bg py-5 px-10 relative flex-col justify-between">
+    <div style="" class="background hidden lg:flex w-2/3 bg-cover bg-center py-5 px-10 relative flex-col justify-between">
       <NavigationLogoOneColor @click="returnHome()"  class="w-36 cursor-pointer text-white" />
 
       <div class="bg-white rounded-md bg-opacity-80 p-5 bottom-5 w-full">
@@ -80,11 +80,8 @@ export default {
   },
 }
 </script>
-
 <style>
-.image-bg {
-  background: url('../assets/images/forgot.jpg') !important;
-  background-position: center;
-  background-size: cover;
+.background {
+  background: url('../assets/images/forgot.jpg');
 }
 </style>
