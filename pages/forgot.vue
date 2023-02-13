@@ -64,12 +64,12 @@ export default {
     updatePassword(){
       this.loadingStatePassword = true
       setTimeout(() => {
-        return navigateTo('/login')
+        this.$router.push({path: '/users'})
       }, 2000);
     },
 
     returnHome(){
-      return navigateTo('/')
+      this.$router.push({path: '/'})
     }
   },
   

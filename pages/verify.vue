@@ -46,12 +46,12 @@ export default {
     verify(){
       this.loadingState = true
       setTimeout(() => {
-        return navigateTo('/users')
+        this.$router.push({path: '/users'})
       }, 2000);
     },
 
     returnHome(){
-      return navigateTo('/')
+      this.$router.push({path: '/'})
     }
   },
   

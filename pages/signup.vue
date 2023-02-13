@@ -76,12 +76,12 @@ export default {
     signUp(){
       this.loadingState = true
       setTimeout(() => {
-        return navigateTo('/verify')
+        this.$router.push({path: '/verify'})
       }, 2000);
     },
 
     returnHome(){
-      return navigateTo('/')
+      this.$router.push({path: '/'})
     }
   },
   
