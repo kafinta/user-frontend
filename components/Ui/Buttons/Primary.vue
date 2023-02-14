@@ -1,7 +1,7 @@
 <template>
   <button
     type="submit"
-    class="py-2 px-5 bg-secondary hover:bg-primary text-white font-medium text-base 2xl:text-xl justify-center duration-500 ease-in-out rounded-md active:bg-primary focus:bg-primary" 
+    class="py-2 px-5 bg-secondary hover:bg-primary text-white font-medium text-base 2xl:text-lg justify-center duration-500 ease-in-out rounded-md active:bg-primary focus:bg-primary" 
     :disabled="loading || disabled" :class="flexdisplay ? 'flex w-full' : 'block w-fit'">
     <div class="flex items-center justify-center uppercase">
       <div v-if="loading"  class="flex items-center">

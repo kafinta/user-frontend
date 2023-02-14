@@ -1,20 +1,18 @@
 <template>
-  <div class="flex items-center justify-between gap-5 px-6 md:px-8 lg:px-10 py-4 bg-white max-w-7xl w-full">
+  <div class="flex items-center justify-between gap-5 px-6 md:px-8 lg:px-10 py-4 bg-white max-w-7xl mx-auto w-full">
     <div>
-      <NavigationLogo class="w-36" @logoClicked="reloadPage()"></NavigationLogo>
+      <NavigationLogo class="w-36" @logoClicked="$router.push({path: '/'})"></NavigationLogo>
     </div>
 
     <form class="mx-auto w-full md:flex items-center justify-end relative hidden">
-      <input @focus="this.$refs.input.focus()"  class="w-full flex justify-center py-3 px-4 border text-sm outline-none border-secondary ring-0 focus:outline-none focus:border-primary active:border-primary rounded-md active:text-primary focus:text-primary text-secondary border-opacity-20 active:border-opacity-100 focus:border-opacity-100 duration-300 ease-out" autocomplete="off" ref="input" type="text" placeholder="What are you looking for?" />
+      <input @focus="focus()" @input="$emit('input', $event.target.value)" class="w-full flex justify-center py-3 px-4 border text-sm outline-none border-secondary ring-0 focus:outline-none focus:border-primary active:border-primary rounded-md active:text-primary focus:text-primary text-secondary border-opacity-20 active:border-opacity-100 focus:border-opacity-100 duration-300 ease-out" autocomplete="off" ref="input" type="text" placeholder="What are you looking for?" />
 
       <button class="bg-primary rounded-md p-3 absolute px-4">
-        <UiIconsSearch class="text-white w-5 h-5" />
+        <UiIconsSearch class="text-white w-5 h-6" />
       </button>
     </form>
 
-    <NavigationMenu @revealMenu="toggleMenu()" />
-
-    <nav class="max-w-full hidden md:block">
+    <nav>
       <ul class="flex gap-5 items-center justify-end">
         <li class="relative cursor-pointer">
           <UiIconsNotifications class="w-4 h-4" />
@@ -24,8 +22,8 @@
           <UiIconsMessages class="w-4 h-4" />
           <div v-if="messages" class="h-2 w-2 rounded-full bg-primary border-white border -top-0.5 -right-1 absolute"></div>
         </li>
-        <li class="hidden lg:block">
-          <UiButtonsSecondary class="flex justify-center" style="width: 7.3rem;">Switch to Selling</UiButtonsSecondary>
+        <li class="">
+          <UiButtonsSecondary class="w-[7.3rem] xl:w-[8.3rem] 2xl:w-[9.3rem]">Switch to Selling</UiButtonsSecondary>
         </li>
 
         <li class="relative cursor-pointer">
@@ -41,10 +39,6 @@
         </li>
       </ul>
     </nav>
-
-    <nav :class="menu_revealed ? 'translate-x-0' : '-translate-x-full'" class="z-10 md:z-0 w-full fixed h-screen left-0 top-[65.5px] md:hidden duration-500 ease-in-out bg-white">
-    </nav>
-
   </div>
 </template>
 
@@ -67,14 +61,6 @@ export default {
   },
 
   methods: {
-    toggleMenu(){
-      this.menu_revealed = !this.menu_revealed
-    },
-
-    reloadPage(){
-      return navigateTo('/')
-    },
-
     getFirstLetter(){
       setTimeout(() => {
         if (this.username !== undefined && this.username !== '') {
@@ -83,6 +69,10 @@ export default {
         console.log("error")
       }
       }, 1000);
+    },
+
+    focus(){
+      this.$refs.input.focus()
     }
   },
 
