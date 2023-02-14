@@ -23,8 +23,9 @@
       </div>
     </section>
 
-    <section class="px-6 md:px-8 lg:px-10 py-10 lg:py-20 max-w-7xl mx-auto bg-primary bg-opacity-5 lg:flex items-center justify-center gap-10">
-      <div class="flex flex-col gap-6">
+    <section class="px-6 md:px-8 lg:px-10 py-10 lg:py-20 bg-primary bg-opacity-10 ">
+      <div class="max-w-7xl mx-auto lg:flex items-center justify-center gap-10">
+        <div class="flex flex-col gap-6">
         <h3 class="text-secondary text-2xl md:text-3xl 2xl:text-4xl font-medium">A whole world of home decor talent at your fingertips</h3>
 
         <div>
@@ -67,6 +68,8 @@
             type="video/mp4" />
         </video>
       </figure>
+      </div>
+
     </section>
 
     <section class="px-6 md:px-8 lg:px-10 py-10 lg:py-20 max-w-7xl mx-auto">
