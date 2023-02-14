@@ -5,7 +5,7 @@
       <NavigationHeader :keep_button_hovered="search_button_hovered" @toggleSearchBox="toggleSearch()" class="fixed z-100 top-0 w-full"></NavigationHeader>
       <div class="py-36 lg:h-screen hero-bg items-center px-6 md:px-8 lg:px-10 flex">
         <div class="w-full md:w-2/3 lg:w-1/2 max-w-7xl">
-          <h1 class="text-secondary text-5xl md:text-6xl 2xl:text-8xl font-bold">Bring Your Dream Home To Life</h1>
+          <h1 class="text-secondary text-4xl md:text-5xl xl:text-6xl font-bold">Bring Your Dream Home To Life</h1>
           <p class="text-secondary text-base 2xl:text-xl mt-2">Find inspiration, products and the pros to make it happen — all in one place</p>
 
           <div class="flex gap-5 mt-5 items-center">

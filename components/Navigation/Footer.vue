@@ -35,7 +35,7 @@
       </div>
     </div>
 
-    <div class="border-t border-secondary border-opacity-10 pt-6 flex items-center justify-between">
+    <div class="border-t border-secondary border-opacity-10 pt-6 flex items-center justify-between max-w-7xl mx-auto">
       <div class="flex items-center gap-5">
         <NavigationLogo class="m-0 w-28" />
         <p class="text-secondary text-xs md:text-sm">&copy; Kafinta {{ date.getFullYear() }}</p>

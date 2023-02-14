@@ -24,10 +24,10 @@
         <UiButtonsSecondary>Find Artisans</UiButtonsSecondary>
       </li>
       <li>
-        <UiButtonsSecondary @clicked="toLogin()">Sign In</UiButtonsSecondary>
+        <UiButtonsSecondary @clicked="$router.push({path: '/login'})">Sign In</UiButtonsSecondary>
       </li>
-      <li>
-        <UiButtonsPrimary @click="toSignUp()">Sign Up</UiButtonsPrimary>
+      <li @click="$router.push({path: '/signup'})">
+        <UiButtonsPrimary>Sign Up</UiButtonsPrimary>
       </li>
     </ul>
     </nav>
@@ -56,10 +56,6 @@ export default {
       this.toggleMenu()
       this.$emit("toggleSearchBox")
     },
-
-    toLogin(){
-      this.$router.push({to: 'login'})
-    }
   }
 }
 </script>
