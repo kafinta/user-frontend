@@ -1,5 +1,5 @@
 <template>
-  <footer class="px-6 md:px-8 lg:px-10 py-6 border-t border-secondary border-opacity-20">
+  <footer class="px-6 md:px-8 lg:px-10 py-6 border-t border-slate-200">
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto py-8">
       <div class="flex flex-col gap-2">
         <h4 class="uppercase text-secondary text-base font-medium mb-2">Company</h4>
@@ -35,7 +35,7 @@
       </div>
     </div>
 
-    <div class="border-t border-secondary border-opacity-10 pt-6 flex items-center justify-between max-w-7xl mx-auto">
+    <div class="border-t border-slate-200 pt-6 flex items-center justify-between max-w-7xl mx-auto">
       <div class="flex items-center gap-5">
         <NavigationLogo class="m-0 w-28" />
         <p class="text-secondary text-xs md:text-sm">&copy; Kafinta {{ date.getFullYear() }}</p>

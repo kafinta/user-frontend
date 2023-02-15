@@ -24,6 +24,7 @@ export { default as UiIconsClose } from '../..\\components\\Ui\\Icons\\Close.vue
 export { default as UiIconsLoading } from '../..\\components\\Ui\\Icons\\Loading.vue'
 export { default as UiIconsMessages } from '../..\\components\\Ui\\Icons\\Messages.vue'
 export { default as UiIconsNotifications } from '../..\\components\\Ui\\Icons\\Notifications.vue'
+export { default as UiIconsPopup } from '../..\\components\\Ui\\Icons\\Popup.vue'
 export { default as UiIconsSearch } from '../..\\components\\Ui\\Icons\\Search.vue'
 export { default as UiTypographyH1 } from '../..\\components\\Ui\\Typography\\H1.vue'
 export { default as UiTypographyH2 } from '../..\\components\\Ui\\Typography\\H2.vue'

@@ -1,5 +1,5 @@
 <template>
-  <p :class="is_white ? 'text-white' : 'text-secondary'" class="text-secondary text-sm md:text-base 2xl:text-lg">
+  <p :class="is_white ? 'text-white' : 'text-secondary'" class="text-sm md:text-base 2xl:text-lg">
     <slot/>
   </p>
 </template>

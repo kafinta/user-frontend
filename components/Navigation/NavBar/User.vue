@@ -16,11 +16,11 @@
       <ul class="flex gap-5 items-center justify-end">
         <li class="relative cursor-pointer">
           <UiIconsNotifications class="w-4 h-4" />
-          <div v-if="notifications" class="h-2 w-2 rounded-full bg-primary border-white border -top-0.5 right-0 absolute"></div>
+          <UiIconsPopup v-if="notifications" class="h-2 w-2 -top-0.5 -right-1 absolute"></UiIconsPopup>
         </li>
         <li class="relative cursor-pointer">      
           <UiIconsMessages class="w-4 h-4" />
-          <div v-if="messages" class="h-2 w-2 rounded-full bg-primary border-white border -top-0.5 -right-1 absolute"></div>
+          <UiIconsPopup v-if="messages" class="h-2 w-2 -top-0.5 -right-1 absolute"></UiIconsPopup>
         </li>
         <li class="">
           <UiButtonsSecondary class="w-[7.3rem] xl:w-[8.3rem] 2xl:w-[9.3rem]">Switch to Selling</UiButtonsSecondary>

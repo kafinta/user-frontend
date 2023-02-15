@@ -32,6 +32,7 @@ You can directly use them in pages and other components without the need to impo
 - `<UiIconsLoading>` | `<ui-icons-loading>` (components/Ui/Icons/Loading.vue)
 - `<UiIconsMessages>` | `<ui-icons-messages>` (components/Ui/Icons/Messages.vue)
 - `<UiIconsNotifications>` | `<ui-icons-notifications>` (components/Ui/Icons/Notifications.vue)
+- `<UiIconsPopup>` | `<ui-icons-popup>` (components/Ui/Icons/Popup.vue)
 - `<UiIconsSearch>` | `<ui-icons-search>` (components/Ui/Icons/Search.vue)
 - `<UiTypographyH1>` | `<ui-typography-h1>` (components/Ui/Typography/H1.vue)
 - `<UiTypographyH2>` | `<ui-typography-h2>` (components/Ui/Typography/H2.vue)
