@@ -1,3 +1,12 @@
 <template>
-  <p class="text-secondary text-base 2xl:text-lg"><slot/></p>
+  <p :class="is_white ? 'text-white' : 'text-secondary'" class="text-secondary text-sm md:text-base 2xl:text-lg">
+    <slot/>
+  </p>
 </template>
+<script>
+  export default {
+    props: {
+      is_white: Boolean
+    }
+  }
+</script>

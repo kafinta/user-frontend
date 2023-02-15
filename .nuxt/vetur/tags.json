@@ -11,15 +11,6 @@
   "CarouselsProjects": {
     "description": "Auto imported from components/Carousels/Projects.vue"
   },
-  "NavigationFooter": {
-    "description": "Auto imported from components/Navigation/Footer.vue"
-  },
-  "NavigationMenu": {
-    "description": "Auto imported from components/Navigation/Menu.vue"
-  },
-  "Search": {
-    "description": "Auto imported from components/Search/Index.vue"
-  },
   "FormButton": {
     "description": "Auto imported from components/Form/Button.vue"
   },
@@ -28,6 +19,15 @@
   },
   "FormToggle": {
     "description": "Auto imported from components/Form/Toggle.vue"
+  },
+  "NavigationFooter": {
+    "description": "Auto imported from components/Navigation/Footer.vue"
+  },
+  "NavigationMenu": {
+    "description": "Auto imported from components/Navigation/Menu.vue"
+  },
+  "Search": {
+    "description": "Auto imported from components/Search/Index.vue"
   },
   "NavigationLogo": {
     "description": "Auto imported from components/Navigation/Logo/Index.vue"

@@ -1,7 +1,7 @@
 <template>
   <nuxt-link to="" class="cursor-pointer group">
     <div class="">
-      <div style="height: 12rem; width: 14rem;" class="background rounded-t-2xl transform ease-in-out duration-500" :style="{ background:`url(${backgroundImagePath})`}"></div>
+      <div style="height: 12rem; width: 16rem;" class="background rounded-t-2xl transform ease-in-out duration-500" :style="{ background:`url(${backgroundImagePath})`}"></div>
 
       <div class="p-2 px-5 bg-secondary bg-opacity-5 rounded-b-2xl h-14 flex gap-3 items-center">
         <div v-if="profileImagePath" class="profile_background rounded-full transform ease-in-out duration-500" :style="{ background:`url(${profileImagePath})`}"></div>
@@ -10,8 +10,8 @@
         </div>
     
         <div>
-          <h3 class="text-secondary text-sm font-medium text-left mb-1">{{title}}</h3>
-          <p class="text-secondary text-opacity-50 text-xs font-normal text-left" v-if="artisan">by {{ artisan }}</p>
+          <UiTypographyP class="text-left">{{title}}</UiTypographyP>
+          <UiTypographyP class="text-opacity-50 text-left" v-if="artisan">by {{ artisan }}</UiTypographyP>
         </div>
       </div>
     </div>
