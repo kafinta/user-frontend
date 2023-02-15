@@ -38,8 +38,8 @@
   "NavigationNavBar": {
     "description": "Auto imported from components/Navigation/NavBar/Index.vue"
   },
-  "NavigationNavBarUser": {
-    "description": "Auto imported from components/Navigation/NavBar/User.vue"
+  "NavigationNavBarUserSearch": {
+    "description": "Auto imported from components/Navigation/NavBar/UserSearch.vue"
   },
   "SearchSuggestionItem": {
     "description": "Auto imported from components/Search/Suggestion/Item.vue"
@@ -94,6 +94,9 @@
   },
   "UiTypographyP": {
     "description": "Auto imported from components/Ui/Typography/P.vue"
+  },
+  "UserProfileOnlineStatus": {
+    "description": "Auto imported from components/User/Profile/OnlineStatus.vue"
   },
   "UserProfilePicture": {
     "description": "Auto imported from components/User/Profile/Picture.vue"

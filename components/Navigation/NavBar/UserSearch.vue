@@ -27,12 +27,7 @@
         </li>
 
         <li class="relative cursor-pointer">
-          <div v-if="profileImagePath" class="profile_background rounded-full transform ease-in-out duration-500" :style="{ background:`url(${profileImagePath})`}"></div>
-          <div v-if="!profileImagePath" class="w-8 h-8 rounded-full text-white text-center font-bold bg-secondary bg-opacity-20 transform ease-in-out duration-500 flex items-center justify-center">
-            {{ first_letter }}
-          </div>
-          <div :class="is_online ? 'bg-green-600' : 'bg-secondary bg-opacity-50'" class="h-2.5 w-2.5 rounded-full border-white border bottom-0 right-0 absolute"></div>
-          <div class="hidden">{{ username }}</div>
+          <slot />
         </li>
         <li v-if="earning" class="hidden">
           <p class="text-primary border text-sm border-primary rounded-md px-2 py-1">${{earning}}</p>
