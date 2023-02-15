@@ -11,15 +11,6 @@
   "CarouselsProjects": {
     "description": "Auto imported from components/Carousels/Projects.vue"
   },
-  "FormButton": {
-    "description": "Auto imported from components/Form/Button.vue"
-  },
-  "FormInput": {
-    "description": "Auto imported from components/Form/Input.vue"
-  },
-  "FormToggle": {
-    "description": "Auto imported from components/Form/Toggle.vue"
-  },
   "NavigationFooter": {
     "description": "Auto imported from components/Navigation/Footer.vue"
   },
@@ -29,17 +20,26 @@
   "Search": {
     "description": "Auto imported from components/Search/Index.vue"
   },
-  "NavigationHeader": {
-    "description": "Auto imported from components/Navigation/Header/Index.vue"
+  "FormButton": {
+    "description": "Auto imported from components/Form/Button.vue"
   },
-  "NavigationHeaderUserHeader": {
-    "description": "Auto imported from components/Navigation/Header/UserHeader.vue"
+  "FormInput": {
+    "description": "Auto imported from components/Form/Input.vue"
+  },
+  "FormToggle": {
+    "description": "Auto imported from components/Form/Toggle.vue"
   },
   "NavigationLogo": {
     "description": "Auto imported from components/Navigation/Logo/Index.vue"
   },
   "NavigationLogoOneColor": {
     "description": "Auto imported from components/Navigation/Logo/OneColor.vue"
+  },
+  "NavigationNavBar": {
+    "description": "Auto imported from components/Navigation/NavBar/Index.vue"
+  },
+  "NavigationNavBarUser": {
+    "description": "Auto imported from components/Navigation/NavBar/User.vue"
   },
   "SearchSuggestionItem": {
     "description": "Auto imported from components/Search/Suggestion/Item.vue"
@@ -79,5 +79,17 @@
   },
   "UiIconsSearch": {
     "description": "Auto imported from components/Ui/Icons/Search.vue"
+  },
+  "UiTypographyH1": {
+    "description": "Auto imported from components/Ui/Typography/H1.vue"
+  },
+  "UiTypographyH2": {
+    "description": "Auto imported from components/Ui/Typography/H2.vue"
+  },
+  "UiTypographyH3": {
+    "description": "Auto imported from components/Ui/Typography/H3.vue"
+  },
+  "UiTypographyP": {
+    "description": "Auto imported from components/Ui/Typography/P.vue"
   }
 }

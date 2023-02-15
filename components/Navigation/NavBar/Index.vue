@@ -1,5 +1,5 @@
 <template>
-  <div class="flex mx-auto items-center max-h-fit justify-between px-6 md:px-8 lg:px-10 py-4 bg-white md:bg-opacity-75 w-full">
+  <nav class="flex mx-auto items-center max-h-fit justify-between px-6 md:px-8 lg:px-10 py-4 bg-white md:bg-opacity-75 w-full">
     <div class="w-36">
       <NavigationLogo @logoClicked="reloadPage()"></NavigationLogo>
     </div>
@@ -32,7 +32,7 @@
     </ul>
     </nav>
 
-  </div>
+  </nav>
 </template>
 
 <script>
