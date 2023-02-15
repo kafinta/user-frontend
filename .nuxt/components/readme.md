@@ -37,3 +37,4 @@ You can directly use them in pages and other components without the need to impo
 - `<UiTypographyH2>` | `<ui-typography-h2>` (components/Ui/Typography/H2.vue)
 - `<UiTypographyH3>` | `<ui-typography-h3>` (components/Ui/Typography/H3.vue)
 - `<UiTypographyP>` | `<ui-typography-p>` (components/Ui/Typography/P.vue)
+- `<UserProfilePicture>` | `<user-profile-picture>` (components/User/Profile/Picture.vue)

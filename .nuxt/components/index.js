@@ -29,6 +29,7 @@ export { default as UiTypographyH1 } from '../..\\components\\Ui\\Typography\\H1
 export { default as UiTypographyH2 } from '../..\\components\\Ui\\Typography\\H2.vue'
 export { default as UiTypographyH3 } from '../..\\components\\Ui\\Typography\\H3.vue'
 export { default as UiTypographyP } from '../..\\components\\Ui\\Typography\\P.vue'
+export { default as UserProfilePicture } from '../..\\components\\User\\Profile\\Picture.vue'
 
 // nuxt/nuxt.js#8607
 function wrapFunctional(options) {

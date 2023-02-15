@@ -1,7 +1,9 @@
 <template>
   <div class="mt-5 overflow-x-hidden px-0">
     <VueSlickCarousel v-bind="settings" >
-      <UiCardsSecondary v-for="item in projects" :key="item.id" :title="item.title" :artisan="item.artisan" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" />
+      <UiCardsSecondary v-for="item in projects" :key="item.id" :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" :artisan="item.artisan">
+        <UserProfilePicture :artisan="item.artisan" :large_dimensions="false"  />
+      </UiCardsSecondary>
       <template #prevArrow>
         <div class="top-[7rem] left-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
           <img src="@/assets/images/icons/triangle.svg" class="h-5 w-5 -ml-0.5 rotate-90" alt="">
@@ -27,7 +29,7 @@ export default {
           title: 'Furniture',
           backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674909090/kafinta/marketplace/furniture_r9hcwn.jpg',
           urlPath: 'furniture',
-          artisan: 'Test User'
+          artisan: '1 User'
         },
         
         {
@@ -35,15 +37,15 @@ export default {
           title: 'Living Room',
           backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674909452/kafinta/marketplace/living-room_jqoixn.jpg',
           urlPath: 'living-room',
-          artisan: 'Test User'
+          artisan: 'Stupid User'
         },
 
         {
           id: 3,
-          title: 'Kitchen and Dining',
+          title: 'Kitchen & Dining',
           backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674909452/kafinta/marketplace/kitchen_irvdft.jpg',
           urlPath: 'kitchen',
-          artisan: 'Test User'
+          artisan: 'Example'
         },
 
         {
@@ -51,7 +53,7 @@ export default {
           title: 'Bedroom',
           backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674909453/kafinta/marketplace/bedroom_q5m7cb.png',
           urlPath: 'bedroom',
-          artisan: 'Test User'
+          artisan: 'User User'
         },
 
         {
@@ -59,15 +61,15 @@ export default {
           title: 'Bathroom',
           backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674909092/kafinta/marketplace/bathroom_qufzyi.jpg',
           urlPath: 'bathroom',
-          artisan: 'Test User'
+          artisan: 'Added User'
         },
 
         {
           id: 6,
-          title: 'Storage and Organization',
+          title: 'Storage & Organization',
           backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674909452/kafinta/marketplace/closet_phsws6.jpg',
           urlPath: 'storage',
-          artisan: 'Test User'
+          artisan: 'User'
         },
 
         {
@@ -75,7 +77,7 @@ export default {
           title: 'Lighting',
           backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674909452/kafinta/marketplace/lighting_zzdqfm.jpg',
           urlPath: 'lighting',
-          artisan: 'Test User'
+          artisan: 'Long Name User'
         },
 
         {
@@ -83,7 +85,7 @@ export default {
           title: 'Outdoors',
           backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674909090/kafinta/marketplace/outdoors_jejx1j.jpg',
           urlPath: 'outdoors',
-          artisan: 'Test User'
+          artisan: 'User'
         },
       ],
 
@@ -100,67 +102,55 @@ export default {
           {
             "breakpoint": 2560,
             "settings": {
-              "slidesToShow": 4.5,
+              "slidesToShow": 3.6,
             }
           },
           {
             "breakpoint": 1250,
             "settings": {
-              "slidesToShow": 4,
+              "slidesToShow": 3.5,
             }
           },
           {
             "breakpoint": 1180,
             "settings": {
-              "slidesToShow": 4,
+              "slidesToShow": 2.9,
             }
           },
           {
             "breakpoint": 1024,
             "settings": {
-              "slidesToShow": 3,
-            }
-          },
-          {
-            "breakpoint": 820,
-            "settings": {
-              "slidesToShow": 2.5,
+              "slidesToShow": 2.1,
             }
           },
           {
             "breakpoint": 768,
             "settings": {
-              "slidesToShow": 2.5,
+              "slidesToShow": 2,
             }
           },
           {
-            "breakpoint": 670,
-            "settings": {
-              "slidesToShow": 1.8,
-            }
-          }, 
-          {
             "breakpoint": 600,
             "settings": {
-              "slidesToShow": 1.4,
+              "slidesToShow": 1.15,
             }
           },          
           {
             "breakpoint": 480,
             "settings": {
-              "slidesToShow": 1.1,
+              "slidesToShow": 0.7,
             }
           },
           {
             "breakpoint": 375,
             "settings": {
-              "slidesToShow": 0.9,
+              "slidesToShow": 0.7,
             }
           },
           {
             "breakpoint": 320,
             "settings": {
-              "slidesToShow": 0.7,
+              "slidesToShow": 0.5,
               "centerMode": true,
             }
           }, 
@@ -170,12 +160,3 @@ export default {
   },
 }
 </script>
-
-<style>
-.carousel__prev,
-.carousel__next {
-	background-color: white;
-  color: #333333;
-  border-radius: 100%;
-}
-</style>

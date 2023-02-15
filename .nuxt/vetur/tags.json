@@ -91,5 +91,8 @@
   },
   "UiTypographyP": {
     "description": "Auto imported from components/Ui/Typography/P.vue"
+  },
+  "UserProfilePicture": {
+    "description": "Auto imported from components/User/Profile/Picture.vue"
   }
 }
