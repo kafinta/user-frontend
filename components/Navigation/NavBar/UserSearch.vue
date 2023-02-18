@@ -16,7 +16,7 @@
       <ul class="flex gap-5 items-center justify-end">
         <li class="relative cursor-pointer">
           <UiIconsNotifications class="w-4 h-4" />
-          <UiIconsPopup v-if="notifications" class="h-2 w-2 -top-0.5 -right-1 absolute"></UiIconsPopup>
+          <UiIconsPopup v-if="notifications" class="h-2 w-2 -top-0.5 right-0 absolute"></UiIconsPopup>
         </li>
         <li class="relative cursor-pointer">      
           <UiIconsMessages class="w-4 h-4" />
