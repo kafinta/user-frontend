@@ -4,6 +4,8 @@
       <NavigationLogo class="w-36" @logoClicked="$router.push({path: '/'})"></NavigationLogo>
     </div>
 
+    <NavigationMenu @revealMenu="toggleMenu()" />
+
     <form class="mx-auto w-full md:flex items-center justify-end relative hidden">
       <input @focus="focus()" @input="$emit('input', $event.target.value)" class="w-full flex justify-center py-3 px-4 border text-sm outline-none border-secondary ring-0 focus:outline-none focus:border-primary active:border-primary rounded-md active:text-primary focus:text-primary text-secondary border-opacity-20 active:border-opacity-100 focus:border-opacity-100 duration-300 ease-out" autocomplete="off" ref="input" type="text" placeholder="What are you looking for?" />
 
@@ -12,7 +14,7 @@
       </button>
     </form>
 
-    <nav>
+    <nav class="hidden md:block">
       <ul class="flex gap-5 items-center justify-end" v-if="signedIn">
         <li class="relative cursor-pointer">
           <UiIconsNotifications class="w-4 h-4" />
@@ -51,7 +53,6 @@ export default {
   data() {
     return {
       menu_revealed: false,
-      first_letter: ''
     }
   },
 
@@ -66,6 +67,10 @@ export default {
   },
 
   methods: {
+    toggleMenu(){
+      this.menu_revealed = !this.menu_revealed
+    },
+
     focus(){
       this.$refs.input.focus()
     }
