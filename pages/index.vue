@@ -2,8 +2,8 @@
   <div class="select-none">
     <Search @toggleSearchBox="toggleSearch()" :searchBoxState="searchBox" />
     <header>
-      <NavigationNavBar :keep_button_hovered="search_button_hovered" @toggleSearchBox="toggleSearch()" class="fixed z-100 top-0 w-full"></NavigationNavBar>
-      <div class="py-36 lg:h-screen hero-bg items-center px-6 md:px-8 lg:px-10 flex">
+      <NavigationNavBar :keep_button_hovered="search_button_hovered" @toggleSearchBox="toggleSearch()"/>
+      <div class="py-36 lg:py-48 2xl:py-56 hero-bg items-center px-6 md:px-8 lg:px-10 flex">
         <div class="w-full md:w-2/3 lg:w-1/2">
           <UiTypographyH1 class="mb-2">Bring Your Dream <br> Home To Life</UiTypographyH1>
           <UiTypographyP>Find inspiration, products and the pros to make it happen <br> — all in one place</UiTypographyP>

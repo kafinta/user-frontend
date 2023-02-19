@@ -45,6 +45,14 @@
         </li>
       </ul>
     </nav>
+
+    <nav class="block md:hidden">
+      <ul :class="menu_revealed ? 'translate-x-0' : '-translate-x-full'" class="z-10 w-full fixed h-screen left-0 top-[65.5px] duration-500 ease-in-out bg-white">
+        <li>
+          Testing Text
+        </li>
+      </ul>
+    </nav>
   </nav>
 </template>
 
