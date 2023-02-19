@@ -13,7 +13,7 @@
     </form>
 
     <nav>
-      <ul class="flex gap-5 items-center justify-end">
+      <ul class="flex gap-5 items-center justify-end" v-if="signedIn">
         <li class="relative cursor-pointer">
           <UiIconsNotifications class="w-4 h-4" />
           <UiIconsPopup v-if="notifications" class="h-2 w-2 -top-0.5 right-0 absolute"></UiIconsPopup>
@@ -33,6 +33,15 @@
           <p class="text-primary border text-sm border-primary rounded-md px-2 py-1">${{earning}}</p>
         </li>
       </ul>
+
+      <ul class="flex gap-5 items-center justify-end" v-if="!signedIn">
+        <li>
+          <UiButtonsSecondary class="w-12 xl:w-14 2xl:w-16 flex" @clicked="$router.push({path: '/login'})">Sign In</UiButtonsSecondary>
+        </li>
+        <li>
+          <UiButtonsPrimary class="w-32" :flexdisplay="false" @click="$router.push({path: '/signup'})">Sign Up</UiButtonsPrimary>
+        </li>
+      </ul>
     </nav>
   </nav>
 </template>
@@ -48,6 +57,7 @@ export default {
 
   props: {
     is_online: Boolean,
+    signedIn: Boolean,
     notifications: Boolean,
     messages: Boolean,
     username: String,
@@ -56,33 +66,9 @@ export default {
   },
 
   methods: {
-    getFirstLetter(){
-      setTimeout(() => {
-        if (this.username !== undefined && this.username !== '') {
-          this.first_letter = this.username.slice(0,1)
-      } else {
-        console.log("error")
-      }
-      }, 1000);
-    },
-
     focus(){
       this.$refs.input.focus()
     }
   },
-
-  created(){
-    this.getFirstLetter()
-  }
 }
 </script>
-
-<style>
-  .profile_background {
-    height: 2rem;
-    width: 2rem;
-    background-position: center center !important;
-    background-size: cover !important;
-    background-repeat: no-repeat !important;
-  }
-</style>
