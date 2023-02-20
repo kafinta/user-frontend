@@ -4,7 +4,7 @@
       <NavigationLogo class="w-36" @logoClicked="$router.push({path: '/'})"></NavigationLogo>
     </div>
 
-    <NavigationMenu @revealMenu="toggleMenu()" />
+    <NavigationMenu class="flex justify-end" @revealMenu="toggleMenu()" />
 
     <form class="mx-auto w-full md:flex items-center justify-end relative hidden">
       <input @focus="focus()" @input="$emit('input', $event.target.value)" class="w-full flex justify-center py-3 px-4 border text-sm outline-none border-secondary ring-0 focus:outline-none focus:border-primary active:border-primary rounded-md active:text-primary focus:text-primary text-secondary border-opacity-20 active:border-opacity-100 focus:border-opacity-100 duration-300 ease-out" autocomplete="off" ref="input" type="text" placeholder="What are you looking for?" />
@@ -46,8 +46,8 @@
       </ul>
     </nav>
 
-    <nav class="block md:hidden">
-      <ul :class="menu_revealed ? 'translate-x-0' : '-translate-x-full'" class="z-10 w-full fixed h-screen left-0 top-[65.5px] duration-500 ease-in-out bg-white">
+    <nav :class="menu_revealed ? 'translate-x-0' : '-translate-x-full'" class="z-100 w-full fixed h-screen left-0 top-[65.5px] duration-500 ease-in-out bg-white md:hidden">
+      <ul >
         <li>
           Testing Text
         </li>
