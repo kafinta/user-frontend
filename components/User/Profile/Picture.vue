@@ -11,7 +11,8 @@
 export default {
   props: {
     artisan: String,
-    large_dimensions: Boolean
+    large_dimensions: Boolean,
+    profileImagePath: String
   },
 
   data() {
@@ -27,7 +28,9 @@ export default {
   },
 
   created(){
-    this.getFirstLetter()
+    // if(window.process){
+      this.getFirstLetter()
+    // }
   }
 }
 </script>
