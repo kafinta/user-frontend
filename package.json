@@ -1,5 +1,9 @@
 {
-  "name": "added",
+  "engines": {
+    "node": "<=16.16.0",
+    "npm": "<=8.11.0"
+  },
+  "name": "kafinta",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -13,23 +17,16 @@
     "@nuxtjs/toast": "^3.3.1",
     "chokidar": "^3.5.3",
     "core-js": "^3.19.3",
-    "glob-parent": "^6.0.2",
-    "nth-check": "^2.1.1",
     "nuxt": "^2.12.2",
-    "swiper": "^9.0.4",
     "vue": "^2.6.14",
     "vue-server-renderer": "^2.6.14",
     "vue-slick-carousel": "^1.0.6",
-    "vue-ssr-carousel": "^1.9.0",
-    "vue-template-compiler": "^2.6.14"
+    "vue-ssr-carousel": "^1.9.1",
+    "vue-template-compiler": "^2.6.14",
+    "webpack": "^4.46.0"
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^4.2.1",
-    "autoprefixer": "^10.4.7",
-    "postcss": "^8.4.13",
-    "sass": "^1.54.7",
-    "sass-loader": "^10.1.1",
-    "tailwindcss": "^3.0.24",
-    "webpack": "^4.46.0"
+    "postcss": "^8.4.4"
   }
 }
