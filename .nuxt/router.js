@@ -4,12 +4,12 @@ import { normalizeURL, decode } from 'ufo'
 import { interopDefault } from './utils'
 import scrollBehavior from './router.scrollBehavior.js'
 
-const _013ea5eb = () => interopDefault(import('..\\pages\\forgot.vue' /* webpackChunkName: "pages/forgot" */))
-const _47b3145e = () => interopDefault(import('..\\pages\\login.vue' /* webpackChunkName: "pages/login" */))
-const _15fb9d40 = () => interopDefault(import('..\\pages\\signup.vue' /* webpackChunkName: "pages/signup" */))
-const _22aa3992 = () => interopDefault(import('..\\pages\\users\\index.vue' /* webpackChunkName: "pages/users/index" */))
-const _543e9f7e = () => interopDefault(import('..\\pages\\verify.vue' /* webpackChunkName: "pages/verify" */))
-const _127ed2ba = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages/index" */))
+const _4f061ff4 = () => interopDefault(import('..\\pages\\forgot.vue' /* webpackChunkName: "pages/forgot" */))
+const _07f316a8 = () => interopDefault(import('..\\pages\\login.vue' /* webpackChunkName: "pages/login" */))
+const _42c9ab69 = () => interopDefault(import('..\\pages\\signup.vue' /* webpackChunkName: "pages/signup" */))
+const _538648db = () => interopDefault(import('..\\pages\\users\\index.vue' /* webpackChunkName: "pages/users/index" */))
+const _23a82a4a = () => interopDefault(import('..\\pages\\verify.vue' /* webpackChunkName: "pages/verify" */))
+const _3e4b7391 = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages/index" */))
 
 const emptyFn = () => {}
 
@@ -24,27 +24,27 @@ export const routerOptions = {
 
   routes: [{
     path: "/forgot",
-    component: _013ea5eb,
+    component: _4f061ff4,
     name: "forgot"
   }, {
     path: "/login",
-    component: _47b3145e,
+    component: _07f316a8,
     name: "login"
   }, {
     path: "/signup",
-    component: _15fb9d40,
+    component: _42c9ab69,
     name: "signup"
   }, {
     path: "/users",
-    component: _22aa3992,
+    component: _538648db,
     name: "users"
   }, {
     path: "/verify",
-    component: _543e9f7e,
+    component: _23a82a4a,
     name: "verify"
   }, {
     path: "/",
-    component: _127ed2ba,
+    component: _3e4b7391,
     name: "index"
   }],
 

@@ -2,43 +2,43 @@
   {
     "name": "forgot",
     "path": "/forgot",
-    "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user\\\\pages\\\\forgot.vue",
+    "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user-frontend\\\\pages\\\\forgot.vue",
     "chunkName": "pages/forgot",
-    "_name": "_013ea5eb"
+    "_name": "_4f061ff4"
   },
   {
     "name": "login",
     "path": "/login",
-    "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user\\\\pages\\\\login.vue",
+    "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user-frontend\\\\pages\\\\login.vue",
     "chunkName": "pages/login",
-    "_name": "_47b3145e"
+    "_name": "_07f316a8"
   },
   {
     "name": "signup",
     "path": "/signup",
-    "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user\\\\pages\\\\signup.vue",
+    "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user-frontend\\\\pages\\\\signup.vue",
     "chunkName": "pages/signup",
-    "_name": "_15fb9d40"
+    "_name": "_42c9ab69"
   },
   {
     "name": "users",
     "path": "/users",
-    "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user\\\\pages\\\\users\\\\index.vue",
+    "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user-frontend\\\\pages\\\\users\\\\index.vue",
     "chunkName": "pages/users/index",
-    "_name": "_22aa3992"
+    "_name": "_538648db"
   },
   {
     "name": "verify",
     "path": "/verify",
-    "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user\\\\pages\\\\verify.vue",
+    "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user-frontend\\\\pages\\\\verify.vue",
     "chunkName": "pages/verify",
-    "_name": "_543e9f7e"
+    "_name": "_23a82a4a"
   },
   {
     "name": "index",
     "path": "/",
-    "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user\\\\pages\\\\index.vue",
+    "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user-frontend\\\\pages\\\\index.vue",
     "chunkName": "pages/index",
-    "_name": "_127ed2ba"
+    "_name": "_3e4b7391"
   }
 ]

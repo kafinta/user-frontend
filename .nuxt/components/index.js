@@ -1,4 +1,3 @@
-export { default as SsrCarousel } from '../..\\node_modules\\vue-ssr-carousel\\index.js'
 export { default as CarouselsMarketplace } from '../..\\components\\Carousels\\Marketplace.vue'
 export { default as CarouselsProfessionals } from '../..\\components\\Carousels\\Professionals.vue'
 export { default as CarouselsProjects } from '../..\\components\\Carousels\\Projects.vue'

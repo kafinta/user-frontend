@@ -13,9 +13,8 @@ import { createStore } from './store.js'
 
 /* Plugins */
 
-import nuxt_plugin_plugin_65ca5ab3 from 'nuxt_plugin_plugin_65ca5ab3' // Source: .\\components\\plugin.js (mode: 'all')
-import nuxt_plugin_axios_62460356 from 'nuxt_plugin_axios_62460356' // Source: .\\axios.js (mode: 'all')
-import nuxt_plugin_toast_2e765005 from 'nuxt_plugin_toast_2e765005' // Source: .\\toast.js (mode: 'client')
+import nuxt_plugin_plugin_55e3c1f8 from 'nuxt_plugin_plugin_55e3c1f8' // Source: .\\components\\plugin.js (mode: 'all')
+import nuxt_plugin_axios_b0172bca from 'nuxt_plugin_axios_b0172bca' // Source: .\\axios.js (mode: 'all')
 import nuxt_plugin_vueslickcarousel_d8b69d56 from 'nuxt_plugin_vueslickcarousel_d8b69d56' // Source: ..\\plugins\\vue-slick-carousel.js (mode: 'all')
 
 // Component: <ClientOnly>
@@ -45,7 +44,7 @@ Vue.component(Nuxt.name, Nuxt)
 
 Object.defineProperty(Vue.prototype, '$nuxt', {
   get() {
-    const globalNuxt = this.$root.$options.$nuxt
+    const globalNuxt = this.$root ? this.$root.$options.$nuxt : null
     if (process.client && !globalNuxt && typeof window !== 'undefined') {
       return window.$nuxt
     }
@@ -70,9 +69,9 @@ function registerModule (path, rawModule, options = {}) {
 }
 
 async function createApp(ssrContext, config = {}) {
-  const router = await createRouter(ssrContext, config)
-
   const store = createStore(ssrContext)
+  const router = await createRouter(ssrContext, config, { store })
+
   // Add this.$router into store actions/mutations
   store.$router = router
 
@@ -151,6 +150,7 @@ async function createApp(ssrContext, config = {}) {
     req: ssrContext ? ssrContext.req : undefined,
     res: ssrContext ? ssrContext.res : undefined,
     beforeRenderFns: ssrContext ? ssrContext.beforeRenderFns : undefined,
+    beforeSerializeFns: ssrContext ? ssrContext.beforeSerializeFns : undefined,
     ssrContext
   })
 
@@ -210,16 +210,12 @@ async function createApp(ssrContext, config = {}) {
   }
   // Plugin execution
 
-  if (typeof nuxt_plugin_plugin_65ca5ab3 === 'function') {
-    await nuxt_plugin_plugin_65ca5ab3(app.context, inject)
+  if (typeof nuxt_plugin_plugin_55e3c1f8 === 'function') {
+    await nuxt_plugin_plugin_55e3c1f8(app.context, inject)
   }
 
-  if (typeof nuxt_plugin_axios_62460356 === 'function') {
-    await nuxt_plugin_axios_62460356(app.context, inject)
-  }
-
-  if (process.client && typeof nuxt_plugin_toast_2e765005 === 'function') {
-    await nuxt_plugin_toast_2e765005(app.context, inject)
+  if (typeof nuxt_plugin_axios_b0172bca === 'function') {
+    await nuxt_plugin_axios_b0172bca(app.context, inject)
   }
 
   if (typeof nuxt_plugin_vueslickcarousel_d8b69d56 === 'function') {

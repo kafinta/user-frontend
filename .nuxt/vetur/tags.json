@@ -1,7 +1,4 @@
 {
-  "SsrCarousel": {
-    "description": "Auto imported from node_modules/vue-ssr-carousel/index.js"
-  },
   "CarouselsMarketplace": {
     "description": "Auto imported from components/Carousels/Marketplace.vue"
   },
