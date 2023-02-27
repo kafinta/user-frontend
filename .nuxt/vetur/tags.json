@@ -35,9 +35,6 @@
   "NavigationNavBar": {
     "description": "Auto imported from components/Navigation/NavBar/Index.vue"
   },
-  "NavigationNavBarUserSearch": {
-    "description": "Auto imported from components/Navigation/NavBar/UserSearch.vue"
-  },
   "SearchSuggestionItem": {
     "description": "Auto imported from components/Search/Suggestion/Item.vue"
   },
@@ -97,5 +94,11 @@
   },
   "UserProfilePicture": {
     "description": "Auto imported from components/User/Profile/Picture.vue"
+  },
+  "NavigationNavBarUserMobile": {
+    "description": "Auto imported from components/Navigation/NavBar/User/Mobile.vue"
+  },
+  "NavigationNavBarUserSearch": {
+    "description": "Auto imported from components/Navigation/NavBar/User/Search.vue"
   }
 }

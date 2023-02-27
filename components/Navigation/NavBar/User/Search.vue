@@ -38,21 +38,15 @@
 
       <ul class="flex gap-5 items-center justify-end" v-if="!signedIn">
         <li>
-          <UiButtonsSecondary class="w-12 xl:w-14 2xl:w-16 flex" @clicked="$router.push({path: '/login'})">Sign In</UiButtonsSecondary>
+          <UiButtonsSecondary class="w-12 xl:w-14 2xl:w-16" @clicked="$router.push({path: '/login'})">Sign In</UiButtonsSecondary>
         </li>
         <li>
-          <UiButtonsPrimary class="w-32" :flexdisplay="false" @click="$router.push({path: '/signup'})">Sign Up</UiButtonsPrimary>
+          <UiButtonsPrimary class="w-[8.5rem]" @click="$router.push({path: '/signup'})">Sign Up</UiButtonsPrimary>
         </li>
       </ul>
     </nav>
 
-    <nav :class="menu_revealed ? 'translate-x-0' : '-translate-x-full'" class="z-100 w-full fixed h-screen left-0 top-[65.5px] duration-500 ease-in-out bg-white md:hidden">
-      <ul >
-        <li>
-          Testing Text
-        </li>
-      </ul>
-    </nav>
+    <NavigationNavBarUserMobile :menu_revealed="toggle_menu"></NavigationNavBarUserMobile>
   </nav>
 </template>
 
@@ -60,7 +54,7 @@
 export default {
   data() {
     return {
-      menu_revealed: false,
+      toggle_menu: false,
     }
   },
 
@@ -76,7 +70,7 @@ export default {
 
   methods: {
     toggleMenu(){
-      this.menu_revealed = !this.menu_revealed
+      this.toggle_menu = !this.toggle_menu
     },
 
     focus(){

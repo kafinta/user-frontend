@@ -18,7 +18,6 @@ You can directly use them in pages and other components without the need to impo
 - `<NavigationLogo>` | `<navigation-logo>` (components/Navigation/Logo/Index.vue)
 - `<NavigationLogoOneColor>` | `<navigation-logo-one-color>` (components/Navigation/Logo/OneColor.vue)
 - `<NavigationNavBar>` | `<navigation-nav-bar>` (components/Navigation/NavBar/Index.vue)
-- `<NavigationNavBarUserSearch>` | `<navigation-nav-bar-user-search>` (components/Navigation/NavBar/UserSearch.vue)
 - `<SearchSuggestionItem>` | `<search-suggestion-item>` (components/Search/Suggestion/Item.vue)
 - `<SearchSuggestionLabel>` | `<search-suggestion-label>` (components/Search/Suggestion/Label.vue)
 - `<SearchSuggestionWrapper>` | `<search-suggestion-wrapper>` (components/Search/Suggestion/Wrapper.vue)
@@ -39,3 +38,5 @@ You can directly use them in pages and other components without the need to impo
 - `<UiTypographyP>` | `<ui-typography-p>` (components/Ui/Typography/P.vue)
 - `<UserProfileOnlineStatus>` | `<user-profile-online-status>` (components/User/Profile/OnlineStatus.vue)
 - `<UserProfilePicture>` | `<user-profile-picture>` (components/User/Profile/Picture.vue)
+- `<NavigationNavBarUserMobile>` | `<navigation-nav-bar-user-mobile>` (components/Navigation/NavBar/User/Mobile.vue)
+- `<NavigationNavBarUserSearch>` | `<navigation-nav-bar-user-search>` (components/Navigation/NavBar/User/Search.vue)

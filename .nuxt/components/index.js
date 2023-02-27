@@ -10,7 +10,6 @@ export { default as Search } from '../..\\components\\Search\\Index.vue'
 export { default as NavigationLogo } from '../..\\components\\Navigation\\Logo\\Index.vue'
 export { default as NavigationLogoOneColor } from '../..\\components\\Navigation\\Logo\\OneColor.vue'
 export { default as NavigationNavBar } from '../..\\components\\Navigation\\NavBar\\Index.vue'
-export { default as NavigationNavBarUserSearch } from '../..\\components\\Navigation\\NavBar\\UserSearch.vue'
 export { default as SearchSuggestionItem } from '../..\\components\\Search\\Suggestion\\Item.vue'
 export { default as SearchSuggestionLabel } from '../..\\components\\Search\\Suggestion\\Label.vue'
 export { default as SearchSuggestionWrapper } from '../..\\components\\Search\\Suggestion\\Wrapper.vue'
@@ -31,6 +30,8 @@ export { default as UiTypographyH3 } from '../..\\components\\Ui\\Typography\\H3
 export { default as UiTypographyP } from '../..\\components\\Ui\\Typography\\P.vue'
 export { default as UserProfileOnlineStatus } from '../..\\components\\User\\Profile\\OnlineStatus.vue'
 export { default as UserProfilePicture } from '../..\\components\\User\\Profile\\Picture.vue'
+export { default as NavigationNavBarUserMobile } from '../..\\components\\Navigation\\NavBar\\User\\Mobile.vue'
+export { default as NavigationNavBarUserSearch } from '../..\\components\\Navigation\\NavBar\\User\\Search.vue'
 
 // nuxt/nuxt.js#8607
 function wrapFunctional(options) {
