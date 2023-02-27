@@ -1,5 +1,5 @@
 <template>
-  <nav class="flex items-center justify-between gap-5 px-6 md:px-8 lg:px-10 py-4 bg-white max-w-7xl mx-auto w-full">
+  <nav :class="toggle_menu ? 'fixed z-100' : ''" class="flex items-center justify-between gap-5 px-6 md:px-8 lg:px-10 py-4 bg-white max-w-7xl mx-auto w-full">
     <div>
       <NavigationLogo class="w-36" @logoClicked="$router.push({path: '/'})"></NavigationLogo>
     </div>

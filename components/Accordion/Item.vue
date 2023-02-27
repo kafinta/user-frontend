@@ -12,6 +12,7 @@
     >
       <!-- This slot will handle the title/header of the accordion and is the part you click on -->
       <slot name="accordion-trigger"></slot>
+      <UiIconsAccordion :class="item.rotate ? 'rotate-0' : 'rotate-180'" class="w-4 h-4 transition-all"/>
     </div>
 
     <transition
@@ -81,6 +82,7 @@ export default {
     return {
       item: {
         active: false,
+        rotate: false,
         id: this.generateRandomNumber(),
       },
     };
@@ -100,6 +102,7 @@ export default {
     async activateFirstItem(){
       if(this.active){
         this.item.active = true
+        this.item.rotate = true
       }
       return true;
     },
@@ -112,9 +115,11 @@ export default {
       if(this.allowMultiple){
 
         if(this.item.active === false){
+          this.item.rotate = true;
           this.item.active = true;
           Object.assign({}, ...this.Items, this.item)
         }else {
+          this.item.rotate = false;
           this.item.active = false;
           Object.assign({}, ...this.Items, this.item)
         }
@@ -123,12 +128,12 @@ export default {
 
         this.Items.forEach(item => {
           item.active = false
+          item.rotate = false
         });
 
         this.item.active = true;
+        this.item.rotate = true;
         Object.assign({}, ...this.Items, this.item)
-
-
       }
     },
     start(el) {
@@ -155,6 +160,7 @@ export default {
 .accordion__trigger {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .accordion__content ul {

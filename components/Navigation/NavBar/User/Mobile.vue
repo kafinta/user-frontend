@@ -1,8 +1,8 @@
 <template>
-  <nav :class="menu_revealed ? 'translate-x-0' : '-translate-x-full'" class="z-100 w-full fixed h-screen left-0 top-[65.5px] duration-500 ease-in-out bg-white md:hidden">
+  <nav :class="menu_revealed ? 'translate-x-0' : '-translate-x-full'" class="z-100 w-full fixed h-screen left-0 top-[65.5px] duration-500 ease-in-out bg-white md:hidden px-6">
     <Accordion>
 
-      <AccordionItem container_class="bg-gray-50 dark:bg-accent1-800 border dark:border-accent1-700  p-2 my-3"
+      <AccordionItem container_class=""
         trigger_class="font-medium" active>
 
         <template #accordion-trigger>
@@ -20,7 +20,7 @@
         </template>
       </AccordionItem>
 
-      <AccordionItem container_class=" bg-gray-50 dark:bg-accent1-800 border dark:border-accent1-700   p-2 my-3"
+      <AccordionItem container_class=""
         trigger_class="font-medium" >
 
         <template #accordion-trigger>
@@ -39,7 +39,7 @@
         </template>
       </AccordionItem>
 
-      <AccordionItem container_class="bg-gray-50 dark:bg-accent1-800 border dark:border-accent1-700  p-2 my-3"
+      <AccordionItem container_class=""
         trigger_class="font-medium">
         <template #accordion-trigger>
           <h3>Language</h3>
@@ -56,7 +56,7 @@
         </template>
       </AccordionItem>
 
-      <AccordionItem container_class="bg-gray-50 dark:bg-accent1-800 border dark:border-accent1-700  p-2 my-3"
+      <AccordionItem container_class=""
         trigger_class="font-medium">
         <template #accordion-trigger>
           <h3>Tags</h3>
