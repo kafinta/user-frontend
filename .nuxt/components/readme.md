@@ -6,6 +6,8 @@ You can directly use them in pages and other components without the need to impo
 
 **Tip:** If a component is conditionally rendered with `v-if` and is big, it is better to use `Lazy` or `lazy-` prefix to lazy load.
 
+- `<Accordion>` | `<accordion>` (components/Accordion/Index.vue)
+- `<AccordionItem>` | `<accordion-item>` (components/Accordion/Item.vue)
 - `<CarouselsMarketplace>` | `<carousels-marketplace>` (components/Carousels/Marketplace.vue)
 - `<CarouselsProfessionals>` | `<carousels-professionals>` (components/Carousels/Professionals.vue)
 - `<CarouselsProjects>` | `<carousels-projects>` (components/Carousels/Projects.vue)

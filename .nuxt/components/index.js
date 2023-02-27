@@ -1,3 +1,5 @@
+export { default as Accordion } from '../..\\components\\Accordion\\Index.vue'
+export { default as AccordionItem } from '../..\\components\\Accordion\\Item.vue'
 export { default as CarouselsMarketplace } from '../..\\components\\Carousels\\Marketplace.vue'
 export { default as CarouselsProfessionals } from '../..\\components\\Carousels\\Professionals.vue'
 export { default as CarouselsProjects } from '../..\\components\\Carousels\\Projects.vue'

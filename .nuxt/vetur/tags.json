@@ -1,4 +1,10 @@
 {
+  "Accordion": {
+    "description": "Auto imported from components/Accordion/Index.vue"
+  },
+  "AccordionItem": {
+    "description": "Auto imported from components/Accordion/Item.vue"
+  },
   "CarouselsMarketplace": {
     "description": "Auto imported from components/Carousels/Marketplace.vue"
   },
