@@ -32,7 +32,7 @@ export default {
 };
 </script>
 
-<style >
+<style>
 .accordion {
     list-style: none;
     margin: 0;
