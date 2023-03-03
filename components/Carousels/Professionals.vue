@@ -1,21 +1,19 @@
 <template>
   <div class="mt-5 overflow-x-hidden px-0 glide">
     <div data-glide-el="track" class="glide__track">
-      <div class="glide__slides glide__slide--active">
+      <div class="glide__slides">
         <UiCards v-for="professional in professionals" :key="professional.id" :title="professional.title" :backgroundImagePath="professional.backgroundImagePath" :urlPath="professional.urlPath" class="glide__slide flex items-center gap-5" />
       </div>
 
-      <!-- <template #prevArrow>
-        <div class="top-[7rem] left-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
+      <div data-glide-el="controls" class="glide__arrows">
+        <button data-glide-dir="<" class="glide__arrow glide__arrow--left top-[7rem] left-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
           <img src="@/assets/images/icons/triangle.svg" class="h-5 w-5 -ml-0.5 rotate-90" alt="">
-        </div>
-      </template>
+        </button>
 
-      <template #nextArrow	>
-        <div class="top-[7rem] right-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
+        <button data-glide-dir=">" class="glide__arrow glide__arrow--right top-[7rem] right-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
           <img src="@/assets/images/icons/triangle.svg" class="h-5 w-5 -ml-0.5 -rotate-90" alt="">
-        </div>
-      </template> -->
+        </button>
+      </div>
     </div>
   </div>
 </template>
