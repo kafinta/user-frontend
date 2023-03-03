@@ -1,8 +1,11 @@
 <template>
-  <div class="mt-5 overflow-x-hidden px-0">
-    <VueSlickCarousel v-bind="settings">
-      <UiCards v-for="professional in professionals" :key="professional.id" :title="professional.title" :backgroundImagePath="professional.backgroundImagePath" :urlPath="professional.urlPath" class="flex items-center gap-5" />
-      <template #prevArrow>
+  <div class="mt-5 overflow-x-hidden px-0 glide">
+    <div data-glide-el="track" class="glide__track">
+      <div class="glide__slides glide__slide--active">
+        <UiCards v-for="professional in professionals" :key="professional.id" :title="professional.title" :backgroundImagePath="professional.backgroundImagePath" :urlPath="professional.urlPath" class="glide__slide flex items-center gap-5" />
+      </div>
+
+      <!-- <template #prevArrow>
         <div class="top-[7rem] left-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
           <img src="@/assets/images/icons/triangle.svg" class="h-5 w-5 -ml-0.5 rotate-90" alt="">
         </div>
@@ -12,12 +15,13 @@
         <div class="top-[7rem] right-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
           <img src="@/assets/images/icons/triangle.svg" class="h-5 w-5 -ml-0.5 -rotate-90" alt="">
         </div>
-      </template>
-    </VueSlickCarousel>
+      </template> -->
+    </div>
   </div>
 </template>
 
 <script>
+  import Glide from '@glidejs/glide'
   export default {
   data() {
     return {
@@ -161,14 +165,73 @@
       }
     }
   },
+
+  mounted() {
+    new Glide('.glide', {
+      type: 'carousel',
+      autoplay: 2000,
+      focusAt: 'center',
+      hoverpause: false,
+      gap: 10,
+      keyboard: true,
+      animationDuration: 1000,
+      breakpoints: {
+        2560:{
+          perView: 5
+        },
+        1024: {
+          perView: 4
+        },
+        950:{
+          perView: 3.4,
+        },
+        875: {
+          perView: 3.3,
+        },
+        768: {
+          perView: 3,
+        },
+        600: {
+          perView: 2.5,
+          peek: {
+            before: 0,
+            after: 0
+          }
+        },
+        525: {
+          perView: 1.9,
+          peek: {
+            before: 15,
+            after: 15
+          }
+        },
+        425: {
+          perView: 1.5,
+          peek: {
+            before: 10,
+            after: 10
+          }
+        },
+        375: {
+          perView: 1.2,
+          peek: {
+            before: 20,
+            after: 20
+          }
+        },
+        320: {
+          perView: 1,
+          peek: {
+            before: 20,
+            after: 20
+          }
+        },
+      }
+    }).mount()
+  },
 }
 </script>
 
 <style>
-.carousel__prev,
-.carousel__next {
-	background-color: white;
-  color: #333333;
-  border-radius: 100%;
-}
+@import '@glidejs/glide/dist/css/glide.core.min.css';
 </style>

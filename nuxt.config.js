@@ -20,7 +20,9 @@ export default {
     ],
     
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel:'stylesheet', href:'node_modules/@glidejs/glide/dist/css/glide.core.min.css'},
+      {rel:'stylesheet', href:'node_modules/@glidejs/glide/dist/css/glide.theme.min.css'},
     ]
   },
 
