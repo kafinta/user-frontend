@@ -34,6 +34,7 @@ export { default as UserProfileOnlineStatus } from '../..\\components\\User\\Pro
 export { default as UserProfilePicture } from '../..\\components\\User\\Profile\\Picture.vue'
 export { default as NavigationNavBarUserMobile } from '../..\\components\\Navigation\\NavBar\\User\\Mobile.vue'
 export { default as NavigationNavBarUserSearch } from '../..\\components\\Navigation\\NavBar\\User\\Search.vue'
+export { default as NavigationNavBarUserSeller } from '../..\\components\\Navigation\\NavBar\\User\\Seller.vue'
 
 // nuxt/nuxt.js#8607
 function wrapFunctional(options) {

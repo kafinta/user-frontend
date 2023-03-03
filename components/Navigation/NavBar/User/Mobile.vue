@@ -1,6 +1,6 @@
 <template>
   <div :class="menu_revealed ? 'translate-x-0' : '-translate-x-full'" class="z-100 w-full fixed h-screen left-0 top-[65.5px] duration-150 ease-in-out bg-white md:hidden px-6">
-    <Accordion>0
+    <Accordion>
 
       <AccordionItem container_class="py-3 px-2"
         trigger_class="font-medium">

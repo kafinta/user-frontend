@@ -35,6 +35,13 @@
     "_name": "_23a82a4a"
   },
   {
+    "name": "users-profile",
+    "path": "/users/profile",
+    "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user-frontend\\\\pages\\\\users\\\\profile.vue",
+    "chunkName": "pages/users/profile",
+    "_name": "_f6e0e41c"
+  },
+  {
     "name": "index",
     "path": "/",
     "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user-frontend\\\\pages\\\\index.vue",

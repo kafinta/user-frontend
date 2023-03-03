@@ -42,3 +42,4 @@ You can directly use them in pages and other components without the need to impo
 - `<UserProfilePicture>` | `<user-profile-picture>` (components/User/Profile/Picture.vue)
 - `<NavigationNavBarUserMobile>` | `<navigation-nav-bar-user-mobile>` (components/Navigation/NavBar/User/Mobile.vue)
 - `<NavigationNavBarUserSearch>` | `<navigation-nav-bar-user-search>` (components/Navigation/NavBar/User/Search.vue)
+- `<NavigationNavBarUserSeller>` | `<navigation-nav-bar-user-seller>` (components/Navigation/NavBar/User/Seller.vue)

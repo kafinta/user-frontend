@@ -106,5 +106,8 @@
   },
   "NavigationNavBarUserSearch": {
     "description": "Auto imported from components/Navigation/NavBar/User/Search.vue"
+  },
+  "NavigationNavBarUserSeller": {
+    "description": "Auto imported from components/Navigation/NavBar/User/Seller.vue"
   }
 }

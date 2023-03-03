@@ -9,6 +9,7 @@ const _07f316a8 = () => interopDefault(import('..\\pages\\login.vue' /* webpackC
 const _42c9ab69 = () => interopDefault(import('..\\pages\\signup.vue' /* webpackChunkName: "pages/signup" */))
 const _538648db = () => interopDefault(import('..\\pages\\users\\index.vue' /* webpackChunkName: "pages/users/index" */))
 const _23a82a4a = () => interopDefault(import('..\\pages\\verify.vue' /* webpackChunkName: "pages/verify" */))
+const _f6e0e41c = () => interopDefault(import('..\\pages\\users\\profile.vue' /* webpackChunkName: "pages/users/profile" */))
 const _3e4b7391 = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages/index" */))
 
 const emptyFn = () => {}
@@ -42,6 +43,10 @@ export const routerOptions = {
     path: "/verify",
     component: _23a82a4a,
     name: "verify"
+  }, {
+    path: "/users/profile",
+    component: _f6e0e41c,
+    name: "users-profile"
   }, {
     path: "/",
     component: _3e4b7391,
