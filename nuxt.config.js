@@ -21,19 +21,16 @@ export default {
     
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel:'stylesheet', href:'node_modules/@glidejs/glide/dist/css/glide.core.min.css'},
-      {rel:'stylesheet', href:'node_modules/@glidejs/glide/dist/css/glide.theme.min.css'},
     ]
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
     './assets/css/main.css',
-    'vue-slick-carousel/dist/vue-slick-carousel.css'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [{ src: './plugins/vue-slick-carousel.js' }],
+  plugins: [],
 
 
   // Auto import components: https://go.nuxtjs.dev/config-components

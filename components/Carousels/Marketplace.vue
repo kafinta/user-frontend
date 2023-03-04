@@ -1,24 +1,25 @@
 <template>
-  <div class="mt-5 overflow-x-hidden px-0">
-    <VueSlickCarousel v-bind="settings" class="relative">
-      <UiCards v-for="item in marketplace" :key="item.id" :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" class="flex items-center gap-5" />
+  <div class="mt-5 overflow-x-hidden px-0 slide">
+    <div data-glide-el="track" class="relative glide__track">
+      <div class="glide__slides">
+        <UiCards v-for="item in marketplace" :key="item.id" :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" class="flex items-center gap-5" />
 
-      <template #prevArrow>
-        <div class="top-[7rem] left-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
-          <img src="@/assets/images/icons/triangle.svg" class="h-5 w-5 -ml-0.5 rotate-90" alt="">
-        </div>
-      </template>
+        <div data-glide-el="controls" class="glide__arrows">
+          <button data-glide-dir="<" class="glide__arrow glide__arrow--left top-[7rem] left-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
+            <img src="@/assets/images/icons/triangle.svg" class="h-5 w-5 -ml-0.5 rotate-90" alt="">
+          </button>
 
-      <template #nextArrow	>
-        <div class="top-[7rem] right-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
-          <img src="@/assets/images/icons/triangle.svg" class="h-5 w-5 -ml-0.5 -rotate-90" alt="">
+          <button data-glide-dir=">" class="glide__arrow glide__arrow--right top-[7rem] right-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
+            <img src="@/assets/images/icons/triangle.svg" class="h-5 w-5 -ml-0.5 -rotate-90" alt="">
+          </button>
         </div>
-      </template>
-    </VueSlickCarousel>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import Glide from '@glidejs/glide'
 export default {
   data() {
     return {
@@ -79,92 +80,74 @@ export default {
           urlPath: 'outdoors'
         },
       ],
-
-      settings :{
-        "arrows": true,
-        "infinite": true,
-        "slidesToShow": 1,
-        "slidesToScroll": 1,
-        "autoplay": true,
-        "speed": 300,
-        "autoplaySpeed": 2000,
-        "centerMode": true,
-        "cssEase": "linear",
-        "responsive": [
-          {
-            "breakpoint": 2560,
-            "settings": {
-              "slidesToShow": 4.5,
-            }
-          },
-          {
-            "breakpoint": 1250,
-            "settings": {
-              "slidesToShow": 4,
-            }
-          },
-          {
-            "breakpoint": 1180,
-            "settings": {
-              "slidesToShow": 4,
-            }
-          },
-          {
-            "breakpoint": 1024,
-            "settings": {
-              "slidesToShow": 3,
-            }
-          },
-          {
-            "breakpoint": 820,
-            "settings": {
-              "slidesToShow": 2.5,
-            }
-          },
-          {
-            "breakpoint": 768,
-            "settings": {
-              "slidesToShow": 2.5,
-            }
-          },
-          {
-            "breakpoint": 670,
-            "settings": {
-              "slidesToShow": 1.8,
-            }
-          }, 
-          {
-            "breakpoint": 600,
-            "settings": {
-              "slidesToShow": 1.4,
-            }
-          },          
-          {
-            "breakpoint": 480,
-            "settings": {
-              "slidesToShow": 1.1,
-            }
-          },
-          {
-            "breakpoint": 375,
-            "settings": {
-              "slidesToShow": 0.9,
-            }
-          },
-          {
-            "breakpoint": 320,
-            "settings": {
-              "slidesToShow": 0.7,
-              "centerMode": true,
-            }
-          }, 
-        ]
-      }
     }
+  },
+
+  mounted() {
+    new Glide('.slide', {
+      type: 'carousel',
+      autoplay: 2000,
+      focusAt: 'center',
+      hoverpause: false,
+      keyboard: true,
+      animationDuration: 1000,
+      breakpoints: {
+        2560:{
+          perView: 5
+        },
+        1024: {
+          perView: 4
+        },
+        950:{
+          perView: 3.4,
+        },
+        875: {
+          perView: 3.3,
+        },
+        768: {
+          perView: 3,
+        },
+        600: {
+          perView: 2.5,
+          peek: {
+            before: 0,
+            after: 0
+          }
+        },
+        525: {
+          perView: 1.9,
+          peek: {
+            before: 15,
+            after: 15
+          }
+        },
+        425: {
+          perView: 1.5,
+          peek: {
+            before: 10,
+            after: 10
+          }
+        },
+        375: {
+          perView: 1.2,
+          peek: {
+            before: 20,
+            after: 20
+          }
+        },
+        320: {
+          perView: 1,
+          peek: {
+            before: 20,
+            after: 20
+          }
+        },
+      }
+    }).mount()
   },
 }
 </script>
 
 <style>
-
+@import '@glidejs/glide/dist/css/glide.core.min.css';
 </style>
