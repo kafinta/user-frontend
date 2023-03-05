@@ -1,13 +1,13 @@
 <template>
-  <footer class="px-6 md:px-8 lg:px-10 py-6 border-t border-slate-200">
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto py-8">
+  <footer class="px-6 md:px-8 lg:px-10 py-6 border-t border-slate-200 w-full">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 max-w-7xl mx-auto py-8">
       <div class="flex flex-col gap-2">
         <h4 class="uppercase text-secondary text-base font-medium mb-2">Company</h4>
         <NuxtLink to=""><UiButtonsSecondary>About</UiButtonsSecondary></NuxtLink>
         <NuxtLink to=""><UiButtonsSecondary>Privacy Policy</UiButtonsSecondary></NuxtLink>
         <NuxtLink to=""><UiButtonsSecondary>Terms of Service</UiButtonsSecondary></NuxtLink>
         <NuxtLink to=""><UiButtonsSecondary>Copyright & Trademark</UiButtonsSecondary></NuxtLink>
-        <NuxtLink to=""><UiButtonsSecondary>Intellectual Property Claims</UiButtonsSecondary></NuxtLink>
+        <NuxtLink to=""><UiButtonsSecondary class="text-left w-fit">Intellectual Property Claims</UiButtonsSecondary></NuxtLink>
       </div>
 
       <div class="flex flex-col gap-2">
