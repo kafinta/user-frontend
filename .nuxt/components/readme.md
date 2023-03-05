@@ -20,6 +20,8 @@ You can directly use them in pages and other components without the need to impo
 - `<NavigationLogo>` | `<navigation-logo>` (components/Navigation/Logo/Index.vue)
 - `<NavigationLogoOneColor>` | `<navigation-logo-one-color>` (components/Navigation/Logo/OneColor.vue)
 - `<NavigationNavBar>` | `<navigation-nav-bar>` (components/Navigation/NavBar/Index.vue)
+- `<NavigationSideBar>` | `<navigation-side-bar>` (components/Navigation/Side/Bar.vue)
+- `<NavigationSideMenu>` | `<navigation-side-menu>` (components/Navigation/Side/Menu.vue)
 - `<SearchSuggestionItem>` | `<search-suggestion-item>` (components/Search/Suggestion/Item.vue)
 - `<SearchSuggestionLabel>` | `<search-suggestion-label>` (components/Search/Suggestion/Label.vue)
 - `<SearchSuggestionWrapper>` | `<search-suggestion-wrapper>` (components/Search/Suggestion/Wrapper.vue)

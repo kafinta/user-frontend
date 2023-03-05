@@ -41,6 +41,12 @@
   "NavigationNavBar": {
     "description": "Auto imported from components/Navigation/NavBar/Index.vue"
   },
+  "NavigationSideBar": {
+    "description": "Auto imported from components/Navigation/Side/Bar.vue"
+  },
+  "NavigationSideMenu": {
+    "description": "Auto imported from components/Navigation/Side/Menu.vue"
+  },
   "SearchSuggestionItem": {
     "description": "Auto imported from components/Search/Suggestion/Item.vue"
   },
