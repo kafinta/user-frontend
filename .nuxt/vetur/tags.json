@@ -35,8 +35,11 @@
   "NavigationLogo": {
     "description": "Auto imported from components/Navigation/Logo/Index.vue"
   },
-  "NavigationLogoOneColor": {
-    "description": "Auto imported from components/Navigation/Logo/OneColor.vue"
+  "NavigationLogoInverted": {
+    "description": "Auto imported from components/Navigation/Logo/Inverted.vue"
+  },
+  "NavigationLogoMonotone": {
+    "description": "Auto imported from components/Navigation/Logo/Monotone.vue"
   },
   "NavigationNavBar": {
     "description": "Auto imported from components/Navigation/NavBar/Index.vue"
