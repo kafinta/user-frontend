@@ -6,11 +6,11 @@ You can directly use them in pages and other components without the need to impo
 
 **Tip:** If a component is conditionally rendered with `v-if` and is big, it is better to use `Lazy` or `lazy-` prefix to lazy load.
 
-- `<Accordion>` | `<accordion>` (components/Accordion/Index.vue)
-- `<AccordionItem>` | `<accordion-item>` (components/Accordion/Item.vue)
 - `<CarouselsMarketplace>` | `<carousels-marketplace>` (components/Carousels/Marketplace.vue)
 - `<CarouselsProfessionals>` | `<carousels-professionals>` (components/Carousels/Professionals.vue)
 - `<CarouselsProjects>` | `<carousels-projects>` (components/Carousels/Projects.vue)
+- `<Accordion>` | `<accordion>` (components/Accordion/Index.vue)
+- `<AccordionItem>` | `<accordion-item>` (components/Accordion/Item.vue)
 - `<FormButton>` | `<form-button>` (components/Form/Button.vue)
 - `<FormInput>` | `<form-input>` (components/Form/Input.vue)
 - `<FormToggle>` | `<form-toggle>` (components/Form/Toggle.vue)
@@ -31,10 +31,13 @@ You can directly use them in pages and other components without the need to impo
 - `<UiCards>` | `<ui-cards>` (components/Ui/Cards/Index.vue)
 - `<UiCardsSecondary>` | `<ui-cards-secondary>` (components/Ui/Cards/Secondary.vue)
 - `<UiIconsAccordion>` | `<ui-icons-accordion>` (components/Ui/Icons/Accordion.vue)
+- `<UiIconsCart>` | `<ui-icons-cart>` (components/Ui/Icons/Cart.vue)
 - `<UiIconsClose>` | `<ui-icons-close>` (components/Ui/Icons/Close.vue)
+- `<UiIconsDashboard>` | `<ui-icons-dashboard>` (components/Ui/Icons/Dashboard.vue)
 - `<UiIconsLoading>` | `<ui-icons-loading>` (components/Ui/Icons/Loading.vue)
 - `<UiIconsMessages>` | `<ui-icons-messages>` (components/Ui/Icons/Messages.vue)
 - `<UiIconsNotifications>` | `<ui-icons-notifications>` (components/Ui/Icons/Notifications.vue)
+- `<UiIconsOverview>` | `<ui-icons-overview>` (components/Ui/Icons/Overview.vue)
 - `<UiIconsPopup>` | `<ui-icons-popup>` (components/Ui/Icons/Popup.vue)
 - `<UiIconsSearch>` | `<ui-icons-search>` (components/Ui/Icons/Search.vue)
 - `<UiTypographyH1>` | `<ui-typography-h1>` (components/Ui/Typography/H1.vue)
