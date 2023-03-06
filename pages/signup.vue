@@ -2,7 +2,7 @@
   <div class="flex flex-row-reverse select-none">
     <div class="background hidden lg:flex w-2/3 bg-cover bg-center py-5 px-10 relative flex-col justify-between">
       <div class="flex justify-end">
-        <NavigationLogoOneColor @click="returnHome()"  class="w-36 cursor-pointer text-white" />
+        <NavigationLogoMonotone @click="returnHome()"  class="w-36 cursor-pointer text-white" />
       </div>
 
       <div class="bg-white rounded-md bg-opacity-80 p-5 bottom-5 w-full">
