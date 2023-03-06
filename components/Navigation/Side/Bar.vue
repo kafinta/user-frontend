@@ -1,7 +1,7 @@
 <template>
   <transition name="slide-fade" >
     <nav class="fixed top-0 left-0 w-3/5 md:w-1/3 lg:w-1/5 xl:w-1/6 md:flex flex-col justify-between bg-secondary h-screen">
-      <div class="mt-8">
+      <div class="mt-6">
         <div class="px-8">
           <NavigationLogoInverted class="w-36 text-white"/>
         </div>
@@ -51,7 +51,22 @@
         </div>
       </div>
 
+      <div class="p-6 bg-[#222222] rounded-t-2xl">
+        <div class="flex items-center gap-5">
+          <div class="relative flex w-fit">
+            <UserProfilePicture :artisan="username" :large_dimensions="true"/>
+            <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="true" :is_displayed="true"/>
+          </div>
 
+          <div>
+            <UiTypographyP class="text-white">{{ username }}</UiTypographyP>
+            <p class="text-green-500 text-sm">$0.00</p>
+          </div>
+        </div>
+
+        <UiButtonsPrimary @clicked="$router.push({path: '/users'})" class="mt-4 bg-primary" :primarybg="true" :flexdisplay="true">Switch to Buying</UiButtonsPrimary>
+
+      </div>
     </nav>
   </transition>
 </template>
@@ -60,6 +75,7 @@
 export default {
   data() {
     return {
+      username: 'Quadri',
       dashboardActive: false,
       inboxActive: false,
       gigsActive: false,
