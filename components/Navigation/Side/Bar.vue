@@ -7,9 +7,45 @@
         </div>
 
         <div class="mt-10">
-          <nuxt-link to="/dashboard">
-            <NavigationSideMenu menu_text="Dashboard" :is_active="false">
-              <UiIconsDashboard />
+          <nuxt-link to="/users/profile">
+            <NavigationSideMenu menu_text="Dashboard" :is_active="dashboardActive">
+              <UiIconsOverview />
+            </NavigationSideMenu>
+          </nuxt-link>
+
+          <nuxt-link to="/users/profile">
+            <NavigationSideMenu menu_text="Inbox" :is_active="inboxActive">
+              <UiIconsMessages />
+            </NavigationSideMenu>
+          </nuxt-link>
+
+          <nuxt-link to="/users/profile">
+            <NavigationSideMenu menu_text="Manage Gigs" :is_active="gigsActive">
+              <UiIconsGigs />
+            </NavigationSideMenu>
+          </nuxt-link>
+
+          <nuxt-link to="/users/dashboard">
+            <NavigationSideMenu menu_text="Orders" :is_active="OrdersActive">
+              <UiIconsCart />
+            </NavigationSideMenu>
+          </nuxt-link>
+
+          <nuxt-link to="/users/profile">
+            <NavigationSideMenu menu_text="Earnings" :is_active="earningsActive">
+              <UiIconsTransactions />
+            </NavigationSideMenu>
+          </nuxt-link>
+
+          <nuxt-link to="/users/profile">
+            <NavigationSideMenu menu_text="Profile" :is_active="profileActive" >
+              <UiIconsProfile />
+            </NavigationSideMenu>
+          </nuxt-link>
+
+          <nuxt-link to="/users/profile">
+            <NavigationSideMenu menu_text="Settings" :is_active="settingsActive" >
+              <UiIconsSettings />
             </NavigationSideMenu>
           </nuxt-link>
         </div>
@@ -24,14 +60,39 @@
 export default {
   data() {
     return {
+      dashboardActive: false,
+      inboxActive: false,
+      gigsActive: false,
+      OrdersActive: false,
+      earningsActive: false,
+      profileActive: false,
+      settingsActive: false,
     };
   },
   methods: {
     routeCheck(){
-      if (this.$route.name.includes('profile')) {
-        console.log(this.$route.name)
+      if (this.$route.name.includes('dashboard')) {
+        this.dashboardActive = true
       }
-    }
+      if (this.$route.name.includes('inbox')) {
+        this.inboxActive = true
+      }
+      if (this.$route.name.includes('gigs')) {
+        this.gigsActive = true
+      }
+      if (this.$route.name.includes('orders')) {
+        this.OrdersActive = true
+      }
+      if (this.$route.name.includes('earnings')) {
+        this.earningsActive = true
+      }
+      if (this.$route.name.includes('profile')) {
+        this.profileActive = true
+      }
+      if (this.$route.name.includes('settings')) {
+        this.settingsActive = true
+      }
+    },
   },
 
   created() {

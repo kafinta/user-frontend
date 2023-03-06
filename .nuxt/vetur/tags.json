@@ -83,6 +83,9 @@
   "UiIconsDashboard": {
     "description": "Auto imported from components/Ui/Icons/Dashboard.vue"
   },
+  "UiIconsGigs": {
+    "description": "Auto imported from components/Ui/Icons/Gigs.vue"
+  },
   "UiIconsLoading": {
     "description": "Auto imported from components/Ui/Icons/Loading.vue"
   },
@@ -98,8 +101,17 @@
   "UiIconsPopup": {
     "description": "Auto imported from components/Ui/Icons/Popup.vue"
   },
+  "UiIconsProfile": {
+    "description": "Auto imported from components/Ui/Icons/Profile.vue"
+  },
   "UiIconsSearch": {
     "description": "Auto imported from components/Ui/Icons/Search.vue"
+  },
+  "UiIconsSettings": {
+    "description": "Auto imported from components/Ui/Icons/Settings.vue"
+  },
+  "UiIconsTransactions": {
+    "description": "Auto imported from components/Ui/Icons/Transactions.vue"
   },
   "UiTypographyH1": {
     "description": "Auto imported from components/Ui/Typography/H1.vue"
