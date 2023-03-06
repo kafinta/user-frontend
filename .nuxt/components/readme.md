@@ -6,11 +6,11 @@ You can directly use them in pages and other components without the need to impo
 
 **Tip:** If a component is conditionally rendered with `v-if` and is big, it is better to use `Lazy` or `lazy-` prefix to lazy load.
 
+- `<Accordion>` | `<accordion>` (components/Accordion/Index.vue)
+- `<AccordionItem>` | `<accordion-item>` (components/Accordion/Item.vue)
 - `<CarouselsMarketplace>` | `<carousels-marketplace>` (components/Carousels/Marketplace.vue)
 - `<CarouselsProfessionals>` | `<carousels-professionals>` (components/Carousels/Professionals.vue)
 - `<CarouselsProjects>` | `<carousels-projects>` (components/Carousels/Projects.vue)
-- `<Accordion>` | `<accordion>` (components/Accordion/Index.vue)
-- `<AccordionItem>` | `<accordion-item>` (components/Accordion/Item.vue)
 - `<FormButton>` | `<form-button>` (components/Form/Button.vue)
 - `<FormInput>` | `<form-input>` (components/Form/Input.vue)
 - `<FormToggle>` | `<form-toggle>` (components/Form/Toggle.vue)
@@ -36,6 +36,7 @@ You can directly use them in pages and other components without the need to impo
 - `<UiIconsDashboard>` | `<ui-icons-dashboard>` (components/Ui/Icons/Dashboard.vue)
 - `<UiIconsGigs>` | `<ui-icons-gigs>` (components/Ui/Icons/Gigs.vue)
 - `<UiIconsLoading>` | `<ui-icons-loading>` (components/Ui/Icons/Loading.vue)
+- `<UiIconsLocation>` | `<ui-icons-location>` (components/Ui/Icons/Location.vue)
 - `<UiIconsMessages>` | `<ui-icons-messages>` (components/Ui/Icons/Messages.vue)
 - `<UiIconsNotifications>` | `<ui-icons-notifications>` (components/Ui/Icons/Notifications.vue)
 - `<UiIconsOverview>` | `<ui-icons-overview>` (components/Ui/Icons/Overview.vue)
@@ -43,6 +44,7 @@ You can directly use them in pages and other components without the need to impo
 - `<UiIconsProfile>` | `<ui-icons-profile>` (components/Ui/Icons/Profile.vue)
 - `<UiIconsSearch>` | `<ui-icons-search>` (components/Ui/Icons/Search.vue)
 - `<UiIconsSettings>` | `<ui-icons-settings>` (components/Ui/Icons/Settings.vue)
+- `<UiIconsTime>` | `<ui-icons-time>` (components/Ui/Icons/Time.vue)
 - `<UiIconsTransactions>` | `<ui-icons-transactions>` (components/Ui/Icons/Transactions.vue)
 - `<UiTypographyH1>` | `<ui-typography-h1>` (components/Ui/Typography/H1.vue)
 - `<UiTypographyH2>` | `<ui-typography-h2>` (components/Ui/Typography/H2.vue)

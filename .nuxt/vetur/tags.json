@@ -1,4 +1,10 @@
 {
+  "Accordion": {
+    "description": "Auto imported from components/Accordion/Index.vue"
+  },
+  "AccordionItem": {
+    "description": "Auto imported from components/Accordion/Item.vue"
+  },
   "CarouselsMarketplace": {
     "description": "Auto imported from components/Carousels/Marketplace.vue"
   },
@@ -7,12 +13,6 @@
   },
   "CarouselsProjects": {
     "description": "Auto imported from components/Carousels/Projects.vue"
-  },
-  "Accordion": {
-    "description": "Auto imported from components/Accordion/Index.vue"
-  },
-  "AccordionItem": {
-    "description": "Auto imported from components/Accordion/Item.vue"
   },
   "FormButton": {
     "description": "Auto imported from components/Form/Button.vue"
@@ -89,6 +89,9 @@
   "UiIconsLoading": {
     "description": "Auto imported from components/Ui/Icons/Loading.vue"
   },
+  "UiIconsLocation": {
+    "description": "Auto imported from components/Ui/Icons/Location.vue"
+  },
   "UiIconsMessages": {
     "description": "Auto imported from components/Ui/Icons/Messages.vue"
   },
@@ -109,6 +112,9 @@
   },
   "UiIconsSettings": {
     "description": "Auto imported from components/Ui/Icons/Settings.vue"
+  },
+  "UiIconsTime": {
+    "description": "Auto imported from components/Ui/Icons/Time.vue"
   },
   "UiIconsTransactions": {
     "description": "Auto imported from components/Ui/Icons/Transactions.vue"
