@@ -38,6 +38,10 @@ export default {
     }
   },
 
+  props: { 
+    BlockBackground: Boolean
+  },
+
   methods: {
     toggleMenu(){
       this.mobile_nav = !this.mobile_nav

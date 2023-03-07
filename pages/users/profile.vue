@@ -9,7 +9,7 @@
             <UiTypographyP class="text-green-500">Online</UiTypographyP>
           </div>
         </div>
-        <UiTypographyH3 class="text-center mt-4">{{username}}</UiTypographyH3>
+        <UiTypographyH3 class="text-center mt-4 mb-3">{{username}}</UiTypographyH3>
 
         <div class="border-t grid grid-cols-1 gap-4 py-4">
           <div class="flex items-center justify-between">
