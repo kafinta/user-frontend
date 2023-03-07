@@ -52,7 +52,7 @@
           <UiTypographyP :class="tab.active ? 'text-white' : 'text-secondary'" class="duration-500 ease-in-out group-hover:text-white">{{tab.title}}</UiTypographyP>
         </div>
       </div>
-      <div class="mt-5 grid gap-3">
+      <div class="mt-8 grid gap-4">
         <div class="border py-2 px-4 w-full flex justify-between items-center" v-for="item in 5">
           <div class="flex items-center gap-5">
             <div class="relative flex w-fit">
@@ -65,9 +65,16 @@
             </div>
           </div>
 
-          <div class="flex gap-5 items-center">
-            <UiTypographyP>$100</UiTypographyP>
-            <UiTypographyP>11 hours left</UiTypographyP>
+          <div class="flex gap-8 items-center">
+            <div>
+              <UiTypographyP :small_text="true">Price</UiTypographyP>
+              <UiTypographyP>$100</UiTypographyP>
+            </div>
+            <div>
+              <UiTypographyP :small_text="true">Status</UiTypographyP>
+              <UiTypographyP>In Progress</UiTypographyP>
+            </div>
+            <UiButtonsTertiary>View</UiButtonsTertiary>
           </div>
         </div>
       </div>
