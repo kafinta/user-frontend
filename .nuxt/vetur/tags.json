@@ -32,6 +32,9 @@
   "Search": {
     "description": "Auto imported from components/Search/Index.vue"
   },
+  "SharedBackdrop": {
+    "description": "Auto imported from components/Shared/Backdrop.vue"
+  },
   "NavigationLogo": {
     "description": "Auto imported from components/Navigation/Logo/Index.vue"
   },
