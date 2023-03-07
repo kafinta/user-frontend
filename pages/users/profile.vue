@@ -39,9 +39,13 @@
       <div class="border p-4">
         <div class="flex justify-between items-center mb-3">
           <UiTypographyH3>Description</UiTypographyH3>
-          <UiButtonsSecondary @clicked="description_edit === true">Edit Description</UiButtonsSecondary>
+          <UiButtonsSecondary @clicked="toggleDescription()">Edit Description</UiButtonsSecondary>
         </div>
-        <UiTypographyP :contenteditable="description_edit" :small_text="true" class="focus:outline-none active:outline-none">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor perspiciatis ipsam quo rerum itaque assumenda nisi corporis eaque, provident nihil optio enim ullam perferendis illum mollitia obcaecati, possimus praesentium doloremque? Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum omnis minus incidunt quis ullam quisquam facere. Fugiat, debitis! Quas sint magni culpa, expedita odio totam possimus illum aut nulla fuga.</UiTypographyP>
+        <UiTypographyP :class="description_edit ? 'bg-gray-100 p-4 h-40 overflow-y-scroll' : ''" :contenteditable="description_edit" :small_text="true" class="focus:outline-none active:outline-none">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor perspiciatis ipsam quo rerum itaque assumenda nisi corporis eaque, provident nihil optio enim ullam perferendis illum mollitia obcaecati, possimus praesentium doloremque? Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum omnis minus incidunt quis ullam quisquam facere. Fugiat, debitis! Quas sint magni culpa, expedita odio totam possimus illum aut nulla fuga.</UiTypographyP>
+        <div class="flex items-center gap-3 mt-3">
+          <UiButtonsPrimary :flexdisplay="true">Cancel</UiButtonsPrimary>
+          <UiButtonsPrimary :flexdisplay="true" :standout="true">Update</UiButtonsPrimary>
+        </div>
       </div>
     </div>
 
@@ -55,6 +59,12 @@ export default {
     return {
       username: 'Quadri',
       description_edit: false
+    }
+  },
+
+  methods: {
+    toggleDescription(){
+      this.description_edit = true
     }
   },
 }

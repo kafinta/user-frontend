@@ -64,7 +64,7 @@
           </div>
         </div>
 
-        <UiButtonsPrimary @clicked="$router.push({path: '/users'})" class="mt-4 bg-primary" :primarybg="true" :flexdisplay="true">Switch to Buying</UiButtonsPrimary>
+        <UiButtonsPrimary @clicked="$router.push({path: '/users'})" class="mt-4 bg-primary" :standout="true" :flexdisplay="true">Switch to Buying</UiButtonsPrimary>
 
       </div>
     </nav>

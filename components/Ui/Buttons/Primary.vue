@@ -2,7 +2,7 @@
   <button 
     @click="$emit('clicked')"
     class="py-2 px-5 text-white font-medium text-base 2xl:text-lg justify-center duration-500 ease-in-out rounded-md active:bg-primary " 
-    :disabled="loading || disabled" :class="[flexdisplay ? 'flex w-full' : 'block w-fit', primarybg ? 'bg-primary hover:bg-opacity-80 focus:bg-opacity-80': 'bg-secondary hover:bg-primary focus:bg-primary']">
+    :disabled="loading || disabled" :class="[flexdisplay ? 'flex w-full' : 'block w-fit', standout ? 'bg-primary hover:bg-opacity-80 focus:bg-opacity-80': 'bg-secondary hover:bg-primary focus:bg-primary']">
     <div class="flex items-center justify-center">
       <div v-if="loading"  class="flex items-center">
         <div class=" mr-2">
@@ -25,7 +25,7 @@ export default {
       default: false,
       type: Boolean
     },
-    primarybg: {
+    standout: {
       default: false,
       type: Boolean
     },
