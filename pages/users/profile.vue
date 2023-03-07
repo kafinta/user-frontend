@@ -36,15 +36,15 @@
         </div>
       </div>
 
-      <div class="border p-4">
+      <div class="border p-4 duration-150 ease-in-out">
         <div class="flex justify-between items-center mb-3">
           <UiTypographyH3>Description</UiTypographyH3>
           <UiButtonsSecondary @clicked="toggleDescription()">Edit Description</UiButtonsSecondary>
         </div>
-        <UiTypographyP :class="description_edit ? 'bg-gray-100 p-4 h-40 overflow-y-scroll' : ''" :contenteditable="description_edit" :small_text="true" class="focus:outline-none active:outline-none">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor perspiciatis ipsam quo rerum itaque assumenda nisi corporis eaque, provident nihil optio enim ullam perferendis illum mollitia obcaecati, possimus praesentium doloremque? Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum omnis minus incidunt quis ullam quisquam facere. Fugiat, debitis! Quas sint magni culpa, expedita odio totam possimus illum aut nulla fuga.</UiTypographyP>
-        <div class="flex items-center gap-3 mt-3">
-          <UiButtonsPrimary :flexdisplay="true">Cancel</UiButtonsPrimary>
-          <UiButtonsPrimary :flexdisplay="true" :standout="true">Update</UiButtonsPrimary>
+        <UiTypographyP :class="description_edit ? 'bg-gray-100 p-4 h-44 overflow-y-scroll focus:outline-none active:outline-none duration-150 ease-in-out' : ''" :contenteditable="description_edit" :small_text="true">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor perspiciatis ipsam quo rerum itaque assumenda nisi corporis eaque, provident nihil optio enim ullam perferendis illum mollitia obcaecati, possimus praesentium doloremque? Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum omnis minus incidunt quis ullam quisquam facere. Fugiat, debitis! Quas sint magni culpa, expedita odio totam possimus illum aut nulla fuga.</UiTypographyP>
+        <div :class="description_edit ? 'flex' : 'hidden'" class="items-center gap-3 mt-3 duration-150 ease-in-out">
+          <UiButtonsTertiary @clicked="toggleDescription()" :flexdisplay="true">Cancel</UiButtonsTertiary>
+          <UiButtonsPrimary  @clicked="toggleDescription()" :flexdisplay="true" :standout="true">Update</UiButtonsPrimary>
         </div>
       </div>
     </div>
@@ -64,7 +64,7 @@ export default {
 
   methods: {
     toggleDescription(){
-      this.description_edit = true
+      this.description_edit = !this.description_edit
     }
   },
 }

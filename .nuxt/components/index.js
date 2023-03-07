@@ -20,6 +20,7 @@ export { default as SearchSuggestionLabel } from '../..\\components\\Search\\Sug
 export { default as SearchSuggestionWrapper } from '../..\\components\\Search\\Suggestion\\Wrapper.vue'
 export { default as UiButtonsPrimary } from '../..\\components\\Ui\\Buttons\\Primary.vue'
 export { default as UiButtonsSecondary } from '../..\\components\\Ui\\Buttons\\Secondary.vue'
+export { default as UiButtonsTertiary } from '../..\\components\\Ui\\Buttons\\Tertiary.vue'
 export { default as UiCards } from '../..\\components\\Ui\\Cards\\Index.vue'
 export { default as UiCardsSecondary } from '../..\\components\\Ui\\Cards\\Secondary.vue'
 export { default as UiIconsAccordion } from '../..\\components\\Ui\\Icons\\Accordion.vue'

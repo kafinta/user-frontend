@@ -28,6 +28,7 @@ You can directly use them in pages and other components without the need to impo
 - `<SearchSuggestionWrapper>` | `<search-suggestion-wrapper>` (components/Search/Suggestion/Wrapper.vue)
 - `<UiButtonsPrimary>` | `<ui-buttons-primary>` (components/Ui/Buttons/Primary.vue)
 - `<UiButtonsSecondary>` | `<ui-buttons-secondary>` (components/Ui/Buttons/Secondary.vue)
+- `<UiButtonsTertiary>` | `<ui-buttons-tertiary>` (components/Ui/Buttons/Tertiary.vue)
 - `<UiCards>` | `<ui-cards>` (components/Ui/Cards/Index.vue)
 - `<UiCardsSecondary>` | `<ui-cards-secondary>` (components/Ui/Cards/Secondary.vue)
 - `<UiIconsAccordion>` | `<ui-icons-accordion>` (components/Ui/Icons/Accordion.vue)

@@ -65,6 +65,9 @@
   "UiButtonsSecondary": {
     "description": "Auto imported from components/Ui/Buttons/Secondary.vue"
   },
+  "UiButtonsTertiary": {
+    "description": "Auto imported from components/Ui/Buttons/Tertiary.vue"
+  },
   "UiCards": {
     "description": "Auto imported from components/Ui/Cards/Index.vue"
   },
