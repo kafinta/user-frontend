@@ -1,5 +1,5 @@
 <template>
-  <div class="flex">
+  <div class="block lg:flex gap-8">
     <div class="w-full lg:w-2/5 grid gap-5">
       <div class="border p-6">
         <div class="relative flex w-fit justify-center mx-auto">
@@ -58,6 +58,27 @@
       </div>
     </div>
 
+    <div class="w-full lg:w-3/5 mt-8 lg:mt-0">
+      <div class="border flex divide-x">
+        <div :class="tab.active ? 'bg-primary text-white' : 'hover:bg-secondary'" class="px-4 py-2 duration-500 ease-in-out group" v-for="tab in tabs" :key="tab.id">
+          <UiTypographyP :class="tab.active ? 'text-white' : 'text-secondary'" class="duration-500 ease-in-out group-hover:text-white">{{tab.title}}</UiTypographyP>
+        </div>
+      </div>
+      <div class="mt-5 grid md:grid-cols-2 gap-3">
+        <div class="bg-slate-200 h-48 w-full"></div>
+        <div class="bg-slate-200 h-48 w-full"></div>
+        <div class="bg-slate-200 h-48 w-full"></div>
+        <div class="bg-slate-200 h-48 w-full flex items-center justify-center">
+          <div>
+            <div class="w-24 h-24 rounded-full bg-slate-300 flex items-center justify-center p-2 relative mx-auto mb-4">
+              <div class="w-1.5 h-8 bg-white"></div>
+              <div class="w-1.5 h-8 bg-white rotate-90 absolute"></div>
+            </div>
+            <UiTypographyP>Create a new gig</UiTypographyP>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -67,7 +88,24 @@ export default {
   data() {
     return {
       username: 'Quadri',
-      description_edit: false
+      description_edit: false,
+      tabs: [
+        {
+          id: 1,
+          title: 'Active Gigs',
+          active: true
+        },
+        {
+          id: 2,
+          title: 'Paused Gigs',
+          active: false
+        },
+        {
+          id: 3,
+          title: 'Modifications',
+          active: false
+        },
+      ]
     }
   },
 
