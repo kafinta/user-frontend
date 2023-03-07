@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NavigationNavBarUserSearch :messages="true" :notifications="true" :signedIn="true" :earning="99" class="border-b border-slate-200">
+    <NavigationNavBarUserSearch :messages="true" :notifications="true" :signedIn="true" :earning="99" class="border-b border-accent-100">
       <div class="relative">
         <UserProfilePicture artisan="Quadri" />
         <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="online_presence" :is_displayed="true"/>

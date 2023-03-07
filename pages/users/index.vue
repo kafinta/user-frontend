@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex items-end gap-16">
-      <div class="h-72 w-1/4 bg-secondary bg-opacity-5 lg:flex items-center justify-center p-7 hidden">
+      <div class="h-72 w-1/4 bg-accent-50 lg:flex items-center justify-center p-7 hidden">
         <div>
           <h5 class="text-center text-lg font-medium">Hi, {{ username }}</h5>
           <p class="text-center text-base font-normal mt-2">Get matched with artisans for your project.</p>
@@ -11,7 +11,7 @@
         </div>
       </div>
 
-      <div class="flex px-5 bg-secondary bg-opacity-5 w-full lg:w-3/4 h-72" ></div>
+      <div class="flex px-5 bg-accent-50 w-full lg:w-3/4 h-72" ></div>
     </div>
 
     <div class="mt-10">

@@ -1,7 +1,7 @@
 <template>
   <div class="block lg:flex gap-8">
     <div class="w-full lg:w-2/5 grid gap-5">
-      <div class="border p-6">
+      <div class="border border-accent-100 p-6">
         <div class="relative flex w-fit justify-center mx-auto">
           <UserProfilePicture :artisan="username" :custom_dimensions="true" class="h-36 w-36"/>
           <div class="absolute -right-5 bottom-0 flex items-center gap-2 bg-white border-green-500 rounded-full border px-2">
@@ -11,7 +11,7 @@
         </div>
         <UiTypographyH3 class="text-center mt-4 mb-3">{{username}}</UiTypographyH3>
 
-        <div class="border-t grid grid-cols-1 gap-4 py-4">
+        <div class="border-t border-accent-100 grid grid-cols-1 gap-4 py-4">
           <div class="flex items-center justify-between">
             <div class="flex gap-3 items-center">
               <UiIconsLocation class="w-5 h-5 text-secondary" />
@@ -36,7 +36,7 @@
         </div>
       </div>
 
-      <div class="border p-6 duration-150 ease-in-out">
+      <div class="border border-accent-100 p-6 duration-150 ease-in-out">
         <div class="flex justify-between items-center mb-3">
           <UiTypographyH3>Description</UiTypographyH3>
           <UiButtonsSecondary @clicked="toggleDescription()">Edit Description</UiButtonsSecondary>
@@ -59,18 +59,18 @@
     </div>
 
     <div class="w-full lg:w-3/5 mt-8 lg:mt-0">
-      <div class="border flex divide-x">
+      <div class="border border-accent-100 flex divide-x divide-accent-100">
         <div :class="tab.active ? 'bg-primary text-white' : 'hover:bg-secondary'" class="px-4 py-2 duration-500 ease-in-out group" v-for="tab in tabs" :key="tab.id">
           <UiTypographyP :class="tab.active ? 'text-white' : 'text-secondary'" class="duration-500 ease-in-out group-hover:text-white">{{tab.title}}</UiTypographyP>
         </div>
       </div>
       <div class="mt-5 grid md:grid-cols-2 gap-3">
-        <div class="bg-slate-200 h-48 w-full"></div>
-        <div class="bg-slate-200 h-48 w-full"></div>
-        <div class="bg-slate-200 h-48 w-full"></div>
-        <div class="bg-slate-200 h-48 w-full flex items-center justify-center">
+        <div class="bg-accent-50 h-48 w-full"></div>
+        <div class="bg-accent-50 h-48 w-full"></div>
+        <div class="bg-accent-50 h-48 w-full"></div>
+        <div class="bg-accent-50 h-48 w-full flex items-center justify-center">
           <div>
-            <div class="w-24 h-24 rounded-full bg-slate-300 flex items-center justify-center p-2 relative mx-auto mb-4">
+            <div class="w-24 h-24 rounded-full bg-accent-200 flex items-center justify-center p-2 relative mx-auto mb-4">
               <div class="w-1.5 h-8 bg-white"></div>
               <div class="w-1.5 h-8 bg-white rotate-90 absolute"></div>
             </div>

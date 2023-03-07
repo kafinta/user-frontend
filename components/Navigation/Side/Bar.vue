@@ -51,7 +51,7 @@
         </div>
       </div>
 
-      <div class="p-6 bg-[#222222] rounded-t-2xl">
+      <div class="p-6 bg-accent-600 rounded-t-2xl">
         <div class="flex items-center gap-5">
           <div class="relative flex w-fit">
             <UserProfilePicture :artisan="username" :custom_dimensions="true" class="h-10 w-10"/>
