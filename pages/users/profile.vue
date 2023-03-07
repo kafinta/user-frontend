@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <div class="w-full lg:w-2/5 grid gap-5">
-      <div class="border p-4">
+      <div class="border p-6">
         <div class="relative flex w-fit justify-center mx-auto">
           <UserProfilePicture :artisan="username" :custom_dimensions="true" class="h-36 w-36"/>
           <div class="absolute -right-5 bottom-0 flex items-center gap-2 bg-white border-green-500 rounded-full border px-2">
@@ -36,15 +36,24 @@
         </div>
       </div>
 
-      <div class="border p-4 duration-150 ease-in-out">
+      <div class="border p-6 duration-150 ease-in-out">
         <div class="flex justify-between items-center mb-3">
           <UiTypographyH3>Description</UiTypographyH3>
           <UiButtonsSecondary @clicked="toggleDescription()">Edit Description</UiButtonsSecondary>
         </div>
-        <UiTypographyP :class="description_edit ? 'bg-gray-100 p-4 h-44 overflow-y-scroll focus:outline-none active:outline-none duration-150 ease-in-out' : ''" :contenteditable="description_edit" :small_text="true">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor perspiciatis ipsam quo rerum itaque assumenda nisi corporis eaque, provident nihil optio enim ullam perferendis illum mollitia obcaecati, possimus praesentium doloremque? Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum omnis minus incidunt quis ullam quisquam facere. Fugiat, debitis! Quas sint magni culpa, expedita odio totam possimus illum aut nulla fuga.</UiTypographyP>
-        <div :class="description_edit ? 'flex' : 'hidden'" class="items-center gap-3 mt-3 duration-150 ease-in-out">
+        <UiTypographyP :class="description_edit ? 'bg-gray-100 p-4 h-44 overflow-y-scroll focus:outline-none active:outline-none duration-150 ease-in-out' : ''" class="mb-4" :contenteditable="description_edit" :small_text="true">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor perspiciatis ipsam quo rerum itaque assumenda nisi corporis eaque, provident nihil optio enim ullam perferendis illum mollitia obcaecati, possimus praesentium doloremque? Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum omnis minus incidunt quis ullam quisquam facere. Fugiat, debitis! Quas sint magni culpa, expedita odio totam possimus illum aut nulla fuga.</UiTypographyP>
+        <div :class="description_edit ? 'flex' : 'hidden'" class="items-center gap-3 my-3 duration-150 ease-in-out">
           <UiButtonsTertiary @clicked="toggleDescription()" :flexdisplay="true">Cancel</UiButtonsTertiary>
           <UiButtonsPrimary  @clicked="toggleDescription()" :flexdisplay="true" :standout="true">Update</UiButtonsPrimary>
+        </div>
+
+        <div class="border-t mt-4">
+          <div class="flex justify-between items-center my-3">
+            <UiTypographyH3>Languages</UiTypographyH3>
+            <UiButtonsSecondary @clicked="toggleDescription()">Add new</UiButtonsSecondary>
+          </div>
+          <UiTypographyP>English <span class="text-slate-400 text-sm">- Native</span></UiTypographyP>
+          <UiTypographyP class="mt-1">French <span class="text-slate-400 text-sm">- Basic</span></UiTypographyP>
         </div>
       </div>
     </div>
