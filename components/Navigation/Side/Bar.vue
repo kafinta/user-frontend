@@ -7,31 +7,31 @@
         </div>
 
         <div class="mt-10">
-          <nuxt-link to="/users/profile">
+          <nuxt-link to="/users/dashboard">
             <NavigationSideMenu menu_text="Dashboard" :is_active="dashboardActive">
               <UiIconsOverview />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link to="/users/profile">
+          <nuxt-link to="/users/inbox">
             <NavigationSideMenu menu_text="Inbox" :is_active="inboxActive">
               <UiIconsMessages />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link to="/users/profile">
+          <nuxt-link to="/users/gigs">
             <NavigationSideMenu menu_text="Manage Gigs" :is_active="gigsActive">
               <UiIconsGigs />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link to="/users/dashboard">
+          <nuxt-link to="/users/orders">
             <NavigationSideMenu menu_text="Orders" :is_active="OrdersActive">
               <UiIconsCart />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link to="/users/profile">
+          <nuxt-link to="/users/earnings">
             <NavigationSideMenu menu_text="Earnings" :is_active="earningsActive">
               <UiIconsTransactions />
             </NavigationSideMenu>
@@ -43,7 +43,7 @@
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link to="/users/profile">
+          <nuxt-link to="/users/settings">
             <NavigationSideMenu menu_text="Settings" :is_active="settingsActive" >
               <UiIconsSettings />
             </NavigationSideMenu>
