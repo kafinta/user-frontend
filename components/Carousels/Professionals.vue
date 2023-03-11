@@ -1,26 +1,26 @@
 <template>
-  <div class="mt-5 overflow-x-hidden px-0 glide">
-    <div data-glide-el="track" class="glide__track">
-      <div class="glide__slides">
-        <UiCards v-for="professional in professionals" :key="professional.id" :title="professional.title" :backgroundImagePath="professional.backgroundImagePath" :urlPath="professional.urlPath" class="glide__slide flex items-center gap-5" />
-      </div>
+  <div class="mt-5 overflow-x-hidden px-0 relative">
+    <carousel :autoplay="true" :nav="false" :dots="false" :loop="true" :center="true" :autoplaySpeed="2000" :autoplayTimeout="2000" :autoplayHoverPause="true" :responsive="false" :autoWidth="true" :margin="10" :rewind="false">
+      <UiCards v-for="professional in professionals" :key="professional.id" :title="professional.title" :backgroundImagePath="professional.backgroundImagePath" :urlPath="professional.urlPath" class="flex items-center gap-5" />
 
-      <div data-glide-el="controls" class="glide__arrows">
-        <button data-glide-dir="<" class="glide__arrow glide__arrow--left top-[7rem] left-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
+      <template slot="prev">
+        <button class="top-[7rem] left-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
           <img src="@/assets/images/icons/triangle.svg" class="h-5 w-5 -ml-0.5 rotate-90" alt="">
         </button>
+      </template>
 
-        <button data-glide-dir=">" class="glide__arrow glide__arrow--right top-[7rem] right-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
+      <template slot="next">
+        <button class="top-[7rem] right-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
           <img src="@/assets/images/icons/triangle.svg" class="h-5 w-5 -ml-0.5 -rotate-90" alt="">
         </button>
-      </div>
-    </div>
+      </template>
+    </carousel>
   </div>
 </template>
 
 <script>
-  import Glide from '@glidejs/glide'
-  export default {
+import carousel from 'vue-owl-carousel'
+export default {
   data() {
     return {
       professionals: [
@@ -83,68 +83,7 @@
     }
   },
 
-  mounted() {
-    new Glide('.glide', {
-      type: 'carousel',
-      autoplay: 2000,
-      focusAt: 'center',
-      hoverpause: false,
-      keyboard: true,
-      animationDuration: 1000,
-      breakpoints: {
-        2560:{
-          perView: 5
-        },
-        1024: {
-          perView: 4
-        },
-        950:{
-          perView: 3.4,
-        },
-        875: {
-          perView: 3.3,
-        },
-        768: {
-          perView: 3,
-        },
-        600: {
-          perView: 2.5,
-          peek: {
-            before: 0,
-            after: 0
-          }
-        },
-        525: {
-          perView: 1.9,
-          peek: {
-            before: 15,
-            after: 15
-          }
-        },
-        425: {
-          perView: 1.5,
-          peek: {
-            before: 10,
-            after: 10
-          }
-        },
-        375: {
-          perView: 1.2,
-          peek: {
-            before: 20,
-            after: 20
-          }
-        },
-        320: {
-          perView: 1,
-          peek: {
-            before: 20,
-            after: 20
-          }
-        },
-      }
-    }).mount()
-  },
+  components: { carousel },
 }
 </script>
 
