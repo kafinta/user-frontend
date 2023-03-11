@@ -87,25 +87,26 @@ export default {
   },
   methods: {
     routeCheck(){
-      if (this.$route.name.includes('dashboard')) {
+
+      if (this.$route.name === "users-dashboard") {
         this.dashboardActive = true
       }
-      if (this.$route.name.includes('inbox')) {
+      if (this.$route.name === 'users-inbox') {
         this.inboxActive = true
       }
-      if (this.$route.name.includes('gigs')) {
+      if (this.$route.name === 'users-gigs') {
         this.gigsActive = true
       }
-      if (this.$route.name.includes('orders')) {
+      if (this.$route.name === 'users-orders') {
         this.OrdersActive = true
       }
-      if (this.$route.name.includes('earnings')) {
+      if (this.$route.name === 'users-earnings') {
         this.earningsActive = true
       }
-      if (this.$route.name.includes('profile')) {
+      if (this.$route.name === 'users-profile') {
         this.profileActive = true
       }
-      if (this.$route.name.includes('settings')) {
+      if (this.$route.name ==='users-settings') {
         this.settingsActive = true
       }
     },
