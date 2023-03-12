@@ -48,24 +48,24 @@
 
     <div class="w-full lg:w-3/5 mt-8 lg:mt-0">
       <div class="border border-accent-100 flex divide-x divide-accent-100">
-        <div class="text-secondary px-4 py-2 duration-500 ease-in-out group">
-          <UiTypographyP class="duration-500 ease-in-out ">Active Orders</UiTypographyP>
+        <div :class="tab.active ? 'bg-primary text-white' : 'hover:bg-secondary'" class="px-4 py-2 duration-500 ease-in-out group" v-for="tab in tabs" :key="tab.id">
+          <UiTypographyP :class="tab.active ? 'text-white' : 'text-secondary'" class="duration-500 ease-in-out group-hover:text-white">{{tab.title}}</UiTypographyP>
         </div>
       </div>
       <div class="mt-8 grid gap-4">
         <div class="border border-accent-100 py-2 px-4 w-full flex justify-between items-center" v-for="item in 5">
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-5">
             <div class="relative flex w-fit">
               <UserProfilePicture :artisan="username" :custom_dimensions="true" class="h-10 w-10"/>
               <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="false" :is_displayed="true"/>
             </div>
 
             <div>
-              <UiTypographyP :small_text="true" class="text-secondary">{{ username }}</UiTypographyP>
+              <UiTypographyP class="text-secondary">{{ username }}</UiTypographyP>
             </div>
           </div>
 
-          <div class="flex gap-5 items-center">
+          <div class="flex gap-8 items-center">
             <div>
               <UiTypographyP :small_text="true">Price</UiTypographyP>
               <UiTypographyP>$100</UiTypographyP>
@@ -92,6 +92,24 @@ export default {
       username: 'Quadri',
       description_edit: false,
       date: '',
+      tabs: [
+        {
+          id: 1,
+          title: 'Active Orders',
+          count: 0,
+          active: true
+        },
+        {
+          id: 2,
+          title: 'Completed Orders',
+          active: false
+        },
+        {
+          id: 3,
+          title: 'Canceled Orders',
+          active: false
+        },
+      ]
     }
   },
 
