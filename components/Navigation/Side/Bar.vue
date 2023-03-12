@@ -58,10 +58,9 @@
 
 
         <div class="px-6 mt-2">
-          <nuxt-link to="/users/profile">
-            <NavigationSideMenu menu_text="Profile" class="rounded-md py-2">
-              <UiIconsProfile />
-            </NavigationSideMenu>
+          <nuxt-link to="/users/profile" class="rounded-md py-2 text-white hover:text-primary duration-500 ease-in-out group bg-primary">
+            <UiIconsProfile class="w-5 h-5 mx-auto" />
+            <UiTypographyP class="text-white group-hover:text-primary duration-500 ease-in-out">Profile</UiTypographyP>
           </nuxt-link>
           <nuxt-link to="/users/setting">
             <NavigationSideMenu menu_text="Settings" class="rounded-md py-2">
