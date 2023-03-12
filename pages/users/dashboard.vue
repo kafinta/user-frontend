@@ -74,8 +74,10 @@
               <UiTypographyP :small_text="true">Status</UiTypographyP>
               <UiTypographyP>In Progress</UiTypographyP>
             </div>
-            <UiButtonsTertiary>View</UiButtonsTertiary>
           </div>
+
+          <UiButtonsTertiary>View</UiButtonsTertiary>
+
         </div>
       </div>
     </div>
