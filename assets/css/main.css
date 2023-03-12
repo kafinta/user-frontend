@@ -9,16 +9,18 @@ body {
   font-family: 'Poppins', sans-serif;
   scroll-behavior: smooth;
   box-sizing: border-box;
+  scroll-snap-type: proximity;
 }
 
 *::-webkit-scrollbar {
-  width:8px;
+  width:5px;
   background-color: transparent;
   cursor: pointer;
+  scroll-behavior: smooth;
 }
 
 *::-webkit-scrollbar-thumb {
-  width:8px;
+  width:5px;
   background-color: #C9B14F;
   cursor: pointer;
 }
