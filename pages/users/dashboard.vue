@@ -65,7 +65,7 @@
             </div>
           </div>
 
-          <div class="flex gap-8 items-center">
+          <div class="flex gap-5 items-center">
             <div>
               <UiTypographyP :small_text="true">Price</UiTypographyP>
               <UiTypographyP>$100</UiTypographyP>

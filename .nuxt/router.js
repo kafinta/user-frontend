@@ -10,6 +10,7 @@ const _42c9ab69 = () => interopDefault(import('..\\pages\\signup.vue' /* webpack
 const _538648db = () => interopDefault(import('..\\pages\\users\\index.vue' /* webpackChunkName: "pages/users/index" */))
 const _23a82a4a = () => interopDefault(import('..\\pages\\verify.vue' /* webpackChunkName: "pages/verify" */))
 const _199e8dc6 = () => interopDefault(import('..\\pages\\users\\dashboard.vue' /* webpackChunkName: "pages/users/dashboard" */))
+const _38758c55 = () => interopDefault(import('..\\pages\\users\\gigs.vue' /* webpackChunkName: "pages/users/gigs" */))
 const _f6e0e41c = () => interopDefault(import('..\\pages\\users\\profile.vue' /* webpackChunkName: "pages/users/profile" */))
 const _3e4b7391 = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages/index" */))
 
@@ -48,6 +49,10 @@ export const routerOptions = {
     path: "/users/dashboard",
     component: _199e8dc6,
     name: "users-dashboard"
+  }, {
+    path: "/users/gigs",
+    component: _38758c55,
+    name: "users-gigs"
   }, {
     path: "/users/profile",
     component: _f6e0e41c,
