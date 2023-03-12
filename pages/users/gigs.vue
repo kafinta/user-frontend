@@ -11,24 +11,52 @@
         <UiTypographyP :class="tab.active ? 'text-white' : 'text-secondary'" class="duration-500 ease-in-out group-hover:text-white">{{tab.title}}</UiTypographyP>
       </div>
     </div>
-    <table class="w-full mt-6">
-      <thead class="bg-accent-50 border-accent-100 flex justify-between px-4 py-2">
-        <th class="w-6/12">
-          <UiTypographyP>Gig</UiTypographyP>
-        </th>
-        <th class="w-1/12">
-          <UiTypographyP>Impressions</UiTypographyP>
-        </th>
-        <th class="w-1/12">
-          <UiTypographyP>Clicks</UiTypographyP>
-        </th>
-        <th class="w-1/12">
-          <UiTypographyP>Orders</UiTypographyP>
-        </th>
-        <th class="w-1/12">
-          <UiTypographyP>Cancellations</UiTypographyP>
-        </th>
+    <table class="w-full mt-6 table-auto hidden lg:block">
+      <thead class="bg-accent-50 border-accent-100 border">
+        <tr class="px-4 py-2">
+          <th class="text-left px-4 py-2">
+            <UiTypographyP>Gig</UiTypographyP>
+          </th>
+          <th class="text-center px-2">
+            <UiTypographyP>Impressions</UiTypographyP>
+          </th>
+          <th class="text-center px-2">
+            <UiTypographyP>Clicks</UiTypographyP>
+          </th>
+          <th class="text-center px-2">
+            <UiTypographyP>Orders</UiTypographyP>
+          </th>
+          <th class="text-center px-2">
+            <UiTypographyP>Cancellations</UiTypographyP>
+          </th>
+          <th class="h-0 px-4">
+            <UiButtonsTertiary class="h-0 opacity-0">View</UiButtonsTertiary>
+          </th>
+        </tr>
       </thead>
+      <tbody class="border-accent-100 border divide-y w-full">
+        <tr v-for="gig in 5" class="w-full">
+          <td class="flex gap-3 items-center px-4 py-2">
+            <div class="gig-img"></div>
+            <UiTypographyP :small_text="true">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse, consequuntur et? Officia, minima iusto reprehenderit numquam non hic quam ipsum nam dignissimos magni ad atque placeat error omnis tempore expedita!</UiTypographyP>
+          </td>
+          <td class="text-center px-2">
+            <UiTypographyP :small_text="true">10</UiTypographyP>
+          </td>
+          <td class="text-center px-2">
+            <UiTypographyP :small_text="true">3</UiTypographyP>
+          </td>
+          <td class="text-center px-2">
+            <UiTypographyP :small_text="true">0</UiTypographyP>
+          </td>
+          <td class="text-center px-2">
+            <UiTypographyP :small_text="true">0%</UiTypographyP>
+          </td>
+          <td class="mx-0">
+            <UiButtonsTertiary class="mx-auto block">View</UiButtonsTertiary>
+          </td>
+        </tr>
+      </tbody>
     </table>
 
   </div>
@@ -68,3 +96,11 @@ export default {
   },
 }
 </script>
+<style>
+  .gig-img {
+    width: 5rem !important;
+    min-width: 5rem;
+    background-color: #D3D3D3;
+    aspect-ratio: 3/2;
+  }
+</style>
