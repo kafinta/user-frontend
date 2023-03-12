@@ -36,23 +36,11 @@
               <UiIconsTransactions />
             </NavigationSideMenu>
           </nuxt-link>
-
-          <nuxt-link to="/users/profile">
-            <NavigationSideMenu menu_text="Profile" :is_active="profileActive" >
-              <UiIconsProfile />
-            </NavigationSideMenu>
-          </nuxt-link>
-
-          <nuxt-link to="/users/settings">
-            <NavigationSideMenu menu_text="Settings" :is_active="settingsActive" >
-              <UiIconsSettings />
-            </NavigationSideMenu>
-          </nuxt-link>
         </div>
       </div>
 
-      <div class="p-6 bg-accent-600 rounded-t-2xl">
-        <div class="flex items-center gap-5">
+      <div class="py-6 bg-accent-600 rounded-t-2xl">
+        <div class="flex items-center gap-5 px-6">
           <div class="relative flex w-fit">
             <UserProfilePicture :artisan="username" :custom_dimensions="true" class="h-10 w-10"/>
             <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="true" :is_displayed="true"/>
@@ -64,7 +52,23 @@
           </div>
         </div>
 
-        <UiButtonsPrimary @clicked="$router.push({path: '/users'})" class="mt-4 bg-primary" :standout="true" :flexdisplay="true">Switch to Buying</UiButtonsPrimary>
+        <div class="px-6">
+          <UiButtonsPrimary @clicked="$router.push({path: '/users'})" class="mt-4 bg-primary" :standout="true" :flexdisplay="true">Switch to Buying</UiButtonsPrimary>
+        </div>
+
+
+        <div class="px-6 mt-2">
+          <nuxt-link to="/users/profile">
+            <NavigationSideMenu menu_text="Profile" class="rounded-md py-2">
+              <UiIconsProfile />
+            </NavigationSideMenu>
+          </nuxt-link>
+          <nuxt-link to="/users/setting">
+            <NavigationSideMenu menu_text="Settings" class="rounded-md py-2">
+              <UiIconsSettings />
+            </NavigationSideMenu>
+          </nuxt-link>
+        </div>
 
       </div>
     </nav>
@@ -87,26 +91,25 @@ export default {
   },
   methods: {
     routeCheck(){
-
-      if (this.$route.name === "users-dashboard") {
+      if (this.$route.name.includes('dashboard')) {
         this.dashboardActive = true
       }
-      if (this.$route.name === 'users-inbox') {
+      if (this.$route.name.includes('inbox')) {
         this.inboxActive = true
       }
-      if (this.$route.name === 'users-gigs') {
+      if (this.$route.name.includes('gigs')) {
         this.gigsActive = true
       }
-      if (this.$route.name === 'users-orders') {
+      if (this.$route.name.includes('orders')) {
         this.OrdersActive = true
       }
-      if (this.$route.name === 'users-earnings') {
+      if (this.$route.name.includes('earnings')) {
         this.earningsActive = true
       }
-      if (this.$route.name === 'users-profile') {
+      if (this.$route.name.includes('profile')) {
         this.profileActive = true
       }
-      if (this.$route.name ==='users-settings') {
+      if (this.$route.name.includes('settings')) {
         this.settingsActive = true
       }
     },
@@ -115,6 +118,12 @@ export default {
   created() {
     this.routeCheck();
   },
+
+  watch: {
+    $route() {
+      location.reload();
+    },
+  }
 }
 </script>
 
