@@ -6,7 +6,7 @@
           <NavigationLogoInverted class="w-36 text-white"/>
         </div>
 
-        <div class="mt-10">
+        <div class="mt-6">
           <nuxt-link to="/users/dashboard">
             <NavigationSideMenu menu_text="Dashboard" :is_active="dashboardActive">
               <UiIconsOverview />
@@ -57,15 +57,14 @@
         </div>
 
 
-        <div class="px-6 mt-2">
-          <nuxt-link to="/users/profile" class="rounded-md py-2 text-white hover:text-primary duration-500 ease-in-out group bg-primary">
+        <div class="px-6 mt-2 flex gap-2 w-full">
+          <nuxt-link to="/users/profile" class="block rounded-md p-2 text-white hover:text-primary duration-500 ease-in-out group bg-secondary hover:bg-accent-500 w-1/2">
             <UiIconsProfile class="w-5 h-5 mx-auto" />
-            <UiTypographyP class="text-white group-hover:text-primary duration-500 ease-in-out">Profile</UiTypographyP>
+            <p class="text-white group-hover:text-primary duration-500 ease-in-out text-sm text-center mt-1">Profile</p>
           </nuxt-link>
-          <nuxt-link to="/users/setting">
-            <NavigationSideMenu menu_text="Settings" class="rounded-md py-2">
-              <UiIconsSettings />
-            </NavigationSideMenu>
+          <nuxt-link to="/users/settings" class="block rounded-md p-2 text-white hover:text-primary duration-500 ease-in-out group bg-secondary hover:bg-accent-500 w-1/2">
+            <UiIconsSettings class="w-5 h-5 mx-auto" />
+            <p class="text-white group-hover:text-primary duration-500 ease-in-out text-sm text-center mt-1">Settings</p>
           </nuxt-link>
         </div>
 
@@ -84,8 +83,6 @@ export default {
       gigsActive: false,
       OrdersActive: false,
       earningsActive: false,
-      profileActive: false,
-      settingsActive: false,
     };
   },
   methods: {
@@ -104,12 +101,6 @@ export default {
       }
       if (this.$route.name.includes('earnings')) {
         this.earningsActive = true
-      }
-      if (this.$route.name.includes('profile')) {
-        this.profileActive = true
-      }
-      if (this.$route.name.includes('settings')) {
-        this.settingsActive = true
       }
     },
   },
