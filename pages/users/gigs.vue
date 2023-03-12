@@ -10,7 +10,26 @@
       <div :class="tab.active ? 'bg-primary text-white' : 'hover:bg-secondary'" class="px-4 py-2 duration-500 ease-in-out group" v-for="tab in tabs" :key="tab.id">
         <UiTypographyP :class="tab.active ? 'text-white' : 'text-secondary'" class="duration-500 ease-in-out group-hover:text-white">{{tab.title}}</UiTypographyP>
       </div>
-    </div>  
+    </div>
+    <table class="w-full mt-6">
+      <thead class="bg-accent-50 border-accent-100 flex justify-between px-4 py-2">
+        <th class="w-6/12">
+          <UiTypographyP>Gig</UiTypographyP>
+        </th>
+        <th class="w-1/12">
+          <UiTypographyP>Impressions</UiTypographyP>
+        </th>
+        <th class="w-1/12">
+          <UiTypographyP>Clicks</UiTypographyP>
+        </th>
+        <th class="w-1/12">
+          <UiTypographyP>Orders</UiTypographyP>
+        </th>
+        <th class="w-1/12">
+          <UiTypographyP>Cancellations</UiTypographyP>
+        </th>
+      </thead>
+    </table>
 
   </div>
 </template>
