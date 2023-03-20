@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full">
+  <div class="flex w-full select-none">
     <NavigationSideBar :class="menu_revealed ? 'translate-x-0' : '-translate-x-full'" class="md:translate-x-0 duration-150 ease-in-out" />
     <div class="w-4/5 md:w-1/3 lg:w-1/5 xl:w-1/6 hidden md:block"></div>
     <SharedBackdrop :show="menu_revealed" @close="toggleMenu()" />
