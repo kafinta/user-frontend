@@ -49,6 +49,13 @@
     "_name": "_38758c55"
   },
   {
+    "name": "users-orders",
+    "path": "/users/orders",
+    "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user-frontend\\\\pages\\\\users\\\\orders.vue",
+    "chunkName": "pages/users/orders",
+    "_name": "_217bc2ac"
+  },
+  {
     "name": "users-profile",
     "path": "/users/profile",
     "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user-frontend\\\\pages\\\\users\\\\profile.vue",
