@@ -18,7 +18,7 @@
     </nav>
 
     <div class="w-full md:w-2/3 lg:w-4/5 xl:w-5/6 mt-12 md:mt-0 left-0">
-      <div class="px-6 md:px-8 lg:px-10 py-6 mx-auto">
+      <div class="px-6 md:px-8 lg:px-10 py-6 mx-auto min-h-screen">
         <Nuxt/>
         <slot />
       </div>
