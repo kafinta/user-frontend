@@ -3,7 +3,7 @@
     <UiTypographyH2>Manage Gigs</UiTypographyH2>
 
     <div class="mt-6 flex justify-end w-full">
-      <UiButtonsPrimary>Create a New Gig</UiButtonsPrimary>
+      <UiButtonsPrimary>List a New Project</UiButtonsPrimary>
     </div>
 
     <div class="border border-accent-100 flex divide-x divide-accent-100 mt-4">

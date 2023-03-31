@@ -7,31 +7,31 @@
         </div>
 
         <div class="mt-6">
-          <nuxt-link to="/users/dashboard">
+          <nuxt-link to="/artisans/dashboard">
             <NavigationSideMenu menu_text="Dashboard" :is_active="dashboardActive">
               <UiIconsOverview />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link to="/users/inbox">
+          <nuxt-link to="/artisans/inbox">
             <NavigationSideMenu menu_text="Inbox" :is_active="inboxActive">
               <UiIconsMessages />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link to="/users/gigs">
-            <NavigationSideMenu menu_text="Manage Gigs" :is_active="gigsActive">
+          <nuxt-link to="/artisans/projects">
+            <NavigationSideMenu menu_text="Manage Projects" :is_active="gigsActive">
               <UiIconsGigs />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link to="/users/orders">
+          <nuxt-link to="/artisans/orders">
             <NavigationSideMenu menu_text="Orders" :is_active="OrdersActive">
               <UiIconsCart />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link to="/users/earnings">
+          <nuxt-link to="/artisans/earnings">
             <NavigationSideMenu menu_text="Earnings" :is_active="earningsActive">
               <UiIconsTransactions />
             </NavigationSideMenu>
@@ -53,16 +53,16 @@
         </div>
 
         <div class="px-6">
-          <UiButtonsPrimary @clicked="$router.push({path: '/users'})" class="mt-4 bg-primary" :standout="true" :flexdisplay="true">Switch to Buying</UiButtonsPrimary>
+          <UiButtonsPrimary @clicked="$router.push({path: '/artisans'})" class="mt-4 bg-primary" :standout="true" :flexdisplay="true">Switch to Buying</UiButtonsPrimary>
         </div>
 
 
         <div class="px-6 mt-2 flex gap-2 w-full">
-          <nuxt-link to="/users/profile" class="block rounded-md p-2 text-white hover:text-primary duration-500 ease-in-out group bg-secondary hover:bg-accent-500 w-1/2">
+          <nuxt-link to="/artisans/profile" class="block rounded-md p-2 text-white hover:text-primary duration-500 ease-in-out group bg-secondary hover:bg-accent-500 w-1/2">
             <UiIconsProfile class="w-5 h-5 mx-auto" />
             <p class="text-white group-hover:text-primary duration-500 ease-in-out text-sm text-center mt-1">Profile</p>
           </nuxt-link>
-          <nuxt-link to="/users/settings" class="block rounded-md p-2 text-white hover:text-primary duration-500 ease-in-out group bg-secondary hover:bg-accent-500 w-1/2">
+          <nuxt-link to="/artisans/settings" class="block rounded-md p-2 text-white hover:text-primary duration-500 ease-in-out group bg-secondary hover:bg-accent-500 w-1/2">
             <UiIconsSettings class="w-5 h-5 mx-auto" />
             <p class="text-white group-hover:text-primary duration-500 ease-in-out text-sm text-center mt-1">Settings</p>
           </nuxt-link>
