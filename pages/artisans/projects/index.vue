@@ -4,7 +4,7 @@
 
     <div class="mt-6 flex justify-end w-full gap-5">
       <UiButtonsTertiary>Filter</UiButtonsTertiary>
-      <UiButtonsPrimary>List a New Project</UiButtonsPrimary>
+      <UiButtonsPrimary @clicked="$router.push({path: '/artisans/projects/new'})">List a New Project</UiButtonsPrimary>
     </div>
 
   </div>

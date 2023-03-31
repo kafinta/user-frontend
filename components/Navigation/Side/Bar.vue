@@ -20,7 +20,7 @@
           </nuxt-link>
 
           <nuxt-link to="/artisans/projects">
-            <NavigationSideMenu menu_text="Manage Projects" :is_active="gigsActive">
+            <NavigationSideMenu menu_text="Manage Projects" :is_active="projectsActive">
               <UiIconsGigs />
             </NavigationSideMenu>
           </nuxt-link>
@@ -93,8 +93,8 @@ export default {
       if (this.$route.name.includes('inbox')) {
         this.inboxActive = true
       }
-      if (this.$route.name.includes('gigs')) {
-        this.gigsActive = true
+      if (this.$route.name.includes('projects')) {
+        this.projectsActive = true
       }
       if (this.$route.name.includes('orders')) {
         this.OrdersActive = true

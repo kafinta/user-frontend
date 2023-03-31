@@ -77,6 +77,13 @@
     "_name": "_338e7f2d"
   },
   {
+    "name": "artisans-projects-new",
+    "path": "/artisans/projects/new",
+    "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user-frontend\\\\pages\\\\artisans\\\\projects\\\\new.vue",
+    "chunkName": "pages/artisans/projects/new",
+    "_name": "_16c22268"
+  },
+  {
     "name": "index",
     "path": "/",
     "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user-frontend\\\\pages\\\\index.vue",

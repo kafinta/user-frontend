@@ -15,6 +15,7 @@ const _2107c96f = () => interopDefault(import('..\\pages\\artisans\\orders.vue' 
 const _76845f8f = () => interopDefault(import('..\\pages\\artisans\\profile.vue' /* webpackChunkName: "pages/artisans/profile" */))
 const _7af32ffe = () => interopDefault(import('..\\pages\\artisans\\projects\\index.vue' /* webpackChunkName: "pages/artisans/projects/index" */))
 const _338e7f2d = () => interopDefault(import('..\\pages\\artisans\\settings.vue' /* webpackChunkName: "pages/artisans/settings" */))
+const _16c22268 = () => interopDefault(import('..\\pages\\artisans\\projects\\new.vue' /* webpackChunkName: "pages/artisans/projects/new" */))
 const _3e4b7391 = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages/index" */))
 
 const emptyFn = () => {}
@@ -72,6 +73,10 @@ export const routerOptions = {
     path: "/artisans/settings",
     component: _338e7f2d,
     name: "artisans-settings"
+  }, {
+    path: "/artisans/projects/new",
+    component: _16c22268,
+    name: "artisans-projects-new"
   }, {
     path: "/",
     component: _3e4b7391,
