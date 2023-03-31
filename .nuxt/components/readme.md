@@ -36,6 +36,7 @@ You can directly use them in pages and other components without the need to impo
 - `<UiIconsCart>` | `<ui-icons-cart>` (components/Ui/Icons/Cart.vue)
 - `<UiIconsClose>` | `<ui-icons-close>` (components/Ui/Icons/Close.vue)
 - `<UiIconsDashboard>` | `<ui-icons-dashboard>` (components/Ui/Icons/Dashboard.vue)
+- `<UiIconsFilter>` | `<ui-icons-filter>` (components/Ui/Icons/Filter.vue)
 - `<UiIconsGigs>` | `<ui-icons-gigs>` (components/Ui/Icons/Gigs.vue)
 - `<UiIconsLoading>` | `<ui-icons-loading>` (components/Ui/Icons/Loading.vue)
 - `<UiIconsLocation>` | `<ui-icons-location>` (components/Ui/Icons/Location.vue)

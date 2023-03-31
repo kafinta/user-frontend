@@ -89,6 +89,9 @@
   "UiIconsDashboard": {
     "description": "Auto imported from components/Ui/Icons/Dashboard.vue"
   },
+  "UiIconsFilter": {
+    "description": "Auto imported from components/Ui/Icons/Filter.vue"
+  },
   "UiIconsGigs": {
     "description": "Auto imported from components/Ui/Icons/Gigs.vue"
   },

@@ -28,6 +28,7 @@ export { default as UiIconsAccordion } from '../..\\components\\Ui\\Icons\\Accor
 export { default as UiIconsCart } from '../..\\components\\Ui\\Icons\\Cart.vue'
 export { default as UiIconsClose } from '../..\\components\\Ui\\Icons\\Close.vue'
 export { default as UiIconsDashboard } from '../..\\components\\Ui\\Icons\\Dashboard.vue'
+export { default as UiIconsFilter } from '../..\\components\\Ui\\Icons\\Filter.vue'
 export { default as UiIconsGigs } from '../..\\components\\Ui\\Icons\\Gigs.vue'
 export { default as UiIconsLoading } from '../..\\components\\Ui\\Icons\\Loading.vue'
 export { default as UiIconsLocation } from '../..\\components\\Ui\\Icons\\Location.vue'
