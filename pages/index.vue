@@ -15,7 +15,7 @@
             </div>
           </div>
 
-          <div class="w-full hidden md:w-1/3 lg:w-1/2 h-full md:block bg-primary py-20"></div>
+          <div class="w-full hidden md:w-1/3 lg:w-1/2 h-full md:block py-20"></div>
         </div>
 
       </div>
