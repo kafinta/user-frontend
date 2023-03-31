@@ -3,16 +3,21 @@
     <Search @toggleSearchBox="toggleSearch()" :searchBoxState="searchBox" />
     <header>
       <NavigationNavBar :keep_button_hovered="search_button_hovered" @toggleSearchBox="toggleSearch()"/>
-      <div class="py-36 lg:py-48 2xl:py-56 hero-bg items-center px-6 md:px-8 lg:px-10 flex">
-        <div class="w-full md:w-2/3 lg:w-1/2">
-          <UiTypographyH1 class="mb-2">Bring Your Dream <br> Home To Life</UiTypographyH1>
-          <UiTypographyP>Find inspiration, products and the pros to make it happen <br> — all in one place</UiTypographyP>
+      <div class="py-36 lg:py-48 2xl:py-56 hero-bg grid place-items-center px-6 md:px-8 lg:px-10">
+        <div class="mx-auto max-w-7xl w-full flex justify-between">
+          <div class="w-full md:w-2/3 lg:w-1/2">
+            <UiTypographyH1 class="mb-2">Bring Your Dream <br> Home To Life</UiTypographyH1>
+            <UiTypographyP>Find inspiration, products and the pros to make it happen <br> — all in one place</UiTypographyP>
 
-          <div class="flex gap-5 mt-5 items-center">
-            <UiButtonsPrimary>Explore Our Store</UiButtonsPrimary>
-            <UiButtonsSecondary class="hidden md:block">Hire Artisans</UiButtonsSecondary>
+            <div class="flex gap-5 mt-5 items-center">
+              <UiButtonsPrimary>Explore Our Store</UiButtonsPrimary>
+              <UiButtonsSecondary class="hidden md:block">Hire Artisans</UiButtonsSecondary>
+            </div>
           </div>
+
+          <div class="w-full hidden md:w-1/3 lg:w-1/2 h-full md:block bg-primary py-20"></div>
         </div>
+
       </div>
     </header>
 
