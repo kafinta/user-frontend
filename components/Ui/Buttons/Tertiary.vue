@@ -1,7 +1,7 @@
 <template>
   <button 
     @click="$emit('clicked')"
-    class="py-2 px-5 text-secondary font-medium text-base 2xl:text-lg justify-center duration-500 ease-in-out rounded-md active:text-secondary border hover:text-primary hover:border-primary focus:border-primary focus:text-primary" 
+    class="py-2 px-5 text-secondary font-medium text-base 2xl:text-lg justify-center duration-500 ease-in-out rounded-md active:text-secondary border hover:text-primary hover:border-primary focus:border-primary focus:text-primary outline-none" 
     :disabled="loading || disabled" :class="[flexdisplay ? 'flex w-full' : 'block w-fit']">
     <div class="flex items-center justify-center">
       <div v-if="loading"  class="flex items-center">
