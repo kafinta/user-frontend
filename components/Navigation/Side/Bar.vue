@@ -20,7 +20,7 @@
           </nuxt-link>
 
           <nuxt-link to="/artisans/projects">
-            <NavigationSideMenu menu_text="Manage Projects" :is_active="projectsActive">
+            <NavigationSideMenu menu_text="Projects" :is_active="projectsActive">
               <UiIconsGigs />
             </NavigationSideMenu>
           </nuxt-link>
