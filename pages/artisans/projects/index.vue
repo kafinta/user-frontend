@@ -2,14 +2,14 @@
   <div class="min-h-screen">
     <UiTypographyH2>Manage Projects</UiTypographyH2>
 
-    <div class="mt-6 flex w-full gap-5">
+    <div class="mt-6 md:flex block w-full gap-5">
       <div class="h-full w-80 p-5">
-        <button class="border-0 p-0 flex gap-3 item-center mb-5">
+        <button @click="filter_revealed = true" class="border-0 p-0 flex gap-3 item-center mb-5">
           <UiTypographyP>Filters</UiTypographyP>
           <UiIconsFilter class="w-5 group-hover:text-secondary" />
         </button>
 
-        <Accordion>
+        <Accordion :class="filter_revealed ? 'block' : 'hidden md:block'" class="">
           <AccordionItem container_class="border border-accent-100 py-3 px-5"
             trigger_class="" active>
             <template #accordion-trigger>
@@ -53,6 +53,7 @@ export default {
   layout: 'seller',
   data() {
     return {
+      filter_revealed: false
     }
   },
 }
