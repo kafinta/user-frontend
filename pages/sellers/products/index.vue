@@ -45,7 +45,7 @@
         </div>
 
         <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3 mt-5">
-          <UserProductsMinimal v-for="items in 5" />
+          <UserProductsMinimal v-for="item in 5" :key="item" />
         </div>
       </div>
     </div>

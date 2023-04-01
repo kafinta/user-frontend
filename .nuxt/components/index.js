@@ -1,11 +1,11 @@
 export { default as Accordion } from '../..\\components\\Accordion\\Index.vue'
 export { default as AccordionItem } from '../..\\components\\Accordion\\Item.vue'
-export { default as FormButton } from '../..\\components\\Form\\Button.vue'
-export { default as FormInput } from '../..\\components\\Form\\Input.vue'
-export { default as FormToggle } from '../..\\components\\Form\\Toggle.vue'
 export { default as CarouselsMarketplace } from '../..\\components\\Carousels\\Marketplace.vue'
 export { default as CarouselsProfessionals } from '../..\\components\\Carousels\\Professionals.vue'
 export { default as CarouselsProjects } from '../..\\components\\Carousels\\Projects.vue'
+export { default as FormButton } from '../..\\components\\Form\\Button.vue'
+export { default as FormInput } from '../..\\components\\Form\\Input.vue'
+export { default as FormToggle } from '../..\\components\\Form\\Toggle.vue'
 export { default as NavigationFooter } from '../..\\components\\Navigation\\Footer.vue'
 export { default as NavigationMenu } from '../..\\components\\Navigation\\Menu.vue'
 export { default as Search } from '../..\\components\\Search\\Index.vue'
@@ -52,7 +52,7 @@ export { default as UserProfilePicture } from '../..\\components\\User\\Profile\
 export { default as NavigationNavBarUserMobile } from '../..\\components\\Navigation\\NavBar\\User\\Mobile.vue'
 export { default as NavigationNavBarUserSearch } from '../..\\components\\Navigation\\NavBar\\User\\Search.vue'
 export { default as NavigationNavBarUserSeller } from '../..\\components\\Navigation\\NavBar\\User\\Seller.vue'
-export { default as UserProjectsMinimal } from '../..\\components\\User\\Projects\\Minimal\\Index.vue'
+export { default as UserProductsMinimal } from '../..\\components\\User\\Products\\Minimal\\Index.vue'
 
 // nuxt/nuxt.js#8607
 function wrapFunctional(options) {

@@ -4,18 +4,18 @@ import { normalizeURL, decode } from 'ufo'
 import { interopDefault } from './utils'
 import scrollBehavior from './router.scrollBehavior.js'
 
-const _7cccddb8 = () => interopDefault(import('..\\pages\\artisans\\index.vue' /* webpackChunkName: "pages/artisans/index" */))
 const _4f061ff4 = () => interopDefault(import('..\\pages\\forgot.vue' /* webpackChunkName: "pages/forgot" */))
 const _07f316a8 = () => interopDefault(import('..\\pages\\login.vue' /* webpackChunkName: "pages/login" */))
+const _ec253762 = () => interopDefault(import('..\\pages\\sellers\\index.vue' /* webpackChunkName: "pages/sellers/index" */))
 const _42c9ab69 = () => interopDefault(import('..\\pages\\signup.vue' /* webpackChunkName: "pages/signup" */))
 const _23a82a4a = () => interopDefault(import('..\\pages\\verify.vue' /* webpackChunkName: "pages/verify" */))
-const _3b37977a = () => interopDefault(import('..\\pages\\artisans\\dashboard.vue' /* webpackChunkName: "pages/artisans/dashboard" */))
-const _12172cb3 = () => interopDefault(import('..\\pages\\artisans\\earnings.vue' /* webpackChunkName: "pages/artisans/earnings" */))
-const _2107c96f = () => interopDefault(import('..\\pages\\artisans\\orders.vue' /* webpackChunkName: "pages/artisans/orders" */))
-const _76845f8f = () => interopDefault(import('..\\pages\\artisans\\profile.vue' /* webpackChunkName: "pages/artisans/profile" */))
-const _7af32ffe = () => interopDefault(import('..\\pages\\artisans\\projects\\index.vue' /* webpackChunkName: "pages/artisans/projects/index" */))
-const _338e7f2d = () => interopDefault(import('..\\pages\\artisans\\settings.vue' /* webpackChunkName: "pages/artisans/settings" */))
-const _16c22268 = () => interopDefault(import('..\\pages\\artisans\\projects\\new.vue' /* webpackChunkName: "pages/artisans/projects/new" */))
+const _20f4fa91 = () => interopDefault(import('..\\pages\\sellers\\dashboard.vue' /* webpackChunkName: "pages/sellers/dashboard" */))
+const _a3b4ea88 = () => interopDefault(import('..\\pages\\sellers\\earnings.vue' /* webpackChunkName: "pages/sellers/earnings" */))
+const _900fd490 = () => interopDefault(import('..\\pages\\sellers\\orders.vue' /* webpackChunkName: "pages/sellers/orders" */))
+const _7cd516ab = () => interopDefault(import('..\\pages\\sellers\\products\\index.vue' /* webpackChunkName: "pages/sellers/products/index" */))
+const _84c4c734 = () => interopDefault(import('..\\pages\\sellers\\profile.vue' /* webpackChunkName: "pages/sellers/profile" */))
+const _60c64594 = () => interopDefault(import('..\\pages\\sellers\\settings.vue' /* webpackChunkName: "pages/sellers/settings" */))
+const _7596c68e = () => interopDefault(import('..\\pages\\sellers\\products\\new.vue' /* webpackChunkName: "pages/sellers/products/new" */))
 const _3e4b7391 = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages/index" */))
 
 const emptyFn = () => {}
@@ -30,10 +30,6 @@ export const routerOptions = {
   scrollBehavior,
 
   routes: [{
-    path: "/artisans",
-    component: _7cccddb8,
-    name: "artisans"
-  }, {
     path: "/forgot",
     component: _4f061ff4,
     name: "forgot"
@@ -41,6 +37,10 @@ export const routerOptions = {
     path: "/login",
     component: _07f316a8,
     name: "login"
+  }, {
+    path: "/sellers",
+    component: _ec253762,
+    name: "sellers"
   }, {
     path: "/signup",
     component: _42c9ab69,
@@ -50,33 +50,33 @@ export const routerOptions = {
     component: _23a82a4a,
     name: "verify"
   }, {
-    path: "/artisans/dashboard",
-    component: _3b37977a,
-    name: "artisans-dashboard"
+    path: "/sellers/dashboard",
+    component: _20f4fa91,
+    name: "sellers-dashboard"
   }, {
-    path: "/artisans/earnings",
-    component: _12172cb3,
-    name: "artisans-earnings"
+    path: "/sellers/earnings",
+    component: _a3b4ea88,
+    name: "sellers-earnings"
   }, {
-    path: "/artisans/orders",
-    component: _2107c96f,
-    name: "artisans-orders"
+    path: "/sellers/orders",
+    component: _900fd490,
+    name: "sellers-orders"
   }, {
-    path: "/artisans/profile",
-    component: _76845f8f,
-    name: "artisans-profile"
+    path: "/sellers/products",
+    component: _7cd516ab,
+    name: "sellers-products"
   }, {
-    path: "/artisans/projects",
-    component: _7af32ffe,
-    name: "artisans-projects"
+    path: "/sellers/profile",
+    component: _84c4c734,
+    name: "sellers-profile"
   }, {
-    path: "/artisans/settings",
-    component: _338e7f2d,
-    name: "artisans-settings"
+    path: "/sellers/settings",
+    component: _60c64594,
+    name: "sellers-settings"
   }, {
-    path: "/artisans/projects/new",
-    component: _16c22268,
-    name: "artisans-projects-new"
+    path: "/sellers/products/new",
+    component: _7596c68e,
+    name: "sellers-products-new"
   }, {
     path: "/",
     component: _3e4b7391,

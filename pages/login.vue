@@ -73,7 +73,7 @@ export default {
     signIn(){
       this.loadingState = true
       setTimeout(() => {
-        this.$router.push({path: '/users'})
+        this.$router.push({path: '/sellers/'})
       }, 2000);
     },  },
   

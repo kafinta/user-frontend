@@ -46,7 +46,7 @@ export default {
     verify(){
       this.loadingState = true
       setTimeout(() => {
-        this.$router.push({path: '/users'})
+        this.$router.push({path: '/sellers'})
       }, 2000);
     },
 
@@ -56,7 +56,7 @@ export default {
   },
   
   created(){
-    if (process.client && window.innerWidth <= 320) {
+    if (process.browser && window.innerWidth <= 320) {
       this.is_small = true
     }
   },
