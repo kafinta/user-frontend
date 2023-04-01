@@ -3,28 +3,43 @@
     <UiTypographyH2>Manage Projects</UiTypographyH2>
 
     <div class="mt-6 flex w-full gap-5">
-      <div class="h-full w-1/5 p-5">
+      <div class="h-full w-80 p-5">
         <button class="border-0 p-0 flex gap-3 item-center mb-5">
           <UiTypographyP>Filters</UiTypographyP>
           <UiIconsFilter class="w-5 group-hover:text-secondary" />
         </button>
 
         <Accordion>
-          <AccordionItem container_class="py-3 px-5 bg-accent-100"
-            trigger_class="">
+          <AccordionItem container_class="border border-accent-100 py-3 px-5"
+            trigger_class="" active>
             <template #accordion-trigger>
-              <UiTypographyP>Account</UiTypographyP>
+              <UiTypographyP>Status</UiTypographyP>
             </template>
 
             <template #accordion-content>
-              <div class="py-3">
+              <div class="gap-3 mt-3 grid">
+                <UiButtonsAccent>Active</UiButtonsAccent>
+                <UiButtonsAccent>Draft</UiButtonsAccent>
+              </div>
+            </template>
+          </AccordionItem>
 
+          <AccordionItem container_class="border border-accent-100 py-3 px-5 mt-3"
+            trigger_class="">
+            <template #accordion-trigger>
+              <UiTypographyP>Category</UiTypographyP>
+            </template>
+
+            <template #accordion-content>
+              <div class="gap-3 mt-3 grid">
+                <UiButtonsAccent>Active</UiButtonsAccent>
+                <UiButtonsAccent>Draft</UiButtonsAccent>
               </div>
             </template>
           </AccordionItem>
         </Accordion>
       </div>
-      <div class="w-4/5">
+      <div class="w-full">
         <div class="flex justify-end w-full">
           <UiButtonsPrimary @clicked="$router.push({path: '/artisans/projects/new'})">List a New Project</UiButtonsPrimary>
         </div>
