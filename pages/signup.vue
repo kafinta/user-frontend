@@ -58,6 +58,7 @@
 </template>
 
 <script>
+import {mapGetters, mapActions} from 'vuex';
 export default {
   data() {
     return {
@@ -73,11 +74,27 @@ export default {
   },
 
   methods: {
+    ...mapActions({
+      register : 'authentication/registerUser'
+    }),
+
     signUp(){
       this.loadingState = true
-      setTimeout(() => {
+      this.register({
+        username: this.form.username,
+        email: this.form.email,
+        password: this.form.password,
+      })
+      .then(() => {
         this.$router.push({path: '/verify'})
-      }, 2000);
+      })
+      .catch( error => {
+        this.$toast.error(error.response.data.errors[Object.keys(error.response.data.errors)[0]][0], {
+          duration: 2000,
+        });
+        // this.error_message = true
+        this.loadingState = false
+      })
     },
 
     returnHome(){

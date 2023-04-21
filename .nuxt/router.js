@@ -6,18 +6,17 @@ import scrollBehavior from './router.scrollBehavior.js'
 
 const _4f061ff4 = () => interopDefault(import('..\\pages\\forgot.vue' /* webpackChunkName: "pages/forgot" */))
 const _07f316a8 = () => interopDefault(import('..\\pages\\login.vue' /* webpackChunkName: "pages/login" */))
-const _ec253762 = () => interopDefault(import('..\\pages\\sellers\\index.vue' /* webpackChunkName: "pages/sellers/index" */))
 const _42c9ab69 = () => interopDefault(import('..\\pages\\signup.vue' /* webpackChunkName: "pages/signup" */))
 const _23a82a4a = () => interopDefault(import('..\\pages\\verify.vue' /* webpackChunkName: "pages/verify" */))
-const _20f4fa91 = () => interopDefault(import('..\\pages\\sellers\\dashboard.vue' /* webpackChunkName: "pages/sellers/dashboard" */))
-const _a3b4ea88 = () => interopDefault(import('..\\pages\\sellers\\earnings.vue' /* webpackChunkName: "pages/sellers/earnings" */))
-const _900fd490 = () => interopDefault(import('..\\pages\\sellers\\orders.vue' /* webpackChunkName: "pages/sellers/orders" */))
-const _7cd516ab = () => interopDefault(import('..\\pages\\sellers\\products\\index.vue' /* webpackChunkName: "pages/sellers/products/index" */))
-const _84c4c734 = () => interopDefault(import('..\\pages\\sellers\\profile.vue' /* webpackChunkName: "pages/sellers/profile" */))
-const _60c64594 = () => interopDefault(import('..\\pages\\sellers\\settings.vue' /* webpackChunkName: "pages/sellers/settings" */))
-const _7596c68e = () => interopDefault(import('..\\pages\\sellers\\products\\new.vue' /* webpackChunkName: "pages/sellers/products/new" */))
 const _3e4b7391 = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages/index" */))
 const _4fccbd46 = () => interopDefault(import('..\\pages\\_user\\buying\\index.vue' /* webpackChunkName: "pages/_user/buying/index" */))
+const _76c7efa6 = () => interopDefault(import('..\\pages\\_user\\selling\\dashboard.vue' /* webpackChunkName: "pages/_user/selling/dashboard" */))
+const _60d859a0 = () => interopDefault(import('..\\pages\\_user\\selling\\earnings.vue' /* webpackChunkName: "pages/_user/selling/earnings" */))
+const _6e194d9c = () => interopDefault(import('..\\pages\\_user\\selling\\orders.vue' /* webpackChunkName: "pages/_user/selling/orders" */))
+const _748a7f47 = () => interopDefault(import('..\\pages\\_user\\selling\\products\\index.vue' /* webpackChunkName: "pages/_user/selling/products/index" */))
+const _68b93dfc = () => interopDefault(import('..\\pages\\_user\\selling\\profile.vue' /* webpackChunkName: "pages/_user/selling/profile" */))
+const _fb60a7cc = () => interopDefault(import('..\\pages\\_user\\selling\\settings.vue' /* webpackChunkName: "pages/_user/selling/settings" */))
+const _05b90756 = () => interopDefault(import('..\\pages\\_user\\selling\\products\\new.vue' /* webpackChunkName: "pages/_user/selling/products/new" */))
 
 const emptyFn = () => {}
 
@@ -39,10 +38,6 @@ export const routerOptions = {
     component: _07f316a8,
     name: "login"
   }, {
-    path: "/sellers",
-    component: _ec253762,
-    name: "sellers"
-  }, {
     path: "/signup",
     component: _42c9ab69,
     name: "signup"
@@ -51,34 +46,6 @@ export const routerOptions = {
     component: _23a82a4a,
     name: "verify"
   }, {
-    path: "/sellers/dashboard",
-    component: _20f4fa91,
-    name: "sellers-dashboard"
-  }, {
-    path: "/sellers/earnings",
-    component: _a3b4ea88,
-    name: "sellers-earnings"
-  }, {
-    path: "/sellers/orders",
-    component: _900fd490,
-    name: "sellers-orders"
-  }, {
-    path: "/sellers/products",
-    component: _7cd516ab,
-    name: "sellers-products"
-  }, {
-    path: "/sellers/profile",
-    component: _84c4c734,
-    name: "sellers-profile"
-  }, {
-    path: "/sellers/settings",
-    component: _60c64594,
-    name: "sellers-settings"
-  }, {
-    path: "/sellers/products/new",
-    component: _7596c68e,
-    name: "sellers-products-new"
-  }, {
     path: "/",
     component: _3e4b7391,
     name: "index"
@@ -86,6 +53,34 @@ export const routerOptions = {
     path: "/:user/buying",
     component: _4fccbd46,
     name: "user-buying"
+  }, {
+    path: "/:user/selling/dashboard",
+    component: _76c7efa6,
+    name: "user-selling-dashboard"
+  }, {
+    path: "/:user/selling/earnings",
+    component: _60d859a0,
+    name: "user-selling-earnings"
+  }, {
+    path: "/:user/selling/orders",
+    component: _6e194d9c,
+    name: "user-selling-orders"
+  }, {
+    path: "/:user/selling/products",
+    component: _748a7f47,
+    name: "user-selling-products"
+  }, {
+    path: "/:user/selling/profile",
+    component: _68b93dfc,
+    name: "user-selling-profile"
+  }, {
+    path: "/:user/selling/settings",
+    component: _fb60a7cc,
+    name: "user-selling-settings"
+  }, {
+    path: "/:user/selling/products/new",
+    component: _05b90756,
+    name: "user-selling-products-new"
   }],
 
   fallback: false
