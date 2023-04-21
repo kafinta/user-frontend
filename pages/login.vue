@@ -77,8 +77,8 @@ export default {
       }, 2000);
     },  },
   
-  created(){
-    if (process.client && window.innerWidth <= 320) {
+  mounted(){
+    if (window.innerWidth <= 320) {
       this.is_small = true
     }
   },

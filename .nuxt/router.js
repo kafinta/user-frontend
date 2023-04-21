@@ -17,6 +17,7 @@ const _84c4c734 = () => interopDefault(import('..\\pages\\sellers\\profile.vue' 
 const _60c64594 = () => interopDefault(import('..\\pages\\sellers\\settings.vue' /* webpackChunkName: "pages/sellers/settings" */))
 const _7596c68e = () => interopDefault(import('..\\pages\\sellers\\products\\new.vue' /* webpackChunkName: "pages/sellers/products/new" */))
 const _3e4b7391 = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages/index" */))
+const _4fccbd46 = () => interopDefault(import('..\\pages\\_user\\buying\\index.vue' /* webpackChunkName: "pages/_user/buying/index" */))
 
 const emptyFn = () => {}
 
@@ -81,6 +82,10 @@ export const routerOptions = {
     path: "/",
     component: _3e4b7391,
     name: "index"
+  }, {
+    path: "/:user/buying",
+    component: _4fccbd46,
+    name: "user-buying"
   }],
 
   fallback: false
