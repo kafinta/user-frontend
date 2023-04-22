@@ -89,6 +89,7 @@
 
 <script>
 export default {
+  middleware: ['user_auth'],
   data() {
     return {
       username: 'Quadri',
@@ -113,10 +114,6 @@ export default {
         },
       ]
     }
-  },
-
-  methods: {
-
   },
 
   created() {
