@@ -12,12 +12,12 @@
               <UiIconsOverview />
             </NavigationSideMenu>
           </nuxt-link>
-<!-- 
+
           <nuxt-link :to="{name: 'user-selling-inbox'}">
             <NavigationSideMenu menu_text="Inbox" :is_active="inboxActive">
               <UiIconsMessages />
             </NavigationSideMenu>
-          </nuxt-link> -->
+          </nuxt-link>
 
           <nuxt-link :to="{name: 'user-selling-products'}">
             <NavigationSideMenu menu_text="Products" :is_active="productsActive">
@@ -56,7 +56,6 @@
           <UiButtonsPrimary @clicked="$router.push({path: '/sellers'})" class="mt-4 bg-primary" :standout="true" :flexdisplay="true">Switch to Buying</UiButtonsPrimary>
         </div>
 
-
         <div class="px-6 mt-2 flex gap-2 w-full">
           <nuxt-link to="/sellers/profile" class="block rounded-md p-2 text-white hover:text-primary duration-500 ease-in-out group bg-secondary hover:bg-accent-500 w-1/2">
             <UiIconsProfile class="w-5 h-5 mx-auto" />
@@ -86,9 +85,10 @@ export default {
       productsActive: false
     };
   },
+
   methods: {
     routeCheck(){
-      if (window.location.pathname.includes('dashboard')) {
+      if (this.$route.name.includes('dashboard')) {
         this.dashboardActive = true
       }
       if (window.location.pathname.includes('inbox')) {
@@ -107,7 +107,7 @@ export default {
   },
 
   mounted() {
-    console.log(window.location.pathname)
+    this.routeCheck()
   },
 }
 </script>

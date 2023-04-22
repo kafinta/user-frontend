@@ -56,6 +56,13 @@
     "_name": "_60d859a0"
   },
   {
+    "name": "user-selling-inbox",
+    "path": "/:user/selling/inbox",
+    "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user-frontend\\\\pages\\\\_user\\\\selling\\\\inbox.vue",
+    "chunkName": "pages/_user/selling/inbox",
+    "_name": "_4fd79f9f"
+  },
+  {
     "name": "user-selling-orders",
     "path": "/:user/selling/orders",
     "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user-frontend\\\\pages\\\\_user\\\\selling\\\\orders.vue",

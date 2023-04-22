@@ -12,6 +12,7 @@ const _3e4b7391 = () => interopDefault(import('..\\pages\\index.vue' /* webpackC
 const _4fccbd46 = () => interopDefault(import('..\\pages\\_user\\buying\\index.vue' /* webpackChunkName: "pages/_user/buying/index" */))
 const _76c7efa6 = () => interopDefault(import('..\\pages\\_user\\selling\\dashboard.vue' /* webpackChunkName: "pages/_user/selling/dashboard" */))
 const _60d859a0 = () => interopDefault(import('..\\pages\\_user\\selling\\earnings.vue' /* webpackChunkName: "pages/_user/selling/earnings" */))
+const _4fd79f9f = () => interopDefault(import('..\\pages\\_user\\selling\\inbox.vue' /* webpackChunkName: "pages/_user/selling/inbox" */))
 const _6e194d9c = () => interopDefault(import('..\\pages\\_user\\selling\\orders.vue' /* webpackChunkName: "pages/_user/selling/orders" */))
 const _748a7f47 = () => interopDefault(import('..\\pages\\_user\\selling\\products\\index.vue' /* webpackChunkName: "pages/_user/selling/products/index" */))
 const _68b93dfc = () => interopDefault(import('..\\pages\\_user\\selling\\profile.vue' /* webpackChunkName: "pages/_user/selling/profile" */))
@@ -61,6 +62,10 @@ export const routerOptions = {
     path: "/:user/selling/earnings",
     component: _60d859a0,
     name: "user-selling-earnings"
+  }, {
+    path: "/:user/selling/inbox",
+    component: _4fd79f9f,
+    name: "user-selling-inbox"
   }, {
     path: "/:user/selling/orders",
     component: _6e194d9c,

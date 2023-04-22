@@ -1,0 +1,5 @@
+<template>
+  <LayoutsSellerDashboard>
+    
+  </LayoutsSellerDashboard>
+</template>
