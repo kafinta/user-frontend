@@ -7,31 +7,31 @@
         </div>
 
         <div class="mt-6">
-          <nuxt-link to="/sellers/dashboard">
+          <nuxt-link :to="{name: 'user-selling-dashboard'}">
             <NavigationSideMenu menu_text="Dashboard" :is_active="dashboardActive">
               <UiIconsOverview />
             </NavigationSideMenu>
           </nuxt-link>
-
-          <nuxt-link to="/sellers/inbox">
+<!-- 
+          <nuxt-link :to="{name: 'user-selling-inbox'}">
             <NavigationSideMenu menu_text="Inbox" :is_active="inboxActive">
               <UiIconsMessages />
             </NavigationSideMenu>
-          </nuxt-link>
+          </nuxt-link> -->
 
-          <nuxt-link to="/sellers/products">
+          <nuxt-link :to="{name: 'user-selling-products'}">
             <NavigationSideMenu menu_text="Products" :is_active="productsActive">
               <UiIconsGigs />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link to="/sellers/orders">
+          <nuxt-link :to="{name: 'user-selling-orders'}">
             <NavigationSideMenu menu_text="Orders" :is_active="OrdersActive">
               <UiIconsCart />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link to="/sellers/earnings">
+          <nuxt-link :to="{name: 'user-selling-earnings'}">
             <NavigationSideMenu menu_text="Earnings" :is_active="earningsActive">
               <UiIconsTransactions />
             </NavigationSideMenu>
@@ -83,37 +83,45 @@ export default {
       gigsActive: false,
       OrdersActive: false,
       earningsActive: false,
+      productsActive: false
     };
   },
   methods: {
     routeCheck(){
-      if (this.$route.name.includes('dashboard')) {
+      if (window.location.pathname.includes('dashboard')) {
         this.dashboardActive = true
       }
-      if (this.$route.name.includes('inbox')) {
+      if (window.location.pathname.includes('inbox')) {
         this.inboxActive = true
       }
-      if (this.$route.name.includes('products')) {
+      if (window.location.pathname.includes('products')) {
         this.productsActive = true
       }
-      if (this.$route.name.includes('orders')) {
+      if (window.location.pathname.includes('orders')) {
         this.OrdersActive = true
       }
-      if (this.$route.name.includes('earnings')) {
+      if (window.location.pathname.includes('earnings')) {
         this.earningsActive = true
       }
     },
   },
+  
+  // computed:{
+  //   routeName: function(){
+  //     return this.$route.name
+  //   } 
+  // },
 
-  created() {
-    this.routeCheck();
-  },
+  // mounted() {
+  //   this.routeCheck();
+  //   console.log(window.location.pathname)
+  // },
 
-  watch: {
-    $route() {
-      location.reload();
-    },
-  }
+  // watch: {
+  //   $route() {
+  //     this.routeCheck()
+  //   },
+  // }
 }
 </script>
 

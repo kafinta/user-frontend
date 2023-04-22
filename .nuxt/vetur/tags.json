@@ -23,6 +23,9 @@
   "CarouselsProjects": {
     "description": "Auto imported from components/Carousels/Projects.vue"
   },
+  "LayoutsSellerDashboard": {
+    "description": "Auto imported from components/layouts/SellerDashboard.vue"
+  },
   "NavigationFooter": {
     "description": "Auto imported from components/Navigation/Footer.vue"
   },

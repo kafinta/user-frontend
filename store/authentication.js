@@ -15,7 +15,7 @@ export const getters = {
 export const actions = {
   registerUser(context, credentials) {
     return new Promise((resolve, reject) => {
-      this.$axios.$post('/api/users/signup', {
+      this.$axios.$post('/api/users/auth/register', {
         email: credentials.email,
         username: credentials.username,
         password: credentials.password,

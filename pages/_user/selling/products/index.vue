@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen">
+  <LayoutsSellerDashboard class="min-h-screen">
     <UiTypographyH2>Manage Projects</UiTypographyH2>
 
     <div class="mt-6 md:flex block w-full gap-5">
@@ -50,11 +50,11 @@
       </div>
     </div>
 
-  </div>
+  </LayoutsSellerDashboard>
 </template>
 <script>
 export default {
-  layout: 'seller',
+  // layout: 'seller',
   data() {
     return {
       filter_revealed: false

@@ -14,6 +14,7 @@ You can directly use them in pages and other components without the need to impo
 - `<CarouselsMarketplace>` | `<carousels-marketplace>` (components/Carousels/Marketplace.vue)
 - `<CarouselsProfessionals>` | `<carousels-professionals>` (components/Carousels/Professionals.vue)
 - `<CarouselsProjects>` | `<carousels-projects>` (components/Carousels/Projects.vue)
+- `<LayoutsSellerDashboard>` | `<layouts-seller-dashboard>` (components/layouts/SellerDashboard.vue)
 - `<NavigationFooter>` | `<navigation-footer>` (components/Navigation/Footer.vue)
 - `<NavigationMenu>` | `<navigation-menu>` (components/Navigation/Menu.vue)
 - `<Search>` | `<search>` (components/Search/Index.vue)
