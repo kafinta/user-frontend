@@ -89,7 +89,6 @@
 
 <script>
 export default {
-  layout: 'seller',
   data() {
     return {
       username: 'Quadri',

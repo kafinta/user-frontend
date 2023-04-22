@@ -54,7 +54,6 @@
 </template>
 <script>
 export default {
-  // layout: 'seller',
   data() {
     return {
       filter_revealed: false
