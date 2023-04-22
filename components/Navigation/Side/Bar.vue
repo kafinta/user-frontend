@@ -105,23 +105,10 @@ export default {
       }
     },
   },
-  
-  // computed:{
-  //   routeName: function(){
-  //     return this.$route.name
-  //   } 
-  // },
 
-  // mounted() {
-  //   this.routeCheck();
-  //   console.log(window.location.pathname)
-  // },
-
-  // watch: {
-  //   $route() {
-  //     this.routeCheck()
-  //   },
-  // }
+  mounted() {
+    console.log(window.location.pathname)
+  },
 }
 </script>
 

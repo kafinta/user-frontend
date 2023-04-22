@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen">
+  <LayoutSellerDashboard>
     <UiTypographyH2 class="mb-6">Profile</UiTypographyH2>
 
     <div class="block lg:flex gap-8">
@@ -83,7 +83,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </LayoutSellerDashboard>
 </template>
 
 <script>

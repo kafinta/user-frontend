@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen">
+  <LayoutsSellerDashboard>
     <UiTypographyH2 class="mb-6">Dashboard</UiTypographyH2>
     <div class="block lg:flex gap-8">
       <div class="w-full lg:w-2/5 grid gap-5">
@@ -83,7 +83,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </LayoutsSellerDashboard>
 
 </template>
 

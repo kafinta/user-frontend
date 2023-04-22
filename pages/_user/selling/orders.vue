@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen">
+  <LayoutsSellerDashboard class="min-h-screen">
     <UiTypographyH2>Orders</UiTypographyH2>
 
     <div class="border border-accent-100 flex divide-x divide-accent-100 mt-6">
@@ -33,7 +33,7 @@
 
       <UiButtonsTertiary>View</UiButtonsTertiary>
     </div>
-  </div>
+  </LayoutsSellerDashboard>
 </template>
 <script>
 export default {
