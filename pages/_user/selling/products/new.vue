@@ -1,5 +1,7 @@
 <template>
-  <LayoutSellerDashboard></LayoutSellerDashboard>
+  <LayoutSellerDashboard>
+    
+  </LayoutSellerDashboard>
 </template>
 <script>
 export default {

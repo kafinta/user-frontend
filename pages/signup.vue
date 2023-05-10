@@ -87,13 +87,14 @@ export default {
       })
       .then(() => {
         this.$router.push({path: '/verify'})
+        this.loadingState = false
       })
-      .catch( error => {
+      .catch(error => {
+        this.error_message = true
+        this.loadingState = false
         this.$toast.error(error.response.data.errors[Object.keys(error.response.data.errors)[0]][0], {
           duration: 2000,
         });
-        // this.error_message = true
-        this.loadingState = false
       })
     },
 
