@@ -17,7 +17,7 @@ export const getters = {
 export const actions = {
   registerUser(context, credentials) {
     return new Promise((resolve, reject) => {
-      this.$axios.$post('/api/users/auth/register', {
+      this.$axios.$post('/api/user/auth/register', {
         email: credentials.email,
         username: credentials.username,
         password: credentials.password,
@@ -57,7 +57,7 @@ export const actions = {
     })
   },
 
-  retrieveUserInfo(context, credentials) {
+  retrieveUserInfo(context) {
     return new Promise((resolve, reject) => {
       this.$axios.defaults.headers.common['Authorization'] = 'Bearer ' + context.state.session_token
 

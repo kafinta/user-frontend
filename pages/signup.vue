@@ -17,7 +17,7 @@
     <div class="w-full lg:w-1/2 h-screen flex items-center justify-center mx-auto px-6 md:px-8 lg:px-10 relative">
       <NavigationLogo @click="returnHome()" class="absolute top-5 left-10 w-36 lg:hidden" :class="is_small ? 'hidden' : ''" />
 
-      <form @submit.prevent="signUp()" action="" class="w-full md:w-2/3 lg:w-full rounded-xl p-5" :class="is_small ? 'p-0' : ''">
+      <main class="w-full md:w-2/3 lg:w-full rounded-xl p-5" :class="is_small ? 'p-0' : ''">
         <h1 :class="is_small ? 'text-2xl' : ''" class="font-medium text-3xl w-fit text-secondary">Create account.</h1>
         <p :class="is_small ? 'mb-4' : ''" class="text-sm text-secondary mb-8">You are just a few steps away.</p>
 
@@ -40,7 +40,7 @@
           </div> 
         </div>
 
-        <div class="grid gap-4">
+        <form @submit.prevent="signUp()" action="" class="grid gap-4">
           <FormInput label="Email" v-model="form.email" placeholder="Enter your email address"></FormInput>
           <FormInput label="Username" v-model="form.username" placeholder="Choose your username"></FormInput>
           <div>
@@ -49,9 +49,9 @@
           </div>
 
           <FormButton :loading="loadingState" class="-mt-3">Sign Up</FormButton>
-        </div>
+        </form>
         <p class="text-sm w-fit mx-auto mt-2 text-secondary text-center">Already a member? <NuxtLink to="/login" class="duration-500 ease-in-out hover:text-primary">Sign In</NuxtLink></p>
-      </form>
+      </main>
     </div>
   </div>
 
@@ -89,13 +89,13 @@ export default {
         this.$router.push({path: '/verify'})
         this.loadingState = false
       })
-      .catch(error => {
-        this.error_message = true
-        this.loadingState = false
-        this.$toast.error(error.response.data.errors[Object.keys(error.response.data.errors)[0]][0], {
-          duration: 2000,
-        });
-      })
+      // .catch(error => {
+      //   this.error_message = true
+      //   this.loadingState = false
+      //   this.$toast.error(error.response.data.errors[Object.keys(error.response.data.errors)[0]][0], {
+      //     duration: 2000,
+      //   });
+      // })
     },
 
     returnHome(){
