@@ -88,19 +88,26 @@ export default {
       .then(() => {
         this.$router.push({path: '/verify'})
         this.loadingState = false
+        console.log(user)
       })
-      // .catch(error => {
-      //   this.error_message = true
-      //   this.loadingState = false
-      //   this.$toast.error(error.response.data.errors[Object.keys(error.response.data.errors)[0]][0], {
-      //     duration: 2000,
-      //   });
-      // })
+      .catch(error => {
+        this.error_message = true
+        this.loadingState = false
+        this.$toast.error("Incorrect Password", {
+          duration: 2000,
+        });
+      })
     },
 
     returnHome(){
       this.$router.push({path: '/'})
     }
+  },
+
+  computed: {
+    ...mapGetters({
+      user: "authentication/getUserInfo",
+    }),
   },
   
   created(){

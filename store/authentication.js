@@ -11,6 +11,10 @@ export const getters = {
 
   getAuthStaus(){
     return state.auth_status
+  },
+
+  getUserInfo(){
+    return state.user
   }
 }
 

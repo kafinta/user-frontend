@@ -32,13 +32,15 @@
 </template>
 
 <script>
+import {mapGetters, mapActions} from 'vuex';
 export default {
   data() {
     return {
       error_state: false,
       code: '',
       is_small: false,
-      loadingState: false
+      loadingState: false,
+      user_info: ''
     }
   },
 
@@ -46,7 +48,7 @@ export default {
     verify(){
       this.loadingState = true
       setTimeout(() => {
-        this.$router.push({path: '/sellers'})
+        this.$router.push({path: '/'})
       }, 2000);
     },
 
@@ -54,11 +56,21 @@ export default {
       this.$router.push({path: '/'})
     }
   },
+
+  computed: {
+    ...mapGetters({
+      user: "authentication/getUserInfo",
+    }),
+  },
   
   created(){
     if (process.browser && window.innerWidth <= 320) {
       this.is_small = true
     }
+  },
+
+  mounted() {
+    console.log(this.user)
   },
 }
 </script>
