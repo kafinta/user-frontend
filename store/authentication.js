@@ -30,6 +30,9 @@ export const actions = {
           context.commit('SET_TOKEN', response.data.token)
           context.commit('SET_AUTHENTICATION_STATUS', true)
           localStorage.setItem('token', response.data.token)
+
+          context.dispatch('retrieveUserInfo')
+
           resolve(response)
         })
 
