@@ -41,7 +41,7 @@ export const actions = {
 
   loginUser(context, credentials){
     return new Promise((resolve, reject) => {
-      this.$axios.$post('/api/user/auth/token/login', {
+      this.$axios.$post('/api/user/auth/login', {
         email: credentials.email,
         password: credentials.password
       })
