@@ -99,11 +99,11 @@ export default {
         this.error_state = true
         this.loadingState = false
         this.form.password = ''
-        // this.$toast.error("Wrong username or password", {
-        //   duration: 2000,
-        // });
+        this.$toast.error(error.response.data.errors[Object.keys(error.response.data.errors)[0]][0], {
+          duration: 5000,
+        });
       })
-    },  
+    },
   },
   
   mounted(){

@@ -93,7 +93,7 @@ export default {
       .catch(error => {
         this.error_message = true
         this.loadingState = false
-        this.$toast.error("Incorrect Password", {
+        this.$toast.error(error.response.message.errors[Object.keys(error.response.data.errors)[0]][0], {
           duration: 2000,
         });
       })
