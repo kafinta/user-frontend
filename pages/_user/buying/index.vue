@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <LayoutsBuyerDashboard>
     <div class="flex items-end gap-16">
       <div class="h-72 w-1/4 bg-accent-50 lg:flex items-center justify-center p-7 hidden">
         <div>
@@ -49,7 +49,7 @@
     <div class="mt-10 bg-primary bg-opacity-5">
 
     </div>
-  </div>
+  </LayoutsBuyerDashboard>
 </template>
 
 <script>
