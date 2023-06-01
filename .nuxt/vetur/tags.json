@@ -5,6 +5,15 @@
   "AccordionItem": {
     "description": "Auto imported from components/Accordion/Item.vue"
   },
+  "FormButton": {
+    "description": "Auto imported from components/Form/Button.vue"
+  },
+  "FormInput": {
+    "description": "Auto imported from components/Form/Input.vue"
+  },
+  "FormToggle": {
+    "description": "Auto imported from components/Form/Toggle.vue"
+  },
   "CarouselsMarketplace": {
     "description": "Auto imported from components/Carousels/Marketplace.vue"
   },
@@ -14,14 +23,8 @@
   "CarouselsProjects": {
     "description": "Auto imported from components/Carousels/Projects.vue"
   },
-  "FormButton": {
-    "description": "Auto imported from components/Form/Button.vue"
-  },
-  "FormInput": {
-    "description": "Auto imported from components/Form/Input.vue"
-  },
-  "FormToggle": {
-    "description": "Auto imported from components/Form/Toggle.vue"
+  "LayoutsBuyerDashboard": {
+    "description": "Auto imported from components/layouts/BuyerDashboard.vue"
   },
   "LayoutsSellerDashboard": {
     "description": "Auto imported from components/layouts/SellerDashboard.vue"
