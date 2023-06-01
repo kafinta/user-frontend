@@ -50,9 +50,6 @@
   "NavigationNavBar": {
     "description": "Auto imported from components/Navigation/NavBar/Index.vue"
   },
-  "NavigationSideBar": {
-    "description": "Auto imported from components/Navigation/Side/Bar.vue"
-  },
   "NavigationSideMenu": {
     "description": "Auto imported from components/Navigation/Side/Menu.vue"
   },
@@ -163,6 +160,12 @@
   },
   "NavigationNavBarUserSeller": {
     "description": "Auto imported from components/Navigation/NavBar/User/Seller.vue"
+  },
+  "NavigationSideBarBuying": {
+    "description": "Auto imported from components/Navigation/Side/Bar/Buying.vue"
+  },
+  "NavigationSideBar": {
+    "description": "Auto imported from components/Navigation/Side/Bar/Index.vue"
   },
   "UserProductsMinimal": {
     "description": "Auto imported from components/User/Products/Minimal/Index.vue"

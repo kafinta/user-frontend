@@ -15,7 +15,6 @@ export { default as NavigationLogo } from '../..\\components\\Navigation\\Logo\\
 export { default as NavigationLogoInverted } from '../..\\components\\Navigation\\Logo\\Inverted.vue'
 export { default as NavigationLogoMonotone } from '../..\\components\\Navigation\\Logo\\Monotone.vue'
 export { default as NavigationNavBar } from '../..\\components\\Navigation\\NavBar\\Index.vue'
-export { default as NavigationSideBar } from '../..\\components\\Navigation\\Side\\Bar.vue'
 export { default as NavigationSideMenu } from '../..\\components\\Navigation\\Side\\Menu.vue'
 export { default as SearchSuggestionItem } from '../..\\components\\Search\\Suggestion\\Item.vue'
 export { default as SearchSuggestionLabel } from '../..\\components\\Search\\Suggestion\\Label.vue'
@@ -53,6 +52,8 @@ export { default as UserProfilePicture } from '../..\\components\\User\\Profile\
 export { default as NavigationNavBarUserMobile } from '../..\\components\\Navigation\\NavBar\\User\\Mobile.vue'
 export { default as NavigationNavBarUserSearch } from '../..\\components\\Navigation\\NavBar\\User\\Search.vue'
 export { default as NavigationNavBarUserSeller } from '../..\\components\\Navigation\\NavBar\\User\\Seller.vue'
+export { default as NavigationSideBarBuying } from '../..\\components\\Navigation\\Side\\Bar\\Buying.vue'
+export { default as NavigationSideBar } from '../..\\components\\Navigation\\Side\\Bar\\Index.vue'
 export { default as UserProductsMinimal } from '../..\\components\\User\\Products\\Minimal\\Index.vue'
 
 // nuxt/nuxt.js#8607
