@@ -34,6 +34,7 @@
 <script>
 import {mapGetters, mapActions} from 'vuex';
 export default {
+  middleware: ['user_auth'],
   data() {
     return {
       error_state: false,
@@ -45,10 +46,15 @@ export default {
   },
 
   methods: {
+    ...mapActions({
+      verify : 'authentication/verifyUser'
+    }),
+
+
     verify(){
       this.loadingState = true
       setTimeout(() => {
-        this.$router.push({path: '/'})
+        this.$router.push({name: '_user-buying', params: {user: user_info.username}})
       }, 2000);
     },
 
@@ -63,14 +69,11 @@ export default {
     }),
   },
   
-  created(){
+  mounted(){
+    this.user_info = this.user
     if (process.browser && window.innerWidth <= 320) {
       this.is_small = true
     }
-  },
-
-  mounted() {
-    console.log(this.user)
   },
 }
 </script>

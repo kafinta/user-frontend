@@ -71,7 +71,6 @@ export const actions = {
       this.$axios.$get('/api/user/account')
         .then(response => {
           context.commit('SET_USER_INFO', response.data)
-
           resolve(response)
         })
 
@@ -80,61 +79,6 @@ export const actions = {
         })
     })
   },
-
-  // verifyUserEmail(context, credentials){
-  //   return new Promise((resolve, reject) => {
-  //     this.$axios.defaults.headers.common['Authorization'] = 'Bearer ' + context.state.user_token
-  //     this.$axios.$post('/api/user/auth/email/verify', {
-  //       verification_code: verification_code
-  //     })
-  //       .then(response => {
-
-  //         resolve(response)
-  //       })
-
-  //       .catch(function (error) {
-  //         reject(error)
-  //       })
-  //   })
-  // },
-
-  // resendEmailVerification(context, credentials){
-  //   return new Promise((resolve, reject) => {
-  //     this.$axios.defaults.headers.common['Authorization'] = 'Bearer ' + context.state.user_token
-
-  //     this.$axios.$get('/api/user/auth/email/resend_verification_code')
-  //       .then(response => {
-
-  //         resolve(response)
-  //       })
-
-  //       .catch(function (error) {
-  //         reject(error)
-  //       })
-  //   })
-  // },
-
-  // userFacebookLogin(context, credentials){
-  //   return new Promise((resolve, reject) => {
-  //     this.$axios.$post('/api/user/auth/oauth2/facebook', {
-  //       email: credentials.email,
-  //       password: credentials.password
-  //     })
-  //       .then(response => {
-  //         context.commit('SET_FACEBOOK_TOKEN', response.data.token)
-  //         context.commit('SET_ADMIN_AUTHENTICATION_STATUS', true)
-
-  //         context.dispatch('retrieveUserInfo')
-
-  //         resolve(response)
-  //       })
-
-
-  //       .catch(function (error) {
-  //         reject(error)
-  //       })
-  //   })
-  // }
 
 }
 
