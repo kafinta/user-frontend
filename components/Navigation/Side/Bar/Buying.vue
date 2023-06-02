@@ -47,7 +47,7 @@
           </div>
 
           <div>
-            <UiTypographyP class="text-white">{{ user.username }}</UiTypographyP>
+            <UiTypographyP class="text-white">{{ username }}</UiTypographyP>
             <p class="text-green-500 text-sm">$0.00</p>
           </div>
         </div>
@@ -73,11 +73,13 @@
 </template>
 
 <script>
-import {mapGetters, mapActions} from 'vuex';
 export default {
+  props: {
+    username: String
+  },
+
   data() {
     return {
-      username: 'Quadri',
       dashboardActive: false,
       inboxActive: false,
       gigsActive: false,
@@ -105,12 +107,6 @@ export default {
         this.earningsActive = true
       }
     },
-  },
-
-  computed: {
-    ...mapGetters({
-      user: "authentication/getUserInfo",
-    }),
   },
 
   mounted() {

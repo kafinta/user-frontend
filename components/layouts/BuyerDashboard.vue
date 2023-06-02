@@ -1,6 +1,6 @@
 <template>
   <div class="flex w-full select-none">
-    <NavigationSideBarBuying :class="menu_revealed ? 'translate-x-0' : '-translate-x-full'" class="md:translate-x-0 duration-150 ease-in-out" />
+    <NavigationSideBarBuying :username="user_info.username" :class="menu_revealed ? 'translate-x-0' : '-translate-x-full'" class="md:translate-x-0 duration-150 ease-in-out" />
     <div class="w-4/5 md:w-1/4 lg:w-1/5 xl:w-1/6 hidden md:block"></div>
     <SharedBackdrop :show="menu_revealed" @close="toggleMenu()" />
 
@@ -29,7 +29,11 @@
 </template>
 
 <script>
+import {mapGetters, mapActions} from 'vuex';
+
 export default {
+  middleware: ['user_auth'],
+
   data() {
     return {
       online_presence: true,
@@ -47,6 +51,12 @@ export default {
       this.mobile_nav = !this.mobile_nav
       this.menu_revealed = !this.menu_revealed
     },
+  },
+
+  computed: {
+    ...mapGetters({
+      user_info: "authentication/getUserInfo",
+    }),
   },
 }
 </script>
