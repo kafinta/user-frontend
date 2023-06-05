@@ -72,6 +72,7 @@ export const actions = {
 
       this.$axios.$get('/api/user/account')
         .then(response => {
+          context.commit('SET_AUTHENTICATION_STATUS', true)
           context.commit('SET_USER_INFO', response)
           resolve(response)
         })

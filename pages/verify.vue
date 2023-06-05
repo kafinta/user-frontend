@@ -45,16 +45,23 @@ export default {
     }
   },
 
+  computed: {
+    ...mapGetters({
+      user: "authentication/getUserInfo",
+    }),
+  },
+
   methods: {
     ...mapActions({
-      verify : 'authentication/verifyUser'
+      verify : 'authentication/verifyUser',
+      getUser: 'authentication/retrieveUserInfo'
     }),
 
 
     verify(){
       this.loadingState = true
       setTimeout(() => {
-        this.$router.push({name: '_user-buying', params: {user: user_info.username}})
+        this.$router.push({name: '_user-buying', params: {user: user.username}})
       }, 2000);
     },
 
@@ -62,15 +69,9 @@ export default {
       this.$router.push({path: '/'})
     }
   },
-
-  computed: {
-    ...mapGetters({
-      user: "authentication/getUserInfo",
-    }),
-  },
   
   mounted(){
-    this.user_info = this.user
+    this.getUser()
     if (process.browser && window.innerWidth <= 320) {
       this.is_small = true
     }
