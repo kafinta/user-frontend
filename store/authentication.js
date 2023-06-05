@@ -1,19 +1,21 @@
 export const state = () =>({
   token: process.browser ? localStorage.getItem('token') : null || null,
-  auth_status: '',
-  user: {},
+  auth_status: false,
+  user: {
+
+  },
 })
 
 export const getters = {
-  getUserToken(){
+  getUserToken(state){
     return state.token != null 
   },
 
-  getAuthStaus(){
+  getAuthStaus(state){
     return state.auth_status
   },
 
-  getUserInfo(){
+  getUserInfo(state){
     return state.user
   }
 }
@@ -66,11 +68,11 @@ export const actions = {
 
   retrieveUserInfo(context) {
     return new Promise((resolve, reject) => {
-      this.$axios.defaults.headers.common['Authorization'] = 'Bearer ' + context.state.session_token
+      this.$axios.defaults.headers.common['Authorization'] = 'Bearer ' + context.state.token
 
       this.$axios.$get('/api/user/account')
         .then(response => {
-          context.commit('SET_USER_INFO', response.data)
+          context.commit('SET_USER_INFO', response)
           resolve(response)
         })
 
@@ -83,11 +85,11 @@ export const actions = {
 }
 
 export const mutations = {
-  SET_USER_AUTHENTICATION_STATUS(state, payload){
+  SET_AUTHENTICATION_STATUS(state, payload){
     state.auth_status = payload
   },
 
-  SET_USER_TOKEN(state, payload){
+  SET_TOKEN(state, payload){
     state.token = payload
   },
 
