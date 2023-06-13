@@ -1,7 +1,8 @@
 <template>
   <LayoutsMarketplace>
-    <div class="mt-6 md:flex block w-full gap-5">
-      <div class="h-full w-96 p-5">
+    <UiTypographyH2>Search results for "couches"</UiTypographyH2>
+    <div class="mt-8 md:flex block w-full gap-10">
+      <div class="h-full w-80">
         <button @click="filter_revealed = true" class="border-0 p-0 flex gap-3 item-center mb-5">
           <UiTypographyP>Filters</UiTypographyP>
           <UiIconsFilter class="w-5 group-hover:text-secondary" />
@@ -38,10 +39,6 @@
         </Accordion>
       </div>
       <div class="w-full">
-        <div class="flex justify-end w-full">
-          <UiButtonsPrimary @clicked="$router.push({path: '/artisans/projects/new'})">List a New Project</UiButtonsPrimary>
-        </div>
-
         <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3 mt-5">
           <UserProductsMinimal v-for="item in 5" :key="item" />
         </div>
