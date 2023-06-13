@@ -26,6 +26,8 @@
           <FormButton :loading="loadingState">Verify</FormButton>
         </div>
       </form>
+
+      {{ user_info.username }}
     </div>
   </div>
 
@@ -41,13 +43,13 @@ export default {
       code: '',
       is_small: false,
       loadingState: false,
-      user_info: ''
+      username: ''
     }
   },
 
   computed: {
     ...mapGetters({
-      user: "authentication/getUserInfo",
+      user_info: "authentication/getUserInfo",
     }),
   },
 
@@ -61,7 +63,9 @@ export default {
     verify(){
       this.loadingState = true
       setTimeout(() => {
-        this.$router.push({name: '_user-buying', params: {user: user.username}})
+        const username = this.user_info.username;
+        console.log(username)
+        this.$router.push({name: '_user-buying', params: {user: user_info.username}})
       }, 2000);
     },
 
