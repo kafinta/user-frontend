@@ -7,7 +7,7 @@
 
       <NavigationMenu class="flex justify-end" @revealMenu="toggleMenu()" />
 
-      <form class="mx-auto w-max md:flex items-center justify-end relative hidden">
+      <form class="mx-auto w-full md:flex items-center justify-end relative hidden">
         <input @focus="focus()" @input="$emit('input', $event.target.value)" class="w-full flex justify-center py-3 px-4 border text-sm outline-none border-secondary ring-0 focus:outline-none focus:border-primary active:border-primary rounded-md active:text-primary focus:text-primary text-secondary border-opacity-20 active:border-opacity-100 focus:border-opacity-100 duration-300 ease-out" autocomplete="off" ref="input" type="text" placeholder="What are you looking for?" />
 
         <button class="bg-primary rounded-md p-3 absolute px-4">
@@ -16,7 +16,7 @@
       </form>
 
       <nav class="hidden md:block">
-        <ul class="flex gap-5 items-center justify-end" v-if="signedIn">
+        <ul class="flex gap-5 items-center" v-if="signedIn">
           <li class="">
             <UiButtonsSecondary>Switch to Selling</UiButtonsSecondary>
           </li>
@@ -29,12 +29,12 @@
           </li>
         </ul>
 
-        <ul class="flex gap-5 items-center justify-end">
+        <ul class="flex gap-5 items-center">
           <li>
-            <UiButtonsSecondary class="w-fit flex" @clicked="$router.push({path: '/login'})">Sign In</UiButtonsSecondary>
+            <UiButtonsSecondary class="w-16" @clicked="$router.push({path: '/login'})">Sign In</UiButtonsSecondary>
           </li>
           <li>
-            <UiButtonsPrimary @click="$router.push({path: '/signup'})">Sign Up</UiButtonsPrimary>
+            <UiButtonsPrimary class="w-28" @click="$router.push({path: '/signup'})">Sign Up</UiButtonsPrimary>
           </li>
         </ul>
       </nav>
