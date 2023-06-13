@@ -26,6 +26,9 @@
   "LayoutsBuyerDashboard": {
     "description": "Auto imported from components/layouts/BuyerDashboard.vue"
   },
+  "LayoutsMarketplace": {
+    "description": "Auto imported from components/layouts/Marketplace.vue"
+  },
   "LayoutsSellerDashboard": {
     "description": "Auto imported from components/layouts/SellerDashboard.vue"
   },

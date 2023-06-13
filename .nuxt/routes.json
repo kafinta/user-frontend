@@ -14,6 +14,13 @@
     "_name": "_07f316a8"
   },
   {
+    "name": "marketplace",
+    "path": "/marketplace",
+    "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user-frontend\\\\pages\\\\marketplace\\\\index.vue",
+    "chunkName": "pages/marketplace/index",
+    "_name": "_11ca9410"
+  },
+  {
     "name": "signup",
     "path": "/signup",
     "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user-frontend\\\\pages\\\\signup.vue",
@@ -26,6 +33,13 @@
     "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user-frontend\\\\pages\\\\verify.vue",
     "chunkName": "pages/verify",
     "_name": "_23a82a4a"
+  },
+  {
+    "name": "marketplace-search",
+    "path": "/marketplace/search",
+    "component": "C:\\\\Users\\\\QUADRI\\\\Documents\\\\Development\\\\Front-end\\\\--nuxt.js\\\\kafinta\\\\user-frontend\\\\pages\\\\marketplace\\\\search\\\\index.vue",
+    "chunkName": "pages/marketplace/search/index",
+    "_name": "_68fb2dd0"
   },
   {
     "name": "index",

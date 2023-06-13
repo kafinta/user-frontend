@@ -15,6 +15,7 @@ You can directly use them in pages and other components without the need to impo
 - `<FormInput>` | `<form-input>` (components/Form/Input.vue)
 - `<FormToggle>` | `<form-toggle>` (components/Form/Toggle.vue)
 - `<LayoutsBuyerDashboard>` | `<layouts-buyer-dashboard>` (components/layouts/BuyerDashboard.vue)
+- `<LayoutsMarketplace>` | `<layouts-marketplace>` (components/layouts/Marketplace.vue)
 - `<LayoutsSellerDashboard>` | `<layouts-seller-dashboard>` (components/layouts/SellerDashboard.vue)
 - `<NavigationFooter>` | `<navigation-footer>` (components/Navigation/Footer.vue)
 - `<NavigationMenu>` | `<navigation-menu>` (components/Navigation/Menu.vue)

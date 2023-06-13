@@ -6,8 +6,10 @@ import scrollBehavior from './router.scrollBehavior.js'
 
 const _4f061ff4 = () => interopDefault(import('..\\pages\\forgot.vue' /* webpackChunkName: "pages/forgot" */))
 const _07f316a8 = () => interopDefault(import('..\\pages\\login.vue' /* webpackChunkName: "pages/login" */))
+const _11ca9410 = () => interopDefault(import('..\\pages\\marketplace\\index.vue' /* webpackChunkName: "pages/marketplace/index" */))
 const _42c9ab69 = () => interopDefault(import('..\\pages\\signup.vue' /* webpackChunkName: "pages/signup" */))
 const _23a82a4a = () => interopDefault(import('..\\pages\\verify.vue' /* webpackChunkName: "pages/verify" */))
+const _68fb2dd0 = () => interopDefault(import('..\\pages\\marketplace\\search\\index.vue' /* webpackChunkName: "pages/marketplace/search/index" */))
 const _3e4b7391 = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages/index" */))
 const _4fccbd46 = () => interopDefault(import('..\\pages\\_user\\buying\\index.vue' /* webpackChunkName: "pages/_user/buying/index" */))
 const _76c7efa6 = () => interopDefault(import('..\\pages\\_user\\selling\\dashboard.vue' /* webpackChunkName: "pages/_user/selling/dashboard" */))
@@ -39,6 +41,10 @@ export const routerOptions = {
     component: _07f316a8,
     name: "login"
   }, {
+    path: "/marketplace",
+    component: _11ca9410,
+    name: "marketplace"
+  }, {
     path: "/signup",
     component: _42c9ab69,
     name: "signup"
@@ -46,6 +52,10 @@ export const routerOptions = {
     path: "/verify",
     component: _23a82a4a,
     name: "verify"
+  }, {
+    path: "/marketplace/search",
+    component: _68fb2dd0,
+    name: "marketplace-search"
   }, {
     path: "/",
     component: _3e4b7391,
