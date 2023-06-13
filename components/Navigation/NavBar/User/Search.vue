@@ -34,7 +34,7 @@
             <UiButtonsSecondary class="w-16" @clicked="$router.push({path: '/login'})">Sign In</UiButtonsSecondary>
           </li>
           <li>
-            <UiButtonsPrimary class="w-28" @click="$router.push({path: '/signup'})">Sign Up</UiButtonsPrimary>
+            <UiButtonsPrimary class="w-32" @click="$router.push({path: '/signup'})">Sign Up</UiButtonsPrimary>
           </li>
         </ul>
       </nav>
