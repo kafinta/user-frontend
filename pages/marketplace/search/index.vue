@@ -1,6 +1,6 @@
 <template>
   <LayoutsMarketplace>
-    <UiTypographyH2>Search results for "couches"</UiTypographyH2>
+    <UiTypographyH2>Search results for "{{search_input}}"</UiTypographyH2>
     <div class="mt-8 md:flex block w-full gap-10">
       <div class="h-full w-80">
         <button @click="filter_revealed = true" class="border-0 p-0 flex gap-3 item-center mb-5">
@@ -50,8 +50,15 @@
 export default {
   data() {
     return {
-      filter_revealed: false
+      filter_revealed: false,
+      search_input: ''
     }
+  },
+
+
+  mounted() {
+    this.search_input = this.$route.query.query
+    console.log(this.search_input)
   },
 }
 </script>
