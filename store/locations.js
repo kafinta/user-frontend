@@ -41,7 +41,7 @@ export const state = () => ({
 })
 
 export const getters = {
-  getSearchBox(state) {
+  getLocations(state) {
     return state.states
   },
 }
