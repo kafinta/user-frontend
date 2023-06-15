@@ -15,7 +15,7 @@
       <UserProductsMinimal v-for="item in 30" :key="item" />
     </div>
 
-    <ModalsDrawer :scrollable="true" :footerButtons="true" :openDialog="openDialog" @closeDialog="openDialog=false">
+    <ModalsDrawer okText="Apply" :scrollable="true" :footerButtons="true" :openDialog="openDialog" @closeDialog="openDialog=false">
       <template #title>Filters</template>
       <div class="h-full">
         <Accordion :class="filter_revealed ? 'block' : 'hidden md:block'" class="">
