@@ -16,13 +16,10 @@
             </UiButtonsSecondary>
           </li>
           <li>
-            <UiButtonsSecondary>Projects</UiButtonsSecondary>
+            <UiButtonsSecondary @clicked="$router.push({name: 'marketplace-projects'})">Projects</UiButtonsSecondary>
           </li>
           <li>
-            <UiButtonsSecondary>Marketplace</UiButtonsSecondary>
-          </li>
-          <li>
-            <UiButtonsSecondary>Find Artisans</UiButtonsSecondary>
+            <UiButtonsSecondary @clicked="$router.push({name: 'marketplace'})">Marketplace</UiButtonsSecondary>
           </li>
           <li>
             <UiButtonsSecondary @clicked="$router.push({path: '/login'})">Sign In</UiButtonsSecondary>
