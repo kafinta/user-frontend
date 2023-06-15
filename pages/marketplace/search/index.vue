@@ -1,13 +1,6 @@
 <template>
   <LayoutsMarketplace>
-    <UiTypographyH2>Search results for "{{search_input}}"</UiTypographyH2>
-    <div class="mt-8 md:flex block w-full gap-10">
-      <div class="h-full w-80">
-        <button @click="filter_revealed = true" class="border-0 p-0 flex gap-3 item-center mb-5">
-          <UiTypographyP>Filters</UiTypographyP>
-          <UiIconsFilter class="w-5 group-hover:text-secondary" />
-        </button>
-
+    <!-- <div class="h-full w-80">
         <Accordion :class="filter_revealed ? 'block' : 'hidden md:block'" class="">
           <AccordionItem container_class="border border-accent-100 py-3 px-5"
             trigger_class="" active>
@@ -37,12 +30,19 @@
             </template>
           </AccordionItem>
         </Accordion>
-      </div>
-      <div class="w-full">
-        <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3 mt-5">
-          <UserProductsMinimal v-for="item in 5" :key="item" />
+    </div> -->
+    <div class="flex justify-between items-center">
+      <UiTypographyH2>Search results for "{{search_input}}"</UiTypographyH2>
+      <UiButtonsPrimary @click="filter_revealed = true">
+        <div class="flex gap-5">
+          <p>Filters</p>
+          <UiIconsFilter class="w-5 flex m-0" />
         </div>
-      </div>
+      </UiButtonsPrimary>
+    </div>
+
+    <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3 mt-5">
+      <UserProductsMinimal v-for="item in 30" :key="item" />
     </div>
   </LayoutsMarketplace>
 </template>
@@ -56,7 +56,7 @@ export default {
   },
 
 
-  mounted() {
+  created() {
     this.search_input = this.$route.query.query
     console.log(this.search_input)
   },
