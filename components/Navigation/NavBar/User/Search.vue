@@ -75,6 +75,7 @@ export default {
 
     pushSearch(){
       this.$router.push({name: 'marketplace-search', query: {query: this.search_input}})
+      this.$location.reload()
     }
   },
 }
