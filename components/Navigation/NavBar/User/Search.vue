@@ -7,10 +7,10 @@
 
       <NavigationMenu class="flex justify-end" @revealMenu="toggleMenu()" />
 
-      <form class="mx-auto w-full md:flex items-center justify-end relative hidden">
-        <input @focus="focus()" @input="$emit('input', $event.target.value)" class="w-full flex justify-center py-3 px-4 border text-sm outline-none border-secondary ring-0 focus:outline-none focus:border-primary active:border-primary rounded-md active:text-primary focus:text-primary text-secondary border-opacity-20 active:border-opacity-100 focus:border-opacity-100 duration-300 ease-out" autocomplete="off" ref="input" type="text" placeholder="What are you looking for?" />
+      <form @submit.prevent="pushSearch" class="mx-auto w-full md:flex items-center justify-end relative hidden">
+        <input @focus="focus()" @input="$emit('input', $event.target.value)" v-model="search_input" class="w-full flex justify-center py-3 px-4 border text-sm outline-none border-secondary ring-0 focus:outline-none focus:border-primary active:border-primary rounded-md active:text-primary focus:text-primary text-secondary border-opacity-20 active:border-opacity-100 focus:border-opacity-100 duration-300 ease-out" autocomplete="off" ref="input" type="text" placeholder="What are you looking for?" />
 
-        <button class="bg-primary rounded-md p-3 absolute px-4">
+        <button type="submit" class="bg-primary rounded-md p-3 absolute px-4">
           <UiIconsSearch class="text-white w-5 h-6" />
         </button>
       </form>
@@ -50,6 +50,7 @@ export default {
   data() {
     return {
       toggle_menu: false,
+      search_input: ''
     }
   },
 
@@ -70,6 +71,10 @@ export default {
 
     focus(){
       this.$refs.input.focus()
+    },
+
+    pushSearch(){
+      this.$router.push({name: 'marketplace-search', query: {query: this.search_input}})
     }
   },
 }
