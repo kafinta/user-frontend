@@ -74,14 +74,14 @@
   "SearchSuggestionWrapper": {
     "description": "Auto imported from components/Search/Suggestion/Wrapper.vue"
   },
-  "UiButtonsAccent": {
-    "description": "Auto imported from components/Ui/Buttons/Accent.vue"
-  },
   "UiButtonsPrimary": {
     "description": "Auto imported from components/Ui/Buttons/Primary.vue"
   },
   "UiButtonsSecondary": {
     "description": "Auto imported from components/Ui/Buttons/Secondary.vue"
+  },
+  "UiButtonsTab": {
+    "description": "Auto imported from components/Ui/Buttons/Tab.vue"
   },
   "UiButtonsTertiary": {
     "description": "Auto imported from components/Ui/Buttons/Tertiary.vue"

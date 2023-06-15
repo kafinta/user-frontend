@@ -1,6 +1,23 @@
 <template>
   <LayoutsMarketplace>
-    <!-- <div class="h-full w-80">
+    
+    <div class="flex justify-between items-center">
+      <UiTypographyH2>Search results for "{{search_input}}"</UiTypographyH2>
+      <UiButtonsPrimary @clicked="openDialog=true">
+        <div class="flex gap-5">
+          <p>Filters</p>
+          <UiIconsFilter class="w-5 flex m-0" />
+        </div>
+      </UiButtonsPrimary>
+    </div>
+
+    <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3 mt-5">
+      <UserProductsMinimal v-for="item in 30" :key="item" />
+    </div>
+
+    <ModalsDrawer :openDialog="openDialog" @closeDialog="openDialog=false">
+      <template #title>Filters</template>
+      <div class="h-full">
         <Accordion :class="filter_revealed ? 'block' : 'hidden md:block'" class="">
           <AccordionItem container_class="border border-accent-100 py-3 px-5"
             trigger_class="" active>
@@ -9,9 +26,9 @@
             </template>
 
             <template #accordion-content>
-              <div class="gap-3 mt-3 grid">
-                <UiButtonsAccent>Active</UiButtonsAccent>
-                <UiButtonsAccent>Draft</UiButtonsAccent>
+              <div class="gap-3 mt-3 flex flex-wrap">
+                <UiButtonsTab>Active</UiButtonsTab>
+                <UiButtonsTab>Active</UiButtonsTab>
               </div>
             </template>
           </AccordionItem>
@@ -23,27 +40,16 @@
             </template>
 
             <template #accordion-content>
-              <div class="gap-3 mt-3 grid">
-                <UiButtonsAccent>Active</UiButtonsAccent>
-                <UiButtonsAccent>Draft</UiButtonsAccent>
+              <div class="gap-3 mt-3 flex flex-wrap">
+                <UiButtonsTab>Active</UiButtonsTab>
+                <UiButtonsTab>Active</UiButtonsTab>
               </div>
             </template>
           </AccordionItem>
         </Accordion>
-    </div> -->
-    <div class="flex justify-between items-center">
-      <UiTypographyH2>Search results for "{{search_input}}"</UiTypographyH2>
-      <UiButtonsPrimary @click="filter_revealed = true">
-        <div class="flex gap-5">
-          <p>Filters</p>
-          <UiIconsFilter class="w-5 flex m-0" />
-        </div>
-      </UiButtonsPrimary>
-    </div>
+      </div>
+    </ModalsDrawer>
 
-    <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3 mt-5">
-      <UserProductsMinimal v-for="item in 30" :key="item" />
-    </div>
   </LayoutsMarketplace>
 </template>
 <script>
@@ -51,7 +57,8 @@ export default {
   data() {
     return {
       filter_revealed: false,
-      search_input: ''
+      search_input: '',
+      openDialog: false
     }
   },
 
