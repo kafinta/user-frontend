@@ -21,10 +21,10 @@
           
           <div v-show="footerButtons" class="absolute bottom-0 w-full select-none">
             <div class="w-full flex justify-between">
-              <a @click="emitCloseDialogEvent()" class="uppercase font-medium border-t border-r border-gray-400 shadow rounded-bl-xl w-1/2 block px-2 py-3 text-center cursor-pointer bg-white hover:bg-gray-200 transition duration-500">
+              <a @click="emitCloseDialogEvent()" class="uppercase font-medium border-t border-r border-accent-100 shadow w-1/2 block px-2 py-3 text-center cursor-pointer bg-white hover:bg-secondary hover:text-white transition duration-500">
                 {{cancelText}}
               </a>
-              <a @click="emitOkEvent()" class="uppercase font-medium border-t border-accent1-300 shadow rounded-br-xl w-1/2 block px-2 py-3 text-center cursor-pointer bg-accent1-100 hover:bg-accent1-200 transition duration-500">
+              <a @click="emitOkEvent()" class="uppercase font-medium border-t border-l border-accent-100 shadow w-1/2 block px-2 py-3 text-center cursor-pointer bg-accent1-100 hover:bg-primary hover:text-white transition duration-500">
                 {{okText}}
               </a>
             </div>
