@@ -15,7 +15,7 @@
             </button>
           </div>
           
-          <div class="px-4 md:px-6 py-5 " :class="(footerButtons ? 'h-screen-80' : 'h-screen-85') + ' ' + (scrollable ? 'custom-scroll-y' : 'overflow-hidden')">
+          <div class="px-4 md:px-6 py-5 " :class="(footerButtons ? 'h-screen-80' : 'h-screen-85') + ' ' + (scrollable ? 'overflow-y-scroll' : 'overflow-hidden')">
             <slot />
           </div>
           
