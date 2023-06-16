@@ -1,8 +1,8 @@
 <template>
   <div class="mt-5 overflow-x-hidden px-0 relative">
     <carousel :autoplay="true" :nav="false" :dots="false" :loop="true" :center="true" :responsive="false" :autoWidth="true" :margin="10" :rewind="false" class="relative">
-      <UiCardsSecondary v-for="item in projects" :key="item.id" :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" :artisan="item.artisan">
-      <UserProfilePicture :artisan="item.artisan" :large_dimensions="false"  />
+      <UiCardsSecondary v-for="item in projects" :key="item.id" :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" :artisan="item.username">
+      <UserProfilePicture :username="item.username" :large_dimensions="false"  />
       </UiCardsSecondary>
 
       <template slot="prev">
@@ -31,7 +31,7 @@ export default {
           title: 'Furniture',
           backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674909090/kafinta/marketplace/furniture_r9hcwn.jpg',
           urlPath: 'furniture',
-          artisan: '1 User'
+          username: '1 User'
         },
         
         {
@@ -39,7 +39,7 @@ export default {
           title: 'Living Room',
           backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674909452/kafinta/marketplace/living-room_jqoixn.jpg',
           urlPath: 'living-room',
-          artisan: 'Stupid User'
+          username: 'Stupid User'
         },
 
         {
@@ -47,7 +47,7 @@ export default {
           title: 'Kitchen & Dining',
           backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674909452/kafinta/marketplace/kitchen_irvdft.jpg',
           urlPath: 'kitchen',
-          artisan: 'Example'
+          username: 'Example'
         },
 
         {
@@ -55,7 +55,7 @@ export default {
           title: 'Bedroom',
           backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674909453/kafinta/marketplace/bedroom_q5m7cb.png',
           urlPath: 'bedroom',
-          artisan: 'User User'
+          username: 'User User'
         },
 
         {
@@ -63,7 +63,7 @@ export default {
           title: 'Bathroom',
           backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674909092/kafinta/marketplace/bathroom_qufzyi.jpg',
           urlPath: 'bathroom',
-          artisan: 'Added User'
+          username: 'Added User'
         },
 
         {
@@ -71,7 +71,7 @@ export default {
           title: 'Storage & Organization',
           backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674909452/kafinta/marketplace/closet_phsws6.jpg',
           urlPath: 'storage',
-          artisan: 'User'
+          username: 'User'
         },
 
         {
@@ -79,7 +79,7 @@ export default {
           title: 'Lighting',
           backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674909452/kafinta/marketplace/lighting_zzdqfm.jpg',
           urlPath: 'lighting',
-          artisan: 'Long Name User'
+          username: 'Long Name User'
         },
 
         {
@@ -87,7 +87,7 @@ export default {
           title: 'Outdoors',
           backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674909090/kafinta/marketplace/outdoors_jejx1j.jpg',
           urlPath: 'outdoors',
-          artisan: 'User'
+          username: 'User'
         },
       ],
     }
