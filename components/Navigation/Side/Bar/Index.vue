@@ -42,7 +42,7 @@
       <div class="py-6 bg-accent-600 rounded-t-2xl">
         <div class="flex items-center gap-5 px-6">
           <div class="relative flex w-fit">
-            <UserProfilePicture :artisan="user_info.username" :custom_dimensions="true" class="h-10 w-10"/>
+            <UserProfilePicture :username="user_info.username" :custom_dimensions="true" class="h-10 w-10"/>
             <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="true" :is_displayed="true"/>
           </div>
 

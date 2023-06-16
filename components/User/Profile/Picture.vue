@@ -10,7 +10,7 @@
 <script>
 export default {
   props: {
-    artisan: String,
+    username: String,
     custom_dimensions: Boolean,
     profileImagePath: String
   },
@@ -23,14 +23,14 @@ export default {
 
   methods: {
     getFirstLetter(){
-      this.first_letter = this.artisan.slice(0,1)
+      setTimeout(() => {
+        this.first_letter = this.username.slice(0,1)
+      }, 1500);
     }
   },
 
-  created(){
-    // if(window.process){
-      this.getFirstLetter()
-    // }
+  mounted(){
+    this.getFirstLetter()
   }
 }
 </script>
