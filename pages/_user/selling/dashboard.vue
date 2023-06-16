@@ -6,12 +6,12 @@
         <div class="border border-accent-100 p-6">
           <div class="flex items-center gap-5 mb-4">
             <div class="relative flex w-fit">
-              <UserProfilePicture :artisan="username" :custom_dimensions="true" class="h-10 w-10"/>
+              <UserProfilePicture :username="user_info.username" :custom_dimensions="true" class="h-10 w-10"/>
               <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="true" :is_displayed="true"/>
             </div>
 
             <div>
-              <UiTypographyP class="text-secondary">{{ username }}</UiTypographyP>
+              <UiTypographyP class="text-secondary">{{ user_info.username }}</UiTypographyP>
             </div>
           </div>
           <div class="border-t border-accent-100 grid grid-cols-1 gap-2 py-4">
@@ -41,28 +41,28 @@
         <div class="border border-accent-100 p-6 duration-150 ease-in-out">
           <div class="flex justify-between items-center">
             <UiTypographyH3>Inbox</UiTypographyH3>
-            <UiButtonsSecondary @clicked="t$route.push({path: '/users/inbox'})">View All</UiButtonsSecondary>
+            <UiButtonsSecondary @clicked="$route.push({path: '/users/inbox'})">View All</UiButtonsSecondary>
           </div>
           <div class="bg-accent-50 h-64 mt-3 duration-150 ease-in-out"></div>
         </div>
       </div>
 
       <div class="w-full lg:w-3/5 mt-8 lg:mt-0">
-        <div class="border border-accent-100 flex divide-x divide-accent-100">
-          <div :class="tab.active ? 'bg-primary text-white' : 'hover:bg-secondary'" class="px-4 py-2 duration-500 ease-in-out group" v-for="tab in tabs" :key="tab.id">
-            <UiTypographyP :class="tab.active ? 'text-white' : 'text-secondary'" class="duration-500 ease-in-out group-hover:text-white">{{tab.title}}</UiTypographyP>
+        <div class="flex gap-2">
+          <div v-for="tab in tabs" :key="tab.id">
+            <UiButtonsTab>{{tab.title}}</UiButtonsTab>
           </div>
         </div>
         <div class="mt-8 grid gap-4">
           <div class="border border-accent-100 py-2 px-4 w-full flex justify-between items-center" v-for="item in 5">
             <div class="flex items-center gap-5">
               <div class="relative flex w-fit">
-                <UserProfilePicture :artisan="username" :custom_dimensions="true" class="h-10 w-10"/>
+                <UserProfilePicture :username="user_info.username" :custom_dimensions="true" class="h-10 w-10"/>
                 <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="false" :is_displayed="true"/>
               </div>
 
               <div>
-                <UiTypographyP class="text-secondary">{{ username }}</UiTypographyP>
+                <UiTypographyP class="text-secondary">{{ user_info.username }}</UiTypographyP>
               </div>
             </div>
 

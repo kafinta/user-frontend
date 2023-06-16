@@ -21,16 +21,10 @@ export default {
     }
   },
 
-  methods: {
-    getFirstLetter(){
-      setTimeout(() => {
-        this.first_letter = this.username.slice(0,1)
-      }, 1500);
-    }
-  },
-
   mounted(){
-    this.getFirstLetter()
+    setTimeout(() => {
+      this.first_letter = this.username.charAt(0)
+    }, 1000);
   }
 }
 </script>
