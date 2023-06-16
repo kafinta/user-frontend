@@ -88,6 +88,7 @@
 </template>
 
 <script>
+import {mapGetters, mapActions} from 'vuex';
 export default {
   middleware: ['user_auth'],
   data() {
@@ -116,8 +117,26 @@ export default {
     }
   },
 
-  created() {
-    this.date = new Date()
+  computed: {
+    ...mapGetters({
+      user_info: "authentication/getUserInfo",
+    }),
+  },
+
+  methods: {
+    ...mapActions({
+      getUser: 'authentication/retrieveUserInfo'
+    }),
+  },
+
+  mounted(){
+    setTimeout(() => {
+      this.date = new Date()
+    }, 2000);
+    this.getUser()
+    if (process.browser && window.innerWidth <= 320) {
+      this.is_small = true
+    }
   },
 }
 </script>

@@ -42,12 +42,12 @@
       <div class="py-6 bg-accent-600 rounded-t-2xl">
         <div class="flex items-center gap-5 px-6">
           <div class="relative flex w-fit">
-            <UserProfilePicture :artisan="username" :custom_dimensions="true" class="h-10 w-10"/>
+            <UserProfilePicture :artisan="user_info.username" :custom_dimensions="true" class="h-10 w-10"/>
             <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="true" :is_displayed="true"/>
           </div>
 
           <div>
-            <UiTypographyP class="text-white">{{ username }}</UiTypographyP>
+            <UiTypographyP class="text-white">{{ user_info.username }}</UiTypographyP>
             <p class="text-green-500 text-sm">$0.00</p>
           </div>
         </div>
@@ -73,10 +73,10 @@
 </template>
 
 <script>
+import {mapGetters, mapActions} from 'vuex';
 export default {
   data() {
     return {
-      username: 'Quadri',
       dashboardActive: false,
       inboxActive: false,
       gigsActive: false,
@@ -86,7 +86,17 @@ export default {
     };
   },
 
+  computed: {
+    ...mapGetters({
+      user_info: "authentication/getUserInfo",
+    }),
+  },
+
   methods: {
+    ...mapActions({
+      getUser: 'authentication/retrieveUserInfo'
+    }),
+
     routeCheck(){
       if (this.$route.name.includes('dashboard')) {
         this.dashboardActive = true
@@ -107,6 +117,7 @@ export default {
   },
 
   mounted() {
+    this.getUser()
     this.routeCheck()
   },
 }
