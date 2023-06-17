@@ -1,6 +1,6 @@
 <template>
   <LayoutsSellerDashboard class="min-h-screen">
-    <UiTypographyH2>Manage Projects</UiTypographyH2>
+    <UiTypographyH2>Manage Products</UiTypographyH2>
 
     <div class="mt-6 md:flex block w-full gap-5">
       <div class="h-full w-96 p-5">
@@ -18,8 +18,8 @@
 
             <template #accordion-content>
               <div class="gap-3 mt-3 grid">
-                <UiButtonsAccent>Active</UiButtonsAccent>
-                <UiButtonsAccent>Draft</UiButtonsAccent>
+                <UiButtonsTab>Active</UiButtonsTab>
+                <UiButtonsTab>Draft</UiButtonsTab>
               </div>
             </template>
           </AccordionItem>
@@ -32,8 +32,8 @@
 
             <template #accordion-content>
               <div class="gap-3 mt-3 grid">
-                <UiButtonsAccent>Active</UiButtonsAccent>
-                <UiButtonsAccent>Draft</UiButtonsAccent>
+                <UiButtonsTab>Active</UiButtonsTab>
+                <UiButtonsTab>Draft</UiButtonsTab>
               </div>
             </template>
           </AccordionItem>
@@ -44,8 +44,8 @@
           <UiButtonsPrimary @clicked="$router.push({path: '/artisans/projects/new'})">List a New Project</UiButtonsPrimary>
         </div>
 
-        <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3 mt-5">
-          <UserProductsMinimal v-for="item in 5" :key="item" />
+        <div class="grid gap-5 mt-5">
+          <UserProductsMinimalDetailed v-for="item in 5" :key="item" />
         </div>
       </div>
     </div>

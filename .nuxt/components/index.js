@@ -1,11 +1,11 @@
 export { default as Accordion } from '../..\\components\\Accordion\\Index.vue'
 export { default as AccordionItem } from '../..\\components\\Accordion\\Item.vue'
-export { default as FormButton } from '../..\\components\\Form\\Button.vue'
-export { default as FormInput } from '../..\\components\\Form\\Input.vue'
-export { default as FormToggle } from '../..\\components\\Form\\Toggle.vue'
 export { default as CarouselsMarketplace } from '../..\\components\\Carousels\\Marketplace.vue'
 export { default as CarouselsProfessionals } from '../..\\components\\Carousels\\Professionals.vue'
 export { default as CarouselsProjects } from '../..\\components\\Carousels\\Projects.vue'
+export { default as FormButton } from '../..\\components\\Form\\Button.vue'
+export { default as FormInput } from '../..\\components\\Form\\Input.vue'
+export { default as FormToggle } from '../..\\components\\Form\\Toggle.vue'
 export { default as LayoutsBuyerDashboard } from '../..\\components\\layouts\\BuyerDashboard.vue'
 export { default as LayoutsMarketplace } from '../..\\components\\layouts\\Marketplace.vue'
 export { default as LayoutsSellerDashboard } from '../..\\components\\layouts\\SellerDashboard.vue'
@@ -58,6 +58,7 @@ export { default as NavigationNavBarUserSearch } from '../..\\components\\Naviga
 export { default as NavigationNavBarUserSeller } from '../..\\components\\Navigation\\NavBar\\User\\Seller.vue'
 export { default as NavigationSideBarBuying } from '../..\\components\\Navigation\\Side\\Bar\\Buying.vue'
 export { default as NavigationSideBar } from '../..\\components\\Navigation\\Side\\Bar\\Index.vue'
+export { default as UserProductsMinimalDetailed } from '../..\\components\\User\\Products\\Minimal\\Detailed.vue'
 export { default as UserProductsMinimal } from '../..\\components\\User\\Products\\Minimal\\Index.vue'
 
 // nuxt/nuxt.js#8607
