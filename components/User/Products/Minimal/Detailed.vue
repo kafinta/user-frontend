@@ -1,11 +1,11 @@
 <template>
-  <div class="border border-accent-100 p-2 flex md:grid md:grid-cols-9 gap-5 items-center relative">
-    <div class="bg-accent-100 aspect-[9/6] w-3/12 md:col-span-1"></div>
+  <div class="group hover:border-accent-300 duration-500 transition cursor-pointer border border-accent-100 p-2 flex lg:grid md:grid-cols-9 gap-5 items-center relative">
+    <div class="bg-accent-100 aspect-[9/6] w-3/12 lg:w-full lg:col-span-1"></div>
     <UiTypographyP class="md:col-span-4">{{ product_name }}</UiTypographyP>
-    <UiTypographyP class="col-span-1 hidden md:block">{{ product_impressions }}</UiTypographyP>
-    <UiTypographyP class="col-span-1 hidden md:block">{{ product_clicks }}</UiTypographyP>
-    <UiTypographyP class="col-span-1 hidden md:block">{{ product_purchases }}</UiTypographyP>
-    <button class="w-1/12 md:col-span-1 flex justify-end">
+    <UiTypographyP class="col-span-1 hidden lg:block">{{ product_impressions }}</UiTypographyP>
+    <UiTypographyP class="col-span-1 hidden lg:block">{{ product_clicks }}</UiTypographyP>
+    <UiTypographyP class="col-span-1 hidden lg:block">{{ product_purchases }}</UiTypographyP>
+    <button class="col-span-1 hidden lg:flex justify-end">
       <UiIconsMore class="w-5" />
     </button>
   </div>
