@@ -4,7 +4,7 @@
 
     <div class="mt-6 md:flex block w-full gap-5">
       <div class="h-full hidden md:block w-80 lg:w-96 p-5">
-        <button @click="filter_revealed = true" class="border-0 p-0 flex gap-3 item-center mb-5">
+        <button @click="filter_revealed = true" class="border-0 p-0 flex gap-3 items-center mb-5">
           <UiTypographyP>Filters</UiTypographyP>
           <UiIconsFilter class="w-5 group-hover:text-secondary" />
         </button>
@@ -40,22 +40,22 @@
         </Accordion>
       </div>
       <div class="w-full">
-        <div class="flex justify-between w-full">
-          <button @click="filter_drawer = true" class="md:hidden border-0 p-0 flex gap-3 item-center mb-5">
-            <UiTypographyP>Filters</UiTypographyP>
+        <div class="flex justify-between items-center w-full">
+          <UiButtonsTab @clicked="filter_drawer = true" class="md:hidden border-0 p-0 flex gap-3 items-center">
+            <p class="text-base">Filters</p>
             <UiIconsFilter class="w-5 group-hover:text-secondary" />
-          </button>
-          <UiButtonsPrimary @clicked="$router.push({path: '/artisans/projects/new'})">List a New Project</UiButtonsPrimary>
+          </UiButtonsTab>
+          <UiButtonsPrimary @clicked="$router.push({name: 'james-products-new'})">List a New Project</UiButtonsPrimary>
         </div>
 
         <div>
-          <div class="grid grid-cols-9">
+          <div class="hidden lg:grid grid-cols-9 mt-5">
           <UiTypographyP class="col-span-5">Product</UiTypographyP>
           <UiTypographyP class="cols-span-1">Impressions</UiTypographyP>
           <UiTypographyP class="cols-span-1">Clicks</UiTypographyP>
           <UiTypographyP class="cols-span-1">Purchases</UiTypographyP>
           </div>
-          <UserProductsMinimalDetailed v-for="item in 5" :key="item" class="grid gap-5 mt-5" />
+          <UserProductsMinimalDetailed v-for="item in 5" :key="item" class="grid gap-5 mt-2" />
         </div>
       </div>
     </div>

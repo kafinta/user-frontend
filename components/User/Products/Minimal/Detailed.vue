@@ -1,14 +1,14 @@
 <template>
-  <div class="group hover:border-accent-300 duration-500 transition cursor-pointer border border-accent-100 p-2 flex lg:grid md:grid-cols-9 gap-5 items-center relative">
-    <div class="bg-accent-100 aspect-[9/6] w-3/12 lg:w-full lg:col-span-1"></div>
-    <UiTypographyP class="md:col-span-4">{{ product_name }}</UiTypographyP>
+  <nuxt-link to="/" target="_blank" class="group hover:border-accent-300 duration-500 transition cursor-pointer border border-accent-100 p-2 grid grid-cols-3 lg:grid-cols-9 lg:gap-5 items-center h-fit">
+    <div class="bg-accent-100 aspect-[3/2] w-full col-span-1 m-0"></div>
+    <UiTypographyP class="col-span-2 lg:col-span-4">{{ product_name }}</UiTypographyP>
     <UiTypographyP class="col-span-1 hidden lg:block">{{ product_impressions }}</UiTypographyP>
     <UiTypographyP class="col-span-1 hidden lg:block">{{ product_clicks }}</UiTypographyP>
     <UiTypographyP class="col-span-1 hidden lg:block">{{ product_purchases }}</UiTypographyP>
     <button class="col-span-1 hidden lg:flex justify-end">
       <UiIconsMore class="w-5" />
     </button>
-  </div>
+  </nuxt-link>
 </template>
 <script>
 export default {
