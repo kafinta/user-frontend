@@ -1,7 +1,5 @@
 <template>
-  <LayoutSellerDashboard>
-    <UiTypographyH2 class="mb-6">Profile</UiTypographyH2>
-
+  <LayoutsSellerDashboard page_title="Profile">
     <div class="block lg:flex gap-8">
       <div class="w-full lg:w-2/5 grid gap-5">
         <div class="border border-accent-100 p-6">
@@ -83,7 +81,7 @@
         </div>
       </div>
     </div>
-  </LayoutSellerDashboard>
+  </LayoutsSellerDashboard>
 </template>
 
 <script>
