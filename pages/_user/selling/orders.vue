@@ -1,7 +1,5 @@
 <template>
-  <LayoutsSellerDashboard class="min-h-screen">
-    <UiTypographyH2>Orders</UiTypographyH2>
-
+  <LayoutsSellerDashboard page_title="Purchases Overview">
     <div class="border border-accent-100 flex divide-x divide-accent-100 mt-6">
       <div :class="tab.active ? 'bg-primary text-white' : 'hover:bg-secondary'" class="px-4 py-2 duration-500 ease-in-out group" v-for="tab in tabs" :key="tab.id">
         <UiTypographyP :class="tab.active ? 'text-white' : 'text-secondary'" class="duration-500 ease-in-out group-hover:text-white">{{tab.title}}</UiTypographyP>

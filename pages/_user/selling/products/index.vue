@@ -1,7 +1,5 @@
 <template>
-  <LayoutsSellerDashboard class="min-h-screen">
-    <UiTypographyH2>Manage Products</UiTypographyH2>
-
+  <LayoutsSellerDashboard page_title="Products Overview">
     <div class="mt-6 md:flex block w-full gap-5">
       <div class="h-full hidden md:block w-80 lg:w-96 p-5">
         <button @click="filter_revealed = true" class="border-0 p-0 flex gap-3 items-center mb-5">
@@ -45,7 +43,7 @@
             <p class="text-base">Filters</p>
             <UiIconsFilter class="w-5 group-hover:text-secondary" />
           </UiButtonsTab>
-          <UiButtonsPrimary @clicked="$router.push({name: 'james-products-new'})">List a New Project</UiButtonsPrimary>
+          <UiButtonsPrimary @clicked="$router.push({path: 'products/new'})">List a New Project</UiButtonsPrimary>
         </div>
 
         <div>
