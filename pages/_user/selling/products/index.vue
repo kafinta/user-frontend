@@ -49,11 +49,11 @@
         </div>
 
         <div>
-          <div class="hidden lg:grid grid-cols-9 mt-5">
+          <div class="hidden lg:grid grid-cols-12 mt-5">
           <UiTypographyP class="col-span-5">Product</UiTypographyP>
-          <UiTypographyP class="cols-span-1">Impressions</UiTypographyP>
-          <UiTypographyP class="cols-span-1">Clicks</UiTypographyP>
-          <UiTypographyP class="cols-span-1">Purchases</UiTypographyP>
+          <UiTypographyP class="col-span-2 mx-auto">Impressions</UiTypographyP>
+          <UiTypographyP class="col-span-2 mx-auto">Clicks</UiTypographyP>
+          <UiTypographyP class="col-span-2 mx-auto">Purchases</UiTypographyP>
           </div>
           <UserProductsMinimalDetailed v-for="item in 5" :key="item" class="grid gap-5 mt-2" />
         </div>
