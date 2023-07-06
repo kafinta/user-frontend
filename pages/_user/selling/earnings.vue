@@ -1,5 +1,5 @@
 <template>
-  <LayoutsSellerDashboard>
+  <LayoutsSellerDashboard page_title="Earnings overiew">
   
   </LayoutsSellerDashboard>
 </template>
