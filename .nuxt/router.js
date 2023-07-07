@@ -20,6 +20,7 @@ const _4fd79f9f = () => interopDefault(import('..\\pages\\_user\\selling\\inbox.
 const _6e194d9c = () => interopDefault(import('..\\pages\\_user\\selling\\orders.vue' /* webpackChunkName: "pages/_user/selling/orders" */))
 const _748a7f47 = () => interopDefault(import('..\\pages\\_user\\selling\\products\\index.vue' /* webpackChunkName: "pages/_user/selling/products/index" */))
 const _05b90756 = () => interopDefault(import('..\\pages\\_user\\selling\\products\\new.vue' /* webpackChunkName: "pages/_user/selling/products/new" */))
+const _2e43b509 = () => interopDefault(import('..\\pages\\_user\\_product\\index.vue' /* webpackChunkName: "pages/_user/_product/index" */))
 
 const emptyFn = () => {}
 
@@ -96,6 +97,10 @@ export const routerOptions = {
     path: "/:user/selling/products/new",
     component: _05b90756,
     name: "user-selling-products-new"
+  }, {
+    path: "/:user/:product",
+    component: _2e43b509,
+    name: "user-product"
   }],
 
   fallback: false
