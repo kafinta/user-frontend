@@ -1,18 +1,25 @@
 <template>
-  <carousel :pauseAutoplayOnHover="true" :snapAlign="'center'" :itemsToShow="1" :wrapAround="true" :autoplay="1000" :breakpoints="breakpoints" class="mt-5 lg:mt-8 overflow-x-hidden px-0">
-    <slide v-for="item in marketplace" :key="item.id">
-      <UiCards  :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" />
-    </slide>
+  <div class="mt-5 overflow-x-hidden px-0 relative">
+    <carousel :autoplay="true" :nav="false" :dots="false" :loop="true" :center="true" :autoplaySpeed="2000" :autoplayTimeout="2000" :autoplayHoverPause="true" :responsive="false" :autoWidth="true" :margin="10" :rewind="false" >
+      <UiCards v-for="item in marketplace" :key="item.id" :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" class="flex items-center gap-5" />
 
-    <template #addons>
-      <Navigation />
-    </template>
-  </carousel>
+      <template slot="prev">
+        <span class="prev top-[7rem] left-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
+          <img src="@/assets/images/icons/triangle.svg" class="h-5 w-5 -ml-0.5 rotate-90" alt="">
+        </span>
+      </template>
+
+      <template slot="next">
+        <span class="next top-[7rem] right-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
+          <img src="@/assets/images/icons/triangle.svg" class="h-5 w-5 -ml-0.5 -rotate-90" alt="">
+        </span>
+      </template>
+    </carousel>
+  </div>
 </template>
 
 <script>
-import 'vue3-carousel/dist/carousel.css'
-import { Carousel, Slide, Navigation } from 'vue3-carousel'
+import carousel from 'vue-owl-carousel'
 export default {
   data() {
     return {
@@ -73,64 +80,8 @@ export default {
           urlPath: 'outdoors'
         },
       ],
-
-      breakpoints: {
-        425: {
-          itemsToShow: 1.6,
-          snapAlign: 'center',
-        },
-
-        480: {
-          itemsToShow: 1.8,
-          snapAlign: 'center',
-        },
-
-        525: {
-          itemsToShow: 2,
-          snapAlign: 'center',
-        },
-
-        625: {
-          itemsToShow: 2.3,
-          snapAlign: 'center',
-        },
-
-        768: {
-          itemsToShow: 3,
-          snapAlign: 'center',
-        },
-
-        820: {
-          itemsToShow: 3.5,
-          snapAlign: 'center',
-        },
-
-        1024: {
-          itemsToShow: 4,
-          snapAlign: 'center',
-        },
-
-        1150: {
-          itemsToShow: 5,
-          snapAlign: 'center',
-        },
-      },
     }
   },
-
-  components: {
-    Carousel,
-    Slide,
-    Navigation,
-  },
+  components: { carousel },
 }
 </script>
-
-<style>
-.carousel__prev,
-.carousel__next {
-	background-color: white;
-  color: #333333;
-  border-radius: 100%;
-}
-</style>

@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-row-reverse select-none">
-    <div class="hidden lg:flex w-2/3 image-bg py-5 px-10 relative flex-col justify-between">
+    <div class="background hidden lg:flex w-2/3 bg-cover bg-center py-5 px-10 relative flex-col justify-between">
       <div class="flex justify-end">
-        <NavigationLogoOneColor @click="returnHome()"  class="w-36 cursor-pointer text-white" />
+        <NavigationLogoMonotone @click="returnHome()"  class="w-36 cursor-pointer text-white" />
       </div>
 
       <div class="bg-white rounded-md bg-opacity-80 p-5 bottom-5 w-full">
@@ -17,18 +17,18 @@
     <div class="w-full lg:w-1/2 h-screen flex items-center justify-center mx-auto px-6 md:px-8 lg:px-10 relative">
       <NavigationLogo @click="returnHome()" class="absolute top-5 left-10 w-36 lg:hidden" :class="is_small ? 'hidden' : ''" />
 
-      <form @submit.prevent="signUp()" action="" class="w-full md:w-2/3 lg:w-full rounded-xl p-5" :class="is_small ? 'p-0' : ''">
+      <main class="w-full md:w-2/3 lg:w-full rounded-xl p-5" :class="is_small ? 'p-0' : ''">
         <h1 :class="is_small ? 'text-2xl' : ''" class="font-medium text-3xl w-fit text-secondary">Create account.</h1>
         <p :class="is_small ? 'mb-4' : ''" class="text-sm text-secondary mb-8">You are just a few steps away.</p>
 
         <div class="mb-6">
           <div class="mt-10 flex gap-5 items-center">
-            <NuxtLink class="hover:-translate-y-1 duration-300 ease-in-out flex gap-3 items-center justify-center w-full border rounded-md border-secondary border-opacity-20 py-3">
+            <NuxtLink to="" class="hover:-translate-y-1 duration-300 ease-in-out flex gap-3 items-center justify-center w-full border rounded-md border-secondary border-opacity-20 py-3">
               <img src="@/assets/images/logos/facebook.svg" class="w-7" alt="">
               Facebook
             </NuxtLink>
 
-            <NuxtLink class="hover:-translate-y-1 duration-300 ease-in-out flex gap-3 items-center justify-center w-full border rounded-md border-secondary border-opacity-20 py-3">
+            <NuxtLink to="" class="hover:-translate-y-1 duration-300 ease-in-out flex gap-3 items-center justify-center w-full border rounded-md border-secondary border-opacity-20 py-3">
               <img src="@/assets/images/logos/google.svg" class="w-7" alt="">
               Google
             </NuxtLink>
@@ -40,27 +40,25 @@
           </div> 
         </div>
 
-        <div class="grid gap-4">
-          <FormInput label="Email" v-model:inputValue="form.email" placeholder="Enter your email address"></FormInput>
-          <FormInput label="Username" v-model:inputValue="form.username" placeholder="Choose your username"></FormInput>
+        <form @submit.prevent="signUp()" action="" class="grid gap-4">
+          <FormInput label="Email" v-model="form.email" placeholder="Enter your email address"></FormInput>
+          <FormInput label="Username" v-model="form.username" placeholder="Choose your username"></FormInput>
           <div>
-            <FormInput :error="error_state" label="Password" type="password" v-model:inputValue="form.password" placeholder="Enter your password"></FormInput>
+            <FormInput :error="error_state" label="Password" type="password" v-model="form.password" placeholder="Enter your password"></FormInput>
             <p :class="error_state ? 'opacity-100' : 'opacity-0'" class="text-sm text-red-600 mt-2">Password must be at least 8 characters</p>
           </div>
 
           <FormButton :loading="loadingState" class="-mt-3">Sign Up</FormButton>
-        </div>
+        </form>
         <p class="text-sm w-fit mx-auto mt-2 text-secondary text-center">Already a member? <NuxtLink to="/login" class="duration-500 ease-in-out hover:text-primary">Sign In</NuxtLink></p>
-      </form>
+      </main>
     </div>
   </div>
 
 </template>
 
 <script>
-definePageMeta({
-  layout: false,
-});
+import {mapGetters, mapActions} from 'vuex';
 export default {
   data() {
     return {
@@ -76,16 +74,40 @@ export default {
   },
 
   methods: {
+    ...mapActions({
+      register : 'authentication/registerUser'
+    }),
+
     signUp(){
       this.loadingState = true
-      setTimeout(() => {
-        return navigateTo('/verify')
-      }, 2000);
+      this.register({
+        username: this.form.username,
+        email: this.form.email,
+        password: this.form.password,
+      })
+      .then(() => {
+        this.$router.push({path: '/verify'})
+        this.loadingState = false
+        console.log(user)
+      })
+      .catch(error => {
+        this.error_message = true
+        this.loadingState = false
+        this.$toast.error(error.response.message.errors[Object.keys(error.response.data.errors)[0]][0], {
+          duration: 2000,
+        });
+      })
     },
 
     returnHome(){
-      return navigateTo('/')
+      this.$router.push({path: '/'})
     }
+  },
+
+  computed: {
+    ...mapGetters({
+      user: "authentication/getUserInfo",
+    }),
   },
   
   created(){
@@ -95,11 +117,8 @@ export default {
   },
 }
 </script>
-
 <style>
-.image-bg {
-  background: url('../assets/images/register.jpg') !important;
-  background-position: center;
-  background-size: cover;
+.background {
+  background-image: url('../assets/images/register.jpg');
 }
 </style>

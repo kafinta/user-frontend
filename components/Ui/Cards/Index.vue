@@ -1,8 +1,8 @@
 <template>
   <nuxt-link to="" class="cursor-pointer group">
-    <div class="background rounded-2xl transform ease-in-out duration-500 hover:scale-90" :style="{ background:`url(${backgroundImagePath})`}">
+    <div style="height: 16rem; width: 14rem;" class="background rounded-2xl transform ease-in-out duration-500 hover:scale-90" :style="{ background:`url(${backgroundImagePath})`}">
       <div class="w-full h-full p-5 flex items-end bg-gradient-to-b from-transparent via-transparent to-black rounded-b-2xl">
-        <h3 class="text-left text-white text-base font-medium">{{title}}</h3>
+        <UiTypographyP :is_white="true">{{title}}</UiTypographyP>
       </div>
     </div>
   </nuxt-link>
@@ -20,9 +20,6 @@ export default {
 
 <style>
   .background {
-    min-height: 16rem !important;
-    max-height: 16rem !important;
-    width: 14rem;
     background-position: center center !important;
     background-size: cover !important;
     background-repeat: no-repeat !important;
