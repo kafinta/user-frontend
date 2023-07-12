@@ -9,7 +9,6 @@ body {
 *{
   scroll-behavior: smooth;
   box-sizing: border-box;
-  scroll-snap-type: proximity;
 }
 
 *::-webkit-scrollbar {
