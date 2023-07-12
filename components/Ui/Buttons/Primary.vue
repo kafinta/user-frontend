@@ -1,12 +1,41 @@
 <template>
-  <button 
-    @click="$emit('clicked')"
-    class="py-2 px-5 text-white font-medium text-base 2xl:text-lg justify-center duration-500 ease-in-out rounded-md active:bg-primary outline-none" 
-    :disabled="loading || disabled" :class="[flexdisplay ? 'flex w-full' : 'block w-fit', standout ? 'bg-primary hover:bg-opacity-80 focus:bg-opacity-80': 'bg-secondary hover:bg-primary focus:bg-primary']">
-    <div class="flex items-center justify-center">
+  <button
+    type="submit"
+    class="py-2 px-5 bg-secondary hover:bg-primary text-white font-medium text-base 2xl:text-xl justify-center duration-500 ease-in-out rounded-md active:bg-primary focus:bg-primary" 
+    :disabled="loading || disabled" :class="flexdisplay ? 'flex w-full' : 'block w-fit'">
+    <div class="flex items-center justify-center uppercase">
       <div v-if="loading"  class="flex items-center">
         <div class=" mr-2">
-          <Loading class="w-7"></Loading>
+          <svg class="w-6 h-6"
+            xmlns="http://www.w3.org/2000/svg" 
+            xmlns:xlink="http://www.w3.org/1999/xlink" 
+            style="
+              margin: auto; 
+              display: block;
+              shape-rendering: auto;"
+              width="244px"
+              height="244px"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="xMidYMid">
+
+            <circle 
+              cx="50" 
+              cy="50" 
+              fill="none"
+              stroke="#ffffff" 
+              stroke-width="5" 
+              r="38" 
+              stroke-dasharray="179.0707812546182 61.690260418206066">
+              <animateTransform 
+                attributeName="transform" 
+                type="rotate" 
+                repeatCount="indefinite" 
+                dur="1.2048192771084336s" 
+                values="0 50 50;360 50 50" 
+                keyTimes="0;1">
+              </animateTransform>
+            </circle>
+          </svg>
         </div>
         {{ loadingText }}
       </div>
@@ -22,10 +51,6 @@ export default {
   name: 'LoadingButton',
   props: {
     flexdisplay: {
-      default: false,
-      type: Boolean
-    },
-    standout: {
       default: false,
       type: Boolean
     },

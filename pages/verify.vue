@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-row-reverse select-none">
-    <div style="" class="background hidden lg:flex w-2/3 bg-cover bg-center py-5 px-10 relative flex-col justify-between">
+    <div class="hidden lg:flex w-2/3 image-bg py-5 px-10 relative flex-col justify-between">
       <div class="flex justify-end">
-        <NavigationLogoMonotone @click="returnHome()"  class="w-36 cursor-pointer text-white" />
+        <NavigationLogoOneColor @click="returnHome()"  class="w-36 cursor-pointer text-white" />
       </div>
 
       <div class="bg-white rounded-md bg-opacity-80 p-5 bottom-5 w-full">
@@ -22,67 +22,54 @@
         <p :class="is_small ? 'mb-4' : ''" class="text-sm text-secondary mb-8">We sent a six digit code to your email. Enter it below to verify your account</p>
 
         <div class="grid gap-4">
-          <FormInput :centerText="true" label="Verification code" v-model="code" placeholder="X X X X X X"></FormInput>
+          <FormInput :centerText="true" label="Verification code" v-model:inputValue="code" placeholder="X X X X X X"></FormInput>
           <FormButton :loading="loadingState">Verify</FormButton>
         </div>
       </form>
     </div>
-
   </div>
 
 </template>
 
 <script>
-import {mapGetters, mapActions} from 'vuex';
+definePageMeta({
+  layout: false,
+});
 export default {
-  middleware: ['user_auth'],
   data() {
     return {
       error_state: false,
       code: '',
       is_small: false,
-      loadingState: false,
-      username: ''
-    }
-  },
-
-  computed: {
-    ...mapGetters({
-      user_info: "authentication/getUserInfo",
-    }),
-
-    forceUser(){
-      this.username = user_info.username
+      loadingState: false
     }
   },
 
   methods: {
-    ...mapActions({
-      verify : 'authentication/verifyUser',
-      getUser: 'authentication/retrieveUserInfo'
-    }),
-
-
     verify(){
       this.loadingState = true
-      this.$router.push({name: '_user-buying', params: {user: user_info.username}})
+      setTimeout(() => {
+        return navigateTo('/users')
+      }, 2000);
     },
 
     returnHome(){
-      this.$router.push({path: '/'})
+      return navigateTo('/')
     }
   },
   
-  mounted(){
-    this.getUser()
-    if (process.browser && window.innerWidth <= 320) {
+  created(){
+    if (process.client && window.innerWidth <= 320) {
       this.is_small = true
     }
   },
 }
 </script>
+
 <style>
-.background {
-  background: url('../assets/images/verify.jpg');
+.image-bg {
+  background: url('../assets/images/verify.jpg') !important;
+  background-position: center;
+  background-size: cover;
 }
 </style>

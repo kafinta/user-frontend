@@ -1,33 +1,17 @@
 {
-  "name": "user-frontend",
-  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
     "build": "nuxt build",
-    "start": "nuxt start",
-    "generate": "nuxt generate"
-  },
-  "dependencies": {
-    "@glidejs/glide": "^3.6.0",
-    "@nuxtjs/axios": "^5.13.6",
-    "@nuxtjs/tailwindcss": "^6.4.1",
-    "@nuxtjs/toast": "^3.3.1",
-    "chokidar": "^3.5.3",
-    "core-js": "^3.19.3",
-    "glob-parent": "^6.0.2",
-    "nth-check": "^2.1.1",
-    "nuxt": "^2.12.2",
-    "postcss": "^8.4.23",
-    "vue": "^2.6.14",
-    "vue-owl-carousel": "^2.0.3",
-    "vue-server-renderer": "^2.6.14",
-    "vue-template-compiler": "^2.6.14"
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@nuxtjs/tailwindcss": "^4.2.1",
-    "autoprefixer": "^10.4.7",
-    "tailwindcss": "^3.0.24",
-    "webpack": "^4.46.0"
+    "@nuxtjs/tailwindcss": "^6.2.0",
+    "autoprefixer": "^10.4.13",
+    "nuxt": "3.0.0",
+    "postcss": "^8.4.20",
+    "tailwindcss": "^3.2.4"
   }
 }

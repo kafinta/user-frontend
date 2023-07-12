@@ -1,8 +1,8 @@
 <template>
   <button
     type="submit"
-    class="py-2 px-5 flex w-full text-white font-medium text-base 2xl:text-lg justify-center duration-500 ease-in-out rounded-md focus:bg-primary " 
-    :disabled="loading || disabled" :class="loading ? 'bg-primary': 'bg-secondary hover:bg-primary'">
+    class="py-2 px-5  hover:bg-primary text-white font-medium w-full text-base 2xl:text-xl justify-center duration-500 ease-in-out rounded-md active:bg-primary focus:bg-primary" 
+    :disabled="loading || disabled" :class="loading ? 'bg-primary' : 'bg-secondary'">
 
     <div class="flex items-center justify-center uppercase">
       <div v-if="loading"  >

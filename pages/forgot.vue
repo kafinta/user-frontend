@@ -1,7 +1,7 @@
 <template>
   <div class="flex select-none">
-    <div style="" class="background hidden lg:flex w-2/3 bg-cover bg-center py-5 px-10 relative flex-col justify-between">
-      <NavigationLogoMonotone @click="returnHome()"  class="w-36 cursor-pointer text-white" />
+    <div class="hidden lg:flex w-2/3 image-bg py-5 px-10 relative flex-col justify-between">
+      <NavigationLogoOneColor @click="returnHome()"  class="w-36 cursor-pointer text-white" />
 
       <div class="bg-white rounded-md bg-opacity-80 p-5 bottom-5 w-full">
         <h1 class="text-2xl text-secondary">With the top of the line products and services available, my home has never looked or felt better. Amazing platform, definitely recommend!</h1>
@@ -20,7 +20,7 @@
         <p :class="is_small ? 'mb-4' : ''" class="text-sm text-secondary mb-8">We sent a six digit code to your email. Enter it below to verify your account</p>
 
         <div class="grid gap-4">
-          <FormInput :centerText="true" label="Verification code" v-model="code" placeholder="X X X X X X"></FormInput>
+          <FormInput :centerText="true" label="Verification code" v-model:inputValue="code" placeholder="X X X X X X"></FormInput>
           <FormButton :loading="loadingState">Verify</FormButton>
         </div>
       </form>
@@ -30,7 +30,7 @@
         <p :class="is_small ? 'mb-4' : ''" class="text-sm text-secondary mb-8">Choose a new password to use with your account.</p>
 
         <div class="grid gap-4">
-          <FormInput label="New password" v-model="new_password" placeholder="Enter your new password"></FormInput>
+          <FormInput label="New password" v-model:inputValue="new_password" placeholder="Enter your new password"></FormInput>
           <FormButton :loading="loadingStatePassword">Update Password</FormButton>
         </div>
       </form> 
@@ -40,6 +40,9 @@
 </template>
 
 <script>
+definePageMeta({
+  layout: false,
+});
 export default {
   data() {
     return {
@@ -64,12 +67,12 @@ export default {
     updatePassword(){
       this.loadingStatePassword = true
       setTimeout(() => {
-        this.$router.push({path: '/users'})
+        return navigateTo('/login')
       }, 2000);
     },
 
     returnHome(){
-      this.$router.push({path: '/'})
+      return navigateTo('/')
     }
   },
   
@@ -80,8 +83,11 @@ export default {
   },
 }
 </script>
+
 <style>
-.background {
-  background: url('../assets/images/forgot.jpg');
+.image-bg {
+  background: url('../assets/images/forgot.jpg') !important;
+  background-position: center;
+  background-size: cover;
 }
 </style>
