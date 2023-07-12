@@ -29,8 +29,6 @@
 </template>
 
 <script>
-import {mapGetters, mapActions} from 'vuex';
-
 export default {
   middleware: ['user_auth'],
 

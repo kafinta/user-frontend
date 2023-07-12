@@ -51,7 +51,6 @@
 </template>
 
 <script>
-// import { mapGetters, mapActions } from 'vuex';
 export default {
   props: {
     searchBoxState: Boolean
