@@ -49,5 +49,8 @@ module.exports = {
   variants: {
     extend: {},
   },
-  plugins: [require("daisyui")],
+  daisyui: {
+    themes: false,
+  },
+  plugins: [require("@tailwindcss/typography"), require("daisyui")],
 };
