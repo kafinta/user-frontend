@@ -19,7 +19,6 @@
 </template>
 
 <script>
-import carousel from 'vue-owl-carousel'
 export default {
   data() {
     return {
@@ -82,8 +81,6 @@ export default {
       ],
     }
   },
-
-  components: { carousel },
 }
 </script>
 
