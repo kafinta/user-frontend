@@ -1,20 +1,8 @@
 <template>
   <div class="mt-5 overflow-x-hidden px-0 relative">
-    <carousel :autoplay="true" :nav="false" :dots="false" :loop="true" :center="true" :autoplaySpeed="2000" :autoplayTimeout="2000" :autoplayHoverPause="true" :responsive="false" :autoWidth="true" :margin="10" :rewind="false">
+    <div :autoplay="true" :nav="false" :dots="false" :loop="true" :center="true" :autoplaySpeed="2000" :autoplayTimeout="2000" :autoplayHoverPause="true" :responsive="false" :autoWidth="true" :margin="10" :rewind="false">
       <UiCards v-for="professional in professionals" :key="professional.id" :title="professional.title" :backgroundImagePath="professional.backgroundImagePath" :urlPath="professional.urlPath" class="flex items-center gap-5" />
-
-      <template slot="prev">
-        <button class="top-[7rem] left-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
-          <img src="@/assets/images/icons/triangle.svg" class="h-5 w-5 -ml-0.5 rotate-90" alt="">
-        </button>
-      </template>
-
-      <template slot="next">
-        <button class="top-[7rem] right-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
-          <img src="@/assets/images/icons/triangle.svg" class="h-5 w-5 -ml-0.5 -rotate-90" alt="">
-        </button>
-      </template>
-    </carousel>
+    </div>
   </div>
 </template>
 
@@ -83,7 +71,3 @@ export default {
   },
 }
 </script>
-
-<style>
-@import '@glidejs/glide/dist/css/glide.core.min.css';
-</style>

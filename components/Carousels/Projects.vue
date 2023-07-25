@@ -1,22 +1,10 @@
 <template>
   <div class="mt-5 overflow-x-hidden px-0 relative">
-    <carousel :autoplay="true" :nav="false" :dots="false" :loop="true" :center="true" :responsive="false" :autoWidth="true" :margin="10" :rewind="false" class="relative">
+    <div :autoplay="true" :nav="false" :dots="false" :loop="true" :center="true" :responsive="false" :autoWidth="true" :margin="10" :rewind="false" class="relative">
       <UiCardsSecondary v-for="item in projects" :key="item.id" :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" :artisan="item.username">
       <UserProfilePicture :username="item.username" :large_dimensions="false"  />
       </UiCardsSecondary>
-
-      <template slot="prev">
-        <button class="top-[7rem] left-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
-          <img src="@/assets/images/icons/triangle.svg" class="h-5 w-5 -ml-0.5 rotate-90" alt="">
-        </button>
-      </template>
-
-      <template slot="next">
-        <button class="top-[7rem] right-3 absolute z-10 cursor-pointer h-10 w-10 rounded-full bg-secondary bg-opacity-40 hover:bg-primary duration-500 ease-in-out flex items-center justify-center">
-          <img src="@/assets/images/icons/triangle.svg" class="h-5 w-5 -ml-0.5 -rotate-90" alt="">
-        </button>
-      </template>
-    </carousel>
+    </div>
   </div>
 </template>
 
