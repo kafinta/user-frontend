@@ -7,7 +7,7 @@
     <div class="flex items-center justify-center uppercase">
       <div v-if="loading"  >
         <div class="justify-center flex">
-          <Loading class="w-7"></Loading>
+          <UiIconsLoading class="w-7"></UiIconsLoading>
         </div>
       </div>
       <div v-if="!loading">
@@ -18,18 +18,16 @@
 </template>
 
 <script>
-import Loading from '@/components/Ui/Icons/Loading.vue'
 export default {
-    name: "LoadingButton",
-    props: {
-        loading: Boolean,
-        disabled: Boolean,
-        loadingText: {
-            default: "Authenticating",
-            type: String
-        },
-    },
-    components: { Loading }
+  name: "LoadingButton",
+  props: {
+      loading: Boolean,
+      disabled: Boolean,
+      loadingText: {
+          default: "Authenticating",
+          type: String
+      },
+  },
 }
 </script>
 

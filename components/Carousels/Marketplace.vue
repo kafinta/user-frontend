@@ -1,13 +1,13 @@
 <template>
-  <div class="mt-5 overflow-x-hidden px-0 relative">
-    <div class="carousel carousel-center">
-      <UiCards v-for="item in marketplace" :key="item.id" :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" class="flex items-center gap-5 carousel-item" />
+  <ssr-carousel :peek-gutter="false" class="mt-5 overflow-x-hidden px-0 relative">
+    <div v-for="item in marketplace" :key="item.id">
+      <UiCards :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" class="flex items-center gap-5"/>
     </div>
-  </div>
+  </ssr-carousel>
 </template>
 
 <script>
-// import carousel from 'vue-owl-carousel'
+import SsrCarousel from 'vue-ssr-carousel'
 export default {
   data() {
     return {
@@ -68,7 +68,38 @@ export default {
           urlPath: 'outdoors'
         },
       ],
+
     }
+  },
+
+  methods: {
+    calculateNoOfCards(cardWidth, extraSpacing){
+      // Get the width of the carousel container
+      const carouselContainer = document.querySelector(".carousel");
+      const carouselWidth = carouselContainer.offsetWidth;
+
+      // Calculate the available width for cards considering extra spacing
+      const availableWidth = carouselWidth - extraSpacing;
+
+      // Calculate the number of cards that can fit without exceeding the available width
+      const numCardsFit = Math.floor(availableWidth / (cardWidth + extraSpacing));
+
+      return numCardsFit;
+    },
+
+    updateCarousel(){
+      const cardWidth = 224; // Replace this with the actual width of your cards in pixels
+      const extraSpacing = 24; // Replace this with the desired extra horizontal spacing in pixels
+
+    }
+  },
+
+  mounted() {
+    window.addEventListener("resize", this.updateCarousel());
+  },
+
+  components: {
+    SsrCarousel
   },
 }
 </script>

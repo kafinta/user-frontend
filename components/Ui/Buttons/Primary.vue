@@ -6,7 +6,7 @@
     <div class="flex items-center justify-center">
       <div v-if="loading"  class="flex items-center">
         <div class=" mr-2">
-          <Loading class="w-7"></Loading>
+          <UiIconsLoading class="w-7"></UiIconsLoading>
         </div>
         {{ loadingText }}
       </div>
