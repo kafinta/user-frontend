@@ -78,30 +78,8 @@ export default {
   },
 
   methods: {
-    ...mapActions({
-      login : 'authentication/loginUser'
-    }),
-
-
     signIn(){
       this.loadingState = true
-      this.login({
-        email: this.form.email,
-        password: this.form.password,
-      })
-      .then(() => {
-        this.$router.push({name: '_user-buying', params: {user: user_info.username}})
-        this.loadingState = false
-        console.log(user)
-      })
-      .catch(error => {
-        this.error_state = true
-        this.loadingState = false
-        this.form.password = ''
-        this.$toast.error(error.response.data.errors[Object.keys(error.response.data.errors)[0]][0], {
-          duration: 5000,
-        });
-      })
     },
   },
   

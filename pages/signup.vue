@@ -73,10 +73,6 @@ export default {
   },
 
   methods: {
-    ...mapActions({
-      register : 'authentication/registerUser'
-    }),
-
     signUp(){
       this.loadingState = true
       this.register({
@@ -101,12 +97,6 @@ export default {
     returnHome(){
       this.$router.push({path: '/'})
     }
-  },
-
-  computed: {
-    ...mapGetters({
-      user: "authentication/getUserInfo",
-    }),
   },
   
   created(){

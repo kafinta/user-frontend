@@ -46,13 +46,6 @@ export default {
   },
 
   computed: {
-    ...mapGetters({
-      user_info: "authentication/getUserInfo",
-    }),
-
-    forceUser(){
-      this.username = user_info.username
-    }
   },
 
   methods: {
