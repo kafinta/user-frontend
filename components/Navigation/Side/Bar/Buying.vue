@@ -7,31 +7,31 @@
         </div>
 
         <div class="mt-6">
-          <nuxt-link :to="{name: 'user-selling-dashboard'}">
+          <nuxt-link :to="{name: 'usernamedashboard'}">
             <NavigationSideMenu menu_text="Dashboard" :is_active="dashboardActive">
               <UiIconsOverview />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link :to="{name: 'user-selling-inbox'}">
+          <nuxt-link :to="{name: 'usernameinbox'}">
             <NavigationSideMenu menu_text="Inbox" :is_active="inboxActive">
               <UiIconsMessages />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link :to="{name: 'user-selling-products'}">
+          <nuxt-link :to="{name: 'usernameproducts'}">
             <NavigationSideMenu menu_text="Products" :is_active="productsActive">
               <UiIconsGigs />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link :to="{name: 'user-selling-orders'}">
+          <nuxt-link :to="{name: 'usernameorders'}">
             <NavigationSideMenu menu_text="Orders" :is_active="OrdersActive">
               <UiIconsCart />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link :to="{name: 'user-selling-earnings'}">
+          <nuxt-link :to="{name: 'usernameearnings'}">
             <NavigationSideMenu menu_text="Earnings" :is_active="earningsActive">
               <UiIconsTransactions />
             </NavigationSideMenu>

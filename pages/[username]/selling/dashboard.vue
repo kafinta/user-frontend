@@ -5,12 +5,12 @@
         <div class="border border-accent-100 p-6">
           <div class="flex items-center gap-5 mb-4">
             <div class="relative flex w-fit">
-              <UserProfilePicture :username="user_info.username" :custom_dimensions="true" class="h-10 w-10"/>
+              <UserProfilePicture username="James" :custom_dimensions="true" class="h-10 w-10"/>
               <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="true" :is_displayed="true"/>
             </div>
 
             <div>
-              <UiTypographyP class="text-secondary">{{ user_info.username }}</UiTypographyP>
+              <UiTypographyP class="text-secondary">James</UiTypographyP>
             </div>
           </div>
           <div class="border-t border-accent-100 grid grid-cols-1 gap-2 py-4">
@@ -40,7 +40,7 @@
         <div class="border border-accent-100 p-6 duration-150 ease-in-out">
           <div class="flex justify-between items-center">
             <UiTypographyH3>Inbox</UiTypographyH3>
-            <UiButtonsSecondary @clicked="$route.push({path: '/users/inbox'})">View All</UiButtonsSecondary>
+            <UiButtonsSecondary @clicked="$route.push({path: '/username/selling/inbox'})">View All</UiButtonsSecondary>
           </div>
           <div class="bg-accent-50 h-64 mt-3 duration-150 ease-in-out"></div>
         </div>
@@ -56,12 +56,12 @@
           <div class="border border-accent-100 py-2 px-4 w-full flex justify-between items-center" v-for="item in 5">
             <div class="flex items-center gap-5">
               <div class="relative flex w-fit">
-                <UserProfilePicture :username="user_info.username" :custom_dimensions="true" class="h-10 w-10"/>
+                <UserProfilePicture username="James" :custom_dimensions="true" class="h-10 w-10"/>
                 <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="false" :is_displayed="true"/>
               </div>
 
               <div>
-                <UiTypographyP class="text-secondary">{{ user_info.username }}</UiTypographyP>
+                <UiTypographyP class="text-secondary">James</UiTypographyP>
               </div>
             </div>
 
@@ -88,7 +88,6 @@
 
 <script>
 export default {
-  middleware: ['user_auth'],
   data() {
     return {
       username: 'Quadri',
@@ -116,25 +115,15 @@ export default {
   },
 
   computed: {
-    ...mapGetters({
-      user_info: "authentication/getUserInfo",
-    }),
   },
 
   methods: {
-    ...mapActions({
-      getUser: 'authentication/retrieveUserInfo'
-    }),
   },
 
   mounted(){
     setTimeout(() => {
       this.date = new Date()
     }, 2000);
-    this.getUser()
-    if (process.browser && window.innerWidth <= 320) {
-      this.is_small = true
-    }
   },
 }
 </script>

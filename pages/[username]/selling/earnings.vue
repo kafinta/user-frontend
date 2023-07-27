@@ -28,6 +28,9 @@
   </LayoutsSellerDashboard>
 </template>
 <script>
+import completed from '@/assets/images/insights/completed.svg'
+import paid from '@/assets/images/insights/paid.svg'
+import pending from '@/assets/images/insights/pending.svg'
   export default {
     data() {
       return {
@@ -36,25 +39,25 @@
             id: 1,
             title: "Withdrawn Funds",
             amount: 0.00,
-            imagePath: require('@/assets/images/insights/completed.svg')
+            imagePath: completed
           },
           {
             id: 2,
             title: "Pending Funds",
             amount: 0.00,
-            imagePath: require('@/assets/images/insights/pending.svg')
+            imagePath: pending
           },
           {
             id: 3,
             title: "Available Funds",
             amount: 0.00,
-            imagePath: require('@/assets/images/insights/paid.svg')
+            imagePath: paid
           },
           {
             id: 4,
             title: "Total Earnings",
             amount: 0.00,
-            imagePath: require('@/assets/images/insights/paid.svg')
+            imagePath: paid
           },
         ]
       }

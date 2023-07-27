@@ -7,31 +7,31 @@
         </div>
 
         <div class="mt-6">
-          <nuxt-link :to="{name: 'user-selling-dashboard'}">
+          <nuxt-link :to="{name: 'username-selling-dashboard'}">
             <NavigationSideMenu menu_text="Dashboard" :is_active="dashboardActive">
               <UiIconsOverview />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link :to="{name: 'user-selling-inbox'}">
+          <nuxt-link :to="{name: 'username-selling-inbox'}">
             <NavigationSideMenu menu_text="Inbox" :is_active="inboxActive">
               <UiIconsMessages />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link :to="{name: 'user-selling-products'}">
+          <nuxt-link :to="{name: 'username-selling-products'}">
             <NavigationSideMenu menu_text="Products" :is_active="productsActive">
               <UiIconsGigs />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link :to="{name: 'user-selling-orders'}">
+          <nuxt-link :to="{name: 'username-selling-orders'}">
             <NavigationSideMenu menu_text="Orders" :is_active="OrdersActive">
               <UiIconsCart />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link :to="{name: 'user-selling-earnings'}">
+          <nuxt-link :to="{name: 'username-selling-earnings'}">
             <NavigationSideMenu menu_text="Earnings" :is_active="earningsActive">
               <UiIconsTransactions />
             </NavigationSideMenu>
@@ -42,18 +42,18 @@
       <div class="py-6 bg-accent-600 rounded-t-2xl">
         <div class="flex items-center gap-5 px-6">
           <div class="relative flex w-fit">
-            <UserProfilePicture :username="user_info.username" :custom_dimensions="true" class="h-10 w-10"/>
+            <UserProfilePicture username="James" :custom_dimensions="true" class="h-10 w-10"/>
             <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="true" :is_displayed="true"/>
           </div>
 
           <div>
-            <UiTypographyP class="text-white">{{ user_info.username }}</UiTypographyP>
+            <UiTypographyP color="white">James</UiTypographyP>
             <p class="text-green-500 text-sm">$0.00</p>
           </div>
         </div>
 
         <div class="px-6">
-          <UiButtonsPrimary @clicked="$router.push({path: '/sellers'})" class="mt-4 bg-primary" :standout="true" :flexdisplay="true">Switch to Buying</UiButtonsPrimary>
+          <UiButtonsPrimary @clicked="$router.push({name: 'username-buying-index'})" class="mt-4 bg-primary" :standout="true" :flexdisplay="true">Switch to Buying</UiButtonsPrimary>
         </div>
 
         <div class="px-6 mt-2 flex gap-2 w-full">
@@ -86,16 +86,9 @@ export default {
   },
 
   computed: {
-    ...mapGetters({
-      user_info: "authentication/getUserInfo",
-    }),
   },
 
   methods: {
-    ...mapActions({
-      getUser: 'authentication/retrieveUserInfo'
-    }),
-
     routeCheck(){
       if (this.$route.name.includes('dashboard')) {
         this.dashboardActive = true
@@ -116,7 +109,7 @@ export default {
   },
 
   mounted() {
-    this.getUser()
+    // this.getUser()
     this.routeCheck()
   },
 }
