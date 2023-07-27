@@ -3,7 +3,6 @@
         <div v-show="show" @click="$emit('close')"
             class="fixed h-screen w-full bg-secondary bg-opacity-80 z-50 cursor-pointer backdrop-blur-sm">
         </div>
-        <slot />
     </transition>
 </template>
 

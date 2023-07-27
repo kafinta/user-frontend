@@ -1,6 +1,7 @@
 export default defineNuxtConfig({
-  ssr: true,
+  // ssr: true,
   modules:[
-    '@nuxtjs/tailwindcss'
+    '@nuxtjs/tailwindcss',
+    'vue3-carousel-nuxt'
   ],
 })

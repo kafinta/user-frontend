@@ -1,13 +1,12 @@
 <template>
-  <ssr-carousel :peek-gutter="false" class="mt-5 overflow-x-hidden px-0 relative">
-    <div v-for="item in marketplace" :key="item.id">
+  <Carousel :itemsToShow="null" :autoplay="1000" class="mt-5 overflow-x-hidden px-0 relative">
+    <Slide v-for="item in marketplace" :key="item.id">
       <UiCards :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" class="flex items-center gap-5"/>
-    </div>
-  </ssr-carousel>
+    </Slide>
+  </Carousel>
 </template>
 
 <script>
-import SsrCarousel from 'vue-ssr-carousel'
 export default {
   data() {
     return {
@@ -99,7 +98,7 @@ export default {
   },
 
   components: {
-    SsrCarousel
+    
   },
 }
 </script>
