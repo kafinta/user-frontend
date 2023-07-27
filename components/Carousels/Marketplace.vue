@@ -1,5 +1,5 @@
 <template>
-  <div class="glide_slides mt-5">
+  <div class="glide_slides mt-5" id="carouselContainer">
     <div class="glide__track" data-glide-el="track">
       <div class="glide__slides">
         <UiCards v-for="item in marketplace" :key="item.id" :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" class="glide__slide"/>
@@ -14,6 +14,15 @@
 import Glide from '@glidejs/glide'
 
 import { onMounted } from 'vue';
+function calculateVisibleCards() {
+  const viewportWidth = window.innerWidth;
+  const cardWidth = 16 * 16; // 16rem * 16px (CSS rem = 16px)
+  const gapWidth = 10; // 24px gap between cards
+
+  // Calculate the number of cards that can fit onscreen
+  const numCards = (viewportWidth) / (cardWidth + gapWidth);
+  return numCards;
+}
 
 const marketplace= [
 {
@@ -74,26 +83,23 @@ const marketplace= [
 ]
 
 onMounted(() =>{
+  window.addEventListener('resize', function () {
+    calculateVisibleCards();
+  });
+
+  const numCards = calculateVisibleCards()
+
   const sliders = document.querySelectorAll(`.glide_slides`)
   sliders.forEach((slider) => {
     new Glide(slider, {
       type: 'carousel',
-      perView: 5,
+      perView: numCards,
       focusAt: 'center',
       autoplay: true,
       animationDuration: 2000,
-      gap: 30,
-      breakpoints: {
-        800: {
-          perView: 2
-        },
-        400: {
-          perView: 1
-        },
-      }
+      // gap: 30,
     }).mount()
   })
-
 })
 
 
