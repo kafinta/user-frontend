@@ -75,23 +75,7 @@ export default {
   methods: {
     signUp(){
       this.loadingState = true
-      this.register({
-        username: this.form.username,
-        email: this.form.email,
-        password: this.form.password,
-      })
-      .then(() => {
-        this.$router.push({path: '/verify'})
-        this.loadingState = false
-        console.log(user)
-      })
-      .catch(error => {
-        this.error_message = true
-        this.loadingState = false
-        this.$toast.error(error.response.message.errors[Object.keys(error.response.data.errors)[0]][0], {
-          duration: 2000,
-        });
-      })
+      this.$router.push({name: ''})
     },
 
     returnHome(){
