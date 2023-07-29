@@ -1,5 +1,5 @@
 <template>
-  <div class="glide_slides mt-5" id="carouselContainer">
+  <div class="glide_slides marketplace mt-5">
     <div class="glide__track" data-glide-el="track">
       <div class="glide__slides">
         <UiCards v-for="item in marketplace" :key="item.id" :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" class="glide__slide"/>
@@ -85,6 +85,20 @@ const marketplace= [
 onMounted(() =>{
   window.addEventListener('resize', function () {
     calculateVisibleCards();
+
+    const numCards = calculateVisibleCards()
+
+    const sliders = document.querySelectorAll(`.marketplace`)
+    sliders.forEach((slider) => {
+      new Glide(slider, {
+        type: 'carousel',
+        perView: numCards,
+        focusAt: 'center',
+        autoplay: true,
+        animationDuration: 2000,
+        // gap: 30,
+      }).mount()
+    })
   });
 
   const numCards = calculateVisibleCards()
@@ -97,7 +111,20 @@ onMounted(() =>{
       focusAt: 'center',
       autoplay: true,
       animationDuration: 2000,
-      // gap: 30,
+      breakpoint: {
+        400: {
+          perView: 1
+        },
+        800: {
+          perView: 3
+        },
+        1024: {
+          perView: 4
+        },
+        1366: {
+          perView: 5
+        }
+      }
     }).mount()
   })
 })

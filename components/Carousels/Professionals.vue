@@ -1,12 +1,15 @@
 <template>
-  <div class="mt-5 overflow-x-hidden px-0 relative">
-    <div :autoplay="true" :nav="false" :dots="false" :loop="true" :center="true" :autoplaySpeed="2000" :autoplayTimeout="2000" :autoplayHoverPause="true" :responsive="false" :autoWidth="true" :margin="10" :rewind="false">
-      <UiCards v-for="professional in professionals" :key="professional.id" :title="professional.title" :backgroundImagePath="professional.backgroundImagePath" :urlPath="professional.urlPath" class="flex items-center gap-5" />
+  <div class="glide_slider professionals mt-5">
+    <div class="glide__track" data-glide-el="track">
+      <div class="glide__slides">
+        <UiCards v-for="professional in professionals" :key="professional.id" :title="professional.title" :backgroundImagePath="professional.backgroundImagePath" :urlPath="professional.urlPath" class="glide__slide" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import Glide from '@glidejs/glide'
 export default {
   data() {
     return {
@@ -67,7 +70,49 @@ export default {
           urlPath: 'dwelling'
         },
       ],
+      numCards: ''
     }
+  },
+
+  methods: {
+    calculateVisibleCards() {
+      const viewportWidth = window.innerWidth;
+      const cardWidth = 16 * 16; // 16rem * 16px (CSS rem = 16px)
+      const gapWidth = 10; // 24px gap between cards
+
+      // Calculate the number of cards that can fit onscreen
+      const numCards = (viewportWidth) / (cardWidth + gapWidth);
+      this.numCards = numCards
+    }
+  },
+
+  mounted() {
+    this.calculateVisibleCards()
+    const sliders = document.querySelectorAll(`.professionals`)
+
+    sliders.forEach((slider) => {
+      new Glide(slider, {
+        type: 'carousel',
+        perView: this.numCards,
+        focusAt: 'center',
+        autoplay: true,
+        animationDuration: 2000,
+        breakpoint: {
+          400: {
+            perView: 1
+          },
+          800: {
+            perView: 3
+          },
+          1024: {
+            perView: 4
+          },
+          1366: {
+            perView: 5
+          }
+        }
+      }).mount()
+    })
   },
 }
 </script>

@@ -1,14 +1,17 @@
 <template>
-  <div class="mt-5 overflow-x-hidden px-0 relative">
-    <div :autoplay="true" :nav="false" :dots="false" :loop="true" :center="true" :responsive="false" :autoWidth="true" :margin="10" :rewind="false" class="relative">
-      <UiCardsSecondary v-for="item in projects" :key="item.id" :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" :artisan="item.username">
-      <UserProfilePicture :username="item.username" :large_dimensions="false"  />
-      </UiCardsSecondary>
+  <div class="glide_slider projects mt-5">
+    <div class="glide__track" data-glide-el="track">
+      <div class="glide__slides">
+        <UiCardsSecondary v-for="item in projects" :key="item.id" :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" :artisan="item.username">
+        <UserProfilePicture :username="item.username" :large_dimensions="false"  />
+        </UiCardsSecondary>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import Glide from '@glidejs/glide'
 export default {
   data() {
     return {
@@ -77,7 +80,48 @@ export default {
           username: 'User'
         },
       ],
+
+      projects_count: ''
     }
+  },
+
+
+  methods: {
+    calculateVisibleCards() {
+      const viewportWidth = window.innerWidth;
+      const cardWidth = 288; // 16rem * 16px (CSS rem = 16px)
+      const gapWidth = 50; // 24px gap between cards
+
+      // Calculate the number of cards that can fit onscreen
+      const count = (viewportWidth) / (cardWidth + gapWidth);
+      this.projects_count = count
+    }
+  },
+
+  mounted() {
+    this.calculateVisibleCards()
+    console.log(this.projects_count)
+    const sliders = document.querySelectorAll(`.projects`)
+
+    sliders.forEach((slider) => {
+      new Glide(slider, {
+        type: 'carousel',
+        perView: this.projects_count,
+        focusAt: 'center',
+        breakpoint: {
+          400: {
+            perView: 1
+          },
+          1024: {
+            perView: 2
+          },
+          1366: {
+            perView: 3,
+            gap: 30
+          }
+        }
+      }).mount()
+    })
   },
 }
 </script>
