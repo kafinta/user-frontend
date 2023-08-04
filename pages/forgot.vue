@@ -20,7 +20,7 @@
         <p :class="is_small ? 'mb-4' : ''" class="text-sm text-secondary mb-8">We sent a six digit code to your email. Enter it below to verify your account</p>
 
         <div class="grid gap-4">
-          <FormInput :centerText="true" label="Verification code" v-model="code" placeholder="X X X X X X"></FormInput>
+          <FormInput :centerText="true" label="Verification code" v-model:inputValue="code" placeholder="X X X X X X"></FormInput>
           <FormButton :loading="loadingState">Verify</FormButton>
         </div>
       </form>
@@ -30,7 +30,7 @@
         <p :class="is_small ? 'mb-4' : ''" class="text-sm text-secondary mb-8">Choose a new password to use with your account.</p>
 
         <div class="grid gap-4">
-          <FormInput label="New password" v-model="new_password" placeholder="Enter your new password"></FormInput>
+          <FormInput label="New password" v-model:inputValue="new_password" placeholder="Enter your new password"></FormInput>
           <FormButton :loading="loadingStatePassword">Update Password</FormButton>
         </div>
       </form> 

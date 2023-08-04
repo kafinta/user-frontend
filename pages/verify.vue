@@ -22,7 +22,7 @@
         <p :class="is_small ? 'mb-4' : ''" class="text-sm text-secondary mb-8">We sent a six digit code to your email. Enter it below to verify your account</p>
 
         <div class="grid gap-4">
-          <FormInput :centerText="true" label="Verification code" v-model="code" placeholder="X X X X X X"></FormInput>
+          <FormInput :centerText="true" label="Verification code" v-model:inputValue="code" placeholder="X X X X X X"></FormInput>
           <FormButton :loading="loadingState">Verify</FormButton>
         </div>
       </form>
@@ -34,7 +34,7 @@
 
 <script>
 export default {
-  middleware: ['user_auth'],
+  // middleware: ['user_auth'],
   data() {
     return {
       error_state: false,
@@ -49,12 +49,6 @@ export default {
   },
 
   methods: {
-    ...mapActions({
-      verify : 'authentication/verifyUser',
-      getUser: 'authentication/retrieveUserInfo'
-    }),
-
-
     verify(){
       this.loadingState = true
       this.$router.push({name: '_user-buying', params: {user: user_info.username}})
@@ -66,7 +60,6 @@ export default {
   },
   
   mounted(){
-    this.getUser()
     if (process.browser && window.innerWidth <= 320) {
       this.is_small = true
     }

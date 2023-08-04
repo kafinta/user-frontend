@@ -41,10 +41,10 @@
         </div>
 
         <form @submit.prevent="signUp()" action="" class="grid gap-4">
-          <FormInput label="Email" v-model="form.email" placeholder="Enter your email address"></FormInput>
-          <FormInput label="Username" v-model="form.username" placeholder="Choose your username"></FormInput>
+          <FormInput label="Email" v-model:inputValue="form.email" placeholder="Enter your email address"></FormInput>
+          <FormInput label="Username" v-model:inputValue="form.username" placeholder="Choose your username"></FormInput>
           <div>
-            <FormInput :error="error_state" label="Password" type="password" v-model="form.password" placeholder="Enter your password"></FormInput>
+            <FormInput :error="error_state" label="Password" type="password" v-model:inputValue="form.password" placeholder="Enter your password"></FormInput>
             <p :class="error_state ? 'opacity-100' : 'opacity-0'" class="text-sm text-red-600 mt-2">Password must be at least 8 characters</p>
           </div>
 

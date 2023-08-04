@@ -39,10 +39,10 @@
         </div>
 
         <form class="grid gap-4">
-          <FormInput label="Email" v-model="form.email" placeholder="Enter your email address"></FormInput>
+          <FormInput label="Email" v-model:inputValue="form.email" placeholder="Enter your email address"></FormInput>
 
           <div class="w-full mb-5">
-            <FormInput :error="error_state" label="Password" type="password" v-model="form.password" placeholder="Enter your password"></FormInput>
+            <FormInput :error="error_state" label="Password" type="password" v-model:inputValue="form.password" placeholder="Enter your password"></FormInput>
 
             <div class="flex justify-between items-center mt-2 w-full">
             
@@ -59,6 +59,8 @@
         <p class="text-sm w-fit mx-auto mt-2 text-secondary text-center">Not a member yet? <nuxt-link to="/signup" class="duration-500 ease-in-out hover:text-primary">Create Account</nuxt-link></p>
       </div>
     </div>
+
+    {{ this.form.email }}
   </div>
 
 </template>
@@ -87,12 +89,6 @@ export default {
     if (window.innerWidth <= 320) {
       this.is_small = true
     }
-  },
-
-  computed: {
-    ...mapGetters({
-      user_info: "authentication/getUserInfo",
-    }),
   },
 }
 </script>
