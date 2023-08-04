@@ -1,9 +1,22 @@
 <template>
-  <div class="glide_slider professionals mt-5">
+  <div class="glide_slider professionals mt-5  relative flex items-center">
     <div class="glide__track" data-glide-el="track">
       <div class="glide__slides">
         <UiCards v-for="professional in professionals" :key="professional.id" :title="professional.title" :backgroundImagePath="professional.backgroundImagePath" :urlPath="professional.urlPath" class="glide__slide" />
       </div>
+    </div>
+
+    <div class="glide__arrows h-fit" data-glide-el="controls">
+      <button class="glide__arrow glide__arrow--left absolute left-3" data-glide-dir="<">
+        <div class="bg-secondary aspect-square rounded-full p-3 hover:bg-primary duration-300 bg-opacity-75">
+          <UiIconsAccordion class="w-5 h-5 -rotate-90 text-white" />
+        </div>
+      </button>
+      <button class="glide__arrow glide__arrow--right absolute right-3" data-glide-dir=">">
+        <div class="bg-secondary aspect-square rounded-full p-3 hover:bg-primary duration-300 bg-opacity-75">
+          <UiIconsAccordion class="w-5 h-5 rotate-90 text-white" />
+        </div>
+        </button>
     </div>
   </div>
 </template>
