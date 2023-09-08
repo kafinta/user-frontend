@@ -38,7 +38,7 @@
     <div class="border-t border-accent-100 pt-6 flex items-center justify-between max-w-7xl mx-auto">
       <div class="flex items-center gap-5">
         <NavigationLogo class="m-0 w-28" />
-        <UiTypographyP :small_text="true" class="text-secondary text-xs md:text-sm">&copy; Kafinta {{ date.getFullYear() }}</UiTypographyP>
+        <UiTypographyP :small_text="true" class="text-secondary text-xs md:text-sm">&copy; Kafinta {{ new Date().getFullYear() }}</UiTypographyP>
       </div>
 
       <div class="flex items-center gap-5">
@@ -63,20 +63,3 @@
     </div>
   </footer>
 </template>
-
-<script>
-export default {
-  data() {
-    return {
-      date: ''
-    }
-  },
-  created(){
-    this.date = new Date()
-  }
-}
-</script>
-
-<style>
-
-</style>
