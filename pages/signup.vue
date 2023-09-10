@@ -58,10 +58,23 @@
 </template>
 
 <script>
+import { defineStore } from 'pinia';
+// import { useStore } from 'pinia';
+import { UserAuth } from '@/store/authentication';
 export default {
   data() {
     return {
+      theAuth: UserAuth(),
       error_state: false,
+      setUsername: (username) => {
+        this.form.username = username;
+      },
+      setEmail: (email) => {
+        this.form.email = email;
+      },
+      setPassword: (password) => {
+        this.form.password = password;
+      },
       form: {
         email: '',
         username: '',
@@ -74,8 +87,15 @@ export default {
 
   methods: {
     signUp(){
-      this.loadingState = true
-      this.$router.push({name: ''})
+      const user_request = {
+        username: this.form.username,
+        email: this.form.email,
+        password: this.form.password,
+      };
+
+      const authentication = UserAuth();
+
+      authentication.dispatch('signup', user_request);
     },
 
     returnHome(){
@@ -83,7 +103,7 @@ export default {
     }
   },
   
-  created(){
+  mounted(){
     if (process.client && window.innerWidth <= 320) {
       this.is_small = true
     }

@@ -5,6 +5,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
+    "cleanup": "nuxt cleanup",
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
@@ -15,7 +16,7 @@
   },
   "dependencies": {
     "@glidejs/glide": "^3.6.0",
-    "axios": "^1.5.0",
+    "@pinia/nuxt": "^0.4.11",
     "pinia": "^2.1.6"
   }
 }
