@@ -114,6 +114,12 @@ export default {
           },
           1440: {
             perView: 3,
+          },
+          2560: {
+            perView: 4,
+          },
+          12000: {
+            perView: 5,
           }
         }
       }).mount()

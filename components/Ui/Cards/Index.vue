@@ -1,6 +1,6 @@
 <template>
   <nuxt-link to="" class="cursor-pointer group">
-    <div style="height: 16rem; width: 100%;" class="background rounded-2xl transform ease-in-out duration-500 hover:scale-90" :style="{ background:`url(${backgroundImagePath})`}">
+    <div style="aspect-ratio: 1/1.2; width: 100%;" class="background rounded-2xl transform ease-in-out duration-500 hover:scale-90" :style="{ background:`url(${backgroundImagePath})`}">
       <div class="w-full h-full p-5 flex items-end bg-gradient-to-b from-transparent via-transparent to-black rounded-b-2xl">
         <UiTypographyP color="white">{{title}}</UiTypographyP>
       </div>

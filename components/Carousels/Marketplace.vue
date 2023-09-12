@@ -108,6 +108,9 @@ onMounted(() =>{
           perView: 3
         },
         1440: {
+          perView: 4
+        },
+        12000: {
           perView: 5
         }
       }

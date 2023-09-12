@@ -1,7 +1,7 @@
 <template>
   <nuxt-link to="" class="cursor-pointer group w-full">
     <div class="">
-      <div class="background rounded-t-2xl h-48 w-full transform ease-in-out duration-500" :style="{ background:`url(${backgroundImagePath})`}"></div>
+      <div class="background rounded-t-2xl aspect-[1/0.6] w-full transform ease-in-out duration-500" :style="{ background:`url(${backgroundImagePath})`}"></div>
 
       <div class="py-2 px-5 bg-accent-100 rounded-b-2xl flex gap-3 items-center w-full">
         <slot/>
