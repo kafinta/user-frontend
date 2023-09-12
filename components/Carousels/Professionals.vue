@@ -16,7 +16,7 @@
         <div class="bg-secondary aspect-square rounded-full p-3 hover:bg-primary duration-300 bg-opacity-75">
           <UiIconsAccordion class="w-5 h-5 rotate-90 text-white" />
         </div>
-        </button>
+      </button>
     </div>
   </div>
 </template>
