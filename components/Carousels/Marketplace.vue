@@ -26,15 +26,6 @@
 import Glide from '@glidejs/glide'
 
 import { onMounted } from 'vue';
-function calculateVisibleCards() {
-  const viewportWidth = window.innerWidth;
-  const cardWidth = 16 * 16; // 16rem * 16px (CSS rem = 16px)
-  const gapWidth = 10; // 24px gap between cards
-
-  // Calculate the number of cards that can fit onscreen
-  const numCards = (viewportWidth) / (cardWidth + gapWidth);
-  return numCards;
-}
 
 const marketplace= [
 {
@@ -94,46 +85,29 @@ const marketplace= [
 },
 ]
 
+const variable = 1
+
 onMounted(() =>{
-  window.addEventListener('resize', function () {
-    calculateVisibleCards();
-
-    const numCards = calculateVisibleCards()
-
-    const sliders = document.querySelectorAll(`.marketplace`)
-    sliders.forEach((slider) => {
-      new Glide(slider, {
-        type: 'carousel',
-        perView: numCards,
-        focusAt: 'center',
-        autoplay: true,
-        animationDuration: 2000,
-        // gap: 30,
-      }).mount()
-    })
-  });
-
-  const numCards = calculateVisibleCards()
-
   const sliders = document.querySelectorAll(`.glide_slides`)
   sliders.forEach((slider) => {
     new Glide(slider, {
       type: 'carousel',
-      perView: numCards,
       focusAt: 'center',
       autoplay: true,
+      gap: 20,
+      peek: 30,
       animationDuration: 2000,
-      breakpoint: {
-        400: {
+      breakpoints: {
+        600: {
           perView: 1
         },
         800: {
-          perView: 3
+          perView: 2
         },
         1024: {
-          perView: 4
+          perView: 3
         },
-        1366: {
+        1440: {
           perView: 5
         }
       }

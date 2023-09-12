@@ -93,44 +93,27 @@ export default {
           username: 'User'
         },
       ],
-
-      projects_count: ''
-    }
-  },
-
-
-  methods: {
-    calculateVisibleCards() {
-      const viewportWidth = window.innerWidth;
-      const cardWidth = 288; // 16rem * 16px (CSS rem = 16px)
-      const gapWidth = 50; // 24px gap between cards
-
-      // Calculate the number of cards that can fit onscreen
-      const count = (viewportWidth) / (cardWidth + gapWidth);
-      this.projects_count = count
     }
   },
 
   mounted() {
-    this.calculateVisibleCards()
-    console.log(this.projects_count)
     const sliders = document.querySelectorAll(`.projects`)
 
     sliders.forEach((slider) => {
       new Glide(slider, {
         type: 'carousel',
-        perView: this.projects_count,
         focusAt: 'center',
-        breakpoint: {
-          400: {
+        gap: 20,
+        peek: 30,
+        breakpoints: {
+          600: {
             perView: 1
           },
           1024: {
             perView: 2
           },
-          1366: {
+          1440: {
             perView: 3,
-            gap: 30
           }
         }
       }).mount()
