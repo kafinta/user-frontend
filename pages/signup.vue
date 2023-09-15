@@ -40,7 +40,7 @@
           </div> 
         </div>
 
-        <form @submit.prevent="signUp()" action="" class="grid gap-4">
+        <form @submit.prevent="register()" action="" class="grid gap-4">
           <FormInput label="Email" v-model:inputValue="form.email" placeholder="Enter your email address"></FormInput>
           <FormInput label="Username" v-model:inputValue="form.username" placeholder="Choose your username"></FormInput>
           <div>
@@ -58,44 +58,31 @@
 </template>
 
 <script>
-import { defineStore } from 'pinia';
-// import { useStore } from 'pinia';
+import { mapActions } from 'pinia';
 import { UserAuth } from '@/store/authentication';
 export default {
   data() {
     return {
-      theAuth: UserAuth(),
-      error_state: false,
-      setUsername: (username) => {
-        this.form.username = username;
-      },
-      setEmail: (email) => {
-        this.form.email = email;
-      },
-      setPassword: (password) => {
-        this.form.password = password;
-      },
       form: {
         email: '',
         username: '',
         password: ''
       },
       is_small: false,
-      loadingState: false
+      loadingState: false,
+      error_state: false
     }
   },
 
   methods: {
-    signUp(){
-      const user_request = {
-        username: this.form.username,
+    ...mapActions(UserAuth, ['signup']),
+    register(){
+      this.loadingState = true
+      this.signup({
         email: this.form.email,
+        username: this.form.username,
         password: this.form.password,
-      };
-
-      const authentication = UserAuth();
-
-      authentication.dispatch('signup', user_request);
+      });
     },
 
     returnHome(){
