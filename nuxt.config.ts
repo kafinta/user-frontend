@@ -2,7 +2,6 @@ export default defineNuxtConfig({
   // ssr: true,
   modules:[
     '@nuxtjs/tailwindcss',
-    '@pinia/nuxt',
   ],
 
   css:[
@@ -10,13 +9,9 @@ export default defineNuxtConfig({
     '@/assets/css/glide.scss'
   ],
 
-  baseURL: 'http://127.0.0.1:8000',
-
-  imports: ['@pinia/nuxt'],
-
   runtimeConfig: {
     public: {
       baseURL: 'http://127.0.0.1:8000',
     },
-  }
+  },
 })

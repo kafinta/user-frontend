@@ -58,8 +58,8 @@
 </template>
 
 <script>
-import { mapActions } from 'pinia';
-import { UserAuth } from '@/store/authentication';
+import { signUp } from '@/composables/signUp'
+const { useSignUp } = signUp()
 export default {
   data() {
     return {
@@ -75,14 +75,13 @@ export default {
   },
 
   methods: {
-    ...mapActions(UserAuth, ['signup']),
     register(){
       this.loadingState = true
-      this.signup({
-        email: this.form.email,
-        username: this.form.username,
-        password: this.form.password,
-      });
+      useSignUp({
+        username: this.username,
+        email: this.email,
+        password: this.password,
+      })
     },
 
     returnHome(){
