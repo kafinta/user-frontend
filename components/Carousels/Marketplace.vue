@@ -88,9 +88,9 @@ const marketplace= [
 const variable = 1
 
 onMounted(() =>{
-  const sliders = document.querySelectorAll(`.glide_slides`)
-  sliders.forEach((slider) => {
-    new Glide(slider, {
+  const marketplaceslider = document.querySelectorAll(`.glide_slides`)
+  marketplaceslider.forEach((marketplace) => {
+    new Glide(marketplace, {
       type: 'carousel',
       focusAt: 'center',
       autoplay: true,

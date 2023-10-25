@@ -51,6 +51,7 @@
 export default {
   data() {
     return {
+      username: 'Kafinta User',
       categories: [
         {
           id: 1,

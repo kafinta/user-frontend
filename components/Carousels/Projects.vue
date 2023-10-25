@@ -2,8 +2,8 @@
   <div class="glide_slider projects mt-5 relative flex items-center">
     <div class="glide__track" data-glide-el="track">
       <div class="glide__slides">
-        <UiCardsSecondary v-for="item in projects" :key="item.id" :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath" :artisan="item.username">
-        <UserProfilePicture :username="item.username" :large_dimensions="false"  />
+        <UiCardsSecondary v-for="item in projects" :key="item.id" :title="item.title" :backgroundImagePath="item.backgroundImagePath" :urlPath="item.urlPath">
+        <UserProfilePicture username="Kafinta" :large_dimensions="false"  />
         </UiCardsSecondary>
       </div>
     </div>
@@ -97,10 +97,10 @@ export default {
   },
 
   mounted() {
-    const sliders = document.querySelectorAll(`.projects`)
+    const projectSlider = document.querySelectorAll(`.projects`)
 
-    sliders.forEach((slider) => {
-      new Glide(slider, {
+    projectSlider.forEach((project) => {
+      new Glide(project, {
         type: 'carousel',
         focusAt: 'center',
         gap: 20,

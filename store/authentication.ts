@@ -10,7 +10,7 @@
 //   console.log(email, username, password);
 //   return new Promise((resolve, reject) => {
 //     console.log('promised');
-//     fetch('http://127.0.0.1:8000/api/user/auth/register', {
+//     fetch('/api/user/auth/register', {
 //       method: 'POST',
 //       headers: {
 //         'Content-Type': 'application/json',

@@ -7,7 +7,7 @@
         <slot/>
         <div>
           <UiTypographyP class="text-left">{{title}}</UiTypographyP>
-          <p class="text-xs text-secondary text-opacity-50 text-left" v-if="artisan">by {{ artisan }}</p>
+          <p class="text-xs text-secondary text-opacity-50 text-left">by Kafinta</p>
         </div>
       </div>
     </div>
@@ -19,7 +19,6 @@ export default {
   props: {
     backgroundImagePath: String,
     title: String,
-    artisan: String,
     urlPath: String,
     profileImagePath: String
   },

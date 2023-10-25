@@ -58,8 +58,6 @@
 </template>
 
 <script>
-import { signUp } from '@/composables/signUp'
-const { useSignUp } = signUp()
 export default {
   data() {
     return {
@@ -77,11 +75,6 @@ export default {
   methods: {
     register(){
       this.loadingState = true
-      useSignUp({
-        username: this.username,
-        email: this.email,
-        password: this.password,
-      })
     },
 
     returnHome(){

@@ -87,10 +87,10 @@ export default {
   },
 
   mounted() {
-    const sliders = document.querySelectorAll(`.professionals`)
+    const professionalsSlider = document.querySelectorAll(`.professionals`)
 
-    sliders.forEach((slider) => {
-      new Glide(slider, {
+    professionalsSlider.forEach((professional) => {
+      new Glide(professional, {
         type: 'carousel',
         focusAt: 'center',
         autoplay: true,
