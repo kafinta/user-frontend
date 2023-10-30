@@ -10,7 +10,7 @@
             <UiTypographyP>Find inspiration, products and the pros to make it happen <br> — all in one place</UiTypographyP>
 
             <div class="flex gap-5 mt-5 items-center">
-              <UiButtonsPrimary>Explore Our Store</UiButtonsPrimary>
+              <UiButtonsPrimary @clicked="$router.push({name: 'marketplace'})">Explore Our Store</UiButtonsPrimary>
               <UiButtonsSecondary class="hidden md:block">Hire Artisans</UiButtonsSecondary>
             </div>
           </div>
@@ -23,7 +23,7 @@
 
     <section class="px-6 md:px-8 lg:px-10 py-10 lg:py-20 max-w-7xl mx-auto">
       <div>
-        <UiTypographyH2>Popular professional services</UiTypographyH2>
+        <UiTypographyH2>Browse by Categories</UiTypographyH2>
         <CarouselsProfessionals />
       </div>
     </section>
@@ -78,12 +78,12 @@
     </section>
 
     <section class="px-6 md:px-8 lg:px-10 py-10 lg:py-20 max-w-7xl mx-auto">
-      <UiTypographyH2 class="text-secondary text-2xl md:text-3xl 2xl:text-4xl font-medium">Explore the marketplace</UiTypographyH2>
+      <UiTypographyH2 class="text-secondary text-2xl md:text-3xl 2xl:text-4xl font-medium">Browse by Rooms</UiTypographyH2>
       <CarouselsMarketplace />
     </section>
 
     <section class="px-6 md:px-8 lg:px-10 py-10 lg:py-20 max-w-7xl mx-auto">
-      <UiTypographyH2 class="text-secondary text-2xl md:text-3xl 2xl:text-4xl font-medium">Get inspired with projects made by our professionals</UiTypographyH2>
+      <UiTypographyH2 class="text-secondary text-2xl md:text-3xl 2xl:text-4xl font-medium">Get inspired by our projects</UiTypographyH2>
       <CarouselsProjects />
     </section>
 

@@ -1,44 +1,30 @@
 <template>
   <LayoutsMarketplace>
-    <div class="flex items-end gap-16">
-      <div class="h-72 w-1/4 bg-accent-50 lg:flex items-center justify-center p-7 hidden">
-        <div>
-          <h5 class="text-center text-lg font-medium">Hi, {{ username }}</h5>
-          <p class="text-center text-base font-normal mt-2">Get matched with artisans for your project.</p>
-          <div class="w-full mt-6">
-            <UiButtonsPrimary class="mt-6 mx-auto">Post a Request</UiButtonsPrimary>
-          </div>
-        </div>
+    <div class="mt-10">
+      <div class="flex items-center justify-between">
+        <h3 class="text-secondary text-xl md:text-2xl 2xl:text-3xl font-medium">Top Categories</h3>
+        <UiButtonsSecondary @clicked="$router.push({name: 'marketplace-rooms', params: {rooms: 'living'}})" class="flex gap-1 items-center">
+          See All
+          <UiIconsAccordion class="transform rotate-90 w-4 h-4" />
+        </UiButtonsSecondary>
       </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-3 mt-6">
+        <button @click="$router.push({name: 'marketplace-rooms', params: {rooms: category.title}})" class="p-5 flex gap-5 border border-secondary border-opacity-20 items-center rounded-lg" v-for="category in categories" :key="category.id">
+          <div class="bg-primary h-20 w-20 rounded-full flex items-center justify-center">
+            <img class="w-14 h-14" alt="" :src="category.imagePath" />
+          </div>
 
-      <div class="flex px-5 bg-accent-50 w-full lg:w-3/4 h-72" ></div>
+          <div class="text-left">
+            <h3 class="text-secondary text-lg font-medium">{{ category.title }}</h3>
+            <p class="text-secondary text-sm mt-0">{{ category.products }}</p>
+          </div>
+        </button>
+      </div>
     </div>
 
     <div class="mt-10">
       <h3 class="text-secondary text-xl md:text-2xl 2xl:text-3xl font-medium">Recommended services for your first project</h3>
       <CarouselsProjects />
-    </div>
-
-    <div class="mt-10 lg:hidden">
-      <div class="flex items-center justify-between">
-        <h3 class="text-secondary text-xl md:text-2xl 2xl:text-3xl font-medium">Top Categories</h3>
-        <UiButtonsSecondary class="flex gap-1 items-center">
-          See All
-          <UiIconsAccordion class="transform rotate-90 w-4 h-4" />
-        </UiButtonsSecondary>
-      </div>
-      <div class="grid grid-cols-1 gap-3 mt-6">
-        <div class="p-5 flex gap-5 border border-secondary border-opacity-20 items-center rounded-lg" v-for="category in categories" :key="category.id">
-          <div class="bg-primary h-20 w-20 rounded-full flex items-center justify-center">
-            <img class="w-14 h-14" alt="" :src="category.imagePath" />
-          </div>
-
-          <div>
-            <h3 class="text-secondary text-lg font-medium">{{ category.title }}</h3>
-            <p class="text-secondary text-sm mt-0">{{ category.products }}</p>
-          </div>
-        </div>
-      </div>
     </div>
 
     <div class="mt-10">
