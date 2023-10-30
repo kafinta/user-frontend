@@ -6,7 +6,7 @@
     </transition>
     
     <transition name="slide-in-left">
-      <div v-show="openDialog" class="fixed w-full sm:w-2/3 lg:w-3/5 xl:w-1/3 right-0 bg-white h-full z-150 top-0">
+      <div v-show="openDialog" class="fixed w-3/4 sm:w-2/3 lg:w-3/5 xl:w-1/3 right-0 bg-white h-full z-150 top-0">
         <div class="relative h-full">
           <div class="flex justify-between items-center border-b border-accent1-100 py-3 sm:py-4 sm:px-2 select-none">
             <p class="uppercase font-bold px-4 select-none"><slot name="title" /></p>
