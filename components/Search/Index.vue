@@ -6,7 +6,7 @@
 
     <transition>
       <div class="fixed w-full z-130 top-24 md:top-32">
-        <form v-show="searchBoxState" class="max-w-3xl mx-auto">
+        <form @submit.prevent="search" v-show="searchBoxState" class="max-w-3xl mx-auto">
           <div class="px-4 sm:px-6">
             <div
               class="w-full bg-white border border-primary dark:border-accent1-500 dark:bg-accent1-700 flex justify-center items-center px-3">
@@ -67,6 +67,10 @@ export default {
     // ...mapActions({
     //   toggleSearchBox: "search/toggleSearchBox",
     // }),
+
+    search(){
+      this.$router.push({name: 'marketplace-search', query: {query: this.search_text}})
+    },
 
     clearSearchText() {
       this.search_text = ''
