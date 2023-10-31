@@ -42,28 +42,28 @@ export default {
         {
           id: 1,
           title: 'Bedroom',
-          imagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1675426589/kafinta/categories/bedroom_oexa9p.svg',
+          imagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1698760299/kafinta/rooms/bedroom_pw1dhq.svg',
           products: 'Beds, pillows, bedsheets, lamps...'
         },
 
         {
           id: 2,
           title: 'Living Room',
-          imagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1675426589/kafinta/categories/living_room_ecan8y.svg',
+          imagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1698760299/kafinta/rooms/living_room_w6gxcb.svg',
           products: 'Sofas, couches, tables ...'
         },
 
         {
           id: 3,
           title: 'Kitchen',
-          imagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1675426589/kafinta/categories/kitchen_wjsr9r.svg',
-          products: 'Racks, tables, kitchen tops...'
+          imagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1698760299/kafinta/rooms/kitchen_b7petm.svg',
+          products: 'Fixtures, tables, kitchen tops...'
         },
 
         {
           id: 4,
           title: 'Dining',
-          imagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1675426589/kafinta/categories/dining_yazb5r.svg',
+          imagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1698760299/kafinta/rooms/dining_oaajex.svg',
           products: 'Chairs, tables, utensils...'
         },
       ]

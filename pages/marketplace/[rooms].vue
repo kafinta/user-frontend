@@ -1,7 +1,6 @@
 <template>
   <LayoutsMarketplace>
-    <UiTypographyP>Search > Rooms</UiTypographyP>
-    <UiTypographyH2 class="mt-6">What room are you searching for?</UiTypographyH2>
+    <UiTypographyH2 class="mt-6">What are you looking for?</UiTypographyH2>
 
     <div class="grid gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-8">
       <NuxtLink v-for="room in 12">
@@ -11,4 +10,15 @@
   </LayoutsMarketplace>
 </template>
 <script>
+export default {
+  data() {
+    return {
+      paths: []
+    }
+  },
+  mounted() {
+    const test = this.$route.path.split('/')
+    this.paths = test
+  },
+}
 </script>

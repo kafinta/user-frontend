@@ -1,5 +1,0 @@
-<template>
-  <LayoutsMarketplace>
-    
-  </LayoutsMarketplace>
-</template>
