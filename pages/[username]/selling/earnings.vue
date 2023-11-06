@@ -28,9 +28,9 @@
   </LayoutsSellerDashboard>
 </template>
 <script>
-import completed from '@/assets/images/insights/completed.svg'
-import paid from '@/assets/images/insights/paid.svg'
-import pending from '@/assets/images/insights/pending.svg'
+import completed from '/images/insights/completed.svg'
+import paid from '/images/insights/paid.svg'
+import pending from '/images/insights/pending.svg'
   export default {
     data() {
       return {

@@ -6,7 +6,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
   useHead({
     title: 'Kafinta | Bring your dream home to life',
   });

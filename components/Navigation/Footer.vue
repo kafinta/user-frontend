@@ -30,8 +30,8 @@
 
       <div class="flex flex-col gap-2">
         <h4 class="uppercase text-secondary text-base font-medium mb-2">Download Apps</h4>
-        <NuxtLink to=""><img src="@/assets/images/icons/apple.svg" class="w-36" alt=""></NuxtLink>
-        <NuxtLink to=""><img src="@/assets/images/icons/google.svg" class="w-36" alt=""></NuxtLink>
+        <NuxtLink to=""><img src="/images/icons/apple.svg" class="w-36" alt=""></NuxtLink>
+        <NuxtLink to=""><img src="/images/icons/google.svg" class="w-36" alt=""></NuxtLink>
       </div>
     </div>
 
@@ -44,19 +44,19 @@
       <div class="flex items-center gap-5">
         <NuxtLink to="">
           <div class="duration-500 ease-in-out cursor-pointer h-8 w-8 bg-accent-100 hover:bg-accent-200 rounded-md flex justify-center items-center">
-            <img src="@/assets/images/logos/facebook_f.svg" class="w-6 h-6" alt="">
+            <img src="/images/logos/facebook_f.svg" class="w-6 h-6" alt="">
           </div>
         </NuxtLink>
 
         <NuxtLink to="">
           <div class="duration-500 ease-in-out cursor-pointer h-8 w-8 bg-accent-100 hover:bg-accent-200 rounded-md flex justify-center items-center">
-            <img src="@/assets/images/logos/twitter.svg" class="w-6 h-6" alt="">
+            <img src="/images/logos/twitter.svg" class="w-6 h-6" alt="">
           </div>
         </NuxtLink>
 
         <NuxtLink to="">
           <div class="duration-500 ease-in-out cursor-pointer h-8 w-8 bg-accent-100 hover:bg-accent-200 rounded-md flex justify-center items-center">
-            <img src="@/assets/images/logos/instagram.svg" class="w-6 h-6" alt="">
+            <img src="/images/logos/instagram.svg" class="w-6 h-6" alt="">
           </div>
         </NuxtLink>
       </div>

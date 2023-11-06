@@ -24,12 +24,12 @@
         <div class="mb-6">
           <div class="mt-10 flex gap-5 items-center">
             <NuxtLink to="" class="hover:-translate-y-1 duration-300 ease-in-out flex gap-3 items-center justify-center w-full border rounded-md border-secondary border-opacity-20 py-3">
-              <img src="@/assets/images/logos/facebook.svg" class="w-7" alt="">
+              <img src="/images/logos/facebook.svg" class="w-7" alt="">
               Facebook
             </NuxtLink>
 
             <NuxtLink to="" class="hover:-translate-y-1 duration-300 ease-in-out flex gap-3 items-center justify-center w-full border rounded-md border-secondary border-opacity-20 py-3">
-              <img src="@/assets/images/logos/google.svg" class="w-7" alt="">
+              <img src="/images/logos/google.svg" class="w-7" alt="">
               Google
             </NuxtLink>
           </div>

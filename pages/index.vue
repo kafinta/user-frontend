@@ -35,7 +35,7 @@
 
         <div>
           <UiTypographyH3 class="flex items-center gap-3 mb-2">
-            <span> <img src="@/assets/images/icons/checked_circle.svg" class="w-7 h-7" alt=""> </span> 
+            <span> <img src="/images/icons/checked_circle.svg" class="w-7 h-7" alt=""> </span> 
             The best for every budget
           </UiTypographyH3>
           <UiTypographyP>Find high-quality services at every price point. No hourly rates, just project-based pricing.</UiTypographyP>
@@ -43,7 +43,7 @@
 
         <div>
           <UiTypographyH3 class="flex items-center gap-3 mb-2">
-            <span> <img src="@/assets/images/icons/checked_circle.svg" class="w-7 h-7" alt=""> </span> 
+            <span> <img src="/images/icons/checked_circle.svg" class="w-7 h-7" alt=""> </span> 
             Quality work done quickly
           </UiTypographyH3>
           <UiTypographyP>Find the right freelancer to begin working on your project within minutes.</UiTypographyP>
@@ -51,7 +51,7 @@
 
         <div>
           <UiTypographyH3 class="flex items-center gap-3 mb-2">
-            <span> <img src="@/assets/images/icons/checked_circle.svg" class="w-7 h-7" alt=""> </span> 
+            <span> <img src="/images/icons/checked_circle.svg" class="w-7 h-7" alt=""> </span> 
             Protected payments, every time
           </UiTypographyH3>
           <UiTypographyP>Always know what you'll pay upfront. Your payment isn't released until you receive the product or approve the work.</UiTypographyP>
@@ -59,7 +59,7 @@
 
         <div>
           <UiTypographyH3 class="font-medium text-lg text-secondary flex items-center gap-3 mb-2">
-            <span> <img src="@/assets/images/icons/checked_circle.svg" class="w-7 h-7" alt=""> </span> 
+            <span> <img src="/images/icons/checked_circle.svg" class="w-7 h-7" alt=""> </span> 
             24/7 support
           </UiTypographyH3>
           <UiTypographyP>Questions? Our round-the-clock support team is available to help anytime, anywhere.</UiTypographyP>
@@ -111,7 +111,7 @@ export default {
 
 <style>
 .hero-bg {
-  background: url('../assets/images/hero-bg.jpg');
+  background: url('/images/hero-bg.jpg');
   background-size: cover;
   background-position: center;
 }

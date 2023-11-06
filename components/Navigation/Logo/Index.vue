@@ -1,6 +1,6 @@
 <template>
   <div @click="emitClicked()" class="cursor-pointer select-none">
-    <img src="@/assets/images/logos/full_logo.svg" alt="" class="w-full">
+    <img src="/images/logos/full_logo.svg" alt="" class="w-full">
   </div>
 </template>
 
