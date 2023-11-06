@@ -1,3 +1,5 @@
+<script setup>
+</script>
 <template>
   <div class="select-none">
     <Search @toggleSearchBox="toggleSearch()" :searchBoxState="searchBox" />
@@ -92,6 +94,7 @@
 </template>
 
 <script>
+
 export default {
   data(){
     return {
