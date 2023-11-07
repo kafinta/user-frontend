@@ -25,7 +25,7 @@
 
     <section class="px-6 md:px-8 lg:px-10 py-10 lg:py-20 max-w-7xl mx-auto">
       <div>
-        <UiTypographyH2>Browse by Categories</UiTypographyH2>
+        <UiTypographyH2>Top Products</UiTypographyH2>
         <CarouselsProfessionals />
       </div>
     </section>

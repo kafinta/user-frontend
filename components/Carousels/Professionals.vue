@@ -2,11 +2,11 @@
   <div class="glide_slider professionals mt-5  relative flex items-center">
     <div class="glide__track" data-glide-el="track">
       <div class="glide__slides">
-        <UiCards v-for="professional in professionals" :key="professional.id" :title="professional.title" :backgroundImagePath="professional.backgroundImagePath" :urlPath="professional.urlPath" class="glide__slide" />
+        <UserProductsCardMinimal v-for="professional in professionals" :key="professional.id" :title="professional.title" :image="professional.backgroundImagePath" :urlPath="professional.urlPath" class="glide__slide" />
       </div>
     </div>
 
-    <div class="glide__arrows h-fit" data-glide-el="controls">
+    <!-- <div class="glide__arrows h-fit" data-glide-el="controls">
       <button class="glide__arrow glide__arrow--left absolute left-3" data-glide-dir="<">
         <div class="bg-secondary aspect-square rounded-full p-3 hover:bg-primary duration-300 bg-opacity-75">
           <UiIconsAccordion class="w-5 h-5 -rotate-90 text-white" />
@@ -17,7 +17,8 @@
           <UiIconsAccordion class="w-5 h-5 rotate-90 text-white" />
         </div>
       </button>
-    </div>
+    </div> -->
+
   </div>
 </template>
 
@@ -95,20 +96,20 @@ export default {
         focusAt: 'center',
         autoplay: true,
         gap: 20,
-        peek: 30,
+        peek: 0,
         animationDuration: 2000,
         breakpoints: {
           600: {
             perView: 1
           },
           800: {
-            perView: 2
+            perView: 1
           },
           1024: {
-            perView: 3
+            perView: 2
           },
           1440: {
-            perView: 4
+            perView: 3
           },
           12000: {
             perView: 5
