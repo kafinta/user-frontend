@@ -91,6 +91,6 @@ export default {
 </script>
 <style>
 .background {
-  background-image: url('../assets/images/register.jpg');
+  background-image: url('/images/register.jpg');
 }
 </style>

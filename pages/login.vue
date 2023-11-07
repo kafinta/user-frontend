@@ -94,6 +94,6 @@ export default {
 </script>
 <style>
 .background {
-  background: url('../assets/images/login.jpg');
+  background: url('/images/login.jpg');
 }
 </style>

@@ -68,6 +68,6 @@ export default {
 </script>
 <style>
 .background {
-  background: url('../assets/images/verify.jpg');
+  background: url('/images/verify.jpg');
 }
 </style>
