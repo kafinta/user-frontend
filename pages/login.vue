@@ -1,3 +1,34 @@
+<script setup>
+const useCustomFetch = useCustomFetch()
+ const handleUserLogin = async () => {
+
+is_loading.value = true
+
+const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
+
+const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('/user/auth/spa/login', {
+    method: 'POST',
+    body: {
+        email: email.value,
+        password: password.value
+    },
+    onResponse(res) {
+        if (res.response.status == 200) {
+            $toast.success(res.response._data.message)
+            // router.push(loginRedirection.value)
+            user_account.value = res.response._data.data.account
+            session.value = 'active'
+            global_authentication.value = false
+
+            email.value = '',
+            password.value = ''
+        }
+    },
+})
+is_loading.value = pending.value
+}
+
+</script>
 <template>
   <div class="flex select-none">
     <div class="background hidden lg:flex w-2/3 bg-cover bg-center py-5 px-10 relative flex-col justify-between">

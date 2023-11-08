@@ -1,3 +1,39 @@
+<script setup>
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
+
+const form ={
+  email: '',
+  username: '',
+  password: ''
+};
+const handleUserSignup = async () => {
+const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
+const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('/user/auth/register', {
+  method: 'POST',
+  body: {
+    email: form.email.value,
+    password: form.password.value,
+    username: form.username.value
+  },
+  onResponse(res) {
+    if (res.response.status == 200) {
+      console.log(res.response._data.message)
+      $toast.success(res.response._data.message)
+      router.push(loginRedirection.value)
+      user_account.value = res.response._data.data.account
+      session.value = 'active'
+      global_authentication.value = false
+
+      form.email.value = '',
+      form.usernmae.value = '',
+      form.password.value = ''
+    }
+  },
+})
+}
+</script>
+
 <template>
   <div class="flex flex-row-reverse select-none">
     <div class="background hidden lg:flex w-2/3 bg-cover bg-center py-5 px-10 relative flex-col justify-between">
@@ -40,7 +76,7 @@
           </div> 
         </div>
 
-        <form @submit.prevent="register()" action="" class="grid gap-4">
+        <form @submit.prevent="handleUserSignup()" action="" class="grid gap-4">
           <FormInput label="Email" v-model:inputValue="form.email" placeholder="Enter your email address"></FormInput>
           <FormInput label="Username" v-model:inputValue="form.username" placeholder="Choose your username"></FormInput>
           <div>
@@ -61,11 +97,6 @@
 export default {
   data() {
     return {
-      form: {
-        email: '',
-        username: '',
-        password: ''
-      },
       is_small: false,
       loadingState: false,
       error_state: false
@@ -73,10 +104,6 @@ export default {
   },
 
   methods: {
-    register(){
-      this.loadingState = true
-    },
-
     returnHome(){
       this.$router.push({path: '/'})
     }

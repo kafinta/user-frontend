@@ -7,7 +7,7 @@ export function useCustomFetch<T>(url: string, options: UseFetchOptions<T> = {})
     const config = useRuntimeConfig()
 
     const defaults: UseFetchOptions<T> = {
-        baseURL: config.public.base_url ?? 'https://test-api.dev',
+        baseURL: config.public.base_url as string ?? 'http://127.0.0.1:8000',
         // cache request
         key: url,
         credentials: 'include',
@@ -21,6 +21,7 @@ export function useCustomFetch<T>(url: string, options: UseFetchOptions<T> = {})
 
         onResponse(_ctx) {
             // _ctx.response._data = new myBusinessResponse(_ctx.response._data)
+           console.log(_ctx.response._data)
         },
 
         onResponseError(_ctx) {
@@ -33,8 +34,8 @@ export function useCustomFetch<T>(url: string, options: UseFetchOptions<T> = {})
                 // user_account.value = undefined as any
                 user_session.value = null
 
-                console.log("oloo")
-                router.push('/login')
+                console.log("error", _ctx.response._data.message)
+                // router.push('/login')
             } else {
                 const { $toast } = useNuxtApp()
                 // $toast.error(_ctx.response._data.message)
