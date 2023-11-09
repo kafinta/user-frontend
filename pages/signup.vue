@@ -1,36 +1,38 @@
 <script setup>
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
+import { ref } from "vue";
 
-const form ={
-  email: '',
-  username: '',
-  password: ''
-};
+let is_small = false;
+let loadingState = ref(false);
+let error_state = false;
+const email = ref();
+const username = ref();
+const password = ref();
+
 const handleUserSignup = async () => {
+loadingState.value = true;
 const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
-const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('/user/auth/register', {
+const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('/api/user/auth/register', {
   method: 'POST',
   body: {
-    email: form.email.value,
-    password: form.password.value,
-    username: form.username.value
+    email: email,
+    password: password,
+    username: username
   },
   onResponse(res) {
     if (res.response.status == 200) {
-      console.log(res.response._data.message)
-      $toast.success(res.response._data.message)
-      router.push(loginRedirection.value)
-      user_account.value = res.response._data.data.account
-      session.value = 'active'
-      global_authentication.value = false
-
-      form.email.value = '',
-      form.usernmae.value = '',
-      form.password.value = ''
+      toast.success(res.response._data.message, {
+        position: toast.POSITION.BOTTOM_RIGHT,
+      })
+      router.push({name: '/verify'})
+      // user_account.value = res.response._data.data.account
+      // session.value = 'active'
+      // global_authentication.value = false
     }
   },
 })
+loadingState.value = pending.value
 }
 </script>
 
@@ -77,10 +79,10 @@ const { pending, data: user_auth_data, error: user_auth_error } = await useCusto
         </div>
 
         <form @submit.prevent="handleUserSignup()" action="" class="grid gap-4">
-          <FormInput label="Email" v-model:inputValue="form.email" placeholder="Enter your email address"></FormInput>
-          <FormInput label="Username" v-model:inputValue="form.username" placeholder="Choose your username"></FormInput>
+          <FormInput label="Email" v-model:inputValue="email" placeholder="Enter your email address"></FormInput>
+          <FormInput label="Username" v-model:inputValue="username" placeholder="Choose your username"></FormInput>
           <div>
-            <FormInput :error="error_state" label="Password" type="password" v-model:inputValue="form.password" placeholder="Enter your password"></FormInput>
+            <FormInput :error="error_state" label="Password" type="password" v-model:inputValue="password" placeholder="Enter your password"></FormInput>
             <p :class="error_state ? 'opacity-100' : 'opacity-0'" class="text-sm text-red-600 mt-2">Password must be at least 8 characters</p>
           </div>
 
@@ -93,13 +95,13 @@ const { pending, data: user_auth_data, error: user_auth_error } = await useCusto
 
 </template>
 
-<script>
+<!-- <script>
 export default {
   data() {
     return {
       is_small: false,
       loadingState: false,
-      error_state: false
+      error_state: false,
     }
   },
 
@@ -115,7 +117,7 @@ export default {
     }
   },
 }
-</script>
+</script> -->
 <style>
 .background {
   background-image: url('/images/register.jpg');
