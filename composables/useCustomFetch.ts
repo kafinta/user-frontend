@@ -6,7 +6,7 @@ export function useCustomFetch<T>(url: string, options: UseFetchOptions<T> = {})
     const XSRF_TOKEN = useCookie('XSRF-TOKEN')
     const config = useRuntimeConfig()
 
-    console.log( XSRF_TOKEN.value)
+    // console.log( XSRF_TOKEN.value)
 
     const defaults: UseFetchOptions<T> = {
         baseURL: config.public.base_url as string ?? 'http://localhost:8000',
