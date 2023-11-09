@@ -6,8 +6,10 @@ export function useCustomFetch<T>(url: string, options: UseFetchOptions<T> = {})
     const XSRF_TOKEN = useCookie('XSRF-TOKEN')
     const config = useRuntimeConfig()
 
+    console.log( XSRF_TOKEN.value)
+
     const defaults: UseFetchOptions<T> = {
-        baseURL: config.public.base_url as string ?? 'http://127.0.0.1:8000',
+        baseURL: config.public.base_url as string ?? 'http://localhost:8000',
         // cache request
         key: url,
         credentials: 'include',
@@ -22,6 +24,7 @@ export function useCustomFetch<T>(url: string, options: UseFetchOptions<T> = {})
         onResponse(_ctx) {
             // _ctx.response._data = new myBusinessResponse(_ctx.response._data)
            console.log(_ctx.response._data)
+           console.log(_ctx.response)
         },
 
         onResponseError(_ctx) {
