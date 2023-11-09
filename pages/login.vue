@@ -1,12 +1,19 @@
 <script setup>
-const useCustomFetch = useCustomFetch()
- const handleUserLogin = async () => {
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
+import { ref } from "vue";
 
-is_loading.value = true
+let is_small = ref(false);
+let loadingState = ref(false);
+let error_state = ref(false);
+const email = ref();
+const password = ref();
 
-const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
+const signIn= async () => {
+  loadingState.value = true;
+  const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
 
-const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('/user/auth/spa/login', {
+  const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('/user/auth/login', {
     method: 'POST',
     body: {
         email: email.value,
@@ -14,7 +21,7 @@ const { pending, data: user_auth_data, error: user_auth_error } = await useCusto
     },
     onResponse(res) {
         if (res.response.status == 200) {
-            $toast.success(res.response._data.message)
+            toast.success(res.response._data.message)
             // router.push(loginRedirection.value)
             user_account.value = res.response._data.data.account
             session.value = 'active'
@@ -24,10 +31,9 @@ const { pending, data: user_auth_data, error: user_auth_error } = await useCusto
             password.value = ''
         }
     },
-})
-is_loading.value = pending.value
+  })
+  loadingState.value = pending.value
 }
-
 </script>
 <template>
   <div class="flex select-none">
@@ -70,10 +76,10 @@ is_loading.value = pending.value
         </div>
 
         <form class="grid gap-4">
-          <FormInput label="Email" v-model:inputValue="form.email" placeholder="Enter your email address"></FormInput>
+          <FormInput label="Email" v-model:inputValue="email" placeholder="Enter your email address"></FormInput>
 
           <div class="w-full mb-5">
-            <FormInput :error="error_state" label="Password" type="password" v-model:inputValue="form.password" placeholder="Enter your password"></FormInput>
+            <FormInput :error="error_state" label="Password" type="password" v-model:inputValue="password" placeholder="Enter your password"></FormInput>
 
             <div class="flex justify-between items-center mt-2 w-full">
             
@@ -91,38 +97,19 @@ is_loading.value = pending.value
       </div>
     </div>
 
-    {{ this.form.email }}
   </div>
 
 </template>
 
-<script>
+<!-- <script>
 export default {
-  data() {
-    return {
-      error_state: false,
-      form: {
-        email: '',
-        password: ''
-      },
-      is_small: false,
-      loadingState: false
-    }
-  },
-
-  methods: {
-    signIn(){
-      this.loadingState = true
-    },
-  },
-  
   mounted(){
     if (window.innerWidth <= 320) {
       this.is_small = true
     }
   },
 }
-</script>
+</script> -->
 <style>
 .background {
   background: url('/images/login.jpg');
