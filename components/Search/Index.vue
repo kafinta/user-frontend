@@ -12,7 +12,7 @@
               class="w-full bg-white border border-primary dark:border-accent1-500 dark:bg-accent1-700 flex justify-center items-center px-3">
               <UiIconsSearch class="p-2 w-10 h-10" :class="gold_search_icon ? 'text-primary' : 'text-secondary'" />
               <input v-model="search_text" type="text" @focus="focus()"
-                class="border text-sm outline-none border-none ring-0 focus:outline-none  rounded-md active:text-primary focus:text-primary text-secondary border-opacity-20 active:border-opacity-100 focus:border-opacity-100 duration-300 ease-out h-full w-full px-3 py-4 md:py-6" ref="input"
+                class="border text-sm outline-none border-none ring-0 focus:outline-none  rounded-md active:text-primary focus:text-primary text-secondary border-opacity-20 active:border-opacity-100 focus:border-opacity-100 duration-300 ease-out h-full w-full px-3 py-4 md:py-6 bg-white" ref="input"
                 placeholder="Search for products, artisans services..." />
 
               <div @click="toggleSearchBox" class="flex cursor-pointer text-sm items-center ">

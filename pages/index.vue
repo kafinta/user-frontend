@@ -1,4 +1,31 @@
 <script setup>
+import { onMounted } from "vue";
+import { ref } from "vue";
+
+const searchBox = ref(false);
+const search_button_hovered = ref(false);
+let categories = [];
+
+const toggleSearch = () => {
+  searchBox.value = !searchBox.value;
+  search_button_hovered.value = !search_button_hovered.value;
+}
+
+const getSomeCategories = async () => {
+  const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
+
+  const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('api/categories/7', {
+    method: 'GET',
+    onResponse(res) {
+      if (res.response.status == 200) {
+        categories = res.response._data
+      }
+    },
+  })
+}
+onMounted(() => {
+  getSomeCategories();
+})
 </script>
 <template>
   <div class="select-none">
@@ -84,6 +111,23 @@
       <CarouselsMarketplace />
     </section>
 
+    <section class="px-6 md:px-8 lg:px-10 py-10 lg:py-20 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="bg-primary bg-opacity-10 p-4 grid place-items-center">
+        <UiTypographyH2>Explore our categories</UiTypographyH2>
+      </div>
+      <ul class="col-span-2 grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <li v-for="item in categories" :key="item.id" class="">
+          <NuxtLink to="marketplace/categories/category" class="flex w-full text-center py-2 px-5 text-secondary font-medium text-base 2xl:text-lg justify-center duration-500 ease-in-out rounded-md border hover:text-primary hover:border-primary focus:border-primary focus:text-primary outline-none">{{ item.name }}</NuxtLink>
+        </li>
+        <li class="">
+          <LazyNuxtLink class="flex w-full text-center py-2 px-5 text-secondary font-medium text-base 2xl:text-lg justify-center duration-500 ease-in-out rounded-md border hover:text-primary hover:border-primary focus:border-primary focus:text-primary outline-none items-center gap-3 hover:gap-5">
+            See All
+            <span><UiIconsAccordion class="w-3 rotate-90" /></span>
+          </LazyNuxtLink>
+        </li>
+      </ul>
+    </section>
+
     <section class="px-6 md:px-8 lg:px-10 py-10 lg:py-20 max-w-7xl mx-auto">
       <UiTypographyH2 class="text-secondary text-2xl md:text-3xl 2xl:text-4xl font-medium">Get inspired by our projects</UiTypographyH2>
       <CarouselsProjects />
@@ -92,26 +136,6 @@
     <NavigationFooter />
   </div>
 </template>
-
-<script>
-
-export default {
-  data(){
-    return {
-      searchBox: false,
-      search_button_hovered: false,
-    }
-  },
-
-  methods: {
-    toggleSearch(){
-      this.searchBox = !this.searchBox
-      this.search_button_hovered = !this.search_button_hovered
-    }
-  },
-}
-</script>
-
 <style>
 .hero-bg {
   background: url('/images/hero-bg.jpg');
