@@ -1,5 +1,7 @@
 import type { UseFetchOptions } from 'nuxt/app'
 import { defu } from 'defu'
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
 
 
 export function useCustomFetch<T>(url: string, options: UseFetchOptions<T> = {}) {
@@ -23,25 +25,15 @@ export function useCustomFetch<T>(url: string, options: UseFetchOptions<T> = {})
 
         onResponse(_ctx) {
             // _ctx.response._data = new myBusinessResponse(_ctx.response._data)
-           console.log(_ctx.response._data)
-           console.log(_ctx.response)
+           toast.success(_ctx.response._data.message)
         },
 
         onResponseError(_ctx) {
-
             if (_ctx.response.status == 401) {
                 const user_session = useCookie('user_session', { sameSite: 'lax' })
-                const router = useRouter()
-                const user_account = useUserAccount()
-
-                // user_account.value = undefined as any
-                user_session.value = null
-
-                console.log("error", _ctx.response._data.message)
-                // router.push('/login')
+                toast.error(_ctx.response._data.message)
             } else {
-                const { $toast } = useNuxtApp()
-                // $toast.error(_ctx.response._data.message)
+                toast.error(_ctx.response._data.message)
             }
         }
     }
