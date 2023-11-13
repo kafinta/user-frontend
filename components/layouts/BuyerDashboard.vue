@@ -21,7 +21,6 @@
       <div class="px-6 md:px-8 lg:px-10 py-6 mx-auto min-h-screen">
         <slot />
       </div>
-      <NavigationFooter class="w-full" />
     </div>
 
   </div>

@@ -1,6 +1,6 @@
 <template>
-  <footer class="px-6 md:px-8 lg:px-10 py-6 border-t border-accent-100 w-full">
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 max-w-7xl mx-auto py-8">
+  <footer class="border-t border-accent-100 w-full">
+    <Container class="grid grid-cols-2 lg:grid-cols-4 gap-5 max-w-7xl mx-auto py-8">
       <div class="flex flex-col gap-2 text-left">
         <h4 class="uppercase text-secondary text-base font-medium mb-2">Company</h4>
         <NuxtLink to=""><UiButtonsSecondary>About</UiButtonsSecondary></NuxtLink>
@@ -33,9 +33,9 @@
         <NuxtLink to=""><img src="/images/icons/apple.svg" class="w-36" alt=""></NuxtLink>
         <NuxtLink to=""><img src="/images/icons/google.svg" class="w-36" alt=""></NuxtLink>
       </div>
-    </div>
+    </Container>
 
-    <div class="border-t border-accent-100 pt-6 flex items-center justify-between max-w-7xl mx-auto">
+    <Container :addTopBottomPadding="false" class="border-t border-accent-100 py-6 flex items-center justify-between">
       <div class="flex items-center gap-5">
         <NavigationLogo class="m-0 w-28" />
         <UiTypographyP :small_text="true" class="text-secondary text-xs md:text-sm">&copy; Kafinta {{ new Date().getFullYear() }}</UiTypographyP>
@@ -60,6 +60,6 @@
           </div>
         </NuxtLink>
       </div>
-    </div>
+    </Container>
   </footer>
 </template>

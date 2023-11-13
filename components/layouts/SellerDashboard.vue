@@ -22,7 +22,6 @@
         <UiTypographyH3  v-show="page_title" class="pb-2 border-b border-accent-100 mb-6">{{ page_title }}</UiTypographyH3>
         <slot />
       </div>
-      <NavigationFooter class="w-full" />
     </div>
 
   </div>
