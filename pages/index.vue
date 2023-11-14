@@ -1,16 +1,14 @@
 <script setup>
-import { onMounted } from "vue";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 
 const searchBox = ref(false);
 const search_button_hovered = ref(false);
-let categories = [];
-
 const toggleSearch = () => {
   searchBox.value = !searchBox.value;
   search_button_hovered.value = !search_button_hovered.value;
 }
-
+const isLoading = ref(false)
+let categories = []
 const getSomeCategories = async () => {
   const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
 
@@ -18,12 +16,15 @@ const getSomeCategories = async () => {
     method: 'GET',
     onResponse(res) {
       if (res.response.status == 200) {
-        categories = res.response._data
+        const thecategories = useState('categories', () => res.response._data)
+        categories = thecategories.value
+        isLoading.value = true
       }
     },
   })
-}
+};
 onMounted(() => {
+  isLoading.value = false
   getSomeCategories();
 })
 </script>
@@ -110,21 +111,27 @@ onMounted(() => {
       <CarouselsMarketplace />
     </Container>
 
-    <Container class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div class="bg-primary bg-opacity-10 p-4 grid place-items-center">
-        <UiTypographyH2>Explore our categories</UiTypographyH2>
+    <Container  class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="bg-primary bg-opacity-10 p-4 grid place-items-center text-left">
+        <div>
+          <UiTypographyH2>Explore our categories</UiTypographyH2>
+          <UiTypographyP>Find the products you want easily</UiTypographyP>
+        </div>
       </div>
-      <ul class="col-span-2 grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <ul v-if="isLoading" class="col-span-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <li v-for="item in categories" :key="item.id" class="">
-          <NuxtLink to="marketplace/categories/category" class="flex w-full text-center py-2 px-5 text-secondary font-medium text-base 2xl:text-lg justify-center duration-500 ease-in-out rounded-md border hover:text-primary hover:border-primary focus:border-primary focus:text-primary outline-none">{{ item.name }}</NuxtLink>
+          <UiButtonsTertiary :flexdisplay="true" @clicked="$router.push({name: 'marketplace-products', query: {category : item.name}})" >{{ item.name }}</UiButtonsTertiary>
         </li>
-        <li class="">
-          <LazyNuxtLink class="flex w-full text-center py-2 px-5 text-secondary font-medium text-base 2xl:text-lg justify-center duration-500 ease-in-out rounded-md border hover:text-primary hover:border-primary focus:border-primary focus:text-primary outline-none items-center gap-3 hover:gap-5">
+        <li class="col-span-2 lg:col-span-1">
+          <NuxtLink class="flex w-full text-center py-2 px-5 text-secondary font-medium text-base 2xl:text-lg justify-center duration-500 ease-in-out rounded-md border hover:text-primary hover:border-primary focus:border-primary focus:text-primary outline-none items-center gap-3 hover:gap-5">
             See All
             <span><UiIconsAccordion class="w-3 rotate-90" /></span>
-          </LazyNuxtLink>
+          </NuxtLink>
         </li>
       </ul>
+      <div v-else class="col-span-2 flex items-center justify-center">
+        <UiIconsLoading class="text-primary h-10 w-10"  />
+      </div>
     </Container>
 
     <Container>
