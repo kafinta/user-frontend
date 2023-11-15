@@ -18,13 +18,13 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Poppins', sans-serif;
   background-color: white;
 }
 
 *{
   scroll-behavior: smooth;
   box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
 }
 
 *::-webkit-scrollbar {
