@@ -1,6 +1,6 @@
 <template>
-  <nav class="max-h-fit px-6 md:px-8 lg:px-10 py-4 bg-white w-full z-100 fixed">
-    <div class="mx-auto max-w-7xl flex items-center justify-between">
+  <nav class="max-h-fit py-4 bg-white w-full z-100 fixed">
+    <Container :addTopBottomPadding="false" class="flex items-center justify-between">
       <div class="w-36">
         <NavigationLogo @logoClicked="reloadPage()"></NavigationLogo>
       </div>
@@ -29,9 +29,7 @@
           </li>
         </ul>
       </nav>
-    </div>
-
-
+    </Container>
   </nav>
 </template>
 

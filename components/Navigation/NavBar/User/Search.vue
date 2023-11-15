@@ -1,6 +1,6 @@
 <template>
-  <nav class="fixed z-100 w-full top-0 border-b border-accent-100">
-    <div class="flex items-center justify-between gap-5 px-6 md:px-8 lg:px-10 py-4 bg-white max-w-7xl mx-auto w-full">
+  <nav class="fixed z-100 w-full top-0 border-b border-accent-100 bg-white">
+    <Container :addTopBottomPadding="false" class="flex items-center justify-between gap-5 py-4 w-full">
       <div>
         <NavigationLogo class="w-36" @logoClicked="$router.push({path: '/'})"></NavigationLogo>
       </div>
@@ -8,7 +8,7 @@
       <NavigationMenu class="flex justify-end" @revealMenu="toggleMenu()" />
 
       <form @submit.prevent="pushSearch" class="mx-auto w-full md:flex items-center justify-end relative hidden">
-        <input @focus="focus()" @input="$emit('input', $event.target.value)" v-model="search_input" class="w-full flex justify-center py-3 px-4 border text-sm outline-none border-secondary ring-0 focus:outline-none focus:border-primary active:border-primary rounded-md active:text-primary focus:text-primary text-secondary border-opacity-20 active:border-opacity-100 focus:border-opacity-100 duration-300 ease-out" autocomplete="off" ref="input" type="text" placeholder="What are you looking for?" />
+        <input @focus="focus()" @input="$emit('input', $event.target.value)" v-model="search_input" class="w-full flex justify-center py-3 px-4 border text-sm outline-none border-secondary ring-0 focus:outline-none focus:border-primary active:border-primary rounded-md active:text-primary focus:text-primary text-secondary border-opacity-20 active:border-opacity-100 focus:border-opacity-100 duration-300 ease-out bg-white" autocomplete="off" ref="input" type="text" placeholder="What are you looking for?" />
 
         <button type="submit" class="bg-primary rounded-md p-3 absolute px-4">
           <UiIconsSearch class="text-white w-5 h-6" />
@@ -40,7 +40,7 @@
       </nav>
 
       <NavigationNavBarUserMobile :menu_revealed="toggle_menu"></NavigationNavBarUserMobile>
-    </div>
+    </Container>
 
   </nav>
 </template>
