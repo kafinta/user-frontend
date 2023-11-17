@@ -9,60 +9,30 @@
       </UiButtonsPrimary>
     </div>
 
-    <div class="flex gap-5 mt-10">
-      <aside class="lg:w-1/4 2xl:w-1/5 hidden lg:block">
+    <div class="grid lg:grid-cols-4 2xl:grid-cols-5 gap-5 mt-10">
+      <aside class="hidden lg:block bg-white overflow-y-scroll border-r border-accent">
         <UiTypographyP class="mb-2">Filters</UiTypographyP>
         <Accordion>
-          <AccordionItem container_class="border border-accent-100 py-3 px-5"
-            trigger_class="" active>
-            <template #accordion-trigger>
-              <UiTypographyP>Category</UiTypographyP>
+          <AccordionItem container_class=""
+            trigger_class=" border-b border-accent py-2 px-3" active>
+            <template #accordion-trigger >
+              <UiTypographyP><strong>Category</strong></UiTypographyP>
             </template>
 
             <template #accordion-content>
-              <div v-if="categoryLoaded" class="gap-3 mt-3 flex flex-wrap text-left">
-                <UiButtonsTab @clicked="$router.push({name:  '', query: {category : category.name}}); console.log('test passed')" class="text-left" v-for="category in categories" :key="category.id">{{category.name}}</UiButtonsTab>
+              <div v-if="categoryLoaded" class="mt-3 flex gap-2 flex-wrap text-left">
+                <UiButtonsTertiary :class="categoryActive ? 'text-primary ml-4' : ''" @clicked="$router.push({name: '', query: {category: category.name}}); selectCategory(category.name)" class="text-left text-secondary hover:text-primary py-2 duration-500 ease-in-out" v-for="category in categories" :key="category.id">{{category.name}}</UiButtonsTertiary>
               </div>
 
               <div v-else class="col-span-2 flex items-center justify-center">
-                <UiIconsLoading class="text-primary h-10 w-10"  />
-              </div>
-            </template>
-          </AccordionItem>
-
-          <AccordionItem container_class="border border-accent-100 py-3 px-5 mt-3"
-            trigger_class="">
-            <template #accordion-trigger>
-              <UiTypographyP>Price</UiTypographyP>
-            </template>
-
-            <template #accordion-content>
-              <div class="gap-3 mt-3 flex flex-wrap">
-                <UiButtonsTab>10k - 25k</UiButtonsTab>
-                <UiButtonsTab>25k - 50k</UiButtonsTab>
-                <UiButtonsTab>50k - 100k</UiButtonsTab>
-                <UiButtonsTab>100k - 500k</UiButtonsTab>
-                <UiButtonsTab>500k - 1m</UiButtonsTab>
-              </div>
-            </template>
-          </AccordionItem>
-
-          <AccordionItem container_class="border border-accent-100 py-3 px-5 mt-3"
-            trigger_class="">
-            <template #accordion-trigger>
-              <UiTypographyP>Location</UiTypographyP>
-            </template>
-
-            <template #accordion-content>
-              <div class="gap-3 mt-3 flex flex-wrap">
-                <UiButtonsTab v-for="location in locations" :key="location">{{ location }}</UiButtonsTab>
+                <UiIconsLoading class="text-primary h-10 w-10" />
               </div>
             </template>
           </AccordionItem>
         </Accordion>
       </aside>
 
-      <div class="w-full">
+      <div class="lg:col-span-3 2xl:col-span-4 w-full">
         <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 w-full">
           <UserProductsMinimal v-for="item in 30" :key="item" />
         </div>
@@ -79,50 +49,6 @@
       <template #title>Filters</template>
       <div class="h-full">
         <Accordion class="">
-          <AccordionItem container_class="border border-accent-100 py-3 px-5"
-            trigger_class="" active>
-            <template #accordion-trigger>
-              <UiTypographyP>Category</UiTypographyP>
-            </template>
-
-            <template #accordion-content>
-              <div class="gap-3 mt-3 flex flex-wrap">
-                <UiButtonsTab v-for="category in 2" :key="category">Category</UiButtonsTab>
-                <UiButtonsTab v-for="category in 1" :key="category">Category Item</UiButtonsTab>
-                <UiButtonsTab v-for="category in 3" :key="category">Category Type</UiButtonsTab>
-              </div>
-            </template>
-          </AccordionItem>
-
-          <AccordionItem container_class="border border-accent-100 py-3 px-5 mt-3"
-            trigger_class="">
-            <template #accordion-trigger>
-              <UiTypographyP>Price</UiTypographyP>
-            </template>
-
-            <template #accordion-content>
-              <div class="gap-3 mt-3 flex flex-wrap">
-                <UiButtonsTab>10k - 25k</UiButtonsTab>
-                <UiButtonsTab>25k - 50k</UiButtonsTab>
-                <UiButtonsTab>50k - 100k</UiButtonsTab>
-                <UiButtonsTab>100k - 500k</UiButtonsTab>
-                <UiButtonsTab>500k - 1m</UiButtonsTab>
-              </div>
-            </template>
-          </AccordionItem>
-
-          <AccordionItem container_class="border border-accent-100 py-3 px-5 mt-3"
-            trigger_class="">
-            <template #accordion-trigger>
-              <UiTypographyP>Location</UiTypographyP>
-            </template>
-
-            <template #accordion-content>
-              <div class="gap-3 mt-3 flex flex-wrap">
-                <UiButtonsTab v-for="location in locations" :key="location">{{ location }}</UiButtonsTab>
-              </div>
-            </template>
-          </AccordionItem>
         </Accordion>
       </div>
     </ModalsDrawer>
@@ -130,12 +56,20 @@
 </template>
 <script setup>
 import { onMounted, ref } from "vue";
+import { useRouter } from 'vue-router'
+const route = useRoute()
+const router = useRouter()
+
 
 const openDialog = ref(false)
-const filter_revealed = ref(false)
 const categoryLoaded = ref(false)
 const locations = []
 let categories = []
+const categoryActive = ref(false)
+
+const selectCategory = () => {
+  
+}
 
 const getCategories = async () => {
   const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
@@ -144,9 +78,8 @@ const getCategories = async () => {
     method: 'GET',
     onResponse(res) {
       if (res.response.status == 200) {
-        const thecategories = useState('categories', () => res.response._data)
-        categories = thecategories.value
-        console.log(categories)
+        const allcategories = useState('categories', () => res.response._data)
+        categories = allcategories.value
         categoryLoaded.value = true
       }
     },

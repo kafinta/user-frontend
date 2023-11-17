@@ -115,8 +115,8 @@ export default {
       if(this.allowMultiple){
 
         if(this.item.active === false){
-          this.item.rotate = true;
-          this.item.active = true;
+          this.item.rotate = false;
+          this.item.active = false;
           Object.assign({}, ...this.Items, this.item)
         }else {
           this.item.rotate = false;
