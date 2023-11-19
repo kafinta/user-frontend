@@ -20,14 +20,14 @@
       </AccordionItem>
 
       <AccordionItem container_class="border border-accent lg:border-none"
-        trigger_class=" border-b border-accent py-2 px-3" active>
+        trigger_class=" border-b border-accent py-2 px-3">
         <template #accordion-trigger >
           <UiTypographyP><strong>Locations</strong></UiTypographyP>
         </template>
 
         <template #accordion-content content_class="px-3 py-2">
           <div v-if="categoryLoaded" class="mt-3 flex gap-2 flex-wrap text-left">
-            <UiButtonsTertiary @clicked="$router.push({name: '', query: {location: location.name}}); selectCategory(location.name)" class="text-left text-secondary hover:text-primary py-2 duration-500 ease-in-out" v-for="location in locations" :key="location.id">{{location.name}}</UiButtonsTertiary>
+            <UiButtonsTertiary @clicked="$router.push({name: '', query: {'': '',location: location.name}})" class="text-left text-secondary hover:text-primary py-2 duration-500 ease-in-out" v-for="location in locations" :key="location.id">{{location.name}}</UiButtonsTertiary>
           </div>
 
           <div v-else class="flex items-center justify-center">
@@ -45,10 +45,9 @@ const route = useRoute()
 const router = useRouter()
 
 const categoryLoaded = ref(false)
-const locations = ref([])
+const locationsLoaded = ref(false)
+let locations = []
 let categories = []
-const categoryActive = ref(false)
-
 const selectCategory = () => {
   
 }
@@ -60,8 +59,7 @@ const getCategories = async () => {
     method: 'GET',
     onResponse(res) {
       if (res.response.status == 200) {
-        const allcategories = useState('categories', () => res.response._data)
-        categories = allcategories.value
+        categories = useState('categories', () => res.response._data).value
         categoryLoaded.value = true
       }
     },
@@ -75,9 +73,8 @@ const getLocations = async () => {
     method: 'GET',
     onResponse(res) {
       if (res.response.status == 200) {
-        locations.value = useState('locations', () => res.response._data)
-        console.log(locations.value)
-        categoryLoaded.value = true
+        locations = useState('locations', () => res.response._data).value
+        locationsLoaded.value = true
       }
     },
   })
@@ -86,5 +83,6 @@ const getLocations = async () => {
 onMounted(() => {
   categoryLoaded.value = false
   getCategories();
+  getLocations();
 })
 </script>
