@@ -10,14 +10,14 @@ const toggleSearch = () => {
 const isLoading = ref(false)
 let categories = []
 const getSomeCategories = async () => {
+
   const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
 
   const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('api/categories/7', {
     method: 'GET',
     onResponse(res) {
       if (res.response.status == 200) {
-        const thecategories = useState('categories', () => res.response._data)
-        categories = thecategories.value
+        categories = useState('somecategories', () => res.response._data).value
         isLoading.value = true
       }
     },
@@ -123,7 +123,7 @@ onMounted(() => {
           <UiButtonsTertiary :flexdisplay="true" @clicked="$router.push({name: 'marketplace-products', query: {category : item.name}})" >{{ item.name }}</UiButtonsTertiary>
         </li>
         <li class="col-span-2 lg:col-span-1">
-          <NuxtLink class="flex w-full text-center py-2 px-5 text-secondary font-medium text-base 2xl:text-lg justify-center duration-500 ease-in-out rounded-md border hover:text-primary hover:border-primary focus:border-primary focus:text-primary outline-none items-center gap-3 hover:gap-5">
+          <NuxtLink to="marketplace/categories" class="flex w-full text-center py-2 px-5 text-secondary font-medium text-base 2xl:text-lg justify-center duration-500 ease-in-out rounded-md border hover:text-primary hover:border-primary focus:border-primary focus:text-primary outline-none items-center gap-3 hover:gap-5">
             See All
             <span><UiIconsAccordion class="w-3 rotate-90" /></span>
           </NuxtLink>
