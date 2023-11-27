@@ -27,7 +27,7 @@
 
         <template #accordion-content content_class="px-3 py-2">
           <div v-if="categoryLoaded" class="mt-3 flex gap-2 flex-wrap text-left">
-            <UiButtonsTertiary @clicked="query.location = location.name; $router.push({name: '', query})" class="text-left text-secondary hover:text-primary py-2 duration-500 ease-in-out" v-for="location in locations" :key="location.id">{{location.name}}</UiButtonsTertiary>
+            <UiButtonsTertiary @clicked="query.location = location.name; $router.push({name: '', query}); console.log($route.query)" class="text-left text-secondary hover:text-primary py-2 duration-500 ease-in-out" v-for="location in locations" :key="location.id">{{location.name}}</UiButtonsTertiary>
           </div>
 
           <div v-else class="flex items-center justify-center">
@@ -50,18 +50,21 @@ let locations = []
 let categories = []
 const query = ref({})
 const getCategories = async () => {
+  const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
   const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('api/categories/', {
     method: 'GET',
     onResponse(res) {
       if (res.response.status == 200) {
         categories = useState('categories', () => res.response._data).value
         categoryLoaded.value = true
+      } else {
       }
     },
   })
 };
 
 const getLocations = async () => {
+  const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
   const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('api/locations/', {
     method: 'GET',
     onResponse(res) {
