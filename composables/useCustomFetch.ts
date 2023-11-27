@@ -1,8 +1,5 @@
 import type { UseFetchOptions } from 'nuxt/app'
 import { defu } from 'defu'
-import { toast } from 'vue3-toastify'
-import 'vue3-toastify/dist/index.css'
-
 
 export function useCustomFetch<T>(url: string, options: UseFetchOptions<T> = {}) {
     const XSRF_TOKEN = useCookie('XSRF-TOKEN')
@@ -31,9 +28,8 @@ export function useCustomFetch<T>(url: string, options: UseFetchOptions<T> = {})
         onResponseError(_ctx) {
             if (_ctx.response.status == 401) {
                 const user_session = useCookie('user_session', { sameSite: 'lax' })
-                toast.error(_ctx.response._data.message)
+                
             } else {
-                toast.error(_ctx.response._data.message)
             }
         }
     }
