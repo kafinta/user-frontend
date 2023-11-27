@@ -1,12 +1,14 @@
 <template>
   <LayoutsMarketplace>
-    <!-- <UiCards v-if="locationsLoaded" v-for="item in locations" :key="item.id" :title="item.name" :backgroundImagePath="item.image" :urlPath="item.urlPath"/> -->
-    <div v-if="locationsLoaded" v-for="item in locations" :key="item.id">
-      <img  :src="'http://localhost:8000' + item.image" alt="">
-    </div>
-    <div v-else class="flex items-center justify-center">
-      <UiIconsLoading class="text-primary h-10 w-10" />
-    </div>
+    <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
+      <li v-if="locationsLoaded" v-for="item in locations" :key="item.id">
+        <UiCards @clicked="$router.push({name: 'marketplace-products', query: {location: item.name}})" :title="item.name" :backgroundImagePath="'http://localhost:8000' + item.image" class="w-full"/>
+      </li>
+      <li v-else class="flex items-center justify-center">
+        <UiIconsLoading class="text-primary h-10 w-10" />
+      </li>
+    </ul>
+
   </LayoutsMarketplace>
 </template>
 <script setup>
@@ -23,7 +25,6 @@ const getLocations = async () => {
     onResponse(res) {
       if (res.response.status == 200) {
         locations = useState('locations', () => res.response._data).value
-        console.log(locations)
         locationsLoaded.value = true
       }
     },

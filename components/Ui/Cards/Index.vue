@@ -1,11 +1,11 @@
 <template>
-  <nuxt-link to="" class="cursor-pointer group">
+  <button @click="$emit('clicked')" class="cursor-pointer group">
     <div style="width: 100%;" class="aspect-square background rounded-2xl transform ease-in-out duration-500 hover:scale-90" :style="{ background:`url(${backgroundImagePath})`}">
-      <div class="w-full h-full p-5 flex items-end bg-gradient-to-b from-transparent via-transparent to-black rounded-b-2xl">
-        <UiTypographyP color="white">{{title}}</UiTypographyP>
+      <div class=" text-left w-full h-full p-5 flex items-end bg-gradient-to-b from-transparent via-transparent to-black rounded-b-2xl">
+        <UiTypographyH3 color="white">{{title}}</UiTypographyH3>
       </div>
     </div>
-  </nuxt-link>
+  </button>
 </template>
 
 <script>
@@ -14,6 +14,7 @@ export default {
     backgroundImagePath: String,
     title: String,
     urlPath: String,
+    query: Object
   },
 }
 </script>
