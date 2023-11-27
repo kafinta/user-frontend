@@ -30,6 +30,5 @@ const getCategories = async () => {
 
 onMounted(() => {
   getCategories();
-  console.log(selected)
 })
 </script>

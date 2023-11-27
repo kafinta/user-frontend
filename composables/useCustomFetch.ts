@@ -22,7 +22,7 @@ export function useCustomFetch<T>(url: string, options: UseFetchOptions<T> = {})
 
         onResponse(_ctx) {
             // _ctx.response._data = new myBusinessResponse(_ctx.response._data)
-           toast.success(_ctx.response._data.message)
+        //    toast.success(_ctx.response._data.message)
         },
 
         onResponseError(_ctx) {

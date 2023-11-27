@@ -16,7 +16,6 @@ const categoryLoaded = ref(false)
 let categories  = []
 
 function selectCategory(item) {
-  const selected = useState('selected_item', () => item.name)
 }
 
 const getCategories = async () => {
