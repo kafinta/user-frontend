@@ -14,7 +14,7 @@
           </div>
 
           <div v-else class="flex items-center justify-center">
-            <UiIconsLoading class="text-primary h-10 w-10" />
+            <UiIconsLoading class="text-accent-100 h-10 w-10" />
           </div>
         </template>
       </AccordionItem>
@@ -31,7 +31,7 @@
           </div>
 
           <div v-else class="flex items-center justify-center">
-            <UiIconsLoading class="text-primary h-10 w-10" />
+            <UiIconsLoading class="text-accent-100 h-10 w-10" />
           </div>
         </template>
       </AccordionItem>
