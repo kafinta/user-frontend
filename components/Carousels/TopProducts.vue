@@ -3,7 +3,11 @@
     <div>
       <div class="glide_slider professionals">
         <div class="flex items-center justify-between">
-          <UiTypographyH2>Top Products</UiTypographyH2>
+          <div>
+            <UiTypographyH2>Top Products</UiTypographyH2>
+            <UiTypographyP>Our top selling products in the last month.</UiTypographyP>
+          </div>
+
           <div class="glide__arrows flex gap-2" data-glide-el="controls">
             <button class="glide__arrow glide__arrow--left" data-glide-dir="<">
               <div class="bg-secondary aspect-square rounded-full p-1.5 hover:bg-primary duration-300 bg-opacity-75">

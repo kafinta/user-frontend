@@ -104,8 +104,9 @@ onMounted(() => {
     </section>
 
     <Container>
-      <UiTypographyH2 class="text-secondary text-2xl md:text-3xl 2xl:text-4xl font-medium">Browse by Rooms</UiTypographyH2>
-      <CarouselsMarketplace />
+      <UiTypographyH2 class="text-secondary text-2xl md:text-3xl 2xl:text-4xl font-medium">Browse by Locations</UiTypographyH2>
+      <UiTypographyP>Search for products based on the rooms they are found in.</UiTypographyP>
+      <CarouselsLocations />
     </Container>
 
     <Container  class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -119,7 +120,7 @@ onMounted(() => {
         <li v-for="item in categories" :key="item.id" class="">
           <LazyUiButtonsTertiary :flexdisplay="true" @clicked="$router.push({name: 'marketplace-products', query: {category : item.name}})" >{{ item.name }}</LazyUiButtonsTertiary>
         </li>
-        <li class="col-span-2 lg:col-span-1">
+        <li class="col-span-1 md:col-span-2 lg:col-span-1">
           <NuxtLink to="marketplace/categories" class="flex w-full text-center py-2 px-5 text-secondary font-medium text-base 2xl:text-lg justify-center duration-500 ease-in-out rounded-md border hover:text-primary hover:border-primary focus:border-primary focus:text-primary outline-none items-center gap-3 hover:gap-5">
             See All
             <span><UiIconsAccordion class="w-3 rotate-90" /></span>
@@ -127,7 +128,7 @@ onMounted(() => {
         </li>
       </ul>
       <div v-else class="col-span-2 flex items-center justify-center">
-        <UiIconsLoading class="text-primary h-10 w-10"  />
+        <UiIconsLoading class="text-accent-100 h-10 w-10"  />
       </div>
     </Container>
 
