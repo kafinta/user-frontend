@@ -2,6 +2,7 @@ export default defineNuxtConfig({
   // ssr: true,
   modules:[
     '@nuxtjs/tailwindcss',
+    // '@pinia/nuxt'
   ],
 
   css:[

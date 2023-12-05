@@ -51,12 +51,9 @@ onMounted(() => {
       </div>
     </header>
 
-    <Container>
-      <div>
-        <UiTypographyH2>Top Products</UiTypographyH2>
-        <CarouselsProfessionals />
-      </div>
-    </Container>
+    <section>
+      <CarouselsTopProducts  />
+    </section>
 
     <section class="bg-primary bg-opacity-10">
       <Container class="max-w-7xl mx-auto lg:flex items-center justify-center gap-10">
@@ -120,7 +117,7 @@ onMounted(() => {
       </div>
       <ul v-if="isLoading" class="col-span-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <li v-for="item in categories" :key="item.id" class="">
-          <UiButtonsTertiary :flexdisplay="true" @clicked="$router.push({name: 'marketplace-products', query: {category : item.name}})" >{{ item.name }}</UiButtonsTertiary>
+          <LazyUiButtonsTertiary :flexdisplay="true" @clicked="$router.push({name: 'marketplace-products', query: {category : item.name}})" >{{ item.name }}</LazyUiButtonsTertiary>
         </li>
         <li class="col-span-2 lg:col-span-1">
           <NuxtLink to="marketplace/categories" class="flex w-full text-center py-2 px-5 text-secondary font-medium text-base 2xl:text-lg justify-center duration-500 ease-in-out rounded-md border hover:text-primary hover:border-primary focus:border-primary focus:text-primary outline-none items-center gap-3 hover:gap-5">
