@@ -27,6 +27,12 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
+.background {
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+}
+
 *::-webkit-scrollbar {
   width:5px;
   background-color: transparent;
@@ -39,7 +45,6 @@ body {
   background-color: #C9B14F;
   cursor: pointer;
 }
-
 
 .menu-shadow {
   box-shadow: 3px 0 10px -2px rgba(0, 0, 0, 0.082);

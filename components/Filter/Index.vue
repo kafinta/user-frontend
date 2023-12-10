@@ -35,6 +35,39 @@
           </div>
         </template>
       </AccordionItem>
+
+      <AccordionItem container_class="border border-accent lg:border-none"
+        trigger_class=" border-b border-accent py-2 px-3">
+        <template #accordion-trigger >
+          <UiTypographyP><strong>Price</strong></UiTypographyP>
+        </template>
+
+        <template #accordion-content content_class="px-3 py-2">
+          <div v-if="categoryLoaded" class="mt-3 flex gap-2 flex-wrap text-left">
+            <UiButtonsTertiary @clicked="query.price = location.name; $router.push({name: '', query}); console.log($route.query)" class="text-left text-secondary hover:text-primary py-2 duration-500 ease-in-out" v-for="location in locations" :key="location.id">{{location.name}}</UiButtonsTertiary>
+          </div>
+
+          <div v-else class="flex items-center justify-center">
+            <UiIconsLoading class="text-accent-100 h-10 w-10" />
+          </div>
+        </template>
+      </AccordionItem>
+      <AccordionItem container_class="border border-accent lg:border-none"
+        trigger_class=" border-b border-accent py-2 px-3">
+        <template #accordion-trigger >
+          <UiTypographyP><strong>Reviews</strong></UiTypographyP>
+        </template>
+
+        <template #accordion-content content_class="px-3 py-2">
+          <div v-if="categoryLoaded" class="mt-3 flex gap-2 flex-wrap text-left">
+            <UiButtonsTertiary @clicked="query.price = location.name; $router.push({name: '', query}); console.log($route.query)" class="text-left text-secondary hover:text-primary py-2 duration-500 ease-in-out" v-for="location in locations" :key="location.id">{{location.name}}</UiButtonsTertiary>
+          </div>
+
+          <div v-else class="flex items-center justify-center">
+            <UiIconsLoading class="text-accent-100 h-10 w-10" />
+          </div>
+        </template>
+      </AccordionItem>
     </Accordion>
   </aside>
 </template>

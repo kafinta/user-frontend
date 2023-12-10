@@ -2,8 +2,11 @@
     <li class="border border-accent-100 rounded-xl">
         <ProductsImage :imagePath="image" class="rounded-t-xl" />
         <aside class="p-4">
-            <h3 class="text-secondary text-xl">{{ title }}</h3>
-            <ProductsPrice></ProductsPrice>
+            <ProductsName class="text-secondary text-xl">{{ title }}</ProductsName>
+            <div class="flex items-center justify-between mt-3">
+                <ProductsRating :rating="review" />
+                <ProductsPrice></ProductsPrice>
+            </div>
         </aside>
     </li>
 </template>
@@ -11,7 +14,11 @@
 export default {
     props: {
         image: String,
-        title: String
-    }
+        title: String,
+        review: {
+            default: 4.3,
+            type: Number
+        }
+    },
 }
 </script>

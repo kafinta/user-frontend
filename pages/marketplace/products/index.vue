@@ -14,7 +14,7 @@
       <Filter class="hidden lg:block"/>
       <div class="lg:col-span-3 2xl:col-span-4 w-full">
         <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 w-full">
-          <ProductsMinimal v-for="item in 30" :key="item" />
+          <ProductsCard v-for="item in 30" :key="item" />
         </div>
           <div class="join gap-1 mt-10 justify-center w-full">
             <button class="join-item btn">«</button>

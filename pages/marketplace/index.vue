@@ -4,7 +4,7 @@
       <div class="mt-2">
         <div class="flex items-center justify-between">
           <div>
-            <UiTypographyH3 class="text-secondary text-xl md:text-2xl 2xl:text-3xl font-medium">Top Locations</UiTypographyH3>
+            <UiTypographyH2 class="text-secondary text-xl md:text-2xl 2xl:text-3xl font-medium">Top Locations</UiTypographyH2>
             <UiTypographyP>Locations our users shop for the most</UiTypographyP>
           </div>
           <UiButtonsSecondary @clicked="$router.push({name: 'marketplace-locations'})" class="flex gap-1 items-center">
