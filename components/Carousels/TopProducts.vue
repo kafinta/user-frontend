@@ -4,7 +4,7 @@
       <div class="glide_slider professionals">
         <div class="flex items-center justify-between">
           <div>
-            <UiTypographyH2>Top Products</UiTypographyH2>
+            <UiTypographyH2>Trending Products</UiTypographyH2>
             <UiTypographyP>Our top selling products in the last month.</UiTypographyP>
           </div>
           <div class="glide__arrows flex gap-2" data-glide-el="controls">
