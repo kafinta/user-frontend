@@ -1,41 +1,3 @@
-<script setup>
-import { toast } from 'vue3-toastify';
-import 'vue3-toastify/dist/index.css';
-import { ref } from "vue";
-
-let is_small = false;
-let loadingState = ref(false);
-let error_state = false;
-const email = ref();
-const username = ref();
-const password = ref();
-
-const handleUserSignup = async () => {
-loadingState.value = true;
-const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
-const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('/api/user/auth/register', {
-  method: 'POST',
-  body: {
-    email: email,
-    password: password,
-    username: username
-  },
-  onResponse(res) {
-    if (res.response.status == 200) {
-      toast.success(res.response._data.message, {
-        position: toast.POSITION.BOTTOM_RIGHT,
-      })
-      router.push({name: '/verify'})
-      // user_account.value = res.response._data.data.account
-      // session.value = 'active'
-      // global_authentication.value = false
-    }
-  },
-})
-loadingState.value = pending.value
-}
-</script>
-
 <template>
   <div class="flex flex-row-reverse select-none">
     <div class="background hidden lg:flex w-2/3 bg-cover bg-center py-5 px-10 relative flex-col justify-between">
@@ -59,30 +21,11 @@ loadingState.value = pending.value
         <h1 :class="is_small ? 'text-2xl' : ''" class="font-medium text-3xl w-fit text-secondary">Create account.</h1>
         <p :class="is_small ? 'mb-4' : ''" class="text-sm text-secondary mb-8">You are just a few steps away.</p>
 
-        <div class="mb-6">
-          <div class="mt-10 flex gap-5 items-center">
-            <NuxtLink to="" class="hover:-translate-y-1 duration-300 ease-in-out flex gap-3 items-center justify-center w-full border rounded-md border-secondary border-opacity-20 py-3">
-              <img src="/images/logos/facebook.svg" class="w-7" alt="">
-              Facebook
-            </NuxtLink>
-
-            <NuxtLink to="" class="hover:-translate-y-1 duration-300 ease-in-out flex gap-3 items-center justify-center w-full border rounded-md border-secondary border-opacity-20 py-3">
-              <img src="/images/logos/google.svg" class="w-7" alt="">
-              Google
-            </NuxtLink>
-          </div>
-
-          <div class="flex items-center justify-center relative w-full mt-5">
-            <p class="text-secondary text-sm absolute bg-white px-6">OR</p>
-            <div class="w-full h-[1px] bg-secondary bg-opacity-20"></div>
-          </div> 
-        </div>
-
         <form @submit.prevent="handleUserSignup()" action="" class="grid gap-4">
-          <FormInput label="Email" v-model:inputValue="email" placeholder="Enter your email address"></FormInput>
-          <FormInput label="Username" v-model:inputValue="username" placeholder="Choose your username"></FormInput>
+          <FormInput label="Email" v-model:inputValue="form.email" placeholder="Enter your email address"></FormInput>
+          <FormInput label="Username" v-model:inputValue="form.username" placeholder="Choose your username"></FormInput>
           <div>
-            <FormInput :error="error_state" label="Password" type="password" v-model:inputValue="password" placeholder="Enter your password"></FormInput>
+            <FormInput :error="error_state" label="Password" type="password" v-model:inputValue="form.password" placeholder="Enter your password"></FormInput>
             <p :class="error_state ? 'opacity-100' : 'opacity-0'" class="text-sm text-red-600 mt-2">Password must be at least 8 characters</p>
           </div>
 
@@ -94,20 +37,51 @@ loadingState.value = pending.value
   </div>
 
 </template>
-
-<!-- <script>
+<script>
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
 export default {
   data() {
     return {
       is_small: false,
       loadingState: false,
       error_state: false,
+      form: {
+        email: '',
+        username: '',
+        password: '',
+      }
     }
   },
 
   methods: {
     returnHome(){
       this.$router.push({path: '/'})
+    },
+
+    async handleUserSignup(){
+      this.loadingState = true;
+      const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
+      const { pending, data: responseData, error: user_auth_error } = await useCustomFetch('/api/user/auth/register', {
+        method: 'POST',
+        body: {
+          email: this.form.email,
+          password: this.form.password,
+          username: this.form.username
+        },
+        onResponse(res) {
+          if (res.response.status == 200) {
+            this.toast.success(responseData.message, {
+              position: toast.POSITION.BOTTOM_RIGHT,
+            })
+            this.$router.push({name: 'verify'})
+            this.form.email= ''
+            this.form.username= ''
+            this.form.password= ''
+            this.loadingState = false
+          }
+        },
+      })
     }
   },
   
@@ -116,8 +90,10 @@ export default {
       this.is_small = true
     }
   },
+
+  components: {toast}
 }
-</script> -->
+</script>
 <style>
 .background {
   background-image: url('/images/register.jpg');
