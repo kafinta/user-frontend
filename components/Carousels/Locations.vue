@@ -2,17 +2,17 @@
   <div v-if="locationsLoaded" class="glide_slides mt-5 relative flex items-center">
     <div class="glide__track" data-glide-el="track">
       <div class="glide__slides">
-        <UiCards  v-for="item in locations" :key="item.id" :title="item.name" :backgroundImagePath="'http://localhost:8000' + item.image" :urlPath="{name: 'marketplace-locations'}" class="glide__slide"/>
+        <UiCards @click="$router.push({name: 'marketplace-products', query: {location: item.name}})" v-for="item in locations" :key="item.id" :title="item.name" :backgroundImagePath="'http://localhost:8000' + item.image" :urlPath="{name: 'marketplace-locations'}" class="glide__slide"/>
       </div>
     </div>
 
     <div class="glide__arrows h-fit" data-glide-el="controls">
-      <button class="glide__arrow glide__arrow--left absolute left-3" data-glide-dir="<">
+      <button class="glide__arrow glide__arrow--left absolute focus:outline-none left-3" data-glide-dir="<">
         <div class="bg-secondary aspect-square rounded-full p-3 hover:bg-primary duration-300 bg-opacity-75">
           <UiIconsAccordion class="w-5 h-5 -rotate-90 text-white" />
         </div>
       </button>
-      <button class="glide__arrow glide__arrow--right absolute right-3" data-glide-dir=">">
+      <button class="glide__arrow glide__arrow--right absolute right-3 focus:outline-none" data-glide-dir=">">
         <div class="bg-secondary aspect-square rounded-full p-3 hover:bg-primary duration-300 bg-opacity-75">
           <UiIconsAccordion class="w-5 h-5 rotate-90 text-white" />
         </div>
@@ -26,7 +26,6 @@
 <script setup>
 import Glide from '@glidejs/glide'
 import { onMounted, ref } from "vue";
-// import { useRouter } from 'vue-router'
 
 const locationsLoaded = ref(false)
 let locations = []
@@ -38,15 +37,16 @@ const getLocations = async () => {
     onResponse(res) {
       if (res.response.status == 200) {
         locations = useState('locations', () => res.response._data).value
-        // locationsLoaded.value = true
+        setTimeout(() => {
+          mountSlider()
+        }, 200);
+        locationsLoaded.value = true
       }
     },
   })
 };
 
-onMounted(() =>{
-  // getLocations();
-
+const mountSlider = () => {
   const marketplaceslider = document.querySelectorAll(`.glide_slides`)
   marketplaceslider.forEach((marketplace) => {
     new Glide(marketplace, {
@@ -75,6 +75,9 @@ onMounted(() =>{
       }
     }).mount()
   })
+}
 
+onMounted(() =>{
+  getLocations();
 })
 </script>
