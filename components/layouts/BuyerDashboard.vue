@@ -28,8 +28,6 @@
 
 <script>
 export default {
-  middleware: ['user_auth'],
-
   data() {
     return {
       online_presence: true,
@@ -47,12 +45,6 @@ export default {
       this.mobile_nav = !this.mobile_nav
       this.menu_revealed = !this.menu_revealed
     },
-  },
-
-  computed: {
-    ...mapGetters({
-      user_info: "authentication/getUserInfo",
-    }),
   },
 }
 </script>

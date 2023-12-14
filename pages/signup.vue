@@ -2,6 +2,7 @@
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import { ref } from "vue";
+const router = useRouter()
 
 let is_small = false;
 let loadingState = ref(false);
@@ -10,40 +11,67 @@ const email = ref();
 const username = ref();
 const password = ref();
 
+const createUserProfile = async () => {
+  const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
+  const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('/api/user/profile', {
+    method: 'POST',
+    onResponse(res) {
+      console.log(res.response)
+      if (res.response.status == 200) {
+        toast.success(res.response._data.message, {
+          position: toast.POSITION.BOTTOM_RIGHT,
+          theme: 'colored'
+        })
+        router.push({name: 'verify'})
+      } else {
+        toast.error(res.response._data.message, {
+          position: toast.POSITION.BOTTOM_RIGHT,
+          theme: 'colored'
+        })
+      }
+    },
+  })
+}
+
 const handleUserSignup = async () => {
 loadingState.value = true;
 const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
 const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('/api/user/auth/register', {
   method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-XSRF-TOKEN': document.cookie.split('; ').find(cookie => cookie.startsWith('XSRF-TOKEN=')).split('=')[1]
+  },
   body: {
     email: email,
     password: password,
     username: username
   },
   onResponse(res) {
+    console.log(res.response)
     if (res.response.status == 200) {
       toast.success(res.response._data.message, {
         position: toast.POSITION.BOTTOM_RIGHT,
+        theme: 'colored'
       })
-      router.push({name: '/verify'})
-      // user_account.value = res.response._data.data.account
-      // session.value = 'active'
-      // global_authentication.value = false
+      createUserProfile()
+      router.push({name: 'verify'})
+    } else {
+      toast.error(res.response._data.message, {
+        position: toast.POSITION.BOTTOM_RIGHT,
+        theme: 'colored'
+      })
     }
   },
 })
 loadingState.value = pending.value
 }
 </script>
-
 <template>
   <div class="flex flex-row-reverse select-none">
-    <div class="background hidden lg:flex w-2/3 bg-cover bg-center py-5 px-10 relative flex-col justify-between">
-      <div class="flex justify-end">
-        <NavigationLogoMonotone @click="returnHome()"  class="w-36 cursor-pointer text-white" />
-      </div>
+    <div class="background hidden lg:flex w-2/3 bg-cover bg-center py-5 px-10 relative flex-col justify-end">
 
-      <div class="bg-white rounded-md bg-opacity-80 p-5 bottom-5 w-full">
+      <div class="bg-white rounded-md bg-opacity-80 p-5 w-full">
         <h1 class="text-2xl text-secondary">With the top of the line products and services available, my home has never looked or felt better. Amazing platform, definitely recommend!</h1>
 
         <p class="text-base 2xl:text-lg text-primary mt-5">Olivia Rhye</p>
@@ -58,25 +86,6 @@ loadingState.value = pending.value
       <main class="w-full md:w-2/3 lg:w-full rounded-xl p-5" :class="is_small ? 'p-0' : ''">
         <h1 :class="is_small ? 'text-2xl' : ''" class="font-medium text-3xl w-fit text-secondary">Create account.</h1>
         <p :class="is_small ? 'mb-4' : ''" class="text-sm text-secondary mb-8">You are just a few steps away.</p>
-
-        <div class="mb-6">
-          <div class="mt-10 flex gap-5 items-center">
-            <NuxtLink to="" class="hover:-translate-y-1 duration-300 ease-in-out flex gap-3 items-center justify-center w-full border rounded-md border-secondary border-opacity-20 py-3">
-              <img src="/images/logos/facebook.svg" class="w-7" alt="">
-              Facebook
-            </NuxtLink>
-
-            <NuxtLink to="" class="hover:-translate-y-1 duration-300 ease-in-out flex gap-3 items-center justify-center w-full border rounded-md border-secondary border-opacity-20 py-3">
-              <img src="/images/logos/google.svg" class="w-7" alt="">
-              Google
-            </NuxtLink>
-          </div>
-
-          <div class="flex items-center justify-center relative w-full mt-5">
-            <p class="text-secondary text-sm absolute bg-white px-6">OR</p>
-            <div class="w-full h-[1px] bg-secondary bg-opacity-20"></div>
-          </div> 
-        </div>
 
         <form @submit.prevent="handleUserSignup()" action="" class="grid gap-4">
           <FormInput label="Email" v-model:inputValue="email" placeholder="Enter your email address"></FormInput>
@@ -94,30 +103,6 @@ loadingState.value = pending.value
   </div>
 
 </template>
-
-<!-- <script>
-export default {
-  data() {
-    return {
-      is_small: false,
-      loadingState: false,
-      error_state: false,
-    }
-  },
-
-  methods: {
-    returnHome(){
-      this.$router.push({path: '/'})
-    }
-  },
-  
-  mounted(){
-    if (process.client && window.innerWidth <= 320) {
-      this.is_small = true
-    }
-  },
-}
-</script> -->
 <style>
 .background {
   background-image: url('/images/register.jpg');
