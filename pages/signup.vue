@@ -88,10 +88,10 @@ loadingState.value = pending.value
         <p :class="is_small ? 'mb-4' : ''" class="text-sm text-secondary mb-8">You are just a few steps away.</p>
 
         <form @submit.prevent="handleUserSignup()" action="" class="grid gap-4">
-          <FormInput label="Email" v-model:inputValue="email" placeholder="Enter your email address"></FormInput>
-          <FormInput label="Username" v-model:inputValue="username" placeholder="Choose your username"></FormInput>
+          <FormInput label="Email" v-model:inputValue="form.email" placeholder="Enter your email address"></FormInput>
+          <FormInput label="Username" v-model:inputValue="form.username" placeholder="Choose your username"></FormInput>
           <div>
-            <FormInput :error="error_state" label="Password" type="password" v-model:inputValue="password" placeholder="Enter your password"></FormInput>
+            <FormInput :error="error_state" label="Password" type="password" v-model:inputValue="form.password" placeholder="Enter your password"></FormInput>
             <p :class="error_state ? 'opacity-100' : 'opacity-0'" class="text-sm text-red-600 mt-2">Password must be at least 8 characters</p>
           </div>
 
