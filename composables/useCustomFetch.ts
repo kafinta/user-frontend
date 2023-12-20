@@ -17,7 +17,7 @@ export function useCustomFetch<T>(url: string, options: UseFetchOptions<T> = {})
         headers:
         {
             'accept': 'application/json, text/plain, */*',
-            'X-XSRF-TOKEN': XSRF_TOKEN.value ? XSRF_TOKEN.value : ''
+            'X-XSRF-TOKEN': XSRF_TOKEN.value
         },
 
         onResponse(_ctx) {

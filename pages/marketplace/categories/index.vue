@@ -11,11 +11,15 @@
   </LayoutsMarketplace>
 </template>
 <script setup>
+import { useSelectCategory } from "@/composables/useSelectCategory";
 import { onMounted, ref } from "vue";
 const categoryLoaded = ref(false)
+const {id} = useSelectCategory() 
 let categories  = []
 
 function selectCategory(item) {
+  id.value = item.id
+  console.log(id.value)
 }
 
 const getCategories = async () => {
