@@ -12,7 +12,7 @@ const username = ref();
 const password = ref();
 
 const createUserProfile = async () => {
-  const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
+  // const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
   const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('/api/user/profile', {
     method: 'POST',
     onResponse(res) {
