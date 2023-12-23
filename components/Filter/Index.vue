@@ -12,7 +12,7 @@
           <div :class="toggleSubcategories ? 'hidden' : 'block'" class="mt-3">
             <ul v-if="categoryLoaded" class="flex gap-2 flex-wrap text-left">
               <li v-for="category in categories" :key="category.id">
-                <UiButtonsTertiary @clicked="query.category = category.name; $router.push({name: '', query}); selectCategory(category)" class="text-left text-secondary hover:text-primary py-2 duration-500 ease-in-out">{{category.name}}</UiButtonsTertiary>
+                <UiButtonsTertiary @clicked="selectCategory(category); query.category = category.name; $router.push({name: '', query});" class="text-left text-secondary hover:text-primary py-2 duration-500 ease-in-out">{{category.name}}</UiButtonsTertiary>
               </li>
             </ul>
             <div v-else class="flex items-center justify-center">
@@ -20,7 +20,11 @@
             </div>
           </div>
 
-          <div :class="toggleSubcategories ? 'block' : 'hidden'" class="mt-3">
+          <div :class="toggleSubcategories ? 'block' : 'hidden'" class="mt-3 px-5">
+            <UiButtonsSecondary @clicked="toggleSub()" class="flex gap-2 items-center mb-5">
+              <span><UiIconsArrow class="w-4" /></span>
+              {{ categoryName }}
+            </UiButtonsSecondary>
             <ul v-if="subcategoryLoaded" class="flex gap-2 flex-wrap text-left">
               <li v-for="subcategory in subcategories" :key="subcategory.id">
                 <UiButtonsTertiary @clicked="query.subcategory = subcategory.name; $router.push({name: '', query}); selectCategory(subcategory)" class="text-left text-secondary hover:text-primary py-2 duration-500 ease-in-out">{{subcategory.name}}</UiButtonsTertiary>
@@ -100,6 +104,7 @@ const locationsLoaded = ref(false)
 const toggleSubcategories = ref(false)
 let locations = []
 let categories = []
+let categoryName = []
 let subcategories = []
 const query = ref({})
 const getCategories = async () => {
@@ -119,14 +124,19 @@ const selectCategory = async (category) => {
   const { pending, data, error } = await useCustomFetch(`api/categories/${category.id}/subcategories/`, {
     method: 'GET',
     onResponse(res) {
-      console.log(res.response)
       if (res.response.status == 200) {
-        subcategories = useState('subcategories', () => res.response._data.subcategories).value
+        categoryName = res.response._data.category.name
+        subcategories = res.response._data.subcategories
         subcategoryLoaded.value = true
-        toggleSubcategories.value = true
       }
     },
   })
+
+  toggleSub()
+}
+
+function toggleSub() {
+  toggleSubcategories.value = !toggleSubcategories.value
 }
 
 const getLocations = async () => {
@@ -134,7 +144,7 @@ const getLocations = async () => {
     method: 'GET',
     onResponse(res) {
       if (res.response.status == 200) {
-        locations = useState('locations', () => locationData).value
+        locations = useState('locations', () => res.response._data).value
         locationsLoaded.value = true
       }
     },
