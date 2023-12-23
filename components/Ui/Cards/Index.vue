@@ -13,7 +13,6 @@ export default {
   props: {
     backgroundImagePath: String,
     title: String,
-    urlPath: String,
     query: Object
   },
 }
