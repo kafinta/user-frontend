@@ -2,7 +2,7 @@
   <div v-if="locationsLoaded" class="glide_slides mt-5 relative flex items-center">
     <div class="glide__track" data-glide-el="track">
       <div class="glide__slides">
-        <UiCards @click="$router.push({name: 'marketplace-products', query: {location: item.name}})" v-for="item in locations" :key="item.id" :title="item.name" :backgroundImagePath="'http://localhost:8000' + item.image" :urlPath="{name: 'marketplace-locations'}" class="glide__slide"/>
+        <UiCards @clicked="$router.push({name: 'marketplace-products', query: {location: item.name}})" v-for="item in locations" :key="item.id" :title="item.name" :backgroundImagePath="'http://localhost:8000' + item.image" class="glide__slide"/>
       </div>
     </div>
 
