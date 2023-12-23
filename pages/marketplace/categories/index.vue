@@ -2,7 +2,7 @@
   <LayoutsMarketplace>
     <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
       <li v-if="categoryLoaded" v-for="item in categories" :key="item.id">
-        <UiCards @clicked="selectCategory(item); $router.push({name: 'marketplace-categories-category', params: {category: item.name}})" :title="item.name" :backgroundImagePath="'http://localhost:8000' + item.image" class="w-full"/>
+        <UiCards @clicked="selectCategory(item); query.category=item.name; $router.push({name: 'marketplace-categories-category', params: {category: item.name}})" :title="item.name" :backgroundImagePath="'http://localhost:8000' + item.image" class="w-full"/>
       </li>
       <li v-else class="flex items-center justify-center">
         <UiIconsLoading class="text-primary h-10 w-10" />
@@ -12,9 +12,11 @@
 </template>
 <script setup>
 import { useSelectCategory } from "@/composables/useSelectCategory";
+import { useQuery } from "@/composables/useQuery";
 import { onMounted, ref } from "vue";
 const categoryLoaded = ref(false)
 const {id} = useSelectCategory() 
+const {query} = useQuery() 
 let categories  = []
 
 function selectCategory(item) {

@@ -95,9 +95,10 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useRouter } from 'vue-router'
+import { useQuery } from "@/composables/useQuery";
 const route = useRoute()
 const router = useRouter()
-
+const query = useQuery()
 const categoryLoaded = ref(false)
 const subcategoryLoaded = ref(false)
 const locationsLoaded = ref(false)
@@ -106,7 +107,6 @@ let locations = []
 let categories = []
 let categoryName = []
 let subcategories = []
-const query = ref({})
 const getCategories = async () => {
   const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('api/categories/', {
     method: 'GET',
