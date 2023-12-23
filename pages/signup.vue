@@ -40,7 +40,6 @@ const { pending, data: user_auth_data, error: user_auth_error } = await useCusto
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'X-XSRF-TOKEN': document.cookie.split('; ').find(cookie => cookie.startsWith('XSRF-TOKEN=')).split('=')[1]
   },
   body: {
     email: email,

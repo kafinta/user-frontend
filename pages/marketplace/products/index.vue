@@ -37,12 +37,4 @@
 import { onMounted, ref } from "vue";
 import { useRouter } from 'vue-router'
 const openDialog = ref(false)
-
-const selectCategory = () => {
-  
-}
-
-onMounted(() => {
-  // categoryLoaded.value = false
-})
 </script>
