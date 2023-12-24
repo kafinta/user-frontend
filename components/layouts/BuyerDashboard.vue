@@ -1,12 +1,12 @@
 <template>
   <div class="flex w-full select-none">
-    <NavigationSideBarBuying :username="user_info.username" :class="menu_revealed ? 'translate-x-0' : '-translate-x-full'" class="md:translate-x-0 duration-150 ease-in-out" />
+    <NavigationSideBarBuying username="Quadri" :class="menu_revealed ? 'translate-x-0' : '-translate-x-full'" class="md:translate-x-0 duration-150 ease-in-out" />
     <div class="w-4/5 md:w-1/4 lg:w-1/5 xl:w-1/6 hidden md:block"></div>
     <SharedBackdrop :show="menu_revealed" @close="toggleMenu()" />
 
     <nav class="flex mx-auto items-center max-h-fit justify-between px-6 py-4 bg-white w-full z-10 fixed md:hidden">
       <div class="w-36">
-        <NavigationLogo @logoClicked="reloadPage()"></NavigationLogo>
+        <NavigationLogo @logoClicked="$router.push({name: '/'})"></NavigationLogo>
       </div>
 
       <div class="flex md:hidden" @click="toggleMenu">
