@@ -7,31 +7,31 @@
         </div>
 
         <div class="mt-6">
-          <nuxt-link :to="{name: 'usernamedashboard'}">
+          <nuxt-link :to="{name: 'username-buying'}">
             <NavigationSideMenu menu_text="Dashboard" :is_active="dashboardActive">
               <UiIconsOverview />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link :to="{name: 'usernameinbox'}">
+          <nuxt-link :to="{name: 'username-buying'}">
             <NavigationSideMenu menu_text="Inbox" :is_active="inboxActive">
               <UiIconsMessages />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link :to="{name: 'usernameproducts'}">
+          <nuxt-link :to="{name: 'username-buying'}">
             <NavigationSideMenu menu_text="Products" :is_active="productsActive">
               <UiIconsGigs />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link :to="{name: 'usernameorders'}">
+          <nuxt-link :to="{name: 'username-buying'}">
             <NavigationSideMenu menu_text="Orders" :is_active="OrdersActive">
               <UiIconsCart />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link :to="{name: 'usernameearnings'}">
+          <nuxt-link :to="{name: 'username-buying'}">
             <NavigationSideMenu menu_text="Earnings" :is_active="earningsActive">
               <UiIconsTransactions />
             </NavigationSideMenu>
@@ -75,7 +75,10 @@
 <script>
 export default {
   props: {
-    username: String
+    username: {
+      default: 'Test User',
+      type: String
+    }
   },
 
   data() {
