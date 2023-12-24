@@ -70,7 +70,7 @@ const getUserDetails = async () => {
   })
 }
 onMounted(() => {
-  // getUserDetails()
+  getUserDetails()
 })
 </script>
 <template>

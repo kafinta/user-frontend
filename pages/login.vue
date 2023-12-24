@@ -2,6 +2,9 @@
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import { ref } from "vue";
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 let is_small = ref(false);
 let loadingState = ref(false);
@@ -25,6 +28,7 @@ const signIn= async () => {
           theme: 'colored',
           position: toast.POSITION.BOTTOM_RIGHT,
         })
+        router.push({name: 'username-buying', params: {username: res.response._data.data.account.username}})
       } else {
       toast.error(res.response._data.message, {
         position: toast.POSITION.BOTTOM_RIGHT,
@@ -57,9 +61,9 @@ const signIn= async () => {
         <p :class="is_small ? 'mb-4' : ''" class="text-sm text-secondary mb-8">Enter your details to resume your session.</p>
 
         <form class="grid gap-4">
-          <FormInput label="Email" v-model:inputValue="form.email" placeholder="Enter your email address"></FormInput>
+          <FormInput label="Email" v-model:inputValue="email" placeholder="Enter your email address"></FormInput>
           <div class="w-full mb-5">
-            <FormInput :error="error_state" label="Password" type="password" v-model:inputValue="form.password" placeholder="Enter your password"></FormInput>
+            <FormInput :error="error_state" label="Password" type="password" v-model:inputValue="password" placeholder="Enter your password"></FormInput>
             <div class="flex justify-between items-center mt-2 w-full">
               <p :class="error_state ? 'opacity-100' : 'opacity-0'" class="text-sm text-red-600 mt-2 duration-300 ease-in-out ">Wrong username or password</p>
               <nuxt-link to="/forgot" :class="error_state ? 'hidden' : 'block'" class="text-sm text-secondary text-opacity-50 hover:text-opacity-100 duration-500 ease-in-out">Forgot password?</nuxt-link>
@@ -75,54 +79,6 @@ const signIn= async () => {
   </div>
 
 </template>
-<script>
-import { toast } from 'vue3-toastify';
-import 'vue3-toastify/dist/index.css';
-export default {
-  data() {
-    return {
-      is_small: false,
-      loadingState: false,
-      error_state: false,
-      form: {
-        email: '',
-        password: ''
-      }
-    }
-  },
-
-  methods: {
-    async signIn(){
-      this.loadingState = true;
-      const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
-      const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('/user/auth/login', {
-        method: 'POST',
-        body: {
-          email: this.form.email,
-          password: this.form.password
-        },
-        onResponse(res) {
-          console.log(res.response)
-          if (res.response.status == 200) {
-            this.toast.success(res.response._data.message)
-            this.$router.push({name: 'verify'})
-            this.form.email= ''
-            this.form.password= ''
-            this.loadingState = false
-          } else {
-            this.toast.error(res.response._data.message)
-          }
-        },
-      })
-    }
-  },
-  mounted(){
-    if (window.innerWidth <= 320) {
-      this.is_small = true
-    }
-  },
-}
-</script>
 <style>
 .background {
   background: url('/images/login.jpg');
