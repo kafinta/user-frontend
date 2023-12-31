@@ -48,10 +48,7 @@ const getUserDetails = async () => {
   const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
   const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('/api/user/profile', {
     method: 'GET',
-    headers: {
-    'Content-Type': 'application/json',
-    'XSRF-TOKEN': document.cookie.split('; ').find(cookie => cookie.startsWith('kafinta_session='))
-    },
+
     onResponse(res) {
       console.log(res.response)
       if (res.response.status == 200) {

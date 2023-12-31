@@ -54,7 +54,6 @@
 
 <script>
 export default {
-  layout: 'user',
   data() {
     return {
       username: 'Quadri',
@@ -95,4 +94,4 @@ export default {
 
 <style>
 
-</style>
+</style> 
