@@ -1,4 +1,4 @@
 export function useQuery<T>(){
-  const query = useState('query', () => ref({}))
+  const query = {}
   return {query}
 }

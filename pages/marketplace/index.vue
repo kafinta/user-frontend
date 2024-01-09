@@ -13,16 +13,16 @@
           </UiButtonsSecondary>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-3 mt-6">
-          <NuxtLink :to="{name: 'marketplace-products', query: {location: category.title}}" class="p-5 flex gap-5 border border-secondary border-opacity-20 items-center rounded-lg hover:border-primary duration-300 ease-in-out" v-for="category in categories" :key="category.id">
+          <button v-for="location in locations" :key="location.id" @click="query.location = location.title; $router.push({path: '/marketplace/products/', query: {location: location.title}})" class="p-5 flex gap-5 border border-secondary border-opacity-20 items-center rounded-lg hover:border-primary duration-300 ease-in-out">
             <div class="bg-primary h-20 w-20 rounded-full flex items-center justify-center">
-              <img class="w-14 h-14" alt="" :src="category.imagePath" />
+              <img class="w-14 h-14" alt="" :src="location.imagePath" />
             </div>
 
             <div class="text-left">
-              <h3 class="text-secondary text-lg font-medium">{{ category.title }}</h3>
-              <p class="text-secondary text-sm mt-0">{{ category.products }}</p>
+              <h3 class="text-secondary text-lg font-medium">{{ location.title }}</h3>
+              <p class="text-secondary text-sm mt-0">{{ location.products }}</p>
             </div>
-          </NuxtLink>
+          </button>
         </div>
       </div>
     </Container>
@@ -41,11 +41,12 @@
   </LayoutsMarketplace>
 </template>
 <script>
+import { useQuery } from "@/composables/useQuery";
 export default {
   data() {
     return {
       username: 'Kafinta User',
-      categories: [
+      locations: [
         {
           id: 1,
           title: 'Bedroom',

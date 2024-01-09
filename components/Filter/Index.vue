@@ -112,9 +112,14 @@ const getCategories = async () => {
     method: 'GET',
     onResponse(res) {
       if (res.response.status == 200) {
-        categories = useState('categories', () => res.response._data).value
+        categories = res.response._data
         categoryLoaded.value = true
-      } else {
+        // const filter_categories = categories
+        // filter_categories.forEach(categoryitem => {
+        //   if (categoryitem.name = route.query.category) {
+        //     console.log(categoryitem.name);
+        //   }
+        // });
       }
     },
   })
