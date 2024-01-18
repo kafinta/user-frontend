@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <aside>
     <transition name="slide-fade">
       <div @click="emitCloseDialogEvent()" v-show="openDialog" class="h-screen cursor-pointer filter w-full bg-secondary bg-opacity-80 backdrop-blur-sm fixed z-140 inset-0">
       </div>
@@ -9,9 +9,9 @@
       <div v-show="openDialog" class="fixed w-4/5 md:w-1/2 lg:w-3/5 xl:w-1/3 right-0 bg-white h-full z-150 top-0">
         <div class="relative h-full">
           <div class="flex justify-between items-center border-b border-accent1-100 py-3 sm:py-4 sm:px-2 select-none">
-            <UiTypographyP class="uppercase px-4 select-none"><strong><slot name="title" /></strong></UiTypographyP>
-            <button @click="emitCloseDialogEvent()" class="block outline-none border-none p-1 cursor-pointer hover:bg-primary hover:text-white text-secondary bg-accent-100 transition duration-300">
-              <UiIconsClose class="h-5 w-5 " />
+            <UiTypographyP class="uppercase px-4 select-none"><span class="font-bold"><slot name="title" /></span></UiTypographyP>
+            <button @click="emitCloseDialogEvent()" class="block outline-none border-none p-2 cursor-pointer hover:bg-primary hover:text-white text-secondary bg-accent-100 transition duration-300">
+              <UiIconsClose class="h-5 w-5" />
             </button>
           </div>
           
@@ -19,14 +19,14 @@
             <slot />
           </div>
           
-          <div v-show="footerButtons" class="absolute bottom-0 w-full select-none">
+          <div v-show="footerButtons" class="absolute bottom-0 w-full select-none border-t border-accent-100">
             <div class="w-full flex justify-between">
-              <a @click="emitCloseDialogEvent()" class="uppercase font-medium border-t border-r border-accent-100 shadow w-1/2 block px-2 py-3 text-center cursor-pointer bg-white hover:bg-secondary hover:text-white transition duration-500">
+              <button @click="emitCloseDialogEvent()" class="uppercase font-medium w-1/2 block px-2 py-3 text-center cursor-pointer bg-white hover:bg-accent-400 hover:text-white transition duration-500">
                 {{cancelText}}
-              </a>
-              <a @click="emitOkEvent()" class="uppercase font-medium border-t border-l border-accent-100 shadow w-1/2 block px-2 py-3 text-center cursor-pointer bg-accent1-100 hover:bg-primary hover:text-white transition duration-500">
+              </button>
+              <button @click="emitOkEvent()" class="uppercase text-white font-medium w-1/2 block px-2 py-3 text-center cursor-pointer bg-secondary hover:bg-primary transition duration-500">
                 {{okText}}
-              </a>
+              </button>
             </div>
             
           </div>
@@ -35,7 +35,7 @@
       </div>
     </transition>
     
-  </div>
+  </aside>
 </template>
 
 <script>
