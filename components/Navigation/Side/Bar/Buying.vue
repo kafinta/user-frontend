@@ -14,25 +14,13 @@
           </nuxt-link>
 
           <nuxt-link :to="{name: 'username-buying'}">
-            <NavigationSideMenu menu_text="Inbox" :is_active="inboxActive">
-              <UiIconsMessages />
-            </NavigationSideMenu>
-          </nuxt-link>
-
-          <nuxt-link :to="{name: 'username-buying'}">
-            <NavigationSideMenu menu_text="Products" :is_active="productsActive">
-              <UiIconsGigs />
-            </NavigationSideMenu>
-          </nuxt-link>
-
-          <nuxt-link :to="{name: 'username-buying'}">
-            <NavigationSideMenu menu_text="Orders" :is_active="OrdersActive">
+            <NavigationSideMenu menu_text="Cart" :is_active="productsActive">
               <UiIconsCart />
             </NavigationSideMenu>
           </nuxt-link>
 
           <nuxt-link :to="{name: 'username-buying'}">
-            <NavigationSideMenu menu_text="Earnings" :is_active="earningsActive">
+            <NavigationSideMenu menu_text="Orders" :is_active="OrdersActive">
               <UiIconsTransactions />
             </NavigationSideMenu>
           </nuxt-link>
@@ -42,7 +30,7 @@
       <div class="py-6 bg-accent-600 rounded-t-2xl">
         <div class="flex items-center gap-5 px-6">
           <div class="relative flex w-fit">
-            <UserProfilePicture :artisan="username" :custom_dimensions="true" class="h-10 w-10"/>
+            <UserProfilePicture :username="username" :large_dimensions="true"/>
             <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="true" :is_displayed="true"/>
           </div>
 
@@ -76,7 +64,7 @@
 export default {
   props: {
     username: {
-      default: 'Test User',
+      default: 'username',
       type: String
     }
   },
@@ -94,25 +82,20 @@ export default {
 
   methods: {
     routeCheck(){
-      if (this.$route.name.includes('dashboard')) {
+      if (window.location.pathname.includes('dashboard')) {
         this.dashboardActive = true
       }
-      if (window.location.pathname.includes('inbox')) {
-        this.inboxActive = true
-      }
-      if (window.location.pathname.includes('products')) {
-        this.productsActive = true
+      if (window.location.pathname.includes('cart')) {
+        this.cartActive = true
       }
       if (window.location.pathname.includes('orders')) {
         this.OrdersActive = true
-      }
-      if (window.location.pathname.includes('earnings')) {
-        this.earningsActive = true
       }
     },
   },
 
   mounted() {
+    console.log(this.$route.name);
     this.routeCheck()
   },
 }
