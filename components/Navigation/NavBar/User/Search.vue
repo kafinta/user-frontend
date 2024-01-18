@@ -19,7 +19,7 @@
               <UiButtonsSecondary @clicked="$router.push({name: ''})">Switch to Selling</UiButtonsSecondary>
             </li>
             <li>
-              <UiButtonsTertiary :flexdisplay="true">
+              <UiButtonsTertiary :flexdisplay="true" @clicked="$emit('cartClicked')">
                 <UiIconsCart class="w-5" />
                 <span>Cart</span>
               </UiButtonsTertiary>
@@ -27,12 +27,20 @@
             <li class="relative">
               <UserProfilePicture @click="toggleOptions()" :large_dimensions="true" :username="username" class="cursor-pointer" />
 
-              <div ref="userOptions" :class="user_options ? 'grid gap-1' : 'hidden'" class=" p-2 rounded-md border border-accent-100 text-secondary absolute bg-white right-0 w-48 mt-4">
-                <NuxtLink :to="{name: 'username-buying', params: {username: username}}" class="w-full hover:bg-accent-100 py-2 px-4 rounded cursor-pointer">Dashboard</NuxtLink>
-                <NuxtLink :to="{name: 'username-buying', params: {username: username}}" class="w-full hover:bg-accent-100 py-2 px-4 rounded cursor-pointer">Profile</NuxtLink>
-                <NuxtLink :to="{name: 'username-buying', params: {username: username}}" class="w-full hover:bg-accent-100 py-2 px-4 rounded cursor-pointer">Orders</NuxtLink>
+              <div ref="userOptions" :class="user_options ? 'grid gap-1' : 'hidden'" class="p-2 px-3 rounded-md border border-accent-100 text-secondary absolute bg-white right-0 w-56 mt-4">
+                <div class="flex gap-5 items-center py-2">
+                  <UserProfilePicture @click="toggleOptions()" :custom_dimensions="true" :username="username" class="cursor-pointer w-12" />
+                  <div>
+                    <UiTypographyP><span class="font-medium">{{ username }}</span></UiTypographyP>
+                    <UiTypographyP>Seller</UiTypographyP>
+                  </div>
+                </div>
                 <hr>
-                <button class="w-full hover:bg-accent-100 py-2 px-4 rounded cursor-pointer text-left">Log out</button>
+                <NuxtLink :to="{name: 'username-buying', params: {username: username}}" class="w-full hover:bg-accent-100 py-2 px-4 rounded cursor-pointer mt-1">Dashboard</NuxtLink>
+                <NuxtLink :to="{name: 'username-buying', params: {username: username}}" class="w-full hover:bg-accent-100 py-2 px-4 rounded cursor-pointer">Profile</NuxtLink>
+                <NuxtLink :to="{name: 'username-buying', params: {username: username}}" class="w-full hover:bg-accent-100 py-2 px-4 rounded cursor-pointer mb-1">Orders</NuxtLink>
+                <hr>
+                <button class="w-full hover:bg-accent-100 py-2 px-4 rounded cursor-pointer text-left mt-1">Log out</button>
               </div>
             </li>
           </ul>
@@ -47,9 +55,8 @@
           </ul>
         </div>
 
-      <!-- <NavigationMenu class="flex justify-end" @revealMenu="toggleMenu()" /> -->
-
-      <!-- <NavigationNavBarUserMobile :menu_revealed="toggle_menu"></NavigationNavBarUserMobile> -->
+      <NavigationMenu class="flex justify-end" @revealMenu="toggleMenu()" />
+      <NavigationNavBarUserMobile :menu_revealed="toggle_menu"></NavigationNavBarUserMobile> 
     </div>
 
   </nav>
@@ -75,7 +82,7 @@ export default {
       default: true
     },
     username: {
-      default: 'Username',
+      default: 'testing',
       type: String
     },
     profileImagePath: String
@@ -91,11 +98,14 @@ export default {
       this.$router.push({ name: 'marketplace-search', query: { query: this.search_input } });
       this.$location.reload();
     },
-    toggleOptions(){
-      this.user_options = !this.user_options
+    toggleOptions() {
+      this.user_options = !this.user_options;
+    },
+    toggleCart() {
+      this.openCart = !this.openCart;
     },
   },
-  mounted(){
-  }
+  mounted() {
+  },
 }
 </script>
