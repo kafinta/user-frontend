@@ -7,19 +7,19 @@
         </div>
 
         <div class="mt-6">
-          <nuxt-link :to="{name: 'username-buying'}">
+          <nuxt-link :to="{name: 'username-buying-dashboard'}">
             <NavigationSideMenu menu_text="Dashboard" :is_active="dashboardActive">
               <UiIconsOverview />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link :to="{name: 'username-buying'}">
+          <nuxt-link :to="{name: 'username-buying-dashboard'}">
             <NavigationSideMenu menu_text="Cart" :is_active="productsActive">
               <UiIconsCart />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link :to="{name: 'username-buying'}">
+          <nuxt-link :to="{name: 'username-buying-dashboard'}">
             <NavigationSideMenu menu_text="Orders" :is_active="OrdersActive">
               <UiIconsTransactions />
             </NavigationSideMenu>
@@ -82,20 +82,19 @@ export default {
 
   methods: {
     routeCheck(){
-      if (window.location.pathname.includes('dashboard')) {
+      if (this.$route.name.includes('dashboard')) {
         this.dashboardActive = true
       }
-      if (window.location.pathname.includes('cart')) {
+      if (this.$route.name.includes('cart')) {
         this.cartActive = true
       }
-      if (window.location.pathname.includes('orders')) {
+      if (this.$route.name.includes('orders')) {
         this.OrdersActive = true
       }
     },
   },
 
   mounted() {
-    console.log(this.$route.name);
     this.routeCheck()
   },
 }
