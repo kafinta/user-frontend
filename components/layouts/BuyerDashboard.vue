@@ -18,7 +18,8 @@
     </nav>
 
     <div class="w-full md:w-3/4 lg:w-4/5 xl:w-5/6 mt-12 md:mt-0 left-0">
-      <div class="px-6 md:px-8 lg:px-10 py-6 mx-auto min-h-screen">
+      <UiTypographyH3 v-show="page_title" class="py-3 px-6 md:px-8 lg:px-10 border-b border-accent-100">{{ page_title }}</UiTypographyH3>
+      <div class="py-6 px-6 md:px-8 lg:px-10 mx-auto min-h-screen">
         <slot />
       </div>
     </div>
@@ -38,7 +39,8 @@ export default {
   },
 
   props: { 
-    BlockBackground: Boolean
+    BlockBackground: Boolean,
+    page_title: String,
   },
 
   methods: {
@@ -49,7 +51,3 @@ export default {
   },
 }
 </script>
-
-<style>
-
-</style>

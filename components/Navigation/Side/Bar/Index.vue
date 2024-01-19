@@ -39,24 +39,25 @@
         </div>
       </div>
 
-      <div class="py-6 bg-accent-600 rounded-t-2xl">
-        <div class="flex items-center gap-5 px-6">
+      <div class="p-4 bg-accent-600 rounded-t-3xl">
+        <div class="flex items-center gap-5">
           <div class="relative flex w-fit">
-            <UserProfilePicture username="James" :custom_dimensions="true" class="h-10 w-10"/>
+            <UserProfilePicture :username="username" :large_dimensions="true"/>
             <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="true" :is_displayed="true"/>
           </div>
 
           <div>
-            <UiTypographyP color="white">James</UiTypographyP>
+            <UiTypographyP class="text-white">{{ username }}</UiTypographyP>
             <p class="text-green-500 text-sm">$0.00</p>
           </div>
+          
         </div>
 
-        <div class="px-6">
-          <UiButtonsPrimary @clicked="$router.push({name: 'username-buying-index'})" class="mt-4 bg-primary" :standout="true" :flexdisplay="true">Switch to Buying</UiButtonsPrimary>
+        <div>
+          <UiButtonsPrimary @clicked="$router.push({name: 'username-buying-dashboard'})" class="mt-4 bg-primary" :standout="true" :flexdisplay="true">Switch to Buying</UiButtonsPrimary>
         </div>
 
-        <div class="px-6 mt-2 flex gap-2 w-full">
+        <div class="mt-2 flex gap-2 w-full">
           <nuxt-link to="/sellers/profile" class="block rounded-md p-2 text-white hover:text-primary duration-500 ease-in-out group bg-secondary hover:bg-accent-500 w-1/2">
             <UiIconsProfile class="w-5 h-5 mx-auto" />
             <p class="text-white group-hover:text-primary duration-500 ease-in-out text-sm text-center mt-1">Profile</p>
@@ -67,6 +68,10 @@
           </nuxt-link>
         </div>
 
+        <button to="/sellers/settings" class="rounded-md p-3 text-white hover:text-primary duration-500 ease-in-out group bg-secondary hover:bg-accent-500 flex items-center gap-3 justify-center w-full mt-2">
+          <UiIconsSettings class="w-5 h-5 max-w-fit" />
+          <span class="text-white group-hover:text-primary duration-500 ease-in-out text-sm">Log out</span>
+        </button>
       </div>
     </nav>
   </transition>
