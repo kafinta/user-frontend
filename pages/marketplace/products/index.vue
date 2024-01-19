@@ -16,10 +16,10 @@
         <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 w-full">
           <ProductsCard v-for="item in 30" :key="item" />
         </div>
-          <div class="join gap-1 mt-10 justify-center w-full">
-            <button class="join-item btn">«</button>
-            <button class="join-item btn btn-active">1</button>
-            <button class="join-item btn">»</button>
+          <div class="divide-x divide-white mt-10 justify-center w-full flex">
+            <button @click="prev" class="text-white bg-secondary h-10 w-10 grid place-items-center rounded-l-md hover:bg-accent-400 duration-300 ease-in-out"><UiIconsArrow class="w-4"/></button>
+            <button v-for="item in 5" ref="pagination" class="text-white bg-secondary h-10 w-10 grid place-items-center">{{ item }}</button>
+            <button @click="next" class="text-white bg-secondary h-10 w-10 grid place-items-center rounded-r-md hover:bg-accent-400 duration-300 ease-in-out"><UiIconsArrow class="w-4 rotate-180"/></button>
           </div>
       </div>
 
@@ -37,4 +37,9 @@
 import { onMounted, ref } from "vue";
 import { useRouter } from 'vue-router'
 const openDialog = ref(false)
+const pagination_btns = ref.pagination
+
+onMounted(() => {
+  console.log(pagination_btns)
+})
 </script>
