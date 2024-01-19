@@ -1,3 +1,7 @@
+<script setup>
+import { useQuery } from "@/composables/useQuery";
+const {query} = useQuery() 
+</script>
 <template>
   <LayoutsMarketplace>
     <Container :addTopBottomPadding="false">
@@ -12,18 +16,20 @@
             <UiIconsAccordion class="transform rotate-90 w-4 h-4" />
           </UiButtonsSecondary>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-3 mt-6">
-          <button v-for="location in locations" :key="location.id" @click="query.location = location.title; $router.push({path: '/marketplace/products/', query: {location: location.title}})" class="p-5 flex gap-5 border border-secondary border-opacity-20 items-center rounded-lg hover:border-primary duration-300 ease-in-out">
-            <div class="bg-primary h-20 w-20 rounded-full flex items-center justify-center">
-              <img class="w-14 h-14" alt="" :src="location.imagePath" />
-            </div>
+        <ul class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-3 mt-6">
+          <li v-for="location in locations" :key="location.id">
+            <button @click="query.location = location.title; $router.push({name: 'marketplace-products', query})" class="p-5 flex gap-5 border border-secondary border-opacity-20 items-center rounded-lg hover:border-primary duration-300 ease-in-out w-full">
+              <div class="bg-primary h-20 w-20 rounded-full flex items-center justify-center">
+                <img class="w-14 h-14" alt="" :src="location.imagePath" />
+              </div>
 
-            <div class="text-left">
-              <h3 class="text-secondary text-lg font-medium">{{ location.title }}</h3>
-              <p class="text-secondary text-sm mt-0">{{ location.products }}</p>
-            </div>
-          </button>
-        </div>
+              <div class="text-left">
+                <h3 class="text-secondary text-lg font-medium">{{ location.title }}</h3>
+                <p class="text-secondary text-sm mt-0">{{ location.products }}</p>
+              </div>
+            </button>
+          </li>
+        </ul>
       </div>
     </Container>
 
@@ -41,7 +47,6 @@
   </LayoutsMarketplace>
 </template>
 <script>
-import { useQuery } from "@/composables/useQuery";
 export default {
   data() {
     return {

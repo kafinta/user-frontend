@@ -37,7 +37,7 @@
                 </div>
                 <hr>
                 <NuxtLink :to="{name: 'username-buying-dashboard', params: {username: username}}" class="w-full hover:bg-accent-100 py-2 px-4 rounded cursor-pointer mt-1">Dashboard</NuxtLink>
-                <NuxtLink :to="{name: 'username-buying-dashboard', params: {username: username}}" class="w-full hover:bg-accent-100 py-2 px-4 rounded cursor-pointer">Profile</NuxtLink>
+                <NuxtLink :to="{name: 'username-profile', params: {username: username}}" class="w-full hover:bg-accent-100 py-2 px-4 rounded cursor-pointer">Profile</NuxtLink>
                 <NuxtLink :to="{name: 'username-buying-dashboard', params: {username: username}}" class="w-full hover:bg-accent-100 py-2 px-4 rounded cursor-pointer mb-1">Orders</NuxtLink>
                 <hr>
                 <button class="w-full hover:bg-accent-100 py-2 px-4 rounded cursor-pointer text-left mt-1">Log out</button>
@@ -75,11 +75,11 @@ export default {
     is_online: Boolean,
     signedIn: {
       type: Boolean,
-      default: true
+      default: false
     },
     isSeller: {
       type: Boolean,
-      default: true
+      default: false
     },
     username: {
       default: 'testing',
