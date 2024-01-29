@@ -20,19 +20,19 @@
         <UiTypographyH3>Verify Email</UiTypographyH3>
         <UiTypographyP>We need to verify your access to the email you used during registration.</UiTypographyP>
         <UiButtonsPrimary v-if="email_verified" disabled class="mt-6">Verified</UiButtonsPrimary>
-        <UiButtonsPrimary v-else class="mt-6">Verify Email</UiButtonsPrimary >
+        <UiButtonsPrimary @clicked="$router.push({name: 'username-selling-onboarding-email'})" v-else class="mt-6">Verify Email</UiButtonsPrimary >
       </li>
       <li class="p-5 rounded-xl border border-accent-100">
         <UiTypographyH3>Create Profile</UiTypographyH3>
         <UiTypographyP>You need to create a profile so that we can get to know you better.</UiTypographyP>
         <UiButtonsPrimary v-if="profile_created" disabled class="mt-6">Created</UiButtonsPrimary>
-        <UiButtonsPrimary v-else class="mt-6">Create profile</UiButtonsPrimary >
+        <UiButtonsPrimary @clicked="$router.push({name: 'username-selling-onboarding-profile'})" v-else class="mt-6">Create profile</UiButtonsPrimary >
       </li>
       <li class="p-5 rounded-xl border border-accent-100">
         <UiTypographyH3>Verify Identity</UiTypographyH3>
         <UiTypographyP>To keep the platform safe and secure for everyone, identity verification is required. Please complete the simple KYC process.</UiTypographyP>
         <UiButtonsPrimary v-if="kyc_verified" disabled class="mt-6">Verified</UiButtonsPrimary>
-        <UiButtonsPrimary v-else class="mt-6">Verify KYC</UiButtonsPrimary >
+        <UiButtonsPrimary @clicked="$router.push({name: 'username-selling-onboarding-kyc'})" v-else class="mt-6">Verify KYC</UiButtonsPrimary >
       </li>
     </ul>
   </LayoutsSellerDashboard>
@@ -41,16 +41,29 @@
 export default {
   data(){
     return {
-      email_verified: true,
-      profile_created: true,
-      kyc_verified: true,
+      email_verified: false,
+      profile_created: false,
+      kyc_verified: false,
+      percentage: 20
     }
+  },      
+
+  mounted(){
+    // if (this.email_verified = true) {
+    //   // document.
+    // }
+    // if (this.profile_created = true) {
+      
+    // }
+    // if (this.kyc_verified = true) {
+      
+    // }
   }
 }
 </script>
 <style>
 :root {
-  --percentage: 20%
+  --percentage: 0%
 }
 .radial {
   background: conic-gradient(#C9B14F var(--percentage), #eaeaea 0deg);

@@ -99,24 +99,32 @@ export default {
   },
 
   methods: {
-    routeCheck(){
+    checkOnboarding(){
       if (this.isSeller === false) {
         this.$router.push({name: 'username-selling-onboarding'})
       }
+    },
+
+    routeCheck(){
+
       if (this.$route.name.includes('onboarding')) {
         this.onboardingActive = true
       }
       if (this.$route.name.includes('dashboard')) {
         this.dashboardActive = true
+        this.checkOnboarding()
       }
       if (window.location.pathname.includes('products')) {
         this.productsActive = true
+        this.checkOnboarding()
       }
       if (window.location.pathname.includes('orders')) {
         this.OrdersActive = true
+        this.checkOnboarding()
       }
       if (window.location.pathname.includes('earnings')) {
         this.earningsActive = true
+        this.checkOnboarding()
       }
     },
   },
@@ -124,7 +132,6 @@ export default {
   mounted() {
     // this.getUser()
     this.routeCheck()
-    console.log(this.isSeller)
   },
 }
 </script>

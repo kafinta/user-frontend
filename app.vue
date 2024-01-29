@@ -27,6 +27,10 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
+button:disabled {
+  cursor: not-allowed;
+}
+
 .background {
   background-size: cover !important;
   background-repeat: no-repeat !important;
