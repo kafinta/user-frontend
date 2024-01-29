@@ -9,7 +9,7 @@
       <div class="relative flex items-center justify-center">
         <div class="h-20 w-20 rounded-full p-1.5 radial bg-primary">
           <div class="bg-white rounded-full h-full w-full grid place-items-center">
-            <UiTypographyP>20%</UiTypographyP>
+            <UiTypographyP>{{percentage}}%</UiTypographyP>
           </div>
         </div>
       </div>
@@ -44,7 +44,7 @@ export default {
       email_verified: false,
       profile_created: false,
       kyc_verified: false,
-      percentage: 20
+      percentage: 0
     }
   },      
 
