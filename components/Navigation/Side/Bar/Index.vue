@@ -105,7 +105,6 @@ export default {
       }
       if (this.$route.name.includes('onboarding')) {
         this.onboardingActive = true
-        this.isSeller = false
       }
       if (this.$route.name.includes('dashboard')) {
         this.dashboardActive = true
