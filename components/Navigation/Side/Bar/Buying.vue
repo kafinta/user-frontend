@@ -42,8 +42,8 @@
         </div>
 
         <div>
-          <UiButtonsPrimary v-if="isSeller" @clicked="$router.push({path: '/sellers'})" class="mt-4 bg-primary" :standout="true" :flexdisplay="true">Switch to Selling</UiButtonsPrimary>
-          <UiButtonsPrimary v-else @clicked="$router.push({path: '/sellers'})" class="mt-4 bg-primary" :standout="true" :flexdisplay="true">Become a Seller</UiButtonsPrimary>
+          <UiButtonsPrimary v-if="isSeller" @clicked="$router.push({name: 'username-selling-dahboard'})" class="mt-4 bg-primary" :standout="true" :flexdisplay="true">Switch to Selling</UiButtonsPrimary>
+          <UiButtonsPrimary v-else @clicked="$router.push({name: 'username-selling-onboarding'})" class="mt-4 bg-primary" :standout="true" :flexdisplay="true">Become a Seller</UiButtonsPrimary>
         </div>
 
         <div class="mt-2 flex gap-2 w-full">
@@ -82,11 +82,8 @@ export default {
   data() {
     return {
       dashboardActive: false,
-      inboxActive: false,
-      gigsActive: false,
       OrdersActive: false,
-      earningsActive: false,
-      productsActive: false
+      cartActive: false,
     };
   },
 

@@ -7,32 +7,32 @@
         </div>
 
         <div class="mt-6">
+          <nuxt-link v-if="!isSeller" :to="{name: 'username-selling-onboarding'}">
+            <NavigationSideMenu menu_text="Onboarding" :is_active="onboardingActive" :isSeller="!isSeller">
+              <UiIconsProfile />
+            </NavigationSideMenu>
+          </nuxt-link>
+
           <nuxt-link :to="{name: 'username-selling-dashboard'}">
-            <NavigationSideMenu menu_text="Dashboard" :is_active="dashboardActive">
+            <NavigationSideMenu menu_text="Dashboard" :is_active="dashboardActive" :isSeller="isSeller">
               <UiIconsOverview />
             </NavigationSideMenu>
           </nuxt-link>
 
-          <nuxt-link :to="{name: 'username-selling-inbox'}">
-            <NavigationSideMenu menu_text="Inbox" :is_active="inboxActive">
-              <UiIconsMessages />
-            </NavigationSideMenu>
-          </nuxt-link>
-
           <nuxt-link :to="{name: 'username-selling-products'}">
-            <NavigationSideMenu menu_text="Products" :is_active="productsActive">
+            <NavigationSideMenu menu_text="Products" :is_active="productsActive" :isSeller="isSeller">
               <UiIconsGigs />
             </NavigationSideMenu>
           </nuxt-link>
 
           <nuxt-link :to="{name: 'username-selling-orders'}">
-            <NavigationSideMenu menu_text="Orders" :is_active="OrdersActive">
+            <NavigationSideMenu menu_text="Orders" :is_active="OrdersActive" :isSeller="isSeller">
               <UiIconsCart />
             </NavigationSideMenu>
           </nuxt-link>
 
           <nuxt-link :to="{name: 'username-selling-earnings'}">
-            <NavigationSideMenu menu_text="Earnings" :is_active="earningsActive">
+            <NavigationSideMenu menu_text="Earnings" :is_active="earningsActive" :isSeller="isSeller">
               <UiIconsTransactions />
             </NavigationSideMenu>
           </nuxt-link>
@@ -79,10 +79,18 @@
 
 <script>
 export default {
+  props: {
+    username:String,
+    isSeller: {
+      type: Boolean,
+      default: false
+    },
+  },
+
   data() {
     return {
+      onboardingActive: false,
       dashboardActive: false,
-      inboxActive: false,
       gigsActive: false,
       OrdersActive: false,
       earningsActive: false,
@@ -90,16 +98,17 @@ export default {
     };
   },
 
-  computed: {
-  },
-
   methods: {
     routeCheck(){
+      if (this.isSeller === false) {
+        this.$router.push({name: 'username-selling-onboarding'})
+      }
+      if (this.$route.name.includes('onboarding')) {
+        this.onboardingActive = true
+        this.isSeller = false
+      }
       if (this.$route.name.includes('dashboard')) {
         this.dashboardActive = true
-      }
-      if (window.location.pathname.includes('inbox')) {
-        this.inboxActive = true
       }
       if (window.location.pathname.includes('products')) {
         this.productsActive = true
@@ -116,6 +125,7 @@ export default {
   mounted() {
     // this.getUser()
     this.routeCheck()
+    console.log(this.isSeller)
   },
 }
 </script>
