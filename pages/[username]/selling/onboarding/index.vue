@@ -49,23 +49,24 @@ export default {
   },      
 
   mounted(){
-    // if (this.email_verified = true) {
-    //   // document.
-    // }
-    // if (this.profile_created = true) {
-      
-    // }
-    // if (this.kyc_verified = true) {
-      
-    // }
-  }
+    document.documentElement.style.setProperty('--percent', `${this.percentage}%`);
+    if (this.email_verified === true) {
+      this.percentage = this.percentage + 20
+      document.documentElement.style.setProperty('--percent', `${this.percentage}%`);
+    }
+    if (this.profile_created === true) {
+      this.percentage = this.percentage + 40
+      document.documentElement.style.setProperty('--percent', `${this.percentage}%`);
+    }
+    if (this.kyc_verified === true) {
+      this.percentage = this.percentage + 40
+      document.documentElement.style.setProperty('--percent', `${this.percentage}%`);
+    }
+  },
 }
 </script>
 <style>
-:root {
-  --percentage: 0%
-}
 .radial {
-  background: conic-gradient(#C9B14F var(--percentage), #eaeaea 0deg);
+  background: conic-gradient(#C9B14F var(--percent), #eaeaea 0deg);
 }
 </style>
