@@ -3,8 +3,10 @@
     <main class="w-full lg:w-2/3 2xl:w-1/2 mx-auto">
       <UiTypographyH3 class="text-center">KYC Verification</UiTypographyH3>
       <form action="" class="flex flex-col lg:grid lg:grid-cols-2 gap-6 w-full mt-6">
-        <FormSelect label="Id Type" placeholder="Select the type of Id you're uploading">
-          <FormOptions v-for="option in 30" option="Option $"></FormOptions>
+        <FormSelect label="Id Type" placeholder="Select the type of Id you're uploading" class="col-span-2 max-w-sm mx-auto">
+          <FormOptions option="National Identity Number"></FormOptions>
+          <FormOptions option="International Passport"></FormOptions>
+          <FormOptions option="National I.D Card"></FormOptions>
         </FormSelect>
         <div>
           <UiTypographyP>Front picture</UiTypographyP>
@@ -13,7 +15,7 @@
             <label for="frontPictureInput" class="group h-52 w-full rounded-md bg-accent-500 bg-opacity-[10%] hover:bg-opacity-50 duration-500 ease-in-out grid place-items-center cursor-pointer absolute">
               <img src="/images/icons/camera.svg" class="w-20 opacity-50" alt="Camera icon"/>
             </label>
-            <img src="" ref="frontPreview" class="h-52 w-full rounded-md object-cover" alt="Back Image Preview">
+            <img src="" ref="frontPreview" class="h-52 w-full rounded-md object-cover" alt="Front Image Preview">
           </div>
         </div>
         <div>

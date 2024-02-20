@@ -6,7 +6,7 @@
         <div class="col-span-1 lg:col-span-2 relative flex items-center justify-center">
           <input @change="previewImage($event)" type="file" id="profilePictureInput" class="hidden" accept="image/*" :v-model="form.profile_picture">
           <label for="profilePictureInput" class="group h-52 aspect-square rounded-full bg-accent-500 bg-opacity-[10%] hover:bg-opacity-50 duration-500 ease-in-out grid place-items-center cursor-pointer absolute">
-            <img src="/images/icons/camera.svg" class="w-20 opacity-50" alt="" />
+            <img src="/images/icons/camera.svg" class="w-20 opacity-50" alt="Profile image preview" />
           </label>
           <img :src="previewSrc" ref="preview" class="h-52 aspect-square rounded-full object-cover">
         </div>
