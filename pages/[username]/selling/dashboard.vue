@@ -1,86 +1,58 @@
 <template>
   <LayoutsSellerDashboard page_title="Seller Dashboard">
-    <div class="block lg:flex gap-8">
-      <div class="w-full lg:w-2/5 grid gap-5">
-        <div class="border border-accent-100 p-6">
-          <div class="flex items-center gap-5 mb-4">
-            <div class="relative flex w-fit">
-              <UserProfilePicture username="James" :custom_dimensions="true" class="h-10 w-10"/>
-              <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="true" :is_displayed="true"/>
-            </div>
-
-            <div>
-              <UiTypographyP class="text-secondary">James</UiTypographyP>
-            </div>
-          </div>
-          <div class="border-t border-accent-100 grid grid-cols-1 gap-2 py-4">
-            <div class="flex items-center justify-between">
-              <UiTypographyP>Response rate</UiTypographyP>
-              <UiTypographyP :small_text="true">50%</UiTypographyP>
-            </div>
-            <div class="flex items-center justify-between">
-              <UiTypographyP>Response time</UiTypographyP>
-              <UiTypographyP :small_text="true">1 Hour</UiTypographyP>
-            </div>
-            <div class="flex items-center justify-between">
-              <UiTypographyP>Delivered on time</UiTypographyP>
-              <UiTypographyP :small_text="true">100%</UiTypographyP>
-            </div>
-            <div class="flex items-center justify-between">
-              <UiTypographyP>Order completion</UiTypographyP>
-              <UiTypographyP :small_text="true">100%</UiTypographyP>
-            </div>
-          </div>
-          <div class="border-t border-accent-100 flex items-center justify-between pt-4">
-            <UiTypographyP>Earned in {{ date.toLocaleString('default', {month: 'long'}) }}</UiTypographyP>
-            <UiTypographyP class="font-medium">$0.00</UiTypographyP>
-          </div>
-        </div>
-
-        <div class="border border-accent-100 p-6 duration-150 ease-in-out">
-          <div class="flex justify-between items-center">
-            <UiTypographyH3>Inbox</UiTypographyH3>
-            <UiButtonsSecondary @clicked="$route.push({path: '/username/selling/inbox'})">View All</UiButtonsSecondary>
-          </div>
-          <div class="bg-accent-50 h-64 mt-3 duration-150 ease-in-out"></div>
+    <div class="border border-accent-100 rounded-md divide-y divide-x lg:divide-y-0 divide-accent-100 grid grid-cols-2 lg:grid-cols-4">
+      <div class="p-5 flex gap-5 items-center">
+        <img src="/images/insights/completed.svg" class="w-8 h-8" alt="">
+        <div>
+          <UiTypographyP>Your Products</UiTypographyP>
+          <UiTypographyH2>0</UiTypographyH2>
         </div>
       </div>
-
-      <div class="w-full lg:w-3/5 mt-8 lg:mt-0">
-        <div class="flex gap-2">
-          <div v-for="tab in tabs" :key="tab.id">
-            <UiButtonsTab>{{tab.title}}</UiButtonsTab>
-          </div>
-        </div>
-        <div class="mt-8 grid gap-4">
-          <div class="border border-accent-100 py-2 px-4 w-full flex justify-between items-center" v-for="item in 5">
-            <div class="flex items-center gap-5">
-              <div class="relative flex w-fit">
-                <UserProfilePicture username="James" :custom_dimensions="true" class="h-10 w-10"/>
-                <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="false" :is_displayed="true"/>
-              </div>
-
-              <div>
-                <UiTypographyP class="text-secondary">James</UiTypographyP>
-              </div>
-            </div>
-
-            <div class="flex gap-5 items-center">
-              <div>
-                <UiTypographyP :small_text="true">Price</UiTypographyP>
-                <UiTypographyP>$100</UiTypographyP>
-              </div>
-              <div>
-                <UiTypographyP :small_text="true">Status</UiTypographyP>
-                <UiTypographyP>In Progress</UiTypographyP>
-              </div>
-            </div>
-
-            <UiButtonsTertiary>View</UiButtonsTertiary>
-
-          </div>
+      <div class="p-5 flex gap-5 items-center">
+        <img src="/images/insights/pending.svg" class="w-8 h-8" alt="">
+        <div>
+          <UiTypographyP>Active Orders</UiTypographyP>
+          <UiTypographyH2>0</UiTypographyH2>
         </div>
       </div>
+      <div class="p-5 flex gap-5 items-center">
+        <img src="/images/insights/completed.svg" class="w-8 h-8" alt="">
+        <div>
+          <UiTypographyP>Completed Orders</UiTypographyP>
+          <UiTypographyH2>0</UiTypographyH2>
+        </div>
+      </div>
+      <div class="p-5 flex gap-5 items-center">
+        <UiIconsCart class="w-8 h-8 text-primary" />
+        <div>
+          <UiTypographyP>Total Earnings</UiTypographyP>
+          <UiTypographyH2>$0.00</UiTypographyH2>
+        </div>
+      </div>
+    </div>
+    <div class="mt-8">
+      <div class="flex items-center justify-between">
+        <UiTypographyH3>Active Orders</UiTypographyH3>
+        <UiButtonsSecondary @clicked="$router.push({name: 'username-selling-orders'})" class="flex gap-1 items-center">
+            See All
+          <UiIconsAccordion class="transform rotate-90 w-4 h-4" />
+        </UiButtonsSecondary>
+      </div>
+      <ul class="grid gap-6 grid-cols-1 lg:grid-cols-2 mt-4">
+        <OrdersCard v-for="item in 2" :key="item" />
+      </ul>
+    </div>
+    <div class="mt-8">
+      <div class="flex items-center justify-between">
+        <UiTypographyH3>Top Products</UiTypographyH3>
+        <UiButtonsSecondary @clicked="$router.push({name: 'username-selling-products'})" class="flex gap-1 items-center">
+            See All
+        <UiIconsAccordion class="transform rotate-90 w-4 h-4" />
+        </UiButtonsSecondary>
+      </div>      
+      <ul class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-4">
+        <ProductsCard v-for="item in 3" />
+      </ul>
     </div>
   </LayoutsSellerDashboard>
 
