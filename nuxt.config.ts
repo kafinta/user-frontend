@@ -14,4 +14,15 @@ export default defineNuxtConfig({
       baseURL: 'http://127.0.0.1:8000',
     },
   },
+
+  // router: {
+  //   routes: [
+  //     // Your routes here
+  //     {
+  //       path: '/',
+  //       middleware: ['routing'],
+  //     },
+  //     // More routes with optional middleware usage
+  //   ],
+  // },
 })
