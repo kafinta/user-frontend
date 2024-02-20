@@ -1,5 +1,5 @@
 <template>
-    <li class="border border-accent-100 rounded-xl">
+    <li class="border border-accent-100 rounded-xl cursor-pointer">
         <ProductsImage :imagePath="image" class="rounded-t-xl" />
         <aside class="p-4">
             <ProductsName class="text-secondary text-xl">{{ title }}</ProductsName>
