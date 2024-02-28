@@ -50,12 +50,6 @@ export default {
       this.menu_revealed = !this.menu_revealed
     },
   },
-
-  mounted(){
-    if (this.sellerState === true) {
-      this.$router.push({name: 'username-selling-dashboard'})
-    }
-  }
 }
 </script>
 

@@ -53,7 +53,7 @@
           <UiTypographyP class="col-span-2 mx-auto">Clicks</UiTypographyP>
           <UiTypographyP class="col-span-2 mx-auto">Purchases</UiTypographyP>
           </div>
-          <UserProductsMinimalDetailed v-for="item in 5" :key="item" class="grid gap-5 mt-2" />
+          <ProductsMinimalDetailed v-for="item in 5" :key="item" class="grid gap-5 mt-2" />
         </div>
       </div>
     </div>

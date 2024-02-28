@@ -62,6 +62,9 @@ export default {
       this.percentage = this.percentage + 40
       document.documentElement.style.setProperty('--percent', `${this.percentage}%`);
     }
+    if (this.percentage == 100) {
+      this.$router.push({name: 'usernamw-selling-dashboard'})
+    }
   },
 }
 </script>

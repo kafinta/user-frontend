@@ -69,6 +69,7 @@ export default {
   data() {
     return {
       username: 'Quadri',
+      filter_revealed: false
     }
   },
 }

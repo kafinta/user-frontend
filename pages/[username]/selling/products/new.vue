@@ -1,7 +1,7 @@
 <template>
-  <LayoutSellerDashboard>
+  <LayoutsSellerDashboard>
     
-  </LayoutSellerDashboard>
+  </LayoutsSellerDashboard>
 </template>
 <script>
 export default {
