@@ -39,7 +39,7 @@
         </UiButtonsSecondary>
       </div>
       <ul class="grid gap-6 grid-cols-1 lg:grid-cols-2 mt-4">
-        <OrdersCard v-for="item in 2" :key="item" />
+        <OrdersCard v-for="item in 2" :key="item" @clicked="$router.push({name: 'username-selliing-orders'})" />
       </ul>
     </div>
     <div class="mt-8">
@@ -51,7 +51,7 @@
         </UiButtonsSecondary>
       </div>      
       <ul class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-4">
-        <ProductsCard v-for="item in 3" />
+        <ProductsCard @clicked="$router.push({name: 'username-selliing-products'})" v-for="item in 3" />
       </ul>
     </div>
   </LayoutsSellerDashboard>

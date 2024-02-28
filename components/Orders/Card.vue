@@ -1,5 +1,5 @@
 <template>
-  <li class="border border-accent-100 rounded-xl flex cursor-pointer">
+  <li @click="$emit('clicked')" class="border border-accent-100 rounded-xl flex cursor-pointer">
     <!-- <ProductsImage :imagePath="image" class="rounded-l-xl w-36" /> -->
     <div class="aspect-video h-36 bg-accent-100"></div>
     <aside class="p-4 h-full flex flex-col justify-between">
