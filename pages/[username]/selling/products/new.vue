@@ -1,5 +1,5 @@
 <template>
-  <LayoutsSellerDashboard>
+  <LayoutsSellerDashboard page_title="New Product">
     
   </LayoutsSellerDashboard>
 </template>
