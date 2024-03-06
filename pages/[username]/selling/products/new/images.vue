@@ -1,6 +1,6 @@
 <template>
   <LayoutsSellerDashboard page_title="New Product">
-    <main class="grid grid-cols-1 place-items-center gap-6 max-w-3xl mx-auto w-full">
+    <main class="grid grid-cols-1 place-items-center gap-6 max-w-3xl mx-auto w-full relative">
       <div class="flex items-center">
         <div class="text-secondary border border-accent-200 h-10 w-10 rounded-full grid place-items-center">1</div>
         <div class="h-0.5 bg-accent-200 w-24"></div>
@@ -9,20 +9,28 @@
         <div class="bg-primary text-white h-10 w-10 rounded-full grid place-items-center">3</div>
       </div>
       <UiTypographyH3>Product Images</UiTypographyH3>
-
-      <form @submit.prevent="submitDetails()" class="flex flex-col lg:grid lg:grid-cols-2 gap-6">
-        <div class="w-full">
-          <UiTypographyP>Product pictures</UiTypographyP>
-          <div class="w-full relative flex items-center justify-center">
-            <input @change="handleFrontImage($event)" type="file" id="frontPictureInput" class="hidden" accept="image/*" :v-model="frontImageFile">
-            <label for="frontPictureInput" class="group h-52 w-full rounded-md bg-accent-500 bg-opacity-[10%] hover:bg-opacity-50 duration-500 ease-in-out grid place-items-center cursor-pointer absolute">
-              <img src="/images/icons/camera.svg" class="w-20 opacity-50" alt="Camera icon"/>
-            </label>
-            <img src="" ref="imagePreview" class="h-52 w-full rounded-md object-cover" alt="Front Image Preview">
-          </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+        <div v-for="image in images" :key="image.id" class="relative aspect-video w-full border border-accent-200 rounded-md">
+          <img :src="image.source || '/images/icons/camera.svg'" alt="Product Image Preview" class="aspect-video object-cover rounded-md">
+          <button @click="deleteImage(id)" class="bg-red-600 p-3 rounded-md flex gap-2 text-white absolute top-2 right-2">
+            <UiIconsDelete class="w-5 h-5" />
+          </button>
         </div>
-        <FormButton class="lg:col-span-2 w-64 mx-auto">Publish</FormButton>
-      </form>
+
+        <form @submit.prevent="publishProduct()" action="" class="w-full aspect-video relative flex items-center justify-center">
+          <input @change="uploadImage($event)" type="file" id="productImageInput" class="hidden" accept="image/*">
+          <label for="productImageInput" class="aspect-video w-full rounded-md bg-accent-500 bg-opacity-[10%] hover:bg-opacity-50 duration-500 ease-in-out grid place-items-center cursor-pointer absolute">
+            <div>
+              <div class="w-24 aspect-square rounded-full bg-secondary relative mx-auto flex items-center justify-center mb-2">
+                <div class="bg-white w-4 h-16"></div>
+                <div class="bg-white w-4 h-16 rotate-90 absolute"></div>
+              </div>
+              <UiTypographyP>Click to add new image</UiTypographyP>
+            </div>
+          </label>
+        </form>
+      </div>
+
 
     </main>
   </LayoutsSellerDashboard>
@@ -31,30 +39,36 @@
 export default {
   data(){
     return {
-      frontImageFile: ''
+      productImageFile: '',
+      images: []
     }
   },
 
   methods: {
-    submitDetails(){
-      this.step1 = false,
-      this.step2 = true
-    },
-    submitSpecifications(){
-      this.step2 = false,
-      this.step3 = true
-    },
-    handleFrontImage(event) {
-      const frontPreview = this.$refs.frontPreview;
-      const frontImageFile = event.target.files[0];
-      if (frontImageFile) {
+    uploadImage(event) {
+      const ImageFile = event.target.files[0];
+      const productImage = {
+        id: Math.floor(Math.random()*1000),
+      }
+      if (ImageFile) {
         const reader = new FileReader();
         reader.onload = function (e) {
-          frontPreview.src = e.target.result;
-        };
-        reader.readAsDataURL(frontImageFile);
+          productImage.source = e.target.result;
+          // Update the images array after reading is complete
+          this.images.push(productImage);
+        }.bind(this); // Bind 'this' to the component context
+        reader.readAsDataURL(ImageFile);
       }
     },
+
+    addNewImage(){
+      this.imageCount +=1;
+      console.log(this.imageCount)
+    },
+
+    publishProduct(){
+      this.$router.push({name: 'username-selling-products'})
+    }
   }
 }
 </script>
