@@ -52,7 +52,7 @@ const { pending, data, error } = await useCustomFetch('/api/user/auth/register',
         theme: 'colored'
       })
       createUserProfile()
-      router.push({name: 'verify'})
+      router.push({name: 'auth-verify'})
     } else {
       toast.error(res.response._data.message, {
         position: toast.POSITION.BOTTOM_RIGHT,
@@ -94,7 +94,7 @@ loadingState.value = pending.value
 
           <FormButton :loading="loadingState" class="-mt-3">Sign Up</FormButton>
         </form>
-        <p class="text-sm w-fit mx-auto mt-2 text-secondary text-center">Already a member? <NuxtLink to="/login" class="duration-500 ease-in-out hover:text-primary">Sign In</NuxtLink></p>
+        <p class="text-sm w-fit mx-auto mt-2 text-secondary text-center">Already a member? <NuxtLink to="/auth/login" class="duration-500 ease-in-out hover:text-primary">Sign In</NuxtLink></p>
       </main>
     </div>
   </div>

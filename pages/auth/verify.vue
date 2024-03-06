@@ -56,7 +56,7 @@ const getUserDetails = async () => {
           position: toast.POSITION.BOTTOM_RIGHT,
           theme: 'colored'
         })
-        router.push({name: 'verify'})
+        router.push({name: 'username-buying'})
       } else {
         toast.error(res.response._data.message, {
           position: toast.POSITION.BOTTOM_RIGHT,

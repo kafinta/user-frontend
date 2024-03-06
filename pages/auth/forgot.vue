@@ -61,7 +61,7 @@ export default {
     updatePassword(){
       this.loadingStatePassword = true
       setTimeout(() => {
-        this.$router.push({path: '/users'})
+        this.$router.push({path: 'username-buying', params: {username: stewart}})
       }, 2000);
     },
 

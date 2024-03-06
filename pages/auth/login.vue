@@ -66,13 +66,13 @@ const signIn= async () => {
             <FormInput :error="error_state" label="Password" type="password" v-model:inputValue="password" placeholder="Enter your password"></FormInput>
             <div class="flex justify-between items-center mt-2 w-full">
               <p :class="error_state ? 'opacity-100' : 'opacity-0'" class="text-sm text-red-600 mt-2 duration-300 ease-in-out ">Wrong username or password</p>
-              <nuxt-link to="/forgot" :class="error_state ? 'hidden' : 'block'" class="text-sm text-secondary text-opacity-50 hover:text-opacity-100 duration-500 ease-in-out">Forgot password?</nuxt-link>
+              <nuxt-link to="/auth/forgot" :class="error_state ? 'hidden' : 'block'" class="text-sm text-secondary text-opacity-50 hover:text-opacity-100 duration-500 ease-in-out">Forgot password?</nuxt-link>
             </div>
           </div>
 
           <FormButton :loading="loadingState">Sign In</FormButton>
         </form>
-        <p class="text-sm w-fit mx-auto mt-2 text-secondary text-center">Not a member yet? <nuxt-link to="/signup" class="duration-500 ease-in-out hover:text-primary">Create Account</nuxt-link></p>
+        <p class="text-sm w-fit mx-auto mt-2 text-secondary text-center">Not a member yet? <nuxt-link to="/auth/signup" class="duration-500 ease-in-out hover:text-primary">Create Account</nuxt-link></p>
       </div>
     </div>
 

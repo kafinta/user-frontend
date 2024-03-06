@@ -22,10 +22,10 @@
             <UiButtonsSecondary @clicked="$router.push({name: 'marketplace'})">Marketplace</UiButtonsSecondary>
           </li>
           <li>
-            <UiButtonsSecondary @clicked="$router.push({name: 'login'})">Sign In</UiButtonsSecondary>
+            <UiButtonsSecondary @clicked="$router.push({name: 'auth-login'})">Sign In</UiButtonsSecondary>
           </li>
           <li >
-            <UiButtonsPrimary @clicked="$router.push({name: 'signup'})">Sign Up</UiButtonsPrimary>
+            <UiButtonsPrimary @clicked="$router.push({name: 'auth-signup'})">Sign Up</UiButtonsPrimary>
           </li>
         </ul>
       </nav>
