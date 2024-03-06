@@ -12,7 +12,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
         <div v-for="image in images" :key="image.id" class="relative aspect-video w-full border border-accent-200 rounded-md">
           <img :src="image.source || '/images/icons/camera.svg'" alt="Product Image Preview" class="aspect-video object-cover rounded-md">
-          <button @click="deleteImage(id)" class="bg-red-600 p-3 rounded-md flex gap-2 text-white absolute top-2 right-2">
+          <button @click="deleteImage(image)" class="bg-red-600 p-3 rounded-md flex gap-2 text-white absolute top-2 right-2">
             <UiIconsDelete class="w-5 h-5" />
           </button>
         </div>
@@ -30,8 +30,6 @@
           </label>
         </form>
       </div>
-
-
     </main>
   </LayoutsSellerDashboard>
 </template>
@@ -64,6 +62,14 @@ export default {
     addNewImage(){
       this.imageCount +=1;
       console.log(this.imageCount)
+    },
+
+    deleteImage(image){
+      const index = this.images.findIndex(img => img.id === image.id);
+      console.log(index)
+      if (index !== -1) {
+        this.images.splice(index, 1);
+      }
     },
 
     publishProduct(){
