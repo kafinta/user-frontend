@@ -38,21 +38,26 @@
   </LayoutsSellerDashboard>
 </template>
 <script>
+import { useOnboarding } from "@/composables/useOnboarding.ts";
+import onboarding from "~/middleware/onboarding";
 export default {
   data(){
     return {
-      email_verified: false,
+      email_verified: true,
       profile_created: false,
       kyc_verified: false,
-      percentage: 0
+      percentage: onboarding.percentage
     }
   },      
 
   mounted(){
-    document.documentElement.style.setProperty('--percent', `${this.percentage}%`);
+    const {onboarding} = useOnboarding();
+    console.log(onboarding)
+    document.documentElement.style.setProperty('--percent', `${onboarding.percentage}%`);
     if (this.email_verified === true) {
+      onboarding.percentage = onboarding.percentage + 20
       this.percentage = this.percentage + 20
-      document.documentElement.style.setProperty('--percent', `${this.percentage}%`);
+      document.documentElement.style.setProperty('--percent', `${onboarding.percentage}%`);
     }
     if (this.profile_created === true) {
       this.percentage = this.percentage + 40
