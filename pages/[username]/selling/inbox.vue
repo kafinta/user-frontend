@@ -1,5 +1,0 @@
-<template>
-  <LayoutsSellerDashboard>
-    
-  </LayoutsSellerDashboard>
-</template>

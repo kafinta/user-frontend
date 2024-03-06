@@ -21,9 +21,9 @@
           <input @change="uploadImage($event)" type="file" id="productImageInput" class="hidden" accept="image/*">
           <label for="productImageInput" class="aspect-video w-full rounded-md bg-accent-500 bg-opacity-[10%] hover:bg-opacity-50 duration-500 ease-in-out grid place-items-center cursor-pointer absolute">
             <div>
-              <div class="w-24 aspect-square rounded-full bg-secondary relative mx-auto flex items-center justify-center mb-2">
-                <div class="bg-white w-4 h-16"></div>
-                <div class="bg-white w-4 h-16 rotate-90 absolute"></div>
+              <div class="w-24 h-24 rounded-full bg-accent-200 flex items-center justify-center p-2 relative mx-auto mb-4">
+                <div class="w-1.5 h-8 bg-white"></div>
+                <div class="w-1.5 h-8 bg-white rotate-90 absolute"></div>
               </div>
               <UiTypographyP>Click to add new image</UiTypographyP>
             </div>
