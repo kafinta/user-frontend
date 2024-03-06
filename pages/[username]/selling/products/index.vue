@@ -51,7 +51,7 @@ export default {
       filter_revealed: false,
       filter_drawer: false,
       products: true,
-      deleteModalOpen: true
+      deleteModalOpen: false
     }
   },
 }
