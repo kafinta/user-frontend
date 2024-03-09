@@ -1,6 +1,6 @@
 <template>
   <LayoutsSellerDashboard page_title="New Product">
-    <main class="grid grid-cols-1 place-items-center gap-6 max-w-3xl mx-auto w-full">
+    <div class="grid grid-cols-1 place-items-center gap-6 max-w-3xl mx-auto w-full">
       <div class="flex items-center">
         <div class="bg-primary text-white h-10 w-10 rounded-full grid place-items-center">1</div>
         <div class="h-0.5 bg-accent-200 w-24"></div>
@@ -24,7 +24,7 @@
         <FormTextarea label="Description" placeholder="Write a detailed description for your product" class="col-span-2"></FormTextarea>
         <FormButton class="lg:col-span-2 w-64 mx-auto">Save & Continue</FormButton>
       </form>
-    </main>
+    </div>
   </LayoutsSellerDashboard>
 </template>
 <script>

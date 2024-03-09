@@ -1,6 +1,6 @@
 <template>
   <LayoutsSellerDashboard page_title="New Product">
-    <main class="grid grid-cols-1 place-items-center gap-6 max-w-3xl mx-auto w-full relative">
+    <div class="grid grid-cols-1 place-items-center gap-6 max-w-3xl mx-auto w-full relative">
       <div class="flex items-center">
         <div class="text-secondary border border-accent-200 h-10 w-10 rounded-full grid place-items-center">1</div>
         <div class="h-0.5 bg-accent-200 w-24"></div>
@@ -30,7 +30,7 @@
           </label>
         </form>
       </div>
-    </main>
+    </div>
   </LayoutsSellerDashboard>
 </template>
 <script>
