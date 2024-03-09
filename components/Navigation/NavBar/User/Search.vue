@@ -16,7 +16,7 @@
         <div class="hidden md:flex">
           <ul class="flex gap-5 items-center" v-if="signedIn">
             <li v-if="isSeller">
-              <UiButtonsSecondary @clicked="$router.push({name: ''})">Switch to Selling</UiButtonsSecondary>
+              <UiButtonsSecondary @clicked="$router.push({name: 'username-selling', params: {username: 'username'}})">Switch to Selling</UiButtonsSecondary>
             </li>
             <li>
               <UiButtonsTertiary :flexdisplay="true" @clicked="$emit('cartClicked')">
@@ -47,10 +47,10 @@
 
           <ul v-else class="flex gap-5 items-center w-fit">
             <li>
-              <UiButtonsSecondary class="w-16" @clicked="$router.push({path: '/login'})">Sign In</UiButtonsSecondary>
+              <UiButtonsSecondary class="w-16" @clicked="$router.push({path: '/auth/login'})">Sign In</UiButtonsSecondary>
             </li>
             <li>
-              <UiButtonsPrimary class="w-32" @click="$router.push({path: '/signup'})">Sign Up</UiButtonsPrimary>
+              <UiButtonsPrimary class="w-32" @click="$router.push({path: '/auth/signup'})">Sign Up</UiButtonsPrimary>
             </li>
           </ul>
         </div>
