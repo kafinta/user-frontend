@@ -10,16 +10,16 @@
       </div>
       <UiTypographyH3>Product Images</UiTypographyH3>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
-        <div v-for="image in images" :key="image.id" class="relative aspect-video w-full border border-accent-200 rounded-md">
-          <img :src="image.source || '/images/icons/camera.svg'" alt="Product Image Preview" class="aspect-video object-cover rounded-md">
+        <div v-for="image in images" :key="image.id" class="relative product w-full border border-accent-200 rounded-md">
+          <img :src="image.source || '/images/icons/camera.svg'" alt="Product Image Preview" class="product object-cover rounded-md">
           <button @click="deleteImage(image)" class="bg-red-600 p-3 rounded-md flex gap-2 text-white absolute top-2 right-2">
             <UiIconsDelete class="w-5 h-5" />
           </button>
         </div>
 
-        <form @submit.prevent="publishProduct()" action="" class="w-full aspect-video relative flex items-center justify-center">
+        <form @submit.prevent="publishProduct()" action="" class="w-full product relative flex items-center justify-center">
           <input @change="uploadImage($event)" type="file" id="productImageInput" class="hidden" accept="image/*">
-          <label for="productImageInput" class="aspect-video w-full rounded-md bg-accent-500 bg-opacity-[10%] hover:bg-opacity-50 duration-500 ease-in-out grid place-items-center cursor-pointer absolute">
+          <label for="productImageInput" class="product w-full rounded-md bg-accent-500 bg-opacity-[10%] hover:bg-opacity-50 duration-500 ease-in-out grid place-items-center cursor-pointer absolute">
             <div>
               <div class="w-24 aspect-square rounded-full bg-secondary relative mx-auto flex items-center justify-center mb-2">
                 <div class="bg-white w-4 h-16"></div>

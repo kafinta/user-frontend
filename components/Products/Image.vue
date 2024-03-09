@@ -1,5 +1,5 @@
 <template>
-  <div :style="{background:`url(${imagePath})`}" class="w-full aspect-video background"></div>
+  <div :style="{background:`url(${imagePath})`}" class="w-full product background"></div>
 </template>
 <script>
   export default{

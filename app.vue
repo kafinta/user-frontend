@@ -27,6 +27,10 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
+.product {
+  aspect-ratio: 4/3;
+}
+
 button:disabled {
   cursor: not-allowed;
 }
