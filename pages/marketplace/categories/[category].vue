@@ -1,13 +1,15 @@
 <template>
   <LayoutsMarketplace>
-    <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
-      <li v-if="categoryLoaded" v-for="item in subcategories" :key="item.id">
-        <UiCards @clicked="query.subcategory=item.name; $router.push({name: 'marketplace-products', query})" :title="item.name" :backgroundImagePath="'http://localhost:8000' + item.image" class="w-full"/>
-      </li>
-      <li v-else class="flex items-center justify-center">
-        <UiIconsLoading class="text-primary h-10 w-10" />
-      </li>
-    </ul>
+    <Container>
+      <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
+        <li v-if="categoryLoaded" v-for="item in subcategories" :key="item.id">
+          <UiCards @clicked="query.subcategory=item.name; $router.push({name: 'marketplace-products', query})" :title="item.name" :backgroundImagePath="'http://localhost:8000' + item.image" class="w-full"/>
+        </li>
+        <li v-else class="flex items-center justify-center">
+          <UiIconsLoading class="text-primary h-10 w-10" />
+        </li>
+      </ul>
+    </Container>
   </LayoutsMarketplace>
 </template>
 <script setup>

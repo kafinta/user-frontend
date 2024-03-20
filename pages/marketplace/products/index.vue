@@ -1,5 +1,6 @@
 <template>
-  <LayoutsMarketplace>
+  <LayoutsMarketplace class="px-4 sm:px-6">
+    <UiTypographyH2>Search results for <b>{{$route.query.query}}</b></UiTypographyH2>
     <div class="flex justify-between items-center">
       <UiButtonsPrimary @clicked="openDialog=true" class="lg:hidden">
         <div class="flex gap-5">
@@ -38,8 +39,4 @@ import { onMounted, ref } from "vue";
 import { useRouter } from 'vue-router'
 const openDialog = ref(false)
 const pagination_btns = ref.pagination
-
-onMounted(() => {
-  console.log(pagination_btns)
-})
 </script>
