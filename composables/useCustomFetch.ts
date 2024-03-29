@@ -4,7 +4,6 @@ import { defu } from 'defu'
 export function useCustomFetch<T>(url: string, options: UseFetchOptions<T> = {}) {
     const XSRF_TOKEN = useCookie('XSRF-TOKEN')
     const config = useRuntimeConfig()
-    const token = process.browser ? localStorage.getItem('token') : null || null
 
     const defaults: UseFetchOptions<T> = {
         baseURL: config.public.base_url as string ?? 'http://localhost:8000',
@@ -17,7 +16,6 @@ export function useCustomFetch<T>(url: string, options: UseFetchOptions<T> = {})
         {
             'accept': 'application/json, text/plain, */*',
             'X-XSRF-TOKEN': XSRF_TOKEN.value ? XSRF_TOKEN.value : '',
-            'Authorization': 'Bearer' + localStorage.getItem('token')
         },
 
         onResponse(_ctx) {
