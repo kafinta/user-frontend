@@ -2,10 +2,10 @@
   <aside class="lg:border-r lg:border-accent lg:pr-2">
     <UiTypographyP class="mb-2 hidden lg:block">Filters</UiTypographyP>
     <Accordion class="grid gap-5">
-      <AccordionItem container_class="border border-accent lg:border-none"
-        trigger_class=" border-b border-accent py-2 px-3" active>
+      <AccordionItem container_class="border border-accent-100 p-2 px-3 rounded-md"
+        trigger_class="font-medium text-lg" active>
         <template #accordion-trigger >
-          <UiTypographyP><strong>Category</strong></UiTypographyP>
+          <h4>Category</h4>
         </template>
 
         <template #accordion-content content_class="px-3 py-2">
@@ -41,10 +41,10 @@
         </template>
       </AccordionItem>
 
-      <AccordionItem container_class="border border-accent lg:border-none"
-        trigger_class=" border-b border-accent py-2 px-3">
+      <AccordionItem container_class="border border-accent-100 p-2 px-3 rounded-md"
+        trigger_class="font-medium text-lg">
         <template #accordion-trigger >
-          <UiTypographyP><strong>Locations</strong></UiTypographyP>
+          <h4>Locations</h4>
         </template>
 
         <template #accordion-content content_class="px-3 py-2">
@@ -57,43 +57,11 @@
           </div>
         </template>
       </AccordionItem>
-      <AccordionItem container_class="border border-accent lg:border-none"
-        trigger_class=" border-b border-accent py-2 px-3">
-        <template #accordion-trigger >
-          <UiTypographyP><strong>Price</strong></UiTypographyP>
-        </template>
-
-        <template #accordion-content content_class="px-3 py-2">
-          <div v-if="categoryLoaded" class="mt-3 flex gap-2 flex-wrap text-left">
-            <UiButtonsTertiary @clicked="query.price = location.name; $router.push({name: '', query}); console.log($route.query)" class="text-left text-secondary hover:text-primary py-2 duration-500 ease-in-out" v-for="location in locations" :key="location.id">{{location.name}}</UiButtonsTertiary>
-          </div>
-
-          <div v-else class="flex items-center justify-center">
-            <UiIconsLoading class="text-accent-100 h-10 w-10" />
-          </div>
-        </template>
-      </AccordionItem>
-      <AccordionItem container_class="border border-accent lg:border-none"
-        trigger_class=" border-b border-accent py-2 px-3">
-        <template #accordion-trigger >
-          <UiTypographyP><strong>Reviews</strong></UiTypographyP>
-        </template>
-
-        <template #accordion-content content_class="px-3 py-2">
-          <div v-if="categoryLoaded" class="mt-3 flex gap-2 flex-wrap text-left">
-            <UiButtonsTertiary @clicked="query.price = location.name; $router.push({name: '', query}); console.log($route.query)" class="text-left text-secondary hover:text-primary py-2 duration-500 ease-in-out" v-for="location in locations" :key="location.id">{{location.name}}</UiButtonsTertiary>
-          </div>
-
-          <div v-else class="flex items-center justify-center">
-            <UiIconsLoading class="text-accent-100 h-10 w-10" />
-          </div>
-        </template>
-      </AccordionItem>
     </Accordion>
   </aside>
 </template>
 <script setup>
-import { onMounted, ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 import { useRouter } from 'vue-router'
 import { useQuery } from "@/composables/useQuery";
 const route = useRoute()
@@ -114,12 +82,6 @@ const getCategories = async () => {
       if (res.response.status == 200) {
         categories = res.response._data
         categoryLoaded.value = true
-        // const filter_categories = categories
-        // filter_categories.forEach(categoryitem => {
-        //   if (categoryitem.name = route.query.category) {
-        //     console.log(categoryitem.name);
-        //   }
-        // });
       }
     },
   })
@@ -156,7 +118,7 @@ const getLocations = async () => {
   })
 };
 
-onMounted(() => {
+onBeforeMount(() => {
   getCategories();
   getLocations();
 })
