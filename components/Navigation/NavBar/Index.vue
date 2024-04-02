@@ -24,7 +24,7 @@
             <UiButtonsSecondary @clicked="$router.push({name: 'marketplace-projects'})">Projects</UiButtonsSecondary>
           </li>
           <li>
-            <UiButtonsSecondary @clicked="$router.push({name: 'marketplace'})">Marketplace</UiButtonsSecondary>
+            <UiButtonsSecondary @clicked="$router.push({path: '/marketplace/'})">Marketplace</UiButtonsSecondary>
           </li>
           <li>
             <UiButtonsSecondary @clicked="$router.push({name: 'auth-login'})">Sign In</UiButtonsSecondary>
