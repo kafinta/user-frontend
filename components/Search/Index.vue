@@ -69,7 +69,7 @@ export default {
     // }),
 
     search(){
-      this.$router.push({name: 'marketplace-search', query: {query: this.search_text}})
+      this.$router.push({name: 'marketplace-products', query: {query: this.search_text}})
     },
 
     clearSearchText() {
