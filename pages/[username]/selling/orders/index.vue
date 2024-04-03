@@ -1,7 +1,7 @@
 <template>
   <LayoutsSellerDashboard page_title="Orders Overview">
-    <ul class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 w-full" v-for="cards in 6">
-      <li class="rounded-2xl border border-accent-100 block">
+    <ul class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 w-full">
+      <li class="rounded-2xl border border-accent-100 block" v-for="cards in 6">
         <ProductsImage class="rounded-t-2xl" />
         <div class="p-5 flex flex-col gap-5">
           <ProductsName>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</ProductsName>
