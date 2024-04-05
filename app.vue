@@ -28,7 +28,9 @@ body {
 }
 
 .product {
-  aspect-ratio: 4/3;
+  aspect-ratio: 5/3;
+  object-fit: cover;
+  object-position: center;
 }
 
 button:disabled {
