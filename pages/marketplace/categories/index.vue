@@ -12,35 +12,57 @@
     </Container>
   </LayoutsMarketplace>
 </template>
-<script setup>
-import { useSelectCategory } from "@/composables/useSelectCategory";
+<script>
+import { mapActions, mapState } from 'pinia'
+import { useFilters } from "@/stores/filters";
 import { useQuery } from "@/composables/useQuery";
-import { onMounted, ref } from "vue";
-const categoryLoaded = ref(false)
-const {id} = useSelectCategory() 
-const {query} = useQuery() 
-let categories  = []
+const { query } = useQuery()
+export default {
+  data(){
+    return {
+      categoriesLoaded : false,
+    }
+  },
+  methods: {
+    ...mapActions(useFilters, { 
+      getCategories: 'fetchCategories',
+      selectCategory: 'selectCategory'
+    }),
 
-function selectCategory(item) {
-  id.value = item.id
-  console.log(id.value)
-}
+    toggleSub(){
+      this.toggleSubcategories = !this.toggleSubcategories
+    },
 
-const getCategories = async () => {
-  const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
-  const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('api/categories/', {
-    method: 'GET',
-    onResponse(res) {
-      if (res.response.status == 200) {
-        categories = useState('categories', () => res.response._data).value
-        categoryLoaded.value = true
-      } else {
+    chooseCategory(category){
+      this.selectCategory(category);
+      this.categoryName = category.name
+      query.category = category.name;
+      this.$router.push({name: '', query})
+      if (this.subcategory != []) {
+        this.toggleSub()
+        this.subcategoryLoaded = true
       }
     },
-  })
-};
 
-onMounted(() => {
-  getCategories();
-})
+    chooseSubcategory(){
+      query.subcategory = item.name; 
+      $router.push({name: 'marketplace-products', query});
+    },
+
+    chooseLocation(){
+      query.location = location.name;
+      $router.push({name: 'marketplace-products', query});
+    }
+  },
+  computed: {
+    ...mapState(useFilters, {
+      categories: 'getCategories',
+      subcategory: 'getSubcategory'
+    })
+  },
+  created(){
+    this.getCategories();
+    this.categoriesLoaded = true;
+  }
+}
 </script>

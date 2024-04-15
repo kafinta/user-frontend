@@ -131,12 +131,6 @@ onMounted(() => {
         <UiIconsLoading class="text-accent-100 h-10 w-10"  />
       </div>
     </Container>
-
-    <Container>
-      <UiTypographyH2 class="text-secondary text-2xl md:text-3xl 2xl:text-4xl font-medium">Get inspired by our projects</UiTypographyH2>
-      <CarouselsProjects />
-    </Container>
-
     <NavigationFooter />
   </div>
 </template>

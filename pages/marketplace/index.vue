@@ -36,14 +36,6 @@ const {query} = useQuery()
     <div class="mt-10">
       <CarouselsTopProducts />
     </div>
-
-    <Container :addTopBottomPadding="false">
-      <div class="mt-10">
-        <UiTypographyH2>Trending Categories</UiTypographyH2>
-        <CarouselsProjects />
-      </div>
-    </Container>
-
   </LayoutsMarketplace>
 </template>
 <script>

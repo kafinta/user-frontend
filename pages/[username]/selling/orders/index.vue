@@ -1,5 +1,14 @@
 <template>
   <LayoutsSellerDashboard page_title="Orders Overview">
+    <div class="flex divide-x border w-full border-accent-100 rounded-md mb-5 overflow-x-hidden">
+      <button :class="active ? 'bg-secondary text-white' : 'bg-accent-200 text-secondary'" class="rounded-l-md px-5 py-3">Awaiting Fulfilment</button>
+      <button :class="active ? 'bg-secondary text-white' : 'bg-accent-200 text-secondary'" class="px-5 py-3">Shipped</button>
+      <button :class="active ? 'bg-secondary text-white' : 'bg-accent-200 text-secondary'" class="px-5 py-3">Delivered</button>
+      <button :class="active ? 'bg-secondary text-white' : 'bg-accent-200 text-secondary'" class="px-5 py-3">Completed</button>
+      <button :class="active ? 'bg-secondary text-white' : 'bg-accent-200 text-secondary'" class="px-5 py-3">Return Requested</button>
+      <button :class="active ? 'bg-secondary text-white' : 'bg-accent-200 text-secondary'" class="px-5 py-3 rounded-r-md">Cancelled</button>
+    </div>
+
     <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 w-full">
       <li class="rounded-2xl border border-accent-100 block" v-for="cards in 6">
         <ProductsImage class="rounded-t-2xl" />
@@ -35,7 +44,8 @@ export default {
     return {
       image: '',
       status: 'pending',
-      orders: 10
+      orders: 10,
+      active: true
     }
   }
 }
