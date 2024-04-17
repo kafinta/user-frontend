@@ -21,9 +21,6 @@
             </UiButtonsSecondary>
           </li>
           <li>
-            <UiButtonsSecondary @clicked="$router.push({name: 'marketplace-projects'})">Projects</UiButtonsSecondary>
-          </li>
-          <li>
             <UiButtonsSecondary @clicked="$router.push({path: '/marketplace/'})">Marketplace</UiButtonsSecondary>
           </li>
           <li>
