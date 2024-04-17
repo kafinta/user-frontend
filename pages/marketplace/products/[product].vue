@@ -1,21 +1,75 @@
 <template>
   <LayoutsMarketplace>
     <Container :addTopBottomPadding="false">
-      <div class="flex gap-16">
-        <div class="w-3/5">
-          <div class="bg-accent-100 w-full aspect-[3/2]"></div>
-          <UiTypographyP>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ea odio facilis aliquam adipisci laboriosam fugiat nulla inventore aperiam. Explicabo nulla, quidem voluptate iste vitae sapiente ratione quas ut magnam illo. Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus atque distinctio repudiandae quae architecto accusamus quas modi recusandae, repellat quidem. Debitis tenetur cupiditate nihil odio. Facilis repellendus id nobis libero. Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel vitae veritatis animi maiores, illo quibusdam perspiciatis vero temporibus quae, doloribus adipisci blanditiis quasi architecto officiis saepe maxime doloremque expedita hic!</UiTypographyP>
-        </div>
+      <div class="grid lg:grid-cols-5 gap-10">
+        <div class="col-span-1 lg:col-span-3">
+          <div class="glide_slider pictures flex items-center relative">
+            <div class="glide__track" data-glide-el="track">
+              <ul class="glide__slides">
+                <div class="product bg-accent-400"></div>
+                <div class="product bg-primary"></div>
+                <div class="product bg-orange-500"></div>
+                <div class="product bg-pink-600"></div>
+              </ul>
+            </div>
+            <div class="glide__arrows flex justify-between h-fit absolute w-full px-6" data-glide-el="controls">
+                <button class="glide__arrow glide__arrow--left" data-glide-dir="<">
+                  <div class="bg-secondary aspect-square rounded-full p-1.5 hover:bg-primary duration-300 bg-opacity-75">
+                    <UiIconsAccordion class="w-7 h-7 -rotate-90 text-white" />
+                  </div>
+                </button>
+                <button class="glide__arrow glide__arrow--right" data-glide-dir=">">
+                  <div class="bg-secondary aspect-square rounded-full p-1.5 hover:bg-primary duration-300 bg-opacity-75">
+                    <UiIconsAccordion class="w-7 h-7 rotate-90 text-white" />
+                  </div>
+                </button>
+              </div>
 
-        <div class="sticky top-20">
-          <UiTypographyH2>Product Name</UiTypographyH2>
-          <UiTypographyP>By Test supplier name</UiTypographyP>
-          <div class="flex gap-0.5 items-center mt-3">
-            <UiIconsStar v-for="star in 5" class="w-5 text-primary" />
           </div>
+          <ProductsPageSidebar v-if="!isDesktop" /> 
         </div>
+        <ProductsPageSidebar v-if="isDesktop" />
       </div>
     </Container>
 
   </LayoutsMarketplace>
 </template>
+<script>
+import Glide from '@glidejs/glide'
+export default {
+  data(){
+    return {
+      isDesktop: false
+    }
+  },
+
+  methods: {
+    mountCarousel(){
+      const productsSlider = document.querySelectorAll(`.pictures`);
+      productsSlider.forEach((picture) => {
+        new Glide(picture, {
+          type: 'carousel',
+          focusAt: 'center',
+          gap: 0,
+          animationDuration: 500,
+          perView: 1
+        }).mount();
+      });
+    },
+
+    handleResize() {
+      this.isDesktop = window.innerWidth >= 1024;
+    }
+  },
+
+  mounted() {
+    this.mountCarousel();
+
+    this.isDesktop = window.innerWidth >= 1024;
+    window.addEventListener('resize', this.handleResize);
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize);
+  },
+}
+</script>
