@@ -13,7 +13,6 @@
   </LayoutsMarketplace>
 </template>
 <script>
-import Glide from '@glidejs/glide'
 export default {
   data(){
     return {
