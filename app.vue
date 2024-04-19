@@ -25,6 +25,8 @@ body {
   scroll-behavior: smooth;
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
+  user-select: none;
+  caret-color: #C9B14F;
 }
 
 .product {
