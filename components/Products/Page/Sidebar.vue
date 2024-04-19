@@ -23,7 +23,7 @@
       </div>
       <UiTypographyP>Previous price: ${{ price + percentage/100 * price }}</UiTypographyP>
 
-      <form class="grid gap-5 p-5 border border-accent-100 rounded-xl mt-5">
+      <form class="grid gap-5 p-5 border border-accent-200 rounded-xl mt-5">
         <div class="">
           <label for="color choice">Color:</label>
           <input type="radio" name="Image" id="">

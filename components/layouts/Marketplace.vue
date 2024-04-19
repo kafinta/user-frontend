@@ -8,7 +8,7 @@
     <ModalsDrawer :openDialog="openCart" @closeDialog="toggleCart()" :footerButtons="true" :scrollable="true" okText="Checkout">
       <template #title>My Cart</template>
       <ul class="grid gap-5">
-        <li class="p-5 border border-accent-100 rounded-md bg-accent-100 h-48" v-for="item in 5">
+        <li class="p-5 border border-accent-200 rounded-md bg-accent-100 h-48" v-for="item in 5">
 
         </li>
       </ul>

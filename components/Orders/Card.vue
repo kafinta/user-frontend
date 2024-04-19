@@ -1,5 +1,5 @@
 <template>
-  <li class="rounded-2xl border border-accent-100 block" @click="emit('clicked')">
+  <li class="rounded-2xl border border-accent-200 block" @click="emit('clicked')">
     <ProductsImage class="rounded-t-2xl" />
     <div class="p-5 flex flex-col gap-5">
       <ProductsName>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</ProductsName>

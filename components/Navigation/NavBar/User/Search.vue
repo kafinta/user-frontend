@@ -1,5 +1,5 @@
 <template>
-  <nav class="fixed z-100 w-full top-0 border-b border-accent-100 bg-white">
+  <nav class="fixed z-100 w-full top-0 border-b border-accent-200 bg-white">
     <div class="max-w-7xl 2xl:max-w-8xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-5 py-4">
       <div class="w-36">
         <NavigationLogo @logoClicked="$router.push({path: '/'})" />
@@ -27,7 +27,7 @@
           <li class="relative">
             <UserProfilePicture @click="toggleOptions()" :large_dimensions="true" :username="username" class="cursor-pointer" />
 
-            <div ref="userOptions" :class="user_options ? 'grid gap-1' : 'hidden'" class="p-2 px-3 rounded-md border border-accent-100 text-secondary absolute bg-white right-0 w-56 mt-4">
+            <div ref="userOptions" :class="user_options ? 'grid gap-1' : 'hidden'" class="p-2 px-3 rounded-md border border-accent-200 text-secondary absolute bg-white right-0 w-56 mt-4">
               <div class="flex gap-5 items-center py-2">
                 <UserProfilePicture @click="toggleOptions()" :custom_dimensions="true" :username="username" class="cursor-pointer w-12" />
                 <div>

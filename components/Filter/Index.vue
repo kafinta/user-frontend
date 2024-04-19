@@ -3,7 +3,7 @@
     <UiTypographyP class="mb-2 hidden lg:block">Filters</UiTypographyP>
     <Accordion class="grid gap-5">
 
-    <AccordionItem container_class="p-2 px-3 rounded-md border border-accent-100"
+    <AccordionItem container_class="p-2 px-3 rounded-md border border-accent-200"
       trigger_class="font-medium text-lg">
 
       <template #accordion-trigger>
@@ -39,7 +39,7 @@
       </template>
     </AccordionItem>
 
-    <AccordionItem container_class="border border-accent-100 p-2 px-3 rounded-md"
+    <AccordionItem container_class="border border-accent-200 p-2 px-3 rounded-md"
       trigger_class="font-medium text-lg">
       <template #accordion-trigger >
         <h4>Locations</h4>

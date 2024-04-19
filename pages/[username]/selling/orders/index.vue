@@ -1,6 +1,6 @@
 <template>
   <LayoutsSellerDashboard page_title="Orders Overview">
-    <div class="flex divide-x border w-full border-accent-100 rounded-md mb-5 overflow-x-hidden">
+    <div class="flex divide-x border w-full border-accent-200 rounded-md mb-5 overflow-x-hidden">
       <button :class="active ? 'bg-secondary text-white' : 'bg-accent-200 text-secondary'" class="rounded-l-md px-5 py-3">Awaiting Fulfilment</button>
       <button :class="active ? 'bg-secondary text-white' : 'bg-accent-200 text-secondary'" class="px-5 py-3">Shipped</button>
       <button :class="active ? 'bg-secondary text-white' : 'bg-accent-200 text-secondary'" class="px-5 py-3">Delivered</button>
@@ -10,7 +10,7 @@
     </div>
 
     <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 w-full">
-      <li class="rounded-2xl border border-accent-100 block" v-for="cards in 6">
+      <li class="rounded-2xl border border-accent-200 block" v-for="cards in 6">
         <ProductsImage class="rounded-t-2xl" />
         <div class="p-5 flex flex-col gap-5">
           <ProductsName>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</ProductsName>

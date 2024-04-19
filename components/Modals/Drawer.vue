@@ -19,7 +19,7 @@
             <slot />
           </div>
           
-          <div v-show="footerButtons" class="absolute bottom-0 w-full select-none border-t border-accent-100">
+          <div v-show="footerButtons" class="absolute bottom-0 w-full select-none border-t border-accent-200">
             <div class="w-full flex justify-between">
               <button @click="emitCloseDialogEvent()" class="uppercase font-medium w-1/2 block px-2 py-3 text-center cursor-pointer bg-white hover:bg-accent-400 hover:text-white transition duration-500">
                 {{cancelText}}

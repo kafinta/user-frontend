@@ -7,7 +7,7 @@
           <UiButtonsPrimary @clicked="$router.push({path: 'products/new'})">List a New Product</UiButtonsPrimary>
         </div>
         <ul v-if="products" class="grid lg:grid-cols-2 gap-6 place-items-center mt-6">
-          <li v-for="item in 4" class="flex gap-4 border items-center border-accent-100 rounded-lg w-full p-2 h-full">
+          <li v-for="item in 4" class="flex gap-4 border items-center border-accent-200 rounded-lg w-full p-2 h-full">
             <div class="bg-accent-200 rounded-md product w-1/3 h-full"></div>
             <div class="w-2/3 justify-between flex flex-col h-full gap-4">
               <UiTypographyH3>This is the product name</UiTypographyH3>
