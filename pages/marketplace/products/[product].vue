@@ -52,24 +52,75 @@
           <hr>
           <div class="py-4">
             <UiTypographyH2>Customer Reviews</UiTypographyH2>
-            <div class="flex gap-5 p-5 border border-accent-200 rounded-md mt-2 items-center">
-              <div>
-                <UiTypographyH2>{{this.review}} out of 5</UiTypographyH2>
-                <div class="flex gap-2 items-center">
-                  <UiIconsStar v-for="n in 5" :key="n" :opacity="getStarOpacity(n)" class="w-7 text-primary" />
-                </div>
-                <UiTypographyP class="mt-2">{{review_count}} ratings and reviews</UiTypographyP>
-              </div>
-              <div class="">
-                <div class="flex gap-2 items-center">
-                  <UiTypographyP>5</UiTypographyP>
-                  <UiIconsStar class="w-5 text-primary" />
-                  <div class="h-2 rounded-md w-36 bg-accent-100">
-                    <div class="w-[75%] h-2 bg-primary rounded-md"></div>
+            <div class="p-5 border border-accent-200 rounded-md mt-2 ">
+              <div class="flex gap-5 lg:gap-10 items-center">
+                <div>
+                  <UiTypographyH2>{{this.review}} out of 5</UiTypographyH2>
+                  <div class="flex gap-2 items-center">
+                    <UiIconsStar v-for="n in 5" :key="n" :opacity="getStarOpacity(n)" class="w-7 text-primary" />
                   </div>
-                  <UiTypographyP>75%</UiTypographyP>
+                  <UiTypographyP class="mt-2">{{review_count}} ratings and reviews</UiTypographyP>
+                </div>
+
+                <div class="grid gap-1">
+                  <div class="flex gap-2 items-center">
+                    <UiTypographyP>5</UiTypographyP>
+                    <UiIconsStar class="w-5 text-primary" />
+                    <div class="h-2 rounded-md w-36 bg-accent-100">
+                      <div class="w-[75%] h-2 bg-primary rounded-md"></div>
+                    </div>
+                    <UiTypographyP>75%</UiTypographyP>
+                  </div>
+
+                  <div class="flex gap-2 items-center">
+                    <UiTypographyP>4</UiTypographyP>
+                    <UiIconsStar class="w-5 text-primary" />
+                    <div class="h-2 rounded-md w-36 bg-accent-100">
+                      <div class="w-[75%] h-2 bg-primary rounded-md"></div>
+                    </div>
+                    <UiTypographyP>75%</UiTypographyP>
+                  </div>
+
+                  <div class="flex gap-2 items-center">
+                    <UiTypographyP>3</UiTypographyP>
+                    <UiIconsStar class="w-5 text-primary" />
+                    <div class="h-2 rounded-md w-36 bg-accent-100">
+                      <div class="w-[75%] h-2 bg-primary rounded-md"></div>
+                    </div>
+                    <UiTypographyP>75%</UiTypographyP>
+                  </div>
+
+                  <div class="flex gap-2 items-center">
+                    <UiTypographyP>2</UiTypographyP>
+                    <UiIconsStar class="w-5 text-primary" />
+                    <div class="h-2 rounded-md w-36 bg-accent-100">
+                      <div class="w-[75%] h-2 bg-primary rounded-md"></div>
+                    </div>
+                    <UiTypographyP>75%</UiTypographyP>
+                  </div>
+
+                  <div class="flex gap-2 items-center">
+                    <UiTypographyP>1</UiTypographyP>
+                    <UiIconsStar class="w-5 text-primary" />
+                    <div class="h-2 rounded-md w-36 bg-accent-100">
+                      <div class="w-[75%] h-2 bg-primary rounded-md"></div>
+                    </div>
+                    <UiTypographyP>75%</UiTypographyP>
+                  </div>
+                  
                 </div>
               </div>
+              <hr class="border-accent-200 my-5">
+              <ul class="grid gap-5 divide-x divide-accent-200">
+                <li>
+                  <article>
+                    <div class="flex gap-3 items-center">
+                      <UserProfilePicture username="reviewer" />
+                      <UiTypographyP>Reviewer</UiTypographyP>
+                    </div>
+                  </article>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
