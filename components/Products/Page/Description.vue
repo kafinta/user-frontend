@@ -1,0 +1,6 @@
+<template>
+  <div class="py-5">
+    <UiTypographyH2>Product Details</UiTypographyH2>
+    <UiTypographyP>Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti, nisi placeat corrupti veritatis facilis molestias mollitia! Id in doloremque doloribus eaque quasi quisquam velit eligendi unde, molestias, maiores sint odit. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Rerum adipisci libero veniam, ad eum quae aliquam. Maiores ipsam nisi dolor autem officia sint atque ipsa cumque necessitatibus nihil? Vero, culpa. <br> Lorem ipsum dolor sit amet consectetur, adipisicing elit. Odio repudiandae magnam, rerum natus voluptas reiciendis, quasi expedita nostrum optio obcaecati similique quisquam. Delectus odit autem commodi ducimus eos quasi fugiat. <br>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Enim laboriosam veniam tenetur quidem natus, magni dolorem rerum debitis reprehenderit repellat iste et! Doloremque dignissimos repellendus modi blanditiis eius, repellat consequatur.</UiTypographyP>
+  </div>
+</template>
