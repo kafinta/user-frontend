@@ -111,12 +111,84 @@
                 </div>
               </div>
               <hr class="border-accent-200 my-5">
-              <ul class="grid gap-5 divide-x divide-accent-200">
+              <ul class="grid gap-5 divide-y divide-accent-200">
                 <li>
-                  <article>
-                    <div class="flex gap-3 items-center">
-                      <UserProfilePicture username="reviewer" />
-                      <UiTypographyP>Reviewer</UiTypographyP>
+                  <article class="grid gap-2">
+                    <div class="flex gap-2">
+                      <UiIconsStar v-for="$ in 5" class="w-7 text-primary" />
+                    </div>
+                    <UiTypographyP>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Optio, ullam ex. Culpa, dolores alias. In excepturi natus eaque dolorem fuga sint rerum facilis! Unde id blanditiis modi impedit doloremque rerum.</UiTypographyP>
+                    <div class="flex justify-between items-center">
+                      <UiTypographyP>{{ new Date().toLocaleDateString() }} by Reviewer</UiTypographyP>
+                      <div class="text-green-500 flex items-center gap-2">
+                        <UiIconsBadge />
+                        <UiTypographyP>Verified purchase</UiTypographyP>
+                      </div>
+
+                    </div>
+                  </article>
+                </li>
+                <li class="pt-5">
+                  <article class="grid gap-2">
+                    <div class="flex gap-2">
+                      <UiIconsStar v-for="$ in 5" class="w-7 text-primary" />
+                    </div>
+                    <UiTypographyP>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Optio, ullam ex. Culpa, dolores alias. In excepturi natus eaque dolorem fuga sint rerum facilis! Unde id blanditiis modi impedit doloremque rerum.</UiTypographyP>
+                    <div class="flex justify-between items-center">
+                      <UiTypographyP>{{ new Date().toLocaleDateString() }} by Reviewer</UiTypographyP>
+                      <div class="text-green-500 flex items-center gap-2">
+                        <UiIconsBadge />
+                        <UiTypographyP>Verified purchase</UiTypographyP>
+                      </div>
+
+                    </div>
+                  </article>
+                </li>
+                <li class="pt-5">
+                  <article class="grid gap-2">
+                    <div class="flex gap-2">
+                      <UiIconsStar v-for="$ in 5" class="w-7 text-primary" />
+                    </div>
+                    <UiTypographyP>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Optio, ullam ex. Culpa, dolores alias. In excepturi natus eaque dolorem fuga sint rerum facilis! Unde id blanditiis modi impedit doloremque rerum.</UiTypographyP>
+                    <div class="flex justify-between items-center">
+                      <UiTypographyP>{{ new Date().toLocaleDateString() }} by Reviewer</UiTypographyP>
+                      <div class="text-green-500 flex items-center gap-2">
+                        <UiIconsBadge />
+                        <UiTypographyP>Verified purchase</UiTypographyP>
+                      </div>
+
+                    </div>
+                  </article>
+                </li>
+                <li class="pt-5">
+                  <article class="grid gap-2">
+                    <div class="flex gap-2">
+                      <UiIconsStar v-for="$ in 5" class="w-7 text-primary" />
+                    </div>
+                    <UiTypographyP>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Optio, ullam ex. Culpa, dolores alias. In excepturi natus eaque dolorem fuga sint rerum facilis! Unde id blanditiis modi impedit doloremque rerum.</UiTypographyP>
+                    <div class="flex justify-between items-center">
+                      <UiTypographyP>{{ new Date().toLocaleDateString() }} by Reviewer</UiTypographyP>
+                      <div class="text-green-500 flex items-center gap-2">
+                        <UiIconsBadge />
+                        <UiTypographyP>Verified purchase</UiTypographyP>
+                      </div>
+
+                    </div>
+                  </article>
+                </li>
+                <li class="pt-5">
+                  <article class="grid gap-2">
+                    <div class="flex gap-2">
+                      <UiIconsStar v-for="$ in 5" class="w-7 text-primary" />
+                    </div>
+                    <UiTypographyP>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Optio, ullam ex. Culpa, dolores alias. In excepturi natus eaque dolorem fuga sint rerum facilis! Unde id blanditiis modi impedit doloremque rerum.</UiTypographyP>
+                    <div class="flex justify-between items-center">
+                      <UiTypographyP>{{ new Date().toLocaleDateString() }} by Reviewer</UiTypographyP>
+                      <div class="text-green-500 flex items-center gap-2">
+                        <UiIconsBadge />
+                        <UiTypographyP>Verified purchase</UiTypographyP>
+                      </div>
+
                     </div>
                   </article>
                 </li>
@@ -135,7 +207,7 @@ export default {
   data(){
     return {
       isDesktop: false,
-      review: 3.6,
+      review: 3.5,
       review_count: 50
     }
   },
