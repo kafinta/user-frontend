@@ -6,13 +6,7 @@
         <UiTypographyP>You need at least 80% to become a seller. Complete some or all of the tasks below to complete your onboarding.</UiTypographyP>
       </div>
 
-      <div class="relative flex items-center justify-center">
-        <div class="h-20 w-20 rounded-full p-1.5 radial bg-primary">
-          <div class="bg-white rounded-full h-full w-full grid place-items-center">
-            <UiTypographyP>{{percentage}}%</UiTypographyP>
-          </div>
-        </div>
-      </div>
+      <ChartPie :value="percentage" :max="100" :isPercent="true" />
     </div>
 
     <ul class="grid gap-8 lg:grid-cols-2 mt-8">
@@ -52,29 +46,20 @@ export default {
 
   mounted(){
     const {onboarding} = useOnboarding();
-    console.log(onboarding)
     document.documentElement.style.setProperty('--percent', `${onboarding.percentage}%`);
     if (this.email_verified === true) {
-      onboarding.percentage = onboarding.percentage + 20
-      this.percentage = this.percentage + 20
-      document.documentElement.style.setProperty('--percent', `${onboarding.percentage}%`);
+      onboarding.percentage =+ 20
+      this.percentage =+ 20
     }
     if (this.profile_created === true) {
-      this.percentage = this.percentage + 40
-      document.documentElement.style.setProperty('--percent', `${this.percentage}%`);
+      this.percentage =+ 40
     }
     if (this.kyc_verified === true) {
-      this.percentage = this.percentage + 40
-      document.documentElement.style.setProperty('--percent', `${this.percentage}%`);
+      this.percentage =+ 40
     }
     if (this.percentage == 100) {
-      this.$router.push({name: 'usernamw-selling-dashboard'})
+      this.$router.push({name: 'username-selling-dashboard'})
     }
   },
 }
 </script>
-<style>
-.radial {
-  background: conic-gradient(#C9B14F var(--percent), #eaeaea 0deg);
-}
-</style>
