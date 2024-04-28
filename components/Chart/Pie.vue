@@ -27,8 +27,8 @@ export default {
     isPercent: Boolean
   },
   mounted(){
-    this.isPercent ? this.percent = '%' : this.percent = '';
     this.percentage = this.value/this.max * 100;
+    this.isPercent ? this.percent = '%' : this.percent = '';
     document.documentElement.style.setProperty('--percent', `${this.percentage}%`);
   }
 }

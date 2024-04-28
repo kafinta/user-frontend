@@ -1,14 +1,8 @@
 <template>
-  <div class="flex">
-    <div class="grid gap-1">
-      <div class="flex gap-2 items-center" v-for="rating in reversedItems" :key="rating">
-        <UiTypographyP>{{rating.rating}}</UiTypographyP>
-        <UiIconsStar class="w-5 text-primary" />
-        <div class="h-2 rounded-md w-36 bg-accent-100">
-          <div :style="{width : `${rating.percentage}%`} " class="h-2 bg-primary rounded-md"></div>
-        </div>
-        <UiTypographyP>{{rating.percentage}}%</UiTypographyP>
-      </div>
+  <div class="grid grid-cols-2 gap-5">
+    <div v-for="item in breakdown" :key="item.id">
+      <ChartPie :value="item.value" :max="5" />
+      <UiTypographyP class="text-center mt-3">{{ item.title }}</UiTypographyP>
     </div>
   </div>
 </template>
@@ -16,37 +10,29 @@
 export default {
   data(){
     return {
-      ratings: [
+      breakdown: [
         {
-          rating: 1,
-          percentage: 60
+          id: 1,
+          value: 1,
+          title: 'Value for Money'
         },
         {
-          rating: 2,
-          percentage: 15
+          id: 2,
+          value: 4,
+          title: 'True to Description'
         },
         {
-          rating: 3,
-          percentage: 5
+          id: 3,
+          value: 4.2,
+          title: 'Product Quality'
         },
         {
-          rating: 4,
-          percentage: 5
-        },
-        {
-          rating: 5,
-          percentage: 15
+          id: 4,
+          value: 1,
+          title: 'Shipping'
         },
       ]
     }
-  },
-  mounted(){
-
-  },
-  computed: {
-    reversedItems() {
-      return this.ratings.slice().reverse();
-    },
-  },
+  }
 }
 </script>
