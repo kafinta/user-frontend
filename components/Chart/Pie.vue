@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-center">
-    <div class="h-20 w-20 rounded-full p-1.5 radial bg-primary">
+    <div :style="gradientStyle" class="h-20 w-20 rounded-full p-1.5 radial bg-primary">
       <div class="bg-white rounded-full h-full w-full grid place-items-center">
         <UiTypographyP>{{value}}{{ percent }}</UiTypographyP>
       </div>
@@ -11,7 +11,7 @@
 export default {
   data(){
     return {
-      percentage: 0,
+      percentage: this.value/this.max * 100,
       percent: '%'
     }
   },
@@ -26,15 +26,17 @@ export default {
     },
     isPercent: Boolean
   },
+  computed: {
+    gradientStyle() {
+      return {
+        background: `conic-gradient(#C9B14F ${this.percentage}%, #eaeaea 0%)`
+      };
+    }
+  },
   mounted(){
-    this.percentage = this.value/this.max * 100;
     this.isPercent ? this.percent = '%' : this.percent = '';
-    document.documentElement.style.setProperty('--percent', `${this.percentage}%`);
   }
 }
 </script>
 <style>
-.radial {
-  background: conic-gradient(#C9B14F var(--percent), #eaeaea 0deg);
-}
 </style>

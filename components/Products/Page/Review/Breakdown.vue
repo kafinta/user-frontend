@@ -2,7 +2,7 @@
   <div class="grid grid-cols-2 gap-5">
     <div v-for="item in breakdown" :key="item.id">
       <ChartPie :value="item.value" :max="5" />
-      <UiTypographyP class="text-center mt-3">{{ item.title }}</UiTypographyP>
+      <UiTypographyP class="text-center mt-3">{{ item.title}}</UiTypographyP>
     </div>
   </div>
 </template>
@@ -13,7 +13,7 @@ export default {
       breakdown: [
         {
           id: 1,
-          value: 1,
+          value: 2,
           title: 'Value for Money'
         },
         {
@@ -23,7 +23,7 @@ export default {
         },
         {
           id: 3,
-          value: 4.2,
+          value: 4.5,
           title: 'Product Quality'
         },
         {
