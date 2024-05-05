@@ -5,9 +5,7 @@
       <div class="flex flex-col md:flex-row gap-5 lg:gap-10 justify-between items-start md:items-center">
         <div>
           <UiTypographyH2>{{review}} out of 5</UiTypographyH2>
-          <div class="flex gap-2 items-center">
-            <UiIconsStar v-for="n in 5" :key="n" :opacity="getStarOpacity(n)" class="w-7 text-primary" />
-          </div>
+          <ProductsReviewStars review="3.2" />
           <UiTypographyP class="mt-2">{{total_review}} ratings and reviews</UiTypographyP>
 
           <div class="grid gap-1 mt-5">
@@ -150,13 +148,7 @@ export default {
   },
 
   methods: {
-    getStarOpacity(index) {
-      if (this.review % 1 > 0.7) {
-        return Math.round(this.review) >= index ? 1 : 0.4;
-      } else {
-        return Math.floor(this.review) >= index ? 1 : 0.4;
-      }
-    },
+
   },
 
   computed: {
