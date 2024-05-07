@@ -3,7 +3,6 @@ import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import { ref } from "vue";
 const router = useRouter()
-
 let is_small = false;
 let loadingState = ref(false);
 let error_state = false;
@@ -11,32 +10,10 @@ const email = ref();
 const username = ref();
 const password = ref();
 
-const createUserProfile = async () => {
-  const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
-  const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('/api/user/profile', {
-    method: 'POST',
-    onResponse(res) {
-      console.log(res.response)
-      if (res.response.status == 200) {
-        toast.success(res.response._data.message, {
-          position: toast.POSITION.BOTTOM_RIGHT,
-          theme: 'colored'
-        })
-        router.push({name: 'verify'})
-      } else {
-        toast.error(res.response._data.message, {
-          position: toast.POSITION.BOTTOM_RIGHT,
-          theme: 'colored'
-        })
-      }
-    },
-  })
-}
-
 const handleUserSignup = async () => {
 loadingState.value = true;
 const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
-const { pending, data, error } = await useCustomFetch('/api/user/auth/register', {
+const { pending, data, error } = await useCustomFetch('/api/user/auth/signup', {
   method: 'POST',
   body: {
     email: email.value,
@@ -46,12 +23,10 @@ const { pending, data, error } = await useCustomFetch('/api/user/auth/register',
   onResponse(res) {
     console.log(res.response)
     if (res.response.status == 200) {
-      localStorage.setItem('token', res.response._data.data.token)
       toast.success(res.response._data.message, {
         position: toast.POSITION.BOTTOM_RIGHT,
         theme: 'colored'
       })
-      createUserProfile()
       router.push({name: 'auth-verify'})
     } else {
       toast.error(res.response._data.message, {

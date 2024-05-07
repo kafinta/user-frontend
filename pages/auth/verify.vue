@@ -2,45 +2,17 @@
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import { ref, onMounted } from "vue";
+import { useUser } from "@/composables/useUser";
 const router = useRouter()
-
+const { user, updateUser } = useUser()
 let is_small = false;
 const loadingState = ref(false);
 let error_state = false;
-const email = ref();
-const username = ref();
-const password = ref();
 const code = ref();
 
 const handleVerification = async () => {
 loadingState.value = true;
-router.push({name: 'username-buying', params: {
-  username: 'testing'
-}})
-// const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
-// const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('/api/user/auth/register', {
-//   method: 'POST',
-//   body: {
-//     email: email,
-//     password: password,
-//     username: username
-//   },
-//   onResponse(res) {
-//     console.log(res.response)
-//     if (res.response.status == 200) {
-//       toast.success(res.response._data.message, {
-//         position: toast.POSITION.BOTTOM_RIGHT,
-//         theme: 'colored'
-//       })
-//       router.push({name: 'verify'})
-//     } else {
-//       toast.error(res.response._data.message, {
-//         position: toast.POSITION.BOTTOM_RIGHT,
-//         theme: 'colored'
-//       })
-//     }
-//   },
-// })
+router.push({name: 'username-buying-dashboard', params: {username: user.value.username}})
 loadingState.value = false
 }
 
@@ -48,15 +20,9 @@ const getUserDetails = async () => {
   const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
   const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('/api/user/profile', {
     method: 'GET',
-
     onResponse(res) {
-      console.log(res.response)
       if (res.response.status == 200) {
-        toast.success(res.response._data.message, {
-          position: toast.POSITION.BOTTOM_RIGHT,
-          theme: 'colored'
-        })
-        router.push({name: 'username-buying'})
+        updateUser(res.response._data.data)
       } else {
         toast.error(res.response._data.message, {
           position: toast.POSITION.BOTTOM_RIGHT,
