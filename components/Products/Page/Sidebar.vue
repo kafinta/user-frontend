@@ -3,7 +3,6 @@
     <UiTypographyH2>Product Name that is super duper ridiculously super long</UiTypographyH2>
     <UiTypographyP>Listed by 
       <span><UiButtonsSecondary>{{ user }}</UiButtonsSecondary></span>
-      in
       <span><UiButtonsSecondary>{{ category }}</UiButtonsSecondary></span>
     </UiTypographyP>
     <div class="flex gap-2 items-center my-3">
@@ -16,7 +15,7 @@
     <hr />
 
     <div class="grid my-5">
-      <div class="bg-secondary text-sm px-4 py-2 text-white rounded-md w-fit">Limited time deal</div>
+      <div class="bg-red-500 text-sm px-4 py-2 text-white rounded-md w-fit">Limited time deal</div>
       <div class="flex items-center gap-2 mt-2">
         <UiTypographyP>-{{percentage}}%</UiTypographyP>
         <UiTypographyH2>${{price}}</UiTypographyH2>
@@ -62,6 +61,9 @@ export default {
       type: Number,
       default: 500
     },
+  },
+  mounted(){
+
   }
 }
 </script>

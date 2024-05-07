@@ -1,7 +1,7 @@
 <template>
   <LayoutsMarketplace>
     <Container :addTopBottomPadding="false">
-      <div class="grid lg:grid-cols-5 gap-10">
+      <div class="grid lg:grid-cols-5 gap-10 relative">
         <div class="col-span-1 lg:col-span-3">
           <ProductsPageCarousel />
           <ProductsPageSidebar v-if="!isDesktop" class="my-5" /> 
@@ -12,10 +12,9 @@
           <hr>
           <ProductsPageReview  />
         </div>
-        <ProductsPageSidebar v-if="isDesktop" />
+        <ProductsPageSidebar v-if="isDesktop"/>
       </div>
     </Container>
-
   </LayoutsMarketplace>
 </template>
 <script>
