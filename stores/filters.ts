@@ -5,15 +5,15 @@ export const useFilters = defineStore('filters', {
   state: () => ({ 
     categories: [],
     locations: [],
-    subcategory: []
+    subcategories: [],
   }),
 
   getters: {
     getCategories(state){
       return state.categories
     },
-    getSubcategory(state){
-      return state.subcategory
+    getSubcategories(state){
+      return state.subcategories
     },
     getLocations(state){
       return state.locations
@@ -40,12 +40,12 @@ export const useFilters = defineStore('filters', {
     },
 
     async selectCategory(category:any){
-      this.subcategory = []
+      this.subcategories = []
       const { pending, data, error } = await useCustomFetch(`api/categories/${category.id}/subcategories/`, {
         method: 'GET',
       })
       if (data) {
-        this.subcategory = data.value.subcategories;
+        this.subcategories = data.value.subcategories;
       }
     }
   },
