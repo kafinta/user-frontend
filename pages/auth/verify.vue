@@ -23,11 +23,13 @@ const getUserDetails = async () => {
     onResponse(res) {
       if (res.response.status == 200) {
         updateUser(res.response._data.data)
+        console.log(res.response);
       } else {
         toast.error(res.response._data.message, {
           position: toast.POSITION.BOTTOM_RIGHT,
           theme: 'colored'
         })
+        console.log(res.response);
       }
     },
   })
