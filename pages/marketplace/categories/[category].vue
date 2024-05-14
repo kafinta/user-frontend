@@ -2,8 +2,8 @@
   <LayoutsMarketplace>
     <Container>
       <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
-        <li v-if="categoryLoaded" v-for="item in subcategories" :key="item.id">
-          <UiCards @clicked="query.subcategory=item.name; $router.push({name: 'marketplace-products', query})" :title="item.name" :backgroundImagePath="'http://localhost:8000' + item.image" class="w-full"/>
+        <li v-if="subcategoriesLoaded" v-for="subcategory in subcategories" :key="subcategory.id">
+          <UiCards @clicked="chooseSubcategory(subcategory)" :title="subcategory.name" :backgroundImagePath="'http://localhost:8000' + subcategory.image" class="w-full"/>
         </li>
         <li v-else class="flex items-center justify-center">
           <UiIconsLoading class="text-primary h-10 w-10" />
@@ -12,30 +12,39 @@
     </Container>
   </LayoutsMarketplace>
 </template>
-<script setup>
-import { useSelectCategory } from "@/composables/useSelectCategory";
+<script>
+import { mapActions, mapState } from 'pinia'
+import { useFilters } from "@/stores/filters";
 import { useQuery } from "@/composables/useQuery";
-import { onMounted, ref } from "vue";
-const categoryLoaded = ref(false)
-const {id} = useSelectCategory() 
-const {query} = useQuery() 
-let subcategories  = []
-const getSubcategories = async () => {
-  const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch(`api/categories/${id.value}/subcategories/`, {
-    method: 'GET',
-    onResponse(res) {
-      console.log(res.response)
-      if (res.response.status == 200) {
-        subcategories = useState('subcategories', () => res.response._data.subcategories).value
-        categoryLoaded.value = true
-      } else {
-      }
-    },
-  })
-};
+const { query } = useQuery();
+export default {
+  data(){
+    return {
+      subcategoriesLoaded : false,
+    }
+  },
 
-onMounted(() => {
-  console.log(id.value)
-  getSubcategories();
-})
+  methods: {
+    ...mapActions(useFilters, { 
+      selectCategory: 'selectCategory'
+    }),
+
+    chooseSubcategory(subcategory){
+      query.subcategory=subcategory.name;
+      this.$router.push({name: 'marketplace-products', query})
+    },
+  },
+  computed: {
+    ...mapState(useFilters, {
+      subcategories: 'getSubcategories',
+    })
+  },
+
+  mounted(){
+    this.subcategoriesLoaded = true;
+  }
+}
+</script>
+<script setup>
+
 </script>

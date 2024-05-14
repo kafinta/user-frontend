@@ -2,8 +2,8 @@
   <LayoutsMarketplace>
     <Container>
       <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
-        <li v-if="categoryLoaded" v-for="item in categories" :key="item.id">
-          <UiCards @clicked="selectCategory(item); query.category=item.name; $router.push({name: 'marketplace-categories-category', params: {category: item.name}})" :title="item.name" :backgroundImagePath="'http://localhost:8000' + item.image" class="w-full"/>
+        <li v-if="categoriesLoaded" v-for="category in categories" :key="category.id">
+          <UiCards @clicked="chooseCategory(category)" :title="category.name" :backgroundImagePath="'http://localhost:8000' + category.image" class="w-full"/>
         </li>
         <li v-else class="flex items-center justify-center">
           <UiIconsLoading class="text-primary h-10 w-10" />
@@ -29,35 +29,15 @@ export default {
       selectCategory: 'selectCategory'
     }),
 
-    toggleSub(){
-      this.toggleSubcategories = !this.toggleSubcategories
-    },
-
     chooseCategory(category){
       this.selectCategory(category);
-      this.categoryName = category.name
       query.category = category.name;
-      this.$router.push({name: '', query})
-      if (this.subcategory != []) {
-        this.toggleSub()
-        this.subcategoryLoaded = true
-      }
+      this.$router.push({name: 'marketplace-categories-category', params: {category: category.name}})
     },
-
-    chooseSubcategory(){
-      query.subcategory = item.name; 
-      $router.push({name: 'marketplace-products', query});
-    },
-
-    chooseLocation(){
-      query.location = location.name;
-      $router.push({name: 'marketplace-products', query});
-    }
   },
   computed: {
     ...mapState(useFilters, {
       categories: 'getCategories',
-      subcategory: 'getSubcategory'
     })
   },
   created(){
