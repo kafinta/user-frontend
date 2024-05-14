@@ -27,9 +27,9 @@
             <span><UiIconsArrow class="w-4" /></span>
             {{ categoryName }}
           </UiButtonsSecondary>
-          <ul v-if="subcategoryLoaded" class="flex gap-2 flex-wrap text-left">
-            <li v-for="item in subcategory" :key="subcategory.id">
-              <UiButtonsTertiary @clicked="chooseSubcategory()" class="text-left text-secondary hover:text-primary py-2 duration-500 ease-in-out">{{item.name}}</UiButtonsTertiary>
+          <ul v-if="subcategoriesLoaded" class="flex gap-2 flex-wrap text-left">
+            <li v-for="subcategory in subcategories" :key="subcategory.id">
+              <UiButtonsTertiary @clicked="chooseSubcategory(subcategory)" class="text-left text-secondary hover:text-primary py-2 duration-500 ease-in-out">{{subcategory.name}}</UiButtonsTertiary>
             </li>
           </ul>
           <div v-else class="flex items-center justify-center">
@@ -47,7 +47,7 @@
 
       <template #accordion-content content_class="px-3 py-2">
         <div v-if="locationsLoaded" class="mt-3 flex gap-2 flex-wrap text-left">
-          <UiButtonsTertiary @clicked="chooseLocation()" class="text-left text-secondary hover:text-primary py-2 duration-500 ease-in-out" v-for="location in locations" :key="location.id">{{location.name}}</UiButtonsTertiary>
+          <UiButtonsTertiary @clicked="chooseLocation(location)" class="text-left text-secondary hover:text-primary py-2 duration-500 ease-in-out" v-for="location in locations" :key="location.id">{{location.name}}</UiButtonsTertiary>
         </div>
 
         <div v-else class="flex items-center justify-center">
@@ -67,7 +67,7 @@ export default {
   data(){
     return {
       categoriesLoaded : false,
-      subcategoryLoaded : false,
+      subcategoriesLoaded : false,
       locationsLoaded : false,
       toggleSubcategories : false,
       categoryName : '',
@@ -91,25 +91,25 @@ export default {
       this.$router.push({name: '', query})
       if (this.subcategory != []) {
         this.toggleSub()
-        this.subcategoryLoaded = true
+        this.subcategoriesLoaded = true
       }
     },
 
-    chooseSubcategory(){
-      query.subcategory = item.name; 
-      $router.push({name: 'marketplace-products', query});
+    chooseSubcategory(subcategory){
+      query.subcategory = subcategory.name; 
+      this.$router.push({name: 'marketplace-products', query});
     },
 
-    chooseLocation(){
+    chooseLocation(location){
       query.location = location.name;
-      $router.push({name: 'marketplace-products', query});
+      this.$router.push({name: 'marketplace-products', query});
     }
   },
   computed: {
     ...mapState(useFilters, {
       categories: 'getCategories',
       locations: 'getLocations',
-      subcategory: 'getSubcategory'
+      subcategories: 'getSubcategories'
     })
   },
   created(){
