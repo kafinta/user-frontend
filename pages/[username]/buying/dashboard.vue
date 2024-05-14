@@ -33,7 +33,6 @@
 
     <div class="mt-10">
       <h3 class="text-secondary text-xl md:text-2xl 2xl:text-3xl font-medium">Products you may like</h3>
-      <CarouselTopProducts  />
     </div>
   </LayoutsBuyerDashboard>
 </template>
@@ -42,8 +41,6 @@
 export default {
   data() {
     return {
-      username: 'Quadri',
-      button_width: true,
     }
   },
 }
