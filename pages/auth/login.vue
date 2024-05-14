@@ -15,7 +15,6 @@ const password = ref();
 const signIn= async () => {
   loadingState.value = true;
   const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
-
   const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('/user/auth/login', {
     method: 'POST',
     body: {
@@ -24,11 +23,12 @@ const signIn= async () => {
     },
     onResponse(res) {
       if (res.response.status == 200) {
+        updateUser(res.response._data.data)
         toast.success(res.response._data.message, {
           theme: 'colored',
           position: toast.POSITION.BOTTOM_RIGHT,
         })
-        router.push({name: 'username-buying', params: {username: res.response._data.data.account.username}})
+        router.push({name: 'username-buying-dashboard', params: {username: user.value.username}})
       } else {
       toast.error(res.response._data.message, {
         position: toast.POSITION.BOTTOM_RIGHT,

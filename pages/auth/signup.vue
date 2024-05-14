@@ -2,6 +2,7 @@
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import { ref } from "vue";
+
 const router = useRouter()
 let is_small = false;
 let loadingState = ref(false);
@@ -13,7 +14,7 @@ const password = ref();
 const handleUserSignup = async () => {
 loadingState.value = true;
 const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
-const { pending, data, error } = await useCustomFetch('/api/user/auth/signup', {
+const { pending, data, error } = await useCustomFetch('/user/auth/signup', {
   method: 'POST',
   body: {
     email: email.value,
