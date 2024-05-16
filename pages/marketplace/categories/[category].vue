@@ -3,7 +3,7 @@
     <Container>
       <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
         <li v-if="subcategoriesLoaded" v-for="subcategory in subcategories" :key="subcategory.id">
-          <UiCards @clicked="chooseSubcategory(subcategory)" :title="subcategory.name" :backgroundImagePath="'http://localhost:8000' + subcategory.image" class="w-full"/>
+          <UiCards @clicked="chooseSubcategory(subcategory)" :title="subcategory.name" :backgroundImagePath="config.public.base_url + subcategory.image" class="w-full"/>
         </li>
         <li v-else class="flex items-center justify-center">
           <UiIconsLoading class="text-primary h-10 w-10" />
