@@ -13,7 +13,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      base_url: 'http://127.0.0.1:8000',
+      base_url: 'https://backend-9jp2.onrender.com',
     },
   },
 

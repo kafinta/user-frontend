@@ -6,7 +6,7 @@ export function useCustomFetch<T>(url: string, options: UseFetchOptions<T> = {})
     const config = useRuntimeConfig()
 
     const defaults: UseFetchOptions<T> = {
-        baseURL: config.public.base_url as string ?? 'http://localhost:8000',
+        baseURL: config.public.base_url as string,
         // cache request
         key: url,
         credentials: 'include',
