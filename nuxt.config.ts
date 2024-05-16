@@ -1,3 +1,5 @@
+import type { baseURL } from "nuxt/dist/core/runtime/nitro/paths";
+
 export default defineNuxtConfig({
   // ssr: true,
   modules:[
@@ -11,7 +13,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      baseURL: 'http://127.0.0.1:8000',
+      base_url: 'http://127.0.0.1:8000',
     },
   },
 
