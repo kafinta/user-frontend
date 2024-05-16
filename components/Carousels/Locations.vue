@@ -35,6 +35,7 @@ const getLocations = async () => {
   const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('api/locations/', {
     method: 'GET',
     onResponse(res) {
+      console.log(res.response);
       if (res.response.status == 200) {
         locations = useState('locations', () => res.response._data).value
         setTimeout(() => {
