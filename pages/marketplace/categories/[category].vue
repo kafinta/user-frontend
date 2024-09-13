@@ -13,6 +13,7 @@
   </LayoutsMarketplace>
 </template>
 <script>
+import { useRuntimeConfig } from '#app'
 import { mapActions, mapState } from 'pinia'
 import { useFilters } from "@/stores/filters";
 import { useQuery } from "@/composables/useQuery";
@@ -21,6 +22,7 @@ export default {
   data(){
     return {
       subcategoriesLoaded : false,
+      config: useRuntimeConfig()
     }
   },
 

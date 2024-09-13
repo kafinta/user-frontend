@@ -26,6 +26,7 @@
 <script setup>
 import Glide from '@glidejs/glide'
 import { onMounted, ref } from "vue";
+const config = useRuntimeConfig()
 
 const locationsLoaded = ref(false)
 let locations = []
