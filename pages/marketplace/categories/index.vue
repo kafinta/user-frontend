@@ -1,7 +1,7 @@
 <template>
   <LayoutsMarketplace>
     <Container>
-      <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
+      <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         <li v-if="categoriesLoaded" v-for="category in categories" :key="category.id">
           <UiCards @clicked="chooseCategory(category)" :title="category.name" :backgroundImagePath="config.public.base_url + category.image" class="w-full"/>
         </li>
@@ -17,10 +17,12 @@ import { mapActions, mapState } from 'pinia'
 import { useFilters } from "@/stores/filters";
 import { useQuery } from "@/composables/useQuery";
 const { query } = useQuery()
+import { useRuntimeConfig } from '#app'
 export default {
   data(){
     return {
       categoriesLoaded : false,
+      config: useRuntimeConfig()
     }
   },
   methods: {
