@@ -1,50 +1,51 @@
 import { defineStore } from 'pinia'
-import {useCustomFetch} from "../composables/useCustomFetch";
+import { useCustomFetch } from "../composables/useCustomFetch";
+
+interface Category {
+  id: number;
+  // Add other properties as needed
+}
+
+interface Location {
+  // Define properties for locations
+}
+
+interface Subcategory {
+  // Define properties for subcategories
+}
 
 export const useFilters = defineStore('filters', {
   state: () => ({ 
-    categories: [],
-    locations: [],
-    subcategories: [],
+    categories: [] as Category[],
+    locations: [] as Location[],
+    subcategories: [] as Subcategory[],
   }),
 
   getters: {
-    getCategories(state){
-      return state.categories
-    },
-    getSubcategories(state){
-      return state.subcategories
-    },
-    getLocations(state){
-      return state.locations
-    }
+    getCategories: (state) => state.categories,
+    getSubcategories: (state) => state.subcategories,
+    getLocations: (state) => state.locations,
   },
   
   actions: {
     async fetchCategories() {
-      const { pending, data, error } = await useCustomFetch('api/categories/', {
-        method: 'GET',
-      })
-      if (data) {
-        this.categories = data.value as never[];
+      const { data } = await useCustomFetch<Category[]>('api/categories/')
+      if (data.value) {
+        this.categories = data.value;
       }
     },
 
-    async fetchLocations () {
-      const { pending, data, error } = await useCustomFetch('api/locations/', {
-        method: 'GET',
-      })
-      if (data) {
-        this.locations = data.value as never[];
+    async fetchLocations() {
+      const { data } = await useCustomFetch<Location[]>('api/locations/')
+      if (data.value) {
+        this.locations = data.value;
       }
     },
 
-    async selectCategory(category:any){
-      this.subcategories = []
-      const { pending, data, error } = await useCustomFetch(`api/categories/${category.id}/subcategories/`, {
-        method: 'GET',
-      })
-      if (data) {
+    async selectCategory(category: Category) {
+      this.subcategories = [];
+      const { data } = await useCustomFetch<{ subcategories: Subcategory[] }>(`api/categories/${category.id}/subcategories/`)
+      if (data.value) {
         this.subcategories = data.value.subcategories;
       }
     }
