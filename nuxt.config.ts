@@ -1,21 +1,14 @@
-import type { baseURL } from "nuxt/dist/core/runtime/nitro/paths";
-
 export default defineNuxtConfig({
   // ssr: true,
   modules:[
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt'
   ],
+  
 
   css:[
     '@/assets/css/glide.scss'
   ],
-
-  runtimeConfig: {
-    public: {
-      base_url: 'https://backend-9jp2.onrender.com',
-    },
-  },
 
   // router: {
   //   routes: [
@@ -27,4 +20,11 @@ export default defineNuxtConfig({
   //     // More routes with optional middleware usage
   //   ],
   // },
+  runtimeConfig: {
+    public: {
+      base_url: 'http://127.0.0.1:8000',
+    },
+  },
+
+  compatibilityDate: '2024-09-11',
 })
