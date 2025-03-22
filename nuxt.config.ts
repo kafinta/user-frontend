@@ -4,18 +4,9 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt'
   ],
-
-  // app: {
-  //   head: {
-  //     link: [
-  //       { rel: 'stylesheet', href: "node_modules/@glidejs/glide/dist/css/glide.core.min.css" }
-  //     ],
-  //   }
-  // },
-
+  
   css: [
     '@glidejs/glide/dist/css/glide.core.min.css',
-    // '@glidejs/glide/dist/css/glide.theme.min.css' // (optional, if needed)
   ],
   // router: {
   //   routes: [
