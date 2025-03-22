@@ -4,12 +4,19 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt'
   ],
-  
 
-  css:[
-    '@/assets/css/glide.scss'
+  // app: {
+  //   head: {
+  //     link: [
+  //       { rel: 'stylesheet', href: "node_modules/@glidejs/glide/dist/css/glide.core.min.css" }
+  //     ],
+  //   }
+  // },
+
+  css: [
+    '@glidejs/glide/dist/css/glide.core.min.css',
+    // '@glidejs/glide/dist/css/glide.theme.min.css' // (optional, if needed)
   ],
-
   // router: {
   //   routes: [
   //     // Your routes here
@@ -22,7 +29,7 @@ export default defineNuxtConfig({
   // },
   runtimeConfig: {
     public: {
-      base_url: 'http://127.0.0.1:8000',
+      base_url: 'http://127.0.0.1:8000/',
     },
   },
 
