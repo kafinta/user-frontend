@@ -10,8 +10,10 @@
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.13.2",
+    "@primevue/auto-import-resolver": "^4.3.2",
     "@primevue/nuxt-module": "^4.3.2",
-    "nuxt": "^3.7.0"
+    "nuxt": "^3.7.0",
+    "unplugin-vue-components": "^28.4.1"
   },
   "dependencies": {
     "@glidejs/glide": "^3.7.1",

@@ -1,3 +1,8 @@
+import { defineNuxtConfig } from 'nuxt/config';
+import vue from '@vitejs/plugin-vue';
+import Components from 'unplugin-vue-components/vite';
+import { PrimeVueResolver } from '@primevue/auto-import-resolver';
+
 export default defineNuxtConfig({
   // ssr: true,
   modules:[
@@ -5,9 +10,17 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
   ],
 
+  vite: {
+    plugins: [
+      // vue(),
+      Components({
+        resolvers: [PrimeVueResolver()]
+      })
+    ]
+  },
+
   css: [
     '@glidejs/glide/dist/css/glide.core.min.css',
-    '@/assets/main.css'
   ],
 
   // router: {
