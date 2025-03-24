@@ -2,12 +2,14 @@ export default defineNuxtConfig({
   // ssr: true,
   modules:[
     '@nuxtjs/tailwindcss',
-    '@pinia/nuxt'
+    '@pinia/nuxt',
   ],
-  
+
   css: [
     '@glidejs/glide/dist/css/glide.core.min.css',
+    '@/assets/main.css'
   ],
+
   // router: {
   //   routes: [
   //     // Your routes here

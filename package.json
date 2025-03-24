@@ -18,6 +18,7 @@
     "@nuxt/typescript-build": "^3.0.2",
     "@pinia/nuxt": "^0.5.1",
     "@primeuix/themes": "^1.0.0",
+    "@primevue/forms": "^4.3.2",
     "@vueuse/core": "^10.8.0",
     "pinia": "^2.1.7",
     "primevue": "^4.3.2",
