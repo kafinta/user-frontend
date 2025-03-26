@@ -20,7 +20,7 @@ export function useCustomFetch<T>(
     : unref(url)
 
   // Debug logs
-  console.log('API URL:', config.public.base_url + resolvedUrl)
+  // console.log('API URL:', config.public.base_url + resolvedUrl)
 
   const defaults: NitroFetchOptions<NitroFetchRequest> = {
     baseURL: config.public.base_url,
@@ -36,17 +36,17 @@ export function useCustomFetch<T>(
     },
     // Add error and response interceptors
     onRequest({ request, options }) {
-      console.log('Making request to:', request)
-      console.log('With options:', options)
+      // console.log('Making request to:', request)
+      // console.log('With options:', options)
     },
     onRequestError({ request, error }) {
-      console.error('Request error:', error)
+      // console.error('Request error:', error)
     },
     onResponse({ request, response }) {
-      console.log('Response received:', response._data)
+      // console.log('Response received:', response._data)
     },
     onResponseError({ request, response }) {
-      console.error('Response error:', response._data)
+      // console.error('Response error:', response._data)
       
       // Optional: Handle specific error scenarios
       if (response.status === 401) {
