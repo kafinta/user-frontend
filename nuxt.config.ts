@@ -8,7 +8,20 @@ export default defineNuxtConfig({
   modules:[
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
+    '@nuxt/image'
   ],
+
+  image: {
+    domains: ['127.0.0.1', 'localhost'],
+    presets: {
+      default: {
+        modifiers: {
+          format: 'webp',
+          quality: 80
+        }
+      }
+    }
+  },
 
   vite: {
     plugins: [
@@ -18,11 +31,6 @@ export default defineNuxtConfig({
       })
     ]
   },
-
-  css: [
-    '@glidejs/glide/dist/css/glide.core.min.css',
-  ],
-
   // router: {
   //   routes: [
   //     // Your routes here
@@ -36,8 +44,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       base_url: 'http://127.0.0.1:8000/',
+      imageBaseUrl: 'http://127.0.0.1:8000/storage'
     },
   },
 
   compatibilityDate: '2024-09-11',
-})
+}as any)
