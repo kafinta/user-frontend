@@ -1,5 +1,5 @@
 <template>
-  <div v-if="loading" class="flex space-x-4 w-full mt-5">
+  <div v-if="isLoading" class="flex space-x-4 w-full mt-5">
     <Skeleton
       v-for="n in numVisibleItems" 
       :key="n" 
@@ -34,11 +34,14 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useWindowSize } from '@vueuse/core'
+import { useFiltersStore } from '~/stores/filters'
+import { storeToRefs } from 'pinia'
+
+
+const filtersStore = useFiltersStore()
+const { locations, isLoading, error  } = storeToRefs(filtersStore)
 
 const { width } = useWindowSize()
-
-const loading = ref(true)
-const locations = ref([])
 
 const responsiveOptions = [
   {
@@ -76,22 +79,8 @@ const numVisibleItems = computed(() => {
   return option ? option.numVisible : responsiveOptions[0].numVisible
 })
 
-const getLocations = async () => {
-  loading.value = true;
-  try {
-    const response = await useCustomFetch('api/locations/', {
-      method: 'GET',
-      requireAuth: false,
-    })
-    locations.value = response.data
-  } catch (error) {
-    console.error('Failed to fetch data', error)
-  } finally {
-    loading.value = false
-  }
-};
 
-onMounted(() => {
-  getLocations();
+onMounted(async () => {
+  await filtersStore.fetchLocations()
 })
 </script>
