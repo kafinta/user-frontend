@@ -1,33 +1,3 @@
-<script setup>
-import { onMounted, ref } from "vue";
-
-const searchBox = ref(false);
-const search_button_hovered = ref(false);
-const toggleSearch = () => {
-  searchBox.value = !searchBox.value;
-  search_button_hovered.value = !search_button_hovered.value;
-}
-const isLoading = ref(false)
-let categories = []
-const getSomeCategories = async () => {
-
-  const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
-
-  const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('api/categories/7', {
-    method: 'GET',
-    onResponse(res) {
-      if (res.response.status == 200) {
-        categories = useState('somecategories', () => res.response._data).value
-        isLoading.value = true
-      }
-    },
-  })
-};
-onMounted(() => {
-  isLoading.value = false
-  getSomeCategories();
-})
-</script>
 <template>
   <div class="select-none">
     <Search @toggleSearchBox="toggleSearch()" :searchBoxState="searchBox" />
@@ -116,24 +86,60 @@ onMounted(() => {
           <UiTypographyP>Find the products you want easily</UiTypographyP>
         </div>
       </div>
-      <ul v-if="isLoading" class="col-span-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        <li v-for="item in categories" :key="item.id" class="">
-          <LazyUiButtonsTertiary :flexdisplay="true" @clicked="$router.push({name: 'marketplace-products', query: {category : item.name}})" >{{ item.name }}</LazyUiButtonsTertiary>
-        </li>
-        <li class="col-span-1 md:col-span-2 lg:col-span-1">
-          <NuxtLink to="marketplace/categories" class="flex w-full text-center py-2 px-5 text-secondary font-medium text-base 2xl:text-lg justify-center duration-500 ease-in-out rounded-md border hover:text-primary hover:border-primary focus:border-primary focus:text-primary outline-none items-center gap-3 hover:gap-5">
-            See All
-            <span><UiIconsAccordion class="w-3 rotate-90" /></span>
-          </NuxtLink>
+      <ul v-if="!isLoading" class="col-span-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <li v-for="item in categories" :key="item.id" class="truncate">
+          <LazyUiButtonsTertiary :flexdisplay="true" @clicked="$router.push({name: 'marketplace-products', query: {category : item.name}})" >
+            {{  truncateText(item.name, 
+            { maxWidth: 17,       
+              breakpoints: { 
+                desktop: true,
+            }  }) }}
+          </LazyUiButtonsTertiary>
         </li>
       </ul>
-      <div v-else class="col-span-2 flex items-center justify-center">
-        <UiIconsLoading class="text-accent-100 h-10 w-10"  />
+      <div v-else class="col-span-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <Skeleton v-for="n in 12" height="42px" />
       </div>
     </Container>
     <NavigationFooter />
   </div>
 </template>
+<script setup>
+import {ref, onMounted} from 'vue'
+import { useFiltersStore } from '~/stores/filters'
+import { storeToRefs } from 'pinia'
+const { truncateText } = useTruncate()
+
+
+const filtersStore = useFiltersStore()
+const { categories, isLoading, error  } = storeToRefs(filtersStore)
+
+const searchBox = ref(false);
+const search_button_hovered = ref(false);
+const toggleSearch = () => {
+  searchBox.value = !searchBox.value;
+  search_button_hovered.value = !search_button_hovered.value;
+}
+// let categories = []
+
+// const initializeCategories = async () => {
+//   console.log('Starting initialization')
+//   try {
+//     console.log('Categories after fetch:', filtersStore.getCategories)
+//   } catch (e) {
+//     console.error('Error in initialization:', e)
+//   } finally {
+//     console.log('Fetch complete')
+//   }
+// }
+onMounted(async () => {
+  // console.log('Component mounted')
+  // await initializeCategories()
+  await filtersStore.fetchCategories()
+
+})
+
+</script>
 <style>
 .hero-bg {
   background: url('/images/hero-bg.jpg');
