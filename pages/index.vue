@@ -120,23 +120,9 @@ const toggleSearch = () => {
   searchBox.value = !searchBox.value;
   search_button_hovered.value = !search_button_hovered.value;
 }
-// let categories = []
 
-// const initializeCategories = async () => {
-//   console.log('Starting initialization')
-//   try {
-//     console.log('Categories after fetch:', filtersStore.getCategories)
-//   } catch (e) {
-//     console.error('Error in initialization:', e)
-//   } finally {
-//     console.log('Fetch complete')
-//   }
-// }
 onMounted(async () => {
-  // console.log('Component mounted')
-  // await initializeCategories()
   await filtersStore.fetchCategories()
-
 })
 
 </script>
