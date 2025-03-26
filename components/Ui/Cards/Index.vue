@@ -1,5 +1,5 @@
 <template>
-  <button @click="$emit('clicked')" class="cursor-pointer group rounded-xl border border-accent-300 p-3 h-full bg-secondary">
+  <button @click="$emit('clicked')" class="cursor-pointer group rounded-xl p-3 h-full bg-secondary w-full">
     <UiTypographyH3 color="white" class="text-left h-[2lh] mb-5">{{ title }}</UiTypographyH3>
     <NuxtImg 
       :src="imageSrc" 
@@ -29,10 +29,5 @@ const props = defineProps({
 
 const imageSrc = computed(() => {
   return props.image_path.replace('http://localhost/', config.public.base_url)
-})
-
-onMounted(()=> {
-  console.log('base url' + config.public.base_url);
-  
 })
 </script>
