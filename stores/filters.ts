@@ -1,53 +1,108 @@
 import { defineStore } from 'pinia'
-import { useCustomFetch } from "../composables/useCustomFetch";
+import { ref } from 'vue'
+import { useCustomFetch } from "../composables/useCustomFetch"
 
-interface Category {
-  id: number;
-  // Add other properties as needed
+export interface Category {
+  id: number
+  name: string
+  image_path: string
+  slug?: string
 }
 
-interface Location {
-  // Define properties for locations
+export interface Location {
+  id: number
+  name: string
+  image_path?: string
 }
 
-interface Subcategory {
-  // Define properties for subcategories
+export interface Subcategory {
+  id: number
+  name: string
+  category_id: number
+  location_id: number
 }
 
-export const useFilters = defineStore('filters', {
-  state: () => ({ 
-    categories: [] as Category[],
-    locations: [] as Location[],
-    subcategories: [] as Subcategory[],
-  }),
+export const useFiltersStore = defineStore('filters', () => {
+  // State
+  const categories = ref<Category[]>([])
+  const locations = ref<Location[]>([])
+  const subcategories = ref<Subcategory[]>([])
+  const isLoading = ref(false)
+  const error = ref<string | null>(null)
 
-  getters: {
-    getCategories: (state) => state.categories,
-    getSubcategories: (state) => state.subcategories,
-    getLocations: (state) => state.locations,
-  },
-  
-  actions: {
-    async fetchCategories() {
-      const { data } = await useCustomFetch<Category[]>('api/categories/')
-      if (data.value) {
-        this.categories = data.value;
+  // Actions
+  async function fetchCategories() {
+    isLoading.value = true
+    error.value = null
+    try {
+      const response = await useCustomFetch<{ data: Category[] }>('api/categories/')
+      
+      if (response.data) {
+        categories.value = response.data
+        return true
       }
-    },
-
-    async fetchLocations() {
-      const { data } = await useCustomFetch<Location[]>('api/locations/')
-      if (data.value) {
-        this.locations = data.value;
-      }
-    },
-
-    async selectCategory(category: Category) {
-      this.subcategories = [];
-      const { data } = await useCustomFetch<{ subcategories: Subcategory[] }>(`api/categories/${category.id}/subcategories/`)
-      if (data.value) {
-        this.subcategories = data.value.subcategories;
-      }
+      return false
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'An unknown error occurred'
+      return false
+    } finally {
+      isLoading.value = false
     }
-  },
+  }
+
+  async function fetchLocations() {
+    isLoading.value = true
+    error.value = null
+    try {
+      const response = await useCustomFetch<{ data: Location[] }>('api/locations/')
+      
+      if (response.data) {
+        locations.value = response.data
+        return true
+      }
+      return false
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'An unknown error occurred'
+      return false
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  async function fetchSubcategories(category_id: number, location_id: number) {
+    isLoading.value = true
+    error.value = null
+    subcategories.value = []
+    
+    try {
+      const response = await useCustomFetch<{ data: { subcategories: Subcategory[] } }>(
+        `api/subcategories/find?category_id=${category_id}&location_id=${location_id}`
+      )
+      
+      if (response.data?.subcategories) {
+        subcategories.value = response.data.subcategories
+        return true
+      }
+      return false
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'An unknown error occurred'
+      return false
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  return {
+    // State
+    categories,
+    locations,
+    subcategories,
+    isLoading,
+    error,
+
+    // Actions
+    fetchCategories,
+    fetchLocations,
+    fetchSubcategories
+  }
 })
