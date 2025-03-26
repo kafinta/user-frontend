@@ -1,84 +1,97 @@
 <template>
-  <div v-if="locationsLoaded" class="glide_slides mt-5 relative flex items-center">
-    <div class="glide__track" data-glide-el="track">
-      <div class="glide__slides">
-        <UiCards @clicked="$router.push({name: 'marketplace-products', query: {location: item.name}})" v-for="item in locations" :key="item.id" :title="item.name" :backgroundImagePath="config.public.base_url + item.image" class="glide__slide"/>
-      </div>
-    </div>
-
-    <div class="glide__arrows h-fit" data-glide-el="controls">
-      <button class="glide__arrow glide__arrow--left absolute focus:outline-none left-3" data-glide-dir="<">
-        <div class="bg-secondary aspect-square rounded-full p-3 hover:bg-primary duration-300 bg-opacity-75">
-          <UiIconsAccordion class="w-5 h-5 -rotate-90 text-white" />
-        </div>
-      </button>
-      <button class="glide__arrow glide__arrow--right absolute right-3 focus:outline-none" data-glide-dir=">">
-        <div class="bg-secondary aspect-square rounded-full p-3 hover:bg-primary duration-300 bg-opacity-75">
-          <UiIconsAccordion class="w-5 h-5 rotate-90 text-white" />
-        </div>
-      </button>
-    </div>
+  <div v-if="loading" class="flex space-x-4 w-full mt-5">
+    <Skeleton
+      v-for="n in numVisibleItems" 
+      :key="n" 
+      class="mr-4"
+      height="15rem"
+    ></Skeleton>
   </div>
-  <div v-else class="col-span-2 flex items-center justify-center mt-5">
-    <UiIconsLoading class="text-accent-100 h-10 w-10"  />
-  </div> 
-</template>
-<script setup>
-import Glide from '@glidejs/glide'
-import { onMounted, ref } from "vue";
-const config = useRuntimeConfig()
 
-const locationsLoaded = ref(false)
-let locations = []
+  <Carousel 
+    v-else 
+    :value="locations" 
+    :numVisible="numVisibleItems" 
+    :numScroll="1" 
+    :responsiveOptions="responsiveOptions" 
+    :showIndicators="false"
+    circular
+    containerClass="mt-5"
+
+  >
+    <template #item="slotProps" >
+      <div class="mx-2">
+        <UiCards
+          :title="slotProps.data.name" 
+          :image_path="slotProps.data.image_path" 
+          :alt="slotProps.data.name"
+        />
+      </div>
+    </template>
+  </Carousel>
+</template>
+
+<script setup>
+import { ref, onMounted, computed } from 'vue'
+import { useWindowSize } from '@vueuse/core'
+
+const { width } = useWindowSize()
+
+const loading = ref(true)
+const locations = ref([])
+
+const responsiveOptions = [
+    {
+        breakpoint: '1280px',
+        numVisible: 5,
+        numScroll: 1
+    },
+    {
+        breakpoint: '1024px',
+        numVisible: 3,
+        numScroll: 1
+    },
+    {
+        breakpoint: '768px',
+        numVisible: 2,
+        numScroll: 1
+    },
+    {
+        breakpoint: '640px',
+        numVisible: 1,
+        numScroll: 1
+    }
+];
+
+const numVisibleItems = computed(() => {
+  // Use reactive width from useWindowSize
+  const currentWidth = width.value
+
+  // Find the appropriate responsive option
+  const option = [...responsiveOptions].reverse().find(opt => 
+    currentWidth <= parseInt(opt.breakpoint.replace('px', ''))
+  )
+
+  // Default to first option if no match
+  return option ? option.numVisible : responsiveOptions[0].numVisible
+})
 
 const getLocations = async () => {
-  const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
-  const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('api/locations/', {
-    method: 'GET',
-    onResponse(res) {
-      if (res.response.status == 200) {
-        locations = useState('locations', () => res.response._data).value
-        setTimeout(() => {
-          mountSlider()
-        }, 200);
-        locationsLoaded.value = true
-      }
-    },
-  })
+  loading.value = true;
+  try {
+    const response = await useCustomFetch('api/locations/', {
+      method: 'GET',
+      requireAuth: false,
+    })
+    locations.value = response.data
+  } catch (error) {
+    console.error('Failed to fetch data', error)
+  } finally {
+    loading.value = false
+  }
 };
 
-const mountSlider = () => {
-  const marketplaceslider = document.querySelectorAll(`.glide_slides`)
-  marketplaceslider.forEach((marketplace) => {
-    new Glide(marketplace, {
-      type: 'carousel',
-      focusAt: 'center',
-      autoplay: true,
-      gap: 20,
-      peek: 30,
-      animationDuration: 1000,
-      breakpoints: {
-        600: {
-          perView: 1
-        },
-        800: {
-          perView: 2
-        },
-        1024: {
-          perView: 3
-        },
-        1440: {
-          perView: 4
-        },
-        12000: {
-          perView: 5
-        }
-      }
-    }).mount()
-  })
-}
-
-onMounted(() =>{
+onMounted(() => {
   getLocations();
 })
 </script>
