@@ -1,41 +1,81 @@
 <template>
   <Container>
     <div>
-      <div class="glide_slider professionals">
-        <div class="flex items-center justify-between">
-          <div>
-            <UiTypographyH2>Trending Products</UiTypographyH2>
-            <UiTypographyP>Our top selling products in the last month.</UiTypographyP>
-          </div>
-          <div class="glide__arrows flex gap-2" data-glide-el="controls">
-            <button class="glide__arrow glide__arrow--left" data-glide-dir="<">
-              <div class="bg-secondary aspect-square rounded-full p-1.5 hover:bg-primary duration-300 bg-opacity-75">
-                <UiIconsAccordion class="w-5 h-5 -rotate-90 text-white" />
-              </div>
-            </button>
-            <button class="glide__arrow glide__arrow--right" data-glide-dir=">">
-              <div class="bg-secondary aspect-square rounded-full p-1.5 hover:bg-primary duration-300 bg-opacity-75">
-                <UiIconsAccordion class="w-5 h-5 rotate-90 text-white" />
-              </div>
-            </button>
-          </div>
+      <div class="flex items-center justify-between">
+        <div>
+          <UiTypographyH2>Trending Products</UiTypographyH2>
+          <UiTypographyP>Our top selling products in the last month.</UiTypographyP>
         </div>
+      </div>
 
-        <div class="glide__track mt-5" data-glide-el="track">
-          <ul class="glide__slides">
-            <ProductsCard v-for="professional in professionals" :key="professional.id" :title="professional.title" :image="professional.backgroundImagePath" :urlPath="professional.urlPath" class="glide__slide" />
-          </ul>
-        </div>
-
+      <Carousel 
+        v-if="professionals.length"
+        :value="professionals" 
+        :numVisible="numVisibleItems" 
+        :numScroll="1" 
+        :responsiveOptions="responsiveOptions" 
+        :showIndicators="false"
+        circular
+        containerClass="mt-5"
+      >
+        <template #item="slotProps">
+          <div class="mx-2 list-none">
+            <ProductsCard class=""
+              :title="slotProps.data.title" 
+              :image="slotProps.data.backgroundImagePath" 
+              :urlPath="slotProps.data.urlPath" 
+            />
+          </div>
+        </template>
+      </Carousel>
+      <div v-else class="mt-5">
+        <UiTypographyP>No professionals found</UiTypographyP>
       </div>
     </div>
   </Container>
-
 </template>
 
 <script setup>
-import Glide from '@glidejs/glide';
-import { onMounted, ref } from "vue";
+import { ref, onMounted, computed } from 'vue'
+import { useWindowSize } from '@vueuse/core'
+
+const { width } = useWindowSize()
+
+const responsiveOptions = [
+  {
+    breakpoint: '1280px',
+    numVisible: 3,
+    numScroll: 1
+  },
+  {
+    breakpoint: '1024px',
+    numVisible: 2,
+    numScroll: 1
+  },
+  {
+    breakpoint: '768px',
+    numVisible: 2,
+    numScroll: 1
+  },
+  {
+    breakpoint: '640px',
+    numVisible: 1,
+    numScroll: 1
+  }
+];
+
+const numVisibleItems = computed(() => {
+  const currentWidth = width.value
+  
+  for (let i = responsiveOptions.length - 1; i >= 0; i--) {
+    if (currentWidth <= parseInt(responsiveOptions[i].breakpoint)) {
+      return responsiveOptions[i].numVisible
+    }
+  }
+  
+  return responsiveOptions[0].numVisible
+})
+
 const professionals = [
   {
       id: 1,
@@ -86,34 +126,4 @@ const professionals = [
       urlPath: 'dwelling'
   },
 ];
-
-onMounted(() =>{
-  const professionalsSlider = document.querySelectorAll(`.professionals`);
-    professionalsSlider.forEach((professional) => {
-      new Glide(professional, {
-        type: 'carousel',
-        focusAt: 'center',
-        gap: 20,
-        peek: 0,
-        animationDuration: 500,
-        breakpoints: {
-          600: {
-              perView: 1
-          },
-          800: {
-              perView: 1
-          },
-          1024: {
-              perView: 2
-          },
-          1440: {
-              perView: 3
-          },
-          12000: {
-              perView: 5
-          }
-        }
-      }).mount();
-    });
-})
 </script>
