@@ -10,7 +10,7 @@
             <UiTypographyP>Find inspiration, products and the pros to make it happen <br> — all in one place</UiTypographyP>
 
             <div class="flex gap-5 mt-5 items-center">
-              <UiButtonsPrimary @clicked="$router.push({name: 'marketplace'})">Explore Our Store</UiButtonsPrimary>
+              <UiButtonsPrimary :url="{name: 'marketplace'}">Explore Our Store</UiButtonsPrimary>
               <UiButtonsSecondary class="hidden md:block">Hire Artisans</UiButtonsSecondary>
             </div>
           </div>
@@ -87,14 +87,16 @@
         </div>
       </div>
       <ul v-if="!isLoading" class="col-span-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        <li v-for="item in categories" :key="item.id" class="truncate">
-          <LazyUiButtonsTertiary :flexdisplay="true" @clicked="$router.push({name: 'marketplace-products', query: {category : item.name}})" >
-            {{  truncateText(item.name, 
-            { maxWidth: 17,       
+        <li v-for="item in categories" :key="item.id">
+          <UiButtonsTertiary :flexdisplay="true"
+          :url="{ name: 'marketplace-products', query: { category: item.name } }" >
+            {{  truncateText(item.name, {
+              maxWidth: 15,       
               breakpoints: { 
                 desktop: true,
-            }  }) }}
-          </LazyUiButtonsTertiary>
+              }
+            }) }}
+          </UiButtonsTertiary>
         </li>
       </ul>
       <div v-else class="col-span-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
