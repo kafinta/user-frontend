@@ -99,6 +99,9 @@
           </UiButtonsTertiary>
         </li>
       </ul>
+      <li v-else-if="error">
+        <UiTypographyP>Error loading catgories... Try again later.</UiTypographyP>
+      </li>
       <div v-else class="col-span-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <Skeleton v-for="n in 12" height="42px" />
       </div>

@@ -7,6 +7,10 @@
     ></Skeleton>
   </div>
 
+  <li v-else-if="error">
+    <UiTypographyP>Error loading locations... Try again later.</UiTypographyP>
+  </li>
+
   <Carousel 
     v-else 
     :value="locations" 

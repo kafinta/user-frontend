@@ -1,50 +1,38 @@
 <template>
+  <
   <LayoutsMarketplace>
     <Container>
       <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        <li v-if="categoriesLoaded" v-for="category in categories" :key="category.id">
-          <UiCards @clicked="chooseCategory(category)" :title="category.name" :backgroundImagePath="config.public.base_url + category.image" class="w-full"/>
+        <li v-if="isLoading">
+          <Skeleton
+            v-for="n in 12" 
+            :key="n" 
+            height="15rem"
+          ></Skeleton>
         </li>
-        <li v-else class="flex items-center justify-center">
-          <UiIconsLoading class="text-primary h-10 w-10" />
+        <li v-else-if="error">
+          <UiTypographyP>Error loading catgories... Try again later.</UiTypographyP>
         </li>
+        <li v-else v-for="category in categories" :key="category.id">
+          <UiCards @clicked="filtersStore.fetchSubcategories(category.id, 1)" :title="category.name" :src="category.image_path" class="w-full"/>
+        </li>
+
+
       </ul>
     </Container>
   </LayoutsMarketplace>
 </template>
-<script>
-import { mapActions, mapState } from 'pinia'
-import { useFilters } from "@/stores/filters";
-import { useQuery } from "@/composables/useQuery";
-const { query } = useQuery()
-import { useRuntimeConfig } from '#app'
-export default {
-  data(){
-    return {
-      categoriesLoaded : false,
-      config: useRuntimeConfig()
-    }
-  },
-  methods: {
-    ...mapActions(useFilters, { 
-      getCategories: 'fetchCategories',
-      selectCategory: 'selectCategory'
-    }),
+<script setup>
+import {ref, onMounted} from 'vue'
+import { useFiltersStore } from '~/stores/filters'
+import { storeToRefs } from 'pinia'
 
-    chooseCategory(category){
-      this.selectCategory(category);
-      query.category = category.name;
-      this.$router.push({name: 'marketplace-categories-category', params: {category: category.name}})
-    },
-  },
-  computed: {
-    ...mapState(useFilters, {
-      categories: 'getCategories',
-    })
-  },
-  created(){
-    this.getCategories();
-    this.categoriesLoaded = true;
-  }
-}
+import { useRuntimeConfig } from '#app'
+
+const filtersStore = useFiltersStore()
+const { categories, isLoading, error  } = storeToRefs(filtersStore)
+
+onMounted(async () => {
+  await filtersStore.fetchCategories()
+})
 </script>
