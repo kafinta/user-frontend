@@ -1,0 +1,133 @@
+// composables/useProductFilters.ts
+import { ref, computed, watch, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useFiltersStore } from '../stores/filters'
+
+export function useProductFilters() {
+  const route = useRoute()
+  const router = useRouter()
+  const filtersStore = useFiltersStore()
+
+  // Initialize from URL query parameters
+  const selectedCategoryId = ref<number | null>(
+    route.query.category ? Number(route.query.category) : null
+  )
+  
+  const selectedLocationId = ref<number | null>(
+    route.query.location ? Number(route.query.location) : null
+  )
+
+  // Selected objects (for display purposes)
+  const selectedCategory = computed(() => {
+    if (!selectedCategoryId.value) return null
+    return filtersStore.categories.find(cat => cat.id === selectedCategoryId.value) || null
+  })
+  
+  const selectedLocation = computed(() => {
+    if (!selectedLocationId.value) return null
+    return filtersStore.locations.find(loc => loc.id === selectedLocationId.value) || null
+  })
+  
+  // Check if both selections are made
+  const canFetchSubcategories = computed(() => 
+    selectedCategoryId.value !== null && selectedLocationId.value !== null
+  )
+
+  // Update URL when selections change
+  watch([selectedCategoryId, selectedLocationId], ([catId, locId]) => {
+    updateQueryParams(catId, locId)
+    
+    if (catId && locId) {
+      fetchSubcategories()
+    }
+  })
+  
+  // Watch for URL changes from outside
+  watch(() => route.query, (newQuery) => {
+    const catId = newQuery.category ? Number(newQuery.category) : null
+    const locId = newQuery.location ? Number(newQuery.location) : null
+    
+    // Only update if different to avoid loops
+    if (catId !== selectedCategoryId.value) {
+      selectedCategoryId.value = catId
+    }
+    
+    if (locId !== selectedLocationId.value) {
+      selectedLocationId.value = locId
+    }
+  }, { deep: true })
+
+  // Initialize on mount
+  onMounted(async () => {
+    // Ensure categories and locations are loaded
+    if (filtersStore.categories.length === 0) {
+      await filtersStore.fetchCategories()
+    }
+    
+    if (filtersStore.locations.length === 0) {
+      await filtersStore.fetchLocations()
+    }
+    
+    // Fetch subcategories if both params are present
+    if (selectedCategoryId.value && selectedLocationId.value) {
+      await fetchSubcategories()
+    }
+  })
+
+  // Update URL with current selections
+  function updateQueryParams(catId: number | null, locId: number | null) {
+    const query: Record<string, string> = {}
+    
+    if (catId) query.category = catId.toString()
+    if (locId) query.location = locId.toString()
+    
+    // Only update if different from current query
+    if (JSON.stringify(query) !== JSON.stringify(route.query)) {
+      router.replace({ query })
+    }
+  }
+
+  // Select a category
+  function selectCategory(id: number) {
+    selectedCategoryId.value = id
+  }
+  
+  // Select a location
+  function selectLocation(id: number) {
+    selectedLocationId.value = id
+  }
+  
+  // Clear selections
+  function clearSelections() {
+    selectedCategoryId.value = null
+    selectedLocationId.value = null
+    updateQueryParams(null, null)
+  }
+  
+  // Fetch subcategories
+  async function fetchSubcategories() {
+    if (!canFetchSubcategories.value) return
+    
+    await filtersStore.fetchSubcategories(
+      selectedCategoryId.value as number,
+      selectedLocationId.value as number
+    )
+  }
+  
+  return {
+    // States
+    selectedCategoryId,
+    selectedLocationId,
+    selectedCategory,
+    selectedLocation,
+    canFetchSubcategories,
+    subcategories: computed(() => filtersStore.subcategories),
+    isLoading: computed(() => filtersStore.isLoading),
+    
+    // Actions
+    selectCategory,
+    selectLocation,
+    fetchSubcategories,
+    clearSelections
+  }
+}
