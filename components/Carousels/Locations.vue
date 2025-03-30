@@ -3,7 +3,6 @@
     <Skeleton
       v-for="n in numVisibleItems" 
       :key="n" 
-      class="mr-4"
       height="15rem"
     ></Skeleton>
   </div>
