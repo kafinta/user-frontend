@@ -22,7 +22,7 @@
       <div class="mx-2">
         <UiCards
           :title="slotProps.data.name" 
-          :image_path="slotProps.data.image_path" 
+          :src="slotProps.data.image_path" 
           :alt="slotProps.data.name"
         />
       </div>
