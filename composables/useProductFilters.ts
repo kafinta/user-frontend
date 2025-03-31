@@ -33,6 +33,12 @@ export function useProductFilters() {
     selectedCategoryId.value !== null && selectedLocationId.value !== null
   )
 
+  // Get the subcategories directly as a computed property
+  const subcategories = computed(() => filtersStore.subcategories)
+  
+  // Get loading state directly as a computed property
+  const isLoading = computed(() => filtersStore.isLoading)
+
   // Update URL when selections change
   watch([selectedCategoryId, selectedLocationId], ([catId, locId]) => {
     updateQueryParams(catId, locId)
@@ -118,11 +124,17 @@ export function useProductFilters() {
     // States
     selectedCategoryId,
     selectedLocationId,
-    selectedCategory,
-    selectedLocation,
-    canFetchSubcategories,
-    subcategories: computed(() => filtersStore.subcategories),
-    isLoading: computed(() => filtersStore.isLoading),
+    // selectedCategory,
+    // selectedLocation,
+    // canFetchSubcategories,
+    // subcategories,
+    // isLoading,
+
+    get selectedCategory() { return selectedCategory.value },
+    get selectedLocation() { return selectedLocation.value },
+    get canFetchSubcategories() { return canFetchSubcategories.value },
+    get subcategories() { return subcategories.value },
+    get isLoading() { return isLoading.value },
     
     // Actions
     selectCategory,
