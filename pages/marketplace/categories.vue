@@ -10,10 +10,10 @@
           ></Skeleton>
         </li>
         <li v-else-if="error">
-          <UiTypographyP>Error loading locations... Try again later.</UiTypographyP>
+          <UiTypographyP>Error loading categories... Try again later.</UiTypographyP>
         </li>
-        <li v-else v-for="location in locations" :key="location.id">
-          <UiCards @clicked="selectLocation(location.id)" :title="location.name" :src="location.image_path" class="w-full"/>
+        <li v-else v-for="category in categories" :key="category.id">
+          <UiCards @clicked="selectCategory(category.id)" :title="category.name" :src="category.image_path" class="w-full"/>
         </li>
       </ul>
     </Container>
@@ -27,35 +27,35 @@ import { useProductFilters } from '@/composables/useProductFilters'
 import { useRouter } from 'vue-router'
 
 const filtersStore = useFiltersStore()
-const { locations, isLoading, error  } = storeToRefs(filtersStore)
+const { categories, isLoading, error  } = storeToRefs(filtersStore)
 const productFilters = useProductFilters()
 const router = useRouter()
 
-function selectLocation(id) {
-  productFilters.selectLocation(id)
+function selectCategory(id) {
+  productFilters.selectCategory(id)
   
-  // Use direct access to the selectedCategoryId value
-  const categoryId = productFilters.selectedCategoryId?.value
+  // Use direct access to the selectedLocationId value
+  const locationId = productFilters.selectedLocationId?.value
   
-  if (!categoryId) {
-    // No category selected yet, go to categories page
+  if (!locationId) {
+    // No location selected yet, go to locations page
     router.push({
-      path: '/marketplace/categories',
-      query: { location: id }
+      path: '/marketplace/locations',
+      query: { category: id }
     })
   } else {
     // Both category and location selected, go to subcategories
     router.push({
       path: '/marketplace/subcategories',
       query: { 
-        category: categoryId,
-        location: id 
+        category: id,
+        location: locationId 
       }
     })
   }
 }
 
 onMounted(async () => {
-  await filtersStore.fetchLocations();
+  await filtersStore.fetchCategories()
 })
 </script>
