@@ -58,14 +58,16 @@ export const useFiltersStore = defineStore('filters', () => {
   }
 
   async function fetchCategories() {
+    isLoading.value = true
+    error.value = null
+    
     const storedCategories = loadFromStorage('categories')
     if (storedCategories) {
       categories.value = storedCategories
+      isLoading.value = false
       return storedCategories
     }
 
-    isLoading.value = true
-    error.value = null
     try {
       const response = await useCustomFetch<{ data: Category[] }>('api/categories/')
       
@@ -74,31 +76,33 @@ export const useFiltersStore = defineStore('filters', () => {
         saveToStorage('categories', response.data)
         return response.data
       }
+      return false
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'An unknown error occurred'
       return false
     } finally {
       isLoading.value = false
-      return true
     }
   }
 
   async function fetchLocations() {
+    isLoading.value = true
+    error.value = null
+    
     const storedLocations = loadFromStorage('locations')
     if (storedLocations) {
       locations.value = storedLocations
+      isLoading.value = false
       return storedLocations
     }
 
-    isLoading.value = true
-    error.value = null
     try {
       const response = await useCustomFetch<{ data: Location[] }>('api/locations/')
       
       if (response.data) {
         locations.value = response.data
         saveToStorage('locations', response.data)
-        return true
+        return response.data
       }
       return false
     } catch (err) {
@@ -106,7 +110,6 @@ export const useFiltersStore = defineStore('filters', () => {
       return false
     } finally {
       isLoading.value = false
-      return locations.value
     }
   }
 
@@ -117,7 +120,7 @@ export const useFiltersStore = defineStore('filters', () => {
     
     try {
       const response = await useCustomFetch<{ data: { subcategories: Subcategory[] } }>(
-        `api/subcategories/find?category_id=${category_id}&location_id=${location_id}`
+        `api/subcategories/?category_id=${category_id}&location_id=${location_id}`
       )
       
       if (response.data?.subcategories) {
