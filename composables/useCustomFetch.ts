@@ -1,3 +1,4 @@
+// composables/useCustomFetch.ts
 import type { UseFetchOptions } from '#app'
 import type { NitroFetchRequest, NitroFetchOptions } from 'nitropack'
 import type { Ref } from 'vue'
@@ -12,46 +13,66 @@ export function useCustomFetch<T>(
 ) {
   const { requireAuth = false, method = 'GET', ...restOptions } = options
   const config = useRuntimeConfig()
-  const token = useAuth().token // Assuming you have an auth composable
+  
+  // Get token from localStorage directly to avoid circular dependency
+  // with the auth store that will use this composable
+  const getAuthToken = (): string | null => {
+    if (import.meta.client) {
+      try {
+        return localStorage.getItem('auth_token')
+      } catch (e) {
+        console.error('Error accessing localStorage:', e)
+        return null
+      }
+    }
+    return null
+  }
 
   // Ensure url is a string if it's a Ref
   const resolvedUrl = typeof url === 'string' 
     ? url 
     : unref(url)
 
-  // Debug logs
-  // console.log('API URL:', config.public.base_url + resolvedUrl)
-
   const defaults: NitroFetchOptions<NitroFetchRequest> = {
     baseURL: config.public.base_url,
     credentials: 'include',
-    // Only add method if it's one of the allowed types
     ...(method ? { method } : {}),
     headers: {
       'accept': 'application/json, text/plain, */*',
-      ...(token.value && requireAuth 
-        ? { 'Authorization': `Bearer ${token.value}` } 
+      ...(requireAuth && getAuthToken()
+        ? { 'Authorization': `Bearer ${getAuthToken()}` } 
         : {}
       )
     },
-    // Add error and response interceptors
     onRequest({ request, options }) {
-      // console.log('Making request to:', request)
-      // console.log('With options:', options)
+      // Request interceptor logic
     },
     onRequestError({ request, error }) {
-      // console.error('Request error:', error)
+      // Request error handling
     },
     onResponse({ request, response }) {
-      // console.log('Response received:', response._data)
+      // Check if response contains a token and set it in localStorage
+      if (response._data && typeof response._data === 'object') {
+        if ('token' in response._data && response._data.token) {
+          if (import.meta.client) {
+            localStorage.setItem('auth_token', response._data.token)
+          }
+        } else if ('access_token' in response._data && response._data.access_token) {
+          if (import.meta.client) {
+            localStorage.setItem('auth_token', response._data.access_token)
+          }
+        }
+      }
     },
     onResponseError({ request, response }) {
-      // console.error('Response error:', response._data)
-      
-      // Optional: Handle specific error scenarios
+      // 401 Unauthorized handling - could dispatch a custom event instead of directly accessing store
       if (response.status === 401) {
-        // Unauthorized - potentially refresh token or redirect to login
-        useAuth().logout()
+        if (import.meta.client) {
+          localStorage.removeItem('auth_token')
+          localStorage.removeItem('auth_user')
+          // Could dispatch a logout event here
+          window.dispatchEvent(new CustomEvent('auth:unauthorized'))
+        }
       }
     }
   }
@@ -61,20 +82,4 @@ export function useCustomFetch<T>(
 
   // Use $fetch with resolved URL
   return $fetch<T>(resolvedUrl, params)
-}
-
-// Optional: Create an auth composable if not already existing
-function useAuth() {
-  const token = useState<string | null>('auth_token', () => null)
-
-  return {
-    token,
-    login(newToken: string) {
-      token.value = newToken
-    },
-    logout() {
-      token.value = null
-      // Additional logout logic like clearing session, redirecting, etc.
-    }
-  }
 }
