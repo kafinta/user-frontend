@@ -1,8 +1,9 @@
 import { useAuthStore } from '~/stores/auth'
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 export default defineNuxtPlugin(() => {
   const authStore = useAuthStore()
   
-  // Initialize auth from localStorage
   authStore.initialize()
   
   // Listen for unauthorized events from useCustomFetch
@@ -10,8 +11,15 @@ export default defineNuxtPlugin(() => {
     window.addEventListener('auth:unauthorized', () => {
       authStore.setToken(null)
       authStore.setUser(null)
-      // Optionally redirect to login page
+
+      toast.error('Unauthorized. Please login again', {
+        position: toast.POSITION.BOTTOM_RIGHT,
+        theme: 'colored'
+      })
       navigateTo('/login')
     })
   }
+  // onUnmounted(() => {
+  //   authStore.cleanup()
+  // })
 })
