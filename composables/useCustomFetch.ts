@@ -51,26 +51,29 @@ export function useCustomFetch<T>(
       // Request error handling
     },
     onResponse({ request, response }) {
-      // Check if response contains a token and set it in localStorage
+      // Only handle token storage, leave user data to the auth store
       if (response._data && typeof response._data === 'object') {
-        if ('token' in response._data && response._data.token) {
+        // Check for auth_token in data object (new API structure)
+        if ('data' in response._data && 
+            response._data.data && 
+            typeof response._data.data === 'object' &&
+            'auth_token' in response._data.data && 
+            response._data.data.auth_token) {
           if (import.meta.client) {
-            localStorage.setItem('auth_token', response._data.token)
+            localStorage.setItem('auth_token', response._data.data.auth_token)
           }
-        } else if ('access_token' in response._data && response._data.access_token) {
-          if (import.meta.client) {
-            localStorage.setItem('auth_token', response._data.access_token)
-          }
+        }
+        // Emit an event so the auth store can update when token changes
+        if (import.meta.client) {
+          window.dispatchEvent(new CustomEvent('auth:token-updated'))
         }
       }
     },
     onResponseError({ request, response }) {
-      // 401 Unauthorized handling - could dispatch a custom event instead of directly accessing store
       if (response.status === 401) {
         if (import.meta.client) {
           localStorage.removeItem('auth_token')
-          localStorage.removeItem('auth_user')
-          // Could dispatch a logout event here
+          // Dispatch an event that the auth store can listen for
           window.dispatchEvent(new CustomEvent('auth:unauthorized'))
         }
       }
