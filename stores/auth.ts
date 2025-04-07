@@ -23,12 +23,14 @@ interface ApiResponse {
   }
 }
 
+
 export const useAuthStore = defineStore('auth', () => {
   // State
   const token = ref<string | null>(null)
   const user = ref<User | null>(null)
-  const loading = ref(false)
+  const isLoading = ref(false)
   const message = ref<string | null>(null)
+  const status = ref<string | null>(null)
   
   // Getters
   const isAuthenticated = computed(() => !!token.value)
@@ -54,6 +56,8 @@ export const useAuthStore = defineStore('auth', () => {
         window.addEventListener('auth:unauthorized', handleUnauthorized)
       } catch (error) {
         console.error('Failed to initialize auth from localStorage:', error)
+        message.value = 'Failed to initialize authentication'
+        status.value = 'error'
       }
     }
   }
@@ -77,6 +81,8 @@ export const useAuthStore = defineStore('auth', () => {
     // Handle unauthorized event
     setToken(null)
     setUser(null)
+    message.value = 'Session expired. Please log in again.'
+    status.value = 'error'
   }
   
   function setToken(newToken: string | null) {
@@ -102,7 +108,9 @@ export const useAuthStore = defineStore('auth', () => {
   }
   
   async function login(credentials: { email: string, password: string }) {
-    loading.value = true
+    isLoading.value = true
+    message.value = null
+    status.value = null
     
     try {
       const response = await useCustomFetch<ApiResponse>('/api/user/login', {
@@ -110,59 +118,87 @@ export const useAuthStore = defineStore('auth', () => {
         body: credentials
       })
       
+      // Set status and message from response
+      status.value = response.status
+      message.value = response.message || 'Login successful'
+      
+      // Handle auth token
+      if (response && response.data && response.data.auth_token) {
+        setToken(response.data.auth_token)
+      }
+      
       // Handle user data
       if (response && response.data && response.data.account) {
         setUser(response.data.account)
       }
       
       return {
-        success: true,
+        status: response.status,
         message: response.message || 'Login successful',
         data: response.data
       }
     } catch (error: any) {
       console.error('Login failed:', error)
+      status.value = 'error'
+      message.value = error.message || 'Login failed. Please try again.'
+      
       return {
-        success: false,
         message: error.message || 'Login failed. Please try again.',
         error
       }
     } finally {
-      loading.value = false
+      isLoading.value = false
     }
   }
   
   async function signup(userData: { email: string, password: string, username: string }) {
-    loading.value = true
+    isLoading.value = true
+    message.value = null
+    status.value = null
     
     try {
       const response = await useCustomFetch<ApiResponse>('/api/user/signup', {
         method: 'POST',
         body: userData
       })
+      
+      // Set status and message from response
+      status.value = response.status
+      message.value = response.message || 'Account created successfully'
+      
+      // Handle auth token
+      if (response && response.data && response.data.auth_token) {
+        setToken(response.data.auth_token)
+      }
+      
+      // Handle user data
       if (response && response.data && response.data.account) {
         setUser(response.data.account)
       }
       
       return {
-        success: true,
+        status: response.status,
         message: response.message || 'Account created successfully',
         data: response.data
       }
     } catch (error: any) {
       console.error('Signup failed:', error)
+      status.value = 'error'
+      message.value = error.message || 'Signup failed. Please try again.'
+      
       return {
-        success: false,
         message: error.message || 'Signup failed. Please try again.',
         error
       }
     } finally {
-      loading.value = false
+      isLoading.value = false
     }
   }
   
   async function logout() {  
-    loading.value = true
+    isLoading.value = true
+    message.value = null
+    status.value = null
     
     try {
       // Optional: API call to invalidate token on server
@@ -178,8 +214,12 @@ export const useAuthStore = defineStore('auth', () => {
       setToken(null)
       setUser(null)
       
+      // Set success status and message
+      status.value = 'success'
+      message.value = 'Successfully logged out'
+      
       return {
-        success: true,
+        status: 'success',
         message: 'Successfully logged out'
       }
     } catch (error: any) {
@@ -187,14 +227,25 @@ export const useAuthStore = defineStore('auth', () => {
       setToken(null)
       setUser(null)
       
+      // Set status and message
+      status.value = 'success' // Still consider logout successful
+      message.value = 'Successfully logged out'
+      
       return {
-        success: true, // Still consider logout successful even if API call fails
+        // Still consider logout successful even if API call fails
+        status: 'success',
         message: 'Successfully logged out',
         error
       }
     } finally {
-      loading.value = false
+      isLoading.value = false
     }
+  }
+  
+  function clearMessages() {
+    // Utility function to clear status and error messages
+    message.value = null
+    status.value = null
   }
   
   function cleanup() {
@@ -208,9 +259,9 @@ export const useAuthStore = defineStore('auth', () => {
     // State
     token,
     user,
-    loading,
+    isLoading,
     message,
-    
+    status,
     // Getters
     isAuthenticated,
     
@@ -223,6 +274,7 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     signup,
     logout,
+    clearMessages,
     cleanup
   }
 })
