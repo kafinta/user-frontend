@@ -1,5 +1,6 @@
 import { defineNuxtPlugin } from "#app";
 import PrimeVue from "primevue/config";
+import ToastService from 'primevue/toastservice';
 import Lara from '@primeuix/themes/lara';
 import { definePreset } from '@primeuix/themes';
 
@@ -46,7 +47,10 @@ export default defineNuxtPlugin((nuxtApp) => {
         prefix: '',
         darkModeSelector: 'none',
         cssLayer: false
-    }
+      }
     },
   });
+  
+  // Add ToastService
+  nuxtApp.vueApp.use(ToastService);
 });
