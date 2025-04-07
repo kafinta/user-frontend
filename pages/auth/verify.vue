@@ -1,10 +1,12 @@
 <script setup>
-import { toast } from 'vue3-toastify';
-import 'vue3-toastify/dist/index.css';
 import { ref, onMounted } from "vue";
-import { useUser } from "@/composables/useUser";
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from '~/stores/auth';
+
 const router = useRouter()
-const { user, updateUser } = useUser()
+const authStore = useAuthStore();
+const { user } = storeToRefs(authStore);
+
 let is_small = false;
 const loadingState = ref(false);
 let error_state = false;
@@ -16,26 +18,26 @@ router.push({name: 'username-buying-dashboard', params: {username: user.value.us
 loadingState.value = false
 }
 
-const getUserDetails = async () => {
-  const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
-  const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('/api/user/profile', {
-    method: 'GET',
-    onResponse(res) {
-      if (res.response.status == 200) {
-        updateUser(res.response._data.data)
-        console.log(res.response);
-      } else {
-        toast.error(res.response._data.message, {
-          position: toast.POSITION.BOTTOM_RIGHT,
-          theme: 'colored'
-        })
-        console.log(res.response);
-      }
-    },
-  })
-}
+// const getUserDetails = async () => {
+//   const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
+//   const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('/api/user/profile', {
+//     method: 'GET',
+//     onResponse(res) {
+//       if (res.response.status == 200) {
+//         updateUser(res.response._data.data)
+//         console.log(res.response);
+//       } else {
+//         toast.error(res.response._data.message, {
+//           position: toast.POSITION.BOTTOM_RIGHT,
+//           theme: 'colored'
+//         })
+//         console.log(res.response);
+//       }
+//     },
+//   })
+// }
 onMounted(() => {
-  getUserDetails()
+  // getUserDetails()
 })
 </script>
 <template>
@@ -54,8 +56,8 @@ onMounted(() => {
         <h1 :class="is_small ? 'text-2xl' : ''" class="font-medium text-3xl w-fit text-secondary">Verify your email.</h1>
         <p :class="is_small ? 'mb-4' : ''" class="text-sm text-secondary mb-8">We sent a six digit code to your email. Enter it below to verify your account</p>
 
-        <div class="grid gap-4">
-          <FormInput :centerText="true" label="Verification code" v-model:inputValue="code" placeholder="X X X X X X"></FormInput>
+        <div class="grid gap-6">
+          <InputOtp v-model="code" :length="6" integerOnly class="justify-between"/>
           <FormButton :loading="loadingState">Verify</FormButton>
         </div>
       </form>
