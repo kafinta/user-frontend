@@ -97,14 +97,6 @@ async function handleSignup() {
     });
   }
 }
-onMounted(() => {
-  toast.add({
-    severity: 'info',
-    summary: 'Test',
-    detail: 'Testing toast functionality',
-    life: 5000
-  });
-});
 </script>
 <style>
 .background {
