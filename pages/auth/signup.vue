@@ -1,46 +1,5 @@
-<script setup>
-import { toast } from 'vue3-toastify';
-import 'vue3-toastify/dist/index.css';
-import { ref } from "vue";
-
-const router = useRouter()
-let is_small = false;
-let loadingState = ref(false);
-let error_state = false;
-const email = ref();
-const username = ref();
-const password = ref();
-
-const handleUserSignup = async () => {
-loadingState.value = true;
-const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
-const { pending, data, error } = await useCustomFetch('/user/auth/signup', {
-  method: 'POST',
-  body: {
-    email: email.value,
-    password: password.value,
-    username: username.value
-  },
-  onResponse(res) {
-    console.log(res.response)
-    if (res.response.status == 200) {
-      toast.success(res.response._data.message, {
-        position: toast.POSITION.BOTTOM_RIGHT,
-        theme: 'colored'
-      })
-      router.push({name: 'auth-verify'})
-    } else {
-      toast.error(res.response._data.message, {
-        position: toast.POSITION.BOTTOM_RIGHT,
-        theme: 'colored'
-      })
-    }
-  },
-})
-loadingState.value = pending.value
-}
-</script>
 <template>
+  <Toast position="top-center" />
   <div class="flex flex-row-reverse select-none">
     <div class="background hidden lg:flex w-2/3 bg-cover bg-center py-5 px-10 relative flex-col justify-end">
 
@@ -60,15 +19,22 @@ loadingState.value = pending.value
         <h1 :class="is_small ? 'text-2xl' : ''" class="font-medium text-3xl w-fit text-secondary">Create account.</h1>
         <p :class="is_small ? 'mb-4' : ''" class="text-sm text-secondary mb-8">You are just a few steps away.</p>
 
-        <form @submit.prevent="handleUserSignup()" action="" class="grid gap-4">
-          <FormInput label="Email" v-model:inputValue="email" placeholder="Enter your email address"></FormInput>
-          <FormInput label="Username" v-model:inputValue="username" placeholder="Choose your username"></FormInput>
-          <div>
-            <FormInput :error="error_state" label="Password" type="password" v-model:inputValue="password" placeholder="Enter your password"></FormInput>
-            <p :class="error_state ? 'opacity-100' : 'opacity-0'" class="text-sm text-red-600 mt-2">Password must be at least 8 characters</p>
-          </div>
+        
+        <form @submit.prevent="handleSignup()" action="" class="grid gap-4">
+          <FloatLabel variant="on" class="w-full">
+            <InputText id="email_label" type="email" v-model="email" fluid/>
+            <label for="email_label">Email</label>
+          </FloatLabel>
+          <FloatLabel variant="on">
+            <InputText id="username_label" type="text" v-model="username" fluid />
+            <label for="username_label">Username</label>
+          </FloatLabel>
+          <FloatLabel variant="on">
+            <InputText id="password_label" type="password" v-model="password" fluid />
+            <label for="password_label">Password</label>
+          </FloatLabel>
 
-          <FormButton :loading="loadingState" class="-mt-3">Sign Up</FormButton>
+          <FormButton :loading="isLoading" class="">Sign Up</FormButton>
         </form>
         <p class="text-sm w-fit mx-auto mt-2 text-secondary text-center">Already a member? <NuxtLink to="/auth/login" class="duration-500 ease-in-out hover:text-primary">Sign In</NuxtLink></p>
       </main>
@@ -76,6 +42,70 @@ loadingState.value = pending.value
   </div>
 
 </template>
+<script setup>
+import { ref } from "vue";
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from '~/stores/auth';
+import { useToast } from "primevue/usetoast";
+import { useRouter } from 'vue-router';
+
+const toast = useToast();
+const authStore = useAuthStore();
+const { message, isLoading, status } = storeToRefs(authStore);
+const router = useRouter();
+
+let is_small = ref(false);
+const email = ref('');
+const username = ref('');
+const password = ref('');
+
+function returnHome() {
+  router.push('/');
+}
+
+async function handleSignup() {
+  try {
+    authStore.clearMessages();
+    await authStore.signup({
+      email: email.value,
+      password: password.value,
+      username: username.value
+    });
+    console.log(status.value)
+    if(status.value === 'success') {
+      toast.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: message.value, // Fixed: Need to use .value for refs
+        life: 3000,
+      });
+      router.push({name: 'auth-verify'});
+    } else if (status.value === 'error') { // Fixed: Using status.value
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: message.value, // Fixed: Need to use .value for refs
+        life: 3000,
+      });
+    }
+  } catch (error) {
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'An unexpected error occurred',
+      life: 3000,
+    });
+  }
+}
+onMounted(() => {
+  toast.add({
+    severity: 'info',
+    summary: 'Test',
+    detail: 'Testing toast functionality',
+    life: 5000
+  });
+});
+</script>
 <style>
 .background {
   background-image: url('/images/register.jpg');
