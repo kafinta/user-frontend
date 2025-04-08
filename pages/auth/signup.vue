@@ -1,5 +1,5 @@
 <template>
-  <Toast position="top-center" />
+  <Toast position="top-right" />
   <div class="flex flex-row-reverse select-none">
     <div class="background hidden lg:flex w-2/3 bg-cover bg-center py-5 px-10 relative flex-col justify-end">
 
