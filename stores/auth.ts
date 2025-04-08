@@ -23,7 +23,6 @@ interface ApiResponse {
   }
 }
 
-
 export const useAuthStore = defineStore('auth', () => {
   // State
   const token = ref<string | null>(null)
@@ -50,44 +49,12 @@ export const useAuthStore = defineStore('auth', () => {
         if (userData) {
           user.value = JSON.parse(userData)
         }
-        
-        // Listen for auth events
-        window.addEventListener('auth:token-updated', syncToken)
-        window.addEventListener('auth:unauthorized', handleUnauthorized)
       } catch (error) {
         console.error('Failed to initialize auth from localStorage:', error)
         message.value = 'Failed to initialize authentication'
         status.value = 'error'
       }
     }
-  }
-  
-  function syncToken(event?: CustomEvent) {
-    if (import.meta.client) {
-      // If event has details with token, use that
-      if (event?.detail?.token) {
-        setToken(event.detail.token)
-      } else {
-        // Otherwise, sync from localStorage
-        const storedToken = localStorage.getItem('auth_token')
-        token.value = storedToken
-      }
-      
-      // If we have a token but no user, try to fetch user profile
-      if (token.value && !user.value) {
-        // fetchUserProfile().catch(err => {
-        //   console.error('Failed to fetch user profile:', err)
-        // })
-      }
-    }
-  }
-  
-  function handleUnauthorized() {
-    // Handle unauthorized event
-    setToken(null)
-    setUser(null)
-    message.value = 'Session expired. Please log in again.'
-    status.value = 'error'
   }
   
   function setToken(newToken: string | null) {
@@ -127,13 +94,12 @@ export const useAuthStore = defineStore('auth', () => {
       status.value = response.status
       message.value = response.message || 'Login successful'
       
-      // Handle auth token
-      if (response && response.data && response.data.auth_token) {
+      // Handle auth token and user data
+      if (response?.data?.auth_token) {
         setToken(response.data.auth_token)
       }
       
-      // Handle user data
-      if (response && response.data && response.data.account) {
+      if (response?.data?.account) {
         setUser(response.data.account)
       }
       
@@ -171,13 +137,12 @@ export const useAuthStore = defineStore('auth', () => {
       status.value = response.status
       message.value = response.message || 'Account created successfully'
       
-      // Handle auth token
-      if (response && response.data && response.data.auth_token) {
+      // Handle auth token and user data
+      if (response?.data?.auth_token) {
         setToken(response.data.auth_token)
       }
       
-      // Handle user data
-      if (response && response.data && response.data.account) {
+      if (response?.data?.account) {
         setUser(response.data.account)
       }
       
@@ -211,7 +176,6 @@ export const useAuthStore = defineStore('auth', () => {
         method: 'POST',
         requireAuth: true
       }).catch((error) => {
-        // Log but don't throw logout API call errors
         console.error('Logout API call failed:', error)
       })
       
@@ -232,12 +196,10 @@ export const useAuthStore = defineStore('auth', () => {
       setToken(null)
       setUser(null)
       
-      // Set status and message
-      status.value = 'success' // Still consider logout successful
+      status.value = 'success'
       message.value = 'Successfully logged out'
       
       return {
-        // Still consider logout successful even if API call fails
         status: 'success',
         message: 'Successfully logged out',
         error
@@ -248,16 +210,8 @@ export const useAuthStore = defineStore('auth', () => {
   }
   
   function clearMessages() {
-    // Utility function to clear status and error messages
     message.value = null
     status.value = null
-  }
-  
-  function cleanup() {
-    if (import.meta.client) {
-      window.removeEventListener('auth:token-updated', syncToken)
-      window.removeEventListener('auth:unauthorized', handleUnauthorized)
-    }
   }
   
   return {
@@ -272,14 +226,11 @@ export const useAuthStore = defineStore('auth', () => {
     
     // Actions
     initialize,
-    syncToken,
-    handleUnauthorized,
     setToken,
     setUser,
     login,
     signup,
     logout,
-    clearMessages,
-    cleanup
+    clearMessages
   }
 })
