@@ -62,14 +62,19 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
   
-  function syncToken() {
-    // Sync token from localStorage to store
+  function syncToken(event?: CustomEvent) {
     if (import.meta.client) {
-      const storedToken = localStorage.getItem('auth_token')
-      token.value = storedToken
+      // If event has details with token, use that
+      if (event?.detail?.token) {
+        setToken(event.detail.token)
+      } else {
+        // Otherwise, sync from localStorage
+        const storedToken = localStorage.getItem('auth_token')
+        token.value = storedToken
+      }
       
       // If we have a token but no user, try to fetch user profile
-      if (storedToken && !user.value) {
+      if (token.value && !user.value) {
         // fetchUserProfile().catch(err => {
         //   console.error('Failed to fetch user profile:', err)
         // })
