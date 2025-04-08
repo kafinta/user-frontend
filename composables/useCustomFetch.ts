@@ -51,21 +51,19 @@ export function useCustomFetch<T>(
       // Request error handling
     },
     onResponse({ request, response }) {
-      // Only handle token storage, leave user data to the auth store
-      if (response._data && typeof response._data === 'object') {
-        // Check for auth_token in data object (new API structure)
-        if ('data' in response._data && 
-            response._data.data && 
-            typeof response._data.data === 'object' &&
-            'auth_token' in response._data.data && 
-            response._data.data.auth_token) {
-          if (import.meta.client) {
-            localStorage.setItem('auth_token', response._data.data.auth_token)
-          }
-        }
-        // Emit an event so the auth store can update when token changes
+      // Check for auth token in response
+      if (response._data && 
+          typeof response._data === 'object' && 
+          'data' in response._data && 
+          response._data.data && 
+          typeof response._data.data === 'object' &&
+          'auth_token' in response._data.data) {
+        
+        // Only emit event, don't write to localStorage directly
         if (import.meta.client) {
-          window.dispatchEvent(new CustomEvent('auth:token-updated'))
+          window.dispatchEvent(new CustomEvent('auth:token-updated', {
+            detail: { token: response._data.data.auth_token }
+          }))
         }
       }
     },
