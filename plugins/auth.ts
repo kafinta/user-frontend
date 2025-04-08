@@ -1,25 +1,27 @@
+// plugins/auth.ts
 import { useAuthStore } from '~/stores/auth'
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
+
 export default defineNuxtPlugin(() => {
   const authStore = useAuthStore()
   
+  // Initialize auth state
   authStore.initialize()
   
-  // Listen for unauthorized events from useCustomFetch
-  if (import.meta.client) {
-    window.addEventListener('auth:unauthorized', () => {
-      authStore.setToken(null)
-      authStore.setUser(null)
-
-      toast.error('Unauthorized. Please login again', {
-        position: toast.POSITION.BOTTOM_RIGHT,
-        theme: 'colored'
-      })
-      navigateTo('/login')
-    })
+  // Provide auth utility methods to the app
+  return {
+    provide: {
+      auth: {
+        isAuthenticated: () => authStore.isAuthenticated,
+        getUser: () => authStore.user,
+        showAuthError: (message: string) => {
+          toast.error(message || 'Authentication error', {
+            position: toast.POSITION.BOTTOM_RIGHT,
+            theme: 'colored'
+          })
+        }
+      }
+    }
   }
-  // onUnmounted(() => {
-  //   authStore.cleanup()
-  // })
 })
