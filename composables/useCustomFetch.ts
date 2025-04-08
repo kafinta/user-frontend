@@ -1,8 +1,8 @@
 // composables/useCustomFetch.ts
 import type { UseFetchOptions } from '#app'
 import type { NitroFetchRequest, NitroFetchOptions } from 'nitropack'
-import type { Ref } from 'vue'
 import { defu } from 'defu'
+import { useToast } from 'primevue/usetoast'
 
 export function useCustomFetch<T>(
   url: NitroFetchRequest, 
@@ -13,9 +13,9 @@ export function useCustomFetch<T>(
 ) {
   const { requireAuth = false, method = 'GET', ...restOptions } = options
   const config = useRuntimeConfig()
+  const toast = useToast()
   
-  // Get token from localStorage directly to avoid circular dependency
-  // with the auth store that will use this composable
+  // Get token from localStorage directly
   const getAuthToken = (): string | null => {
     if (import.meta.client) {
       try {
@@ -44,35 +44,23 @@ export function useCustomFetch<T>(
         : {}
       )
     },
-    onRequest({ request, options }) {
-      // Request interceptor logic
-    },
-    onRequestError({ request, error }) {
-      // Request error handling
-    },
-    onResponse({ request, response }) {
-      // Check for auth token in response
-      if (response._data && 
-          typeof response._data === 'object' && 
-          'data' in response._data && 
-          response._data.data && 
-          typeof response._data.data === 'object' &&
-          'auth_token' in response._data.data) {
-        
-        // Only emit event, don't write to localStorage directly
-        if (import.meta.client) {
-          window.dispatchEvent(new CustomEvent('auth:token-updated', {
-            detail: { token: response._data.data.auth_token }
-          }))
-        }
-      }
-    },
     onResponseError({ request, response }) {
       if (response.status === 401) {
         if (import.meta.client) {
+          // Clear auth data
           localStorage.removeItem('auth_token')
-          // Dispatch an event that the auth store can listen for
-          window.dispatchEvent(new CustomEvent('auth:unauthorized'))
+          localStorage.removeItem('auth_user')
+          
+          // Show toast notification using PrimeVue
+          toast.add({
+            severity: 'error',
+            summary: 'Unauthorized',
+            detail: 'Your session has expired. Please login again.',
+            life: 3000
+          })
+          
+          // Redirect to login if needed
+          navigateTo('/auth/login')
         }
       }
     }
