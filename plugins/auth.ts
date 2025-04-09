@@ -1,7 +1,6 @@
 // plugins/auth.ts
 import { useAuthStore } from '~/stores/auth'
-import { toast } from 'vue3-toastify';
-import 'vue3-toastify/dist/index.css';
+import { useToast } from 'primevue/usetoast'
 
 export default defineNuxtPlugin(() => {
   const authStore = useAuthStore()
@@ -16,9 +15,12 @@ export default defineNuxtPlugin(() => {
         isAuthenticated: () => authStore.isAuthenticated,
         getUser: () => authStore.user,
         showAuthError: (message: string) => {
-          toast.error(message || 'Authentication error', {
-            position: toast.POSITION.BOTTOM_RIGHT,
-            theme: 'colored'
+          const toast = useToast()
+          toast.add({
+            severity: 'error',
+            summary: 'Authentication Error',
+            detail: message || 'Authentication error',
+            life: 3000
           })
         }
       }

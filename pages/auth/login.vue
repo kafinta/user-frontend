@@ -1,5 +1,4 @@
 <template>
-  <Toast position="top-right" />
   <div class="flex select-none">
     <div class="background hidden lg:flex w-2/3 bg-cover bg-center py-5 px-10 relative flex-col justify-end">
       <div class="bg-white rounded-md bg-opacity-80 p-5 w-full">
