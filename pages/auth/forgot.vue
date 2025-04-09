@@ -37,6 +37,10 @@
 </template>
 
 <script>
+definePageMeta({
+  middleware: ['auth'],
+  authOnly: true
+})
 export default {
   data() {
     return {

@@ -1,45 +1,3 @@
-<script setup>
-import { ref, onMounted } from "vue";
-import { storeToRefs } from 'pinia';
-import { useAuthStore } from '~/stores/auth';
-
-const router = useRouter()
-const authStore = useAuthStore();
-const { user } = storeToRefs(authStore);
-
-let is_small = false;
-const loadingState = ref(false);
-let error_state = false;
-const code = ref();
-
-const handleVerification = async () => {
-loadingState.value = true;
-router.push({name: 'username-buying-dashboard', params: {username: user.value.username}})
-loadingState.value = false
-}
-
-// const getUserDetails = async () => {
-//   const { data: csrf_token_data, error: csrf_token_error } = await useCustomFetch('/sanctum/csrf-cookie')
-//   const { pending, data: user_auth_data, error: user_auth_error } = await useCustomFetch('/api/user/profile', {
-//     method: 'GET',
-//     onResponse(res) {
-//       if (res.response.status == 200) {
-//         updateUser(res.response._data.data)
-//         console.log(res.response);
-//       } else {
-//         toast.error(res.response._data.message, {
-//           position: toast.POSITION.BOTTOM_RIGHT,
-//           theme: 'colored'
-//         })
-//         console.log(res.response);
-//       }
-//     },
-//   })
-// }
-onMounted(() => {
-  // getUserDetails()
-})
-</script>
 <template>
   <div class="flex flex-row-reverse select-none">
     <div style="" class="verify background hidden lg:flex w-2/3 bg-cover bg-center py-5 px-10 relative flex-col justify-end">
@@ -65,6 +23,33 @@ onMounted(() => {
 
   </div>
 </template>
+<script setup>
+definePageMeta({
+  middleware: ['auth'],
+  authOnly: true
+})
+
+import { ref, onMounted } from "vue";
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from '~/stores/auth';
+
+const router = useRouter()
+const authStore = useAuthStore();
+const { user } = storeToRefs(authStore);
+
+let is_small = false;
+const loadingState = ref(false);
+let error_state = false;
+const code = ref();
+
+const handleVerification = async () => {
+loadingState.value = true;
+router.push({name: 'username-buying-dashboard', params: {username: user.value.username}})
+loadingState.value = false
+}
+onMounted(() => {
+})
+</script>
 <style>
 .verify {
   background: url('/images/verify.jpg');
