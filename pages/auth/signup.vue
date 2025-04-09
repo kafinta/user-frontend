@@ -42,6 +42,10 @@
 
 </template>
 <script setup>
+definePageMeta({
+  middleware: ['auth'],
+  authOnly: true
+})
 import { ref } from "vue";
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/stores/auth';
