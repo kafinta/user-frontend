@@ -8,10 +8,15 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Accordion: typeof import('primevue/accordion')['default']
     Button: typeof import('primevue/button')['default']
     Carousel: typeof import('primevue/carousel')['default']
+    FloatLabel: typeof import('primevue/floatlabel')['default']
+    InputOtp: typeof import('primevue/inputotp')['default']
+    InputText: typeof import('primevue/inputtext')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Skeleton: typeof import('primevue/skeleton')['default']
+    Toast: typeof import('primevue/toast')['default']
   }
 }
