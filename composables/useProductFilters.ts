@@ -143,3 +143,32 @@ export function useProductFilters() {
     clearSelections
   }
 }
+
+// Add this to your composable or to a utility file
+export function getSelectionMessage(selectedCategory: any, selectedLocation: any, currentPage: string) {
+  // When viewing the categories page with a location already selected
+  if (currentPage === 'categories' && selectedLocation) {
+    return `Choose a category for your ${selectedLocation.name}`;
+  }
+  
+  // When viewing the locations page with a category already selected
+  if (currentPage === 'locations' && selectedCategory) {
+    return `Choose where to place your ${selectedCategory.name}`;
+  }
+  
+  // When both are selected (subcategories page)
+  if (selectedCategory && selectedLocation) {
+    return `Browse ${selectedCategory.name} for your ${selectedLocation.name}`;
+  }
+  
+  // Default messages when starting fresh
+  if (currentPage === 'categories') {
+    return 'Choose a category to get started';
+  }
+  
+  if (currentPage === 'locations') {
+    return 'Choose a room to get started';
+  }
+  
+  return 'Find the perfect items for your home';
+}
