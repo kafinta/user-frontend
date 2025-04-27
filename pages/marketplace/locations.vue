@@ -1,6 +1,10 @@
 <template>
   <LayoutsMarketplace>
     <Container>
+      <div class="flex justify-between mb-6">
+        <UiTypographyH2>{{ getSelectionMessage() }}</UiTypographyH2>
+        <UiButtonsPrimary @clicked="$router.push({name: 'marketplace-categories'})">Change Category</UiButtonsPrimary>
+      </div>
       <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         <li v-if="isLoading">
           <Skeleton
@@ -27,7 +31,7 @@ import { useProductFilters } from '@/composables/useProductFilters'
 import { useRouter } from 'vue-router'
 
 const filtersStore = useFiltersStore()
-const { locations, isLoading, error  } = storeToRefs(filtersStore)
+const { locations, isLoading, error, selectedCategory } = storeToRefs(filtersStore)
 const productFilters = useProductFilters()
 const router = useRouter()
 
@@ -56,6 +60,6 @@ function selectLocation(id) {
 }
 
 onMounted(async () => {
-  await filtersStore.fetchLocations();
+  await filtersStore.fetchLocations()
 })
 </script>
