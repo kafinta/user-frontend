@@ -25,6 +25,7 @@
     <template #item="slotProps" >
       <div class="mx-2">
         <UiCards
+          @clicked="selectLocation(slotProps.data.id)"
           :title="slotProps.data.name" 
           :src="slotProps.data.image_path" 
           :alt="slotProps.data.name"
@@ -39,10 +40,37 @@ import { ref, onMounted, computed } from 'vue'
 import { useWindowSize } from '@vueuse/core'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
+import { useProductFilters } from '@/composables/useProductFilters'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
-
+const productFilters = useProductFilters()
 const filtersStore = useFiltersStore()
 const { locations, isLoading, error  } = storeToRefs(filtersStore)
+
+function selectLocation(id) {
+  productFilters.selectLocation(id)
+  
+  // Use direct access to the selectedCategoryId value
+  const categoryId = productFilters.selectedCategoryId?.value
+  
+  if (!categoryId) {
+    // No category selected yet, go to categories page
+    router.push({
+      path: '/marketplace/categories',
+      query: { location: id }
+    })
+  } else {
+    // Both category and location selected, go to subcategories
+    router.push({
+      path: '/marketplace/subcategories',
+      query: { 
+        category: categoryId,
+        location: id 
+      }
+    })
+  }
+}
 
 const { width } = useWindowSize()
 
