@@ -1,6 +1,10 @@
 <template>
   <LayoutsMarketplace>
     <Container>
+      <div class="flex justify-between mb-6">
+        <UiTypographyH2>{{ selectionMessage }}</UiTypographyH2>
+        <UiButtonsPrimary v-if="productFilters.selectedLocation" @clicked="$router.push({name: 'marketplace-locations'})">Change Room</UiButtonsPrimary>
+      </div>
       <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         <li v-if="isLoading">
           <Skeleton
@@ -20,7 +24,7 @@
   </LayoutsMarketplace>
 </template>
 <script setup>
-import {ref, onMounted} from 'vue'
+import {ref, onMounted, computed} from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useProductFilters } from '@/composables/useProductFilters'
@@ -30,6 +34,17 @@ const filtersStore = useFiltersStore()
 const { categories, isLoading, error  } = storeToRefs(filtersStore)
 const productFilters = useProductFilters()
 const router = useRouter()
+
+// Simplified selection message
+const selectionMessage = computed(() => {
+  const selectedLocation = productFilters.selectedLocation
+  
+  if (selectedLocation) {
+    return `Choose a category for your ${selectedLocation.name}`
+  }
+  
+  return 'Choose a category to get started'
+})
 
 function selectCategory(id) {
   productFilters.selectCategory(id)
