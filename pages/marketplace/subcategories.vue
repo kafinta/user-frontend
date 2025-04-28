@@ -1,18 +1,21 @@
 <template>
   <LayoutsMarketplace>
     <Container>
-      <div class="flex justify-between mb-6">
-        <UiTypographyH2>{{ selectionMessage }}</UiTypographyH2>
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <UiTypographyH2>{{ selectionMessage }}</UiTypographyH2>
+          <UiBreadcrumbs :model="breadcrumbItems" />
+        </div>
         <div class="flex gap-2">
-          <UiButtonsPrimary @clicked="$router.push({name: 'marketplace-categories'})">Change Category</UiButtonsPrimary>
-          <UiButtonsPrimary @clicked="$router.push({name: 'marketplace-locations'})">Change Room</UiButtonsPrimary>
+          <UiButtonsPrimary @clicked="router.push({name: 'marketplace-categories'})">Change Category</UiButtonsPrimary>
+          <UiButtonsPrimary @clicked="router.push({name: 'marketplace-locations'})">Change Room</UiButtonsPrimary>
         </div>
       </div>
       <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         <li v-if="isLoading">
           <Skeleton
-            v-for="n in 12" 
-            :key="n" 
+            v-for="n in 12"
+            :key="n"
             height="15rem"
           ></Skeleton>
         </li>
@@ -43,18 +46,53 @@ import {ref, onMounted, computed} from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useProductFilters } from '@/composables/useProductFilters'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const filtersStore = useFiltersStore()
-const { subcategories, isLoading, error  } = storeToRefs(filtersStore)
+const { subcategories, isLoading, error } = storeToRefs(filtersStore)
 const productFilters = useProductFilters()
 const router = useRouter()
+const route = useRoute()
+
+const home = ref({
+  icon: 'pi pi-home',
+  route: '/marketplace'
+});
+
+// Define breadcrumb items
+const breadcrumbItems = computed(() => {
+  const items = [];
+  
+  // Add category to breadcrumb if selected
+  if (productFilters.selectedCategory) {
+    items.push({
+      label: productFilters.selectedCategory.name,
+      route: '/marketplace/categories'
+    });
+  }
+  
+  // Add location to breadcrumb if selected
+  if (productFilters.selectedLocation) {
+    items.push({
+      label: productFilters.selectedLocation.name,
+      route: '/marketplace/locations'
+    });
+  }
+  
+  // Add current page (Subcategories)
+  items.push({
+    label: 'Subcategories',
+    active: true
+  });
+  
+  return items;
+});
 
 // Add contextual message based on selected category and location
 const selectionMessage = computed(() => {
   const selectedCategory = productFilters.selectedCategory
   const selectedLocation = productFilters.selectedLocation
-  
+
   if (selectedCategory && selectedLocation) {
     return `Choose a subcategory for ${selectedCategory.name} in your ${selectedLocation.name}`
   } else if (selectedCategory) {
@@ -62,23 +100,48 @@ const selectionMessage = computed(() => {
   } else if (selectedLocation) {
     return `Choose a subcategory for your ${selectedLocation.name}`
   }
-  
+
   return 'Choose a subcategory to get started'
 })
 
 function selectSubcategory(id) {
   router.push({
     path: '/marketplace/products',
-    query: { 
-      subcategory: productFilters.selectedSubcategoryId.value,
-      category: productFilters.selectedCategoryId.value,
-      location: productFilters.selectedLocationId.value
+    query: {
+      subcategory: id,
+      category: productFilters.selectedCategoryId?.value,
+      location: productFilters.selectedLocationId?.value
     }
   });
 }
+
 onMounted(async () => {
-  if (productFilters.selectedCategoryId.value && productFilters.selectedLocationId.value) {
-    await productFilters.fetchSubcategories()
+  const categoryId = route.query.category;
+  const locationId = route.query.location;
+
+  // If we have parameters but not selected items, load them
+  if (categoryId && !productFilters.selectedCategory) {
+    productFilters.selectCategory(categoryId);
+  }
+
+  if (locationId && !productFilters.selectedLocation) {
+    productFilters.selectLocation(locationId);
+  }
+
+  // Only fetch subcategories if we have both a category and location
+  if (productFilters.selectedCategoryId?.value && productFilters.selectedLocationId?.value) {
+    await productFilters.fetchSubcategories();
+  } else if (categoryId && locationId) {
+    // If we have the IDs in the URL but they're not in the state yet,
+    // we need to wait for the selectCategory and selectLocation to complete
+    // before fetching subcategories
+    await Promise.all([
+      productFilters.selectCategory(categoryId),
+      productFilters.selectLocation(locationId)
+    ]);
+    await productFilters.fetchSubcategories();
   }
 })
 </script>
+
+

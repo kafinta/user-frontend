@@ -2,14 +2,17 @@
   <LayoutsMarketplace>
     <Container>
       <div class="flex justify-between mb-6">
-        <UiTypographyH2>{{ selectionMessage }}</UiTypographyH2>
+        <div>
+          <UiTypographyH2>{{ selectionMessage }}</UiTypographyH2>
+          <UiBreadcrumbs :model="breadcrumbItems" />
+        </div>
         <UiButtonsPrimary @clicked="$router.push({name: 'marketplace-categories'})">Change Category</UiButtonsPrimary>
       </div>
       <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         <li v-if="isLoading">
           <Skeleton
-            v-for="n in 12" 
-            :key="n" 
+            v-for="n in 12"
+            :key="n"
             height="15rem"
           ></Skeleton>
         </li>
@@ -35,26 +38,45 @@ const { locations, isLoading, error } = storeToRefs(filtersStore)
 const productFilters = useProductFilters()
 const router = useRouter()
 
+const breadcrumbItems = computed(() => {
+  const items = [];
+  
+  // Add category to breadcrumb if selected
+  if (productFilters.selectedCategory) {
+    items.push({
+      label: productFilters.selectedCategory.name,
+      route: '/marketplace/categories'
+    });
+  }
+  
+  // Add current page (Locations)
+  items.push({
+    label: 'Locations',
+    active: true
+  });
+  
+  return items;
+});
 // Simplified selection message
 const selectionMessage = computed(() => {
   const selectedCategory = productFilters.selectedCategory
-  
+
   if (selectedCategory) {
     return `Choose where to place your ${selectedCategory.name}`
   }
-  
+
   return 'Choose a room to get started'
 })
 
 function selectLocation(id) {
   productFilters.selectLocation(id)
-  
+
   const categoryId = productFilters.selectedCategoryId?.value
-  
+
   // Simplified navigation logic
   router.push({
     path: categoryId ? '/marketplace/subcategories' : '/marketplace/categories',
-    query: { 
+    query: {
       location: id,
       ...(categoryId && { category: categoryId })
     }
@@ -62,6 +84,14 @@ function selectLocation(id) {
 }
 
 onMounted(async () => {
-  await filtersStore.fetchLocations()
+  // Check if we have a category in the URL but not in the state
+  const categoryId = router.currentRoute.value.query.category;
+  if (categoryId && !productFilters.selectedCategory) {
+    productFilters.selectCategory(categoryId);
+  }
+
+  await filtersStore.fetchLocations();
 })
 </script>
+
+
