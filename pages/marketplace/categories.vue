@@ -31,7 +31,7 @@ import { useProductFilters } from '@/composables/useProductFilters'
 import { useRouter } from 'vue-router'
 
 const filtersStore = useFiltersStore()
-const { categories, isLoading, error  } = storeToRefs(filtersStore)
+const { categories, isLoading, error } = storeToRefs(filtersStore)
 const productFilters = useProductFilters()
 const router = useRouter()
 
@@ -49,25 +49,16 @@ const selectionMessage = computed(() => {
 function selectCategory(id) {
   productFilters.selectCategory(id)
   
-  // Use direct access to the selectedLocationId value
   const locationId = productFilters.selectedLocationId?.value
   
-  if (!locationId) {
-    // No location selected yet, go to locations page
-    router.push({
-      path: '/marketplace/locations',
-      query: { category: id }
-    })
-  } else {
-    // Both category and location selected, go to subcategories
-    router.push({
-      path: '/marketplace/subcategories',
-      query: { 
-        category: id,
-        location: locationId 
-      }
-    })
-  }
+  // Simplified navigation logic
+  router.push({
+    path: locationId ? '/marketplace/subcategories' : '/marketplace/locations',
+    query: { 
+      category: id,
+      ...(locationId && { location: locationId })
+    }
+  })
 }
 
 onMounted(async () => {
