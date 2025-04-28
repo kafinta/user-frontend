@@ -1,7 +1,27 @@
-import { useWindowSize } from "@vueuse/core";
+import { ref, onMounted, onUnmounted } from 'vue';
 
 // composables/useTruncate.ts
 export function useTruncate() {
+  // Create a reactive window width reference
+  const windowWidth = ref(0);
+  
+  // Update window width function
+  const updateWindowWidth = () => {
+    windowWidth.value = window.innerWidth;
+  };
+  
+  // Set up event listeners when the composable is used in a component
+  if (typeof window !== 'undefined') {
+    onMounted(() => {
+      updateWindowWidth();
+      window.addEventListener('resize', updateWindowWidth);
+    });
+    
+    onUnmounted(() => {
+      window.removeEventListener('resize', updateWindowWidth);
+    });
+  }
+
   const truncateText = (
     text: string, 
     options: {
@@ -25,9 +45,6 @@ export function useTruncate() {
       breakpoints = {}
     } = options;
 
-    // Check current viewport width
-    const { width } = useWindowSize()
-
     // Breakpoint definitions (adjust as needed for your design)
     const breakpointSizes = {
       mobile: 640,   // Small phones
@@ -38,10 +55,10 @@ export function useTruncate() {
 
     // Determine if truncation should be disabled based on current viewport
     const enableTruncation = (
-      (width.value <= breakpointSizes.mobile && breakpoints.mobile === true) ||
-      (width.value <= breakpointSizes.tablet && breakpoints.tablet === true) ||
-      (width.value >= breakpointSizes.desktop && breakpoints.desktop === true)||
-      (width.value >= breakpointSizes.large && breakpoints.large === true)
+      (windowWidth.value <= breakpointSizes.mobile && breakpoints.mobile === true) ||
+      (windowWidth.value <= breakpointSizes.tablet && breakpoints.tablet === true) ||
+      (windowWidth.value >= breakpointSizes.desktop && breakpoints.desktop === true)||
+      (windowWidth.value >= breakpointSizes.large && breakpoints.large === true)
     )
 
     // If truncation is disabled for current viewport, return full text
