@@ -1,6 +1,13 @@
 <template>
   <LayoutsMarketplace>
     <Container>
+      <div class="flex justify-between mb-6">
+        <UiTypographyH2>{{ selectionMessage }}</UiTypographyH2>
+        <div class="flex gap-2">
+          <UiButtonsPrimary @clicked="$router.push({name: 'marketplace-categories'})">Change Category</UiButtonsPrimary>
+          <UiButtonsPrimary @clicked="$router.push({name: 'marketplace-locations'})">Change Room</UiButtonsPrimary>
+        </div>
+      </div>
       <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         <li v-if="isLoading">
           <Skeleton
@@ -32,7 +39,7 @@
   </LayoutsMarketplace>
 </template>
 <script setup>
-import {ref, onMounted} from 'vue'
+import {ref, onMounted, computed} from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useProductFilters } from '@/composables/useProductFilters'
@@ -43,11 +50,27 @@ const { subcategories, isLoading, error  } = storeToRefs(filtersStore)
 const productFilters = useProductFilters()
 const router = useRouter()
 
+// Add contextual message based on selected category and location
+const selectionMessage = computed(() => {
+  const selectedCategory = productFilters.selectedCategory
+  const selectedLocation = productFilters.selectedLocation
+  
+  if (selectedCategory && selectedLocation) {
+    return `Choose a subcategory for ${selectedCategory.name} in your ${selectedLocation.name}`
+  } else if (selectedCategory) {
+    return `Choose a subcategory for ${selectedCategory.name}`
+  } else if (selectedLocation) {
+    return `Choose a subcategory for your ${selectedLocation.name}`
+  }
+  
+  return 'Choose a subcategory to get started'
+})
+
 function selectSubcategory(id) {
   router.push({
-    path: '/marketplace/categories/products',
+    path: '/marketplace/products',
     query: { 
-      subcategory: id,
+      subcategory: productFilters.selectedSubcategoryId.value,
       category: productFilters.selectedCategoryId.value,
       location: productFilters.selectedLocationId.value
     }
