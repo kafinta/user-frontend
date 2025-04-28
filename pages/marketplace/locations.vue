@@ -49,25 +49,16 @@ const selectionMessage = computed(() => {
 function selectLocation(id) {
   productFilters.selectLocation(id)
   
-  // Use direct access to the selectedCategoryId value
   const categoryId = productFilters.selectedCategoryId?.value
   
-  if (!categoryId) {
-    // No category selected yet, go to categories page
-    router.push({
-      path: '/marketplace/categories',
-      query: { location: id }
-    })
-  } else {
-    // Both category and location selected, go to subcategories
-    router.push({
-      path: '/marketplace/subcategories',
-      query: { 
-        category: categoryId,
-        location: id 
-      }
-    })
-  }
+  // Simplified navigation logic
+  router.push({
+    path: categoryId ? '/marketplace/subcategories' : '/marketplace/categories',
+    query: { 
+      location: id,
+      ...(categoryId && { category: categoryId })
+    }
+  })
 }
 
 onMounted(async () => {
