@@ -10,6 +10,11 @@ export default defineNuxtConfig({
     '@nuxt/image',
   ],
 
+  css: [
+    'primeicons/primeicons.css'
+
+  ],
+  
   plugins: [
     '~/plugins/primevue.ts',
     '~/plugins/auth.ts',
