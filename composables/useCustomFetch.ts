@@ -3,6 +3,7 @@ import type { UseFetchOptions } from '#app'
 import type { NitroFetchRequest, NitroFetchOptions } from 'nitropack'
 import { defu } from 'defu'
 import { useToast } from 'primevue/usetoast'
+import { getCurrentInstance } from 'vue'
 
 export function useCustomFetch<T>(
   url: NitroFetchRequest, 
@@ -13,7 +14,10 @@ export function useCustomFetch<T>(
 ) {
   const { requireAuth = false, method = 'GET', ...restOptions } = options
   const config = useRuntimeConfig()
-  const toast = useToast()
+  
+  // Only use toast if we're in a component context
+  const instance = getCurrentInstance()
+  const toast = instance ? useToast() : null
   
   // Get token from localStorage directly
   const getAuthToken = (): string | null => {
@@ -51,13 +55,15 @@ export function useCustomFetch<T>(
           localStorage.removeItem('auth_token')
           localStorage.removeItem('auth_user')
           
-          // Show toast notification using PrimeVue
-          toast.add({
-            severity: 'error',
-            summary: 'Unauthorized',
-            detail: 'Your session has expired. Please login again.',
-            life: 3000
-          })
+          // Show toast notification using PrimeVue only if toast is available
+          if (toast) {
+            toast.add({
+              severity: 'error',
+              summary: 'Unauthorized',
+              detail: 'Your session has expired. Please login again.',
+              life: 3000
+            })
+          }
           
           // Redirect to login if needed
           navigateTo('/auth/login')
