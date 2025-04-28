@@ -10,15 +10,29 @@ export function useTruncate() {
     windowWidth.value = window.innerWidth;
   };
   
+  // Simple debounce implementation
+  let debounceTimer: number | null = null;
+  const debouncedUpdateWidth = () => {
+    if (debounceTimer) {
+      clearTimeout(debounceTimer);
+    }
+    debounceTimer = window.setTimeout(() => {
+      updateWindowWidth();
+    }, 100);
+  };
+
   // Set up event listeners when the composable is used in a component
   if (typeof window !== 'undefined') {
     onMounted(() => {
       updateWindowWidth();
-      window.addEventListener('resize', updateWindowWidth);
+      window.addEventListener('resize', debouncedUpdateWidth);
     });
     
     onUnmounted(() => {
-      window.removeEventListener('resize', updateWindowWidth);
+      window.removeEventListener('resize', debouncedUpdateWidth);
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
     });
   }
 
