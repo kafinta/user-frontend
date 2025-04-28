@@ -89,7 +89,7 @@
       <ul v-if="!isLoading" class="col-span-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <li v-for="item in categories" :key="item.id">
           <UiButtonsTertiary :flexdisplay="true"
-          :url="{ name: 'marketplace-products', query: { category: item.name } }" >
+          @clicked="selectCategory(item.id)" >
             {{  truncateText(item.name, {
               maxWidth: 15,       
               breakpoints: { 
@@ -113,7 +113,12 @@
 import {ref, onMounted} from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const { truncateText } = useTruncate()
+import { useProductFilters } from '@/composables/useProductFilters'
+const productFilters = useProductFilters()
+
 
 
 const filtersStore = useFiltersStore()
@@ -124,6 +129,21 @@ const search_button_hovered = ref(false);
 const toggleSearch = () => {
   searchBox.value = !searchBox.value;
   search_button_hovered.value = !search_button_hovered.value;
+}
+
+function selectCategory(id) {
+  productFilters.selectCategory(id)
+  
+  const locationId = productFilters.selectedLocationId?.value
+  
+  // Simplified navigation logic
+  router.push({
+    path: locationId ? '/marketplace/subcategories' : '/marketplace/locations',
+    query: { 
+      category: id,
+      ...(locationId && { location: locationId })
+    }
+  })
 }
 
 onMounted(async () => {
