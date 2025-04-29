@@ -1,38 +1,42 @@
 <template>
-  <nav aria-label="Breadcrumb" class="card flex items-center gap-2">
-    <ol class="flex items-center gap-2 flex-wrap">
+  <nav aria-label="Breadcrumb">
+    <ol class="flex items-center gap-2 flex-wrap text-accent-400 text-base">
+      <!-- Home item -->
       <li>
         <slot name="home">
           <nuxt-link :to="homeRoute" class="breadcrumb-link" aria-label="Home">
-            <span v-if="homeIcon" :class="homeIcon" class="text-accent-400 hover:text-primary duration-300"></span>
-            <span v-else class="pi pi-home text-accent-400 hover:text-primary duration-300"></span>
+            <i class="hover:text-primary duration-300 pi pi-home"></i>
           </nuxt-link>
         </slot>
       </li>
-      
-      <li aria-hidden="true">
-        <span class="text-accent-400 pi pi-angle-right h-4"></span>
+
+      <!-- First separator -->
+      <li v-if="validatedModel.length > 0" aria-hidden="true">
+        <i class="pi pi-angle-right"></i>
       </li>
-      
+
       <!-- Dynamic breadcrumb items -->
       <template v-for="(item, index) in validatedModel" :key="index">
         <li>
-          <nuxt-link 
-            v-if="item.route && !item.active" 
-            :to="item.route" 
-            class="breadcrumb-link"
-            @click="handleItemClick(item)"
+          <nuxt-link
+            v-if="item.route && !item.active"
+            :to="item.route"
+            :class="getBreadcrumbItemClass(item)"
           >
-            <span v-if="item.icon" :class="item.icon" class="mr-1"></span>
-            <span class="font-normal text-accent-400 hover:text-primary duration-300">{{ item.label }}</span>
+            {{ item.label }}
           </nuxt-link>
-          <span v-else-if="item.active" class="font-normal text-primary" aria-current="page">{{ item.label }}</span>
-          <span v-else class="font-normal text-accent-400">{{ item.label }}</span>
+          <span
+            v-else
+            :class="getBreadcrumbItemClass(item)"
+            :aria-current="item.active ? 'page' : undefined"
+          >
+            {{ item.label }}
+          </span>
         </li>
-        
+
         <!-- Add separator except after the last item -->
         <li v-if="index < validatedModel.length - 1" aria-hidden="true">
-          <span class="text-accent-400" :class="separatorIcon"></span>
+          <i class="pi pi-angle-right"></i>
         </li>
       </template>
     </ol>
@@ -47,9 +51,9 @@ const props = defineProps({
     type: Array,
     default: () => [],
     validator: (value) => {
-      return value.every(item => 
-        typeof item === 'object' && 
-        'label' in item && 
+      return value.every(item =>
+        typeof item === 'object' &&
+        'label' in item &&
         typeof item.label === 'string'
       );
     }
@@ -57,32 +61,33 @@ const props = defineProps({
   homeRoute: {
     type: [String, Object],
     default: '/'
-  },
-  homeIcon: {
-    type: String,
-    default: 'pi pi-home'
-  },
-  separatorIcon: {
-    type: String,
-    default: 'pi pi-angle-right'
   }
 });
 
-const emit = defineEmits(['item-click']);
-
-// Validate model items
+// Process model items and set the last one as active
 const validatedModel = computed(() => {
-  return props.model.map(item => ({
+  const items = props.model.map((item, index, array) => ({
     ...item,
     label: item.label || 'Unnamed',
     route: item.route || null,
-    active: !!item.active
+    // Set the last item as active, ignore any active flag in the original items
+    active: index === array.length - 1
   }));
+
+  return items;
 });
 
-// Function to handle item clicks
-const handleItemClick = (item) => {
-  emit('item-click', item);
+// Get class for breadcrumb item based on its state
+const getBreadcrumbItemClass = (item) => {
+  const baseClass = 'font-normal';
+
+  if (item.active) {
+    return `${baseClass} text-primary`;
+  }
+
+  return item.route
+    ? `${baseClass} text-accent-400 hover:text-primary duration-300 breadcrumb-link`
+    : `${baseClass} text-accent-400`;
 };
 </script>
 
@@ -90,11 +95,5 @@ const handleItemClick = (item) => {
 .breadcrumb-link {
   text-decoration: none;
   transition: color 0.2s ease;
-}
-
-@media (max-width: 640px) {
-  .card {
-    padding: 0.5rem 0;
-  }
 }
 </style>
