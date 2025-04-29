@@ -1,36 +1,34 @@
 <template>
   <LayoutsMarketplace>
-    <Container>
-      <div class="flex justify-between items-center mb-6">
+    <Container :addTopBottomPadding="false" class="pb-18 py-8">
+      <div class="flex justify-between items-center gap-4 flex-wrap">
         <div>
           <UiTypographyH2>{{ selectionMessage }}</UiTypographyH2>
           <UiBreadcrumbs :model="breadcrumbItems" />
         </div>
-        <div class="flex gap-2">
+        <div class="flex gap-2 lg:flex-col justify-stretch items-end">
           <UiButtonsPrimary @clicked="router.push({name: 'marketplace-categories'})">Change Category</UiButtonsPrimary>
           <UiButtonsPrimary @clicked="router.push({name: 'marketplace-locations'})">Change Room</UiButtonsPrimary>
         </div>
       </div>
-      <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        <li v-if="isLoading">
+      <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-16">
+        <li v-if="isLoading" v-for="n in 12" :key="n">
           <Skeleton
-            v-for="n in 12"
-            :key="n"
             height="15rem"
           ></Skeleton>
         </li>
-        <li v-else-if="error">
+        <li v-else-if="error" class="col-span-2 md:col-span-3 lg:col-span-4 place-content-center">
           <UiTypographyP>Error loading subcategories... Try again later.</UiTypographyP>
         </li>
-        <li v-else-if="subcategories.length === 0">
+        <li v-else-if="subcategories.length === 0" class="col-span-2 md:col-span-3 lg:col-span-4 place-content-center">
           <div class="text-center py-8">
             <UiTypographyH3>No items found</UiTypographyH3>
             <UiTypographyP class="mt-2">
               We couldn't find any items that match your selection.
             </UiTypographyP>
-            <div class="mt-4">
+            <div class="mt-4 flex gap-4 items-center justify-center">
               <UiButtonsPrimary @click="router.push('/marketplace/categories')">Change Category</UiButtonsPrimary>
-              <UiButtonsPrimary @click="router.push('/marketplace/locations')" class="ml-2">Change Room</UiButtonsPrimary>
+              <UiButtonsPrimary @click="router.push('/marketplace/locations')">Change Room</UiButtonsPrimary>
             </div>
           </div>
         </li>
@@ -94,14 +92,13 @@ const selectionMessage = computed(() => {
   const selectedLocation = productFilters.selectedLocation
 
   if (selectedCategory && selectedLocation) {
-    return `Choose a subcategory for ${selectedCategory.name} in your ${selectedLocation.name}`
+    return `Browse ${selectedLocation.name} ${selectedCategory.name} `
   } else if (selectedCategory) {
-    return `Choose a subcategory for ${selectedCategory.name}`
+    return `Browse ${selectedCategory.name} subcategories`
   } else if (selectedLocation) {
-    return `Choose a subcategory for your ${selectedLocation.name}`
+    return `Browse ${selectedLocation.name} subcategories`
   }
-
-  return 'Choose a subcategory to get started'
+  return 'Browse subcategories'
 })
 
 async function selectSubcategory(id) {
