@@ -51,19 +51,24 @@ const selectionMessage = computed(() => {
   return 'Choose a category to get started'
 })
 
-function selectCategory(id) {
-  productFilters.selectCategory(id)
-
+async function selectCategory(id) {
+  // Get the current location ID directly from the store
   const locationId = productFilters.selectedLocationId?.value
-
-  // Simplified navigation logic
-  router.push({
+  
+  // Create the query parameters
+  const query = { category: id }
+  if (locationId) {
+    query.location = locationId
+  }
+  
+  // Navigate first
+  await router.push({
     path: locationId ? '/marketplace/subcategories' : '/marketplace/locations',
-    query: {
-      category: id,
-      ...(locationId && { location: locationId })
-    }
+    query
   })
+  
+  // Update the state after navigation
+  productFilters.selectCategory(id)
 }
 
 const breadcrumbItems = computed(() => {
@@ -96,5 +101,3 @@ onMounted(async () => {
   await filtersStore.fetchCategories();
 })
 </script>
-
-

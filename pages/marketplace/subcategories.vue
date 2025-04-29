@@ -104,15 +104,22 @@ const selectionMessage = computed(() => {
   return 'Choose a subcategory to get started'
 })
 
-function selectSubcategory(id) {
-  router.push({
+async function selectSubcategory(id) {
+  // Create the query parameters
+  const query = {
+    subcategory: id,
+    category: productFilters.selectedCategoryId?.value,
+    location: productFilters.selectedLocationId?.value
+  }
+  
+  // Navigate first
+  await router.push({
     path: '/marketplace/products',
-    query: {
-      subcategory: id,
-      category: productFilters.selectedCategoryId?.value,
-      location: productFilters.selectedLocationId?.value
-    }
-  });
+    query
+  })
+  
+  // Note: We don't need to update any state here as the subcategory ID
+  // is only used for the query parameter and not stored in the productFilters
 }
 
 onMounted(async () => {
