@@ -1,22 +1,20 @@
 <template>
   <LayoutsMarketplace>
-    <Container>
-      <div class="flex justify-between items-center mb-6">
+    <Container :addTopBottomPadding="false" class="pb-18 py-8">
+      <div class="flex justify-between flex-wrap items-center gap-4">
         <div>
           <UiTypographyH2>{{ selectionMessage }}</UiTypographyH2>
           <UiBreadcrumbs :model="breadcrumbItems" />
         </div>
         <UiButtonsPrimary v-if="productFilters.selectedLocation" @clicked="$router.push({name: 'marketplace-locations'})">Change Room</UiButtonsPrimary>
       </div>
-      <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        <li v-if="isLoading">
+      <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-12">
+        <li v-if="isLoading" v-for="n in 12" :key="n">
           <Skeleton
-            v-for="n in 12"
-            :key="n"
             height="15rem"
           ></Skeleton>
         </li>
-        <li v-else-if="error">
+        <li v-else-if="error" class="col-span-2 md:col-span-3 lg:col-span-4 place-content-center">
           <UiTypographyP>Error loading categories... Try again later.</UiTypographyP>
         </li>
         <li v-else v-for="category in categories" :key="category.id">
@@ -45,10 +43,10 @@ const selectionMessage = computed(() => {
   const selectedLocation = productFilters.selectedLocation
 
   if (selectedLocation) {
-    return `Choose a category for your ${selectedLocation.name}`
+    return `Browse ${selectedLocation.name} categories`
   }
 
-  return 'Choose a category to get started'
+  return 'Browse categories'
 })
 
 async function selectCategory(id) {
