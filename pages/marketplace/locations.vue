@@ -68,19 +68,24 @@ const selectionMessage = computed(() => {
   return 'Choose a room to get started'
 })
 
-function selectLocation(id) {
-  productFilters.selectLocation(id)
-
+async function selectLocation(id) {
+  // Get the current category ID directly from the store
   const categoryId = productFilters.selectedCategoryId?.value
-
-  // Simplified navigation logic
-  router.push({
+  
+  // Create the query parameters
+  const query = { location: id }
+  if (categoryId) {
+    query.category = categoryId
+  }
+  
+  // Navigate first
+  await router.push({
     path: categoryId ? '/marketplace/subcategories' : '/marketplace/categories',
-    query: {
-      location: id,
-      ...(categoryId && { category: categoryId })
-    }
+    query
   })
+  
+  // Update the state after navigation
+  productFilters.selectLocation(id)
 }
 
 onMounted(async () => {
