@@ -60,7 +60,7 @@ const home = ref({
 // Define breadcrumb items
 const breadcrumbItems = computed(() => {
   const items = [];
-  
+
   // Add category to breadcrumb if selected
   if (productFilters.selectedCategory) {
     items.push({
@@ -68,7 +68,7 @@ const breadcrumbItems = computed(() => {
       route: '/marketplace/categories'
     });
   }
-  
+
   // Add location to breadcrumb if selected
   if (productFilters.selectedLocation) {
     items.push({
@@ -76,13 +76,13 @@ const breadcrumbItems = computed(() => {
       route: '/marketplace/locations'
     });
   }
-  
+
   // Add current page (Subcategories)
   items.push({
     label: 'Subcategories',
     active: true
   });
-  
+
   return items;
 });
 
@@ -102,21 +102,21 @@ const selectionMessage = computed(() => {
 })
 
 async function selectSubcategory(id) {
+  // Fetch subcategory details first to get attributes
+  await productFilters.selectSubcategory(id)
+
   // Create the query parameters
   const query = {
     subcategory: id,
     category: productFilters.selectedCategoryId?.value,
     location: productFilters.selectedLocationId?.value
   }
-  
-  // Navigate first
+
+  // Navigate to products page
   await router.push({
     path: '/marketplace/products',
     query
   })
-  
-  // Note: We don't need to update any state here as the subcategory ID
-  // is only used for the query parameter and not stored in the productFilters
 }
 
 onMounted(async () => {
