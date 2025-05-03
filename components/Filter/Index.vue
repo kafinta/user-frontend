@@ -58,30 +58,18 @@ const subcategoryDetails = computed(() => selectedSubcategory.value)
 // Check if an attribute value is selected
 function isAttributeValueSelected(attributeId, value) {
   if (!selectedAttributes.value.has(attributeId)) return false
-  return selectedAttributes.value.get(attributeId).includes(value)
+  return selectedAttributes.value.get(attributeId)[0] === value
 }
 
 // Toggle attribute value selection
 function toggleAttributeValue(attributeId, value) {
-  if (!selectedAttributes.value.has(attributeId)) {
-    selectedAttributes.value.set(attributeId, [value])
-    return
-  }
-
-  const values = selectedAttributes.value.get(attributeId)
-  const index = values.indexOf(value)
-
-  if (index === -1) {
-    values.push(value)
-  } else {
-    values.splice(index, 1)
-  }
-
-  // If no values left, remove the attribute
-  if (values.length === 0) {
+  // If the value is already selected, deselect it
+  if (selectedAttributes.value.has(attributeId) &&
+      selectedAttributes.value.get(attributeId)[0] === value) {
     selectedAttributes.value.delete(attributeId)
   } else {
-    selectedAttributes.value.set(attributeId, values)
+    // Otherwise, set this value as the only selected value for this attribute
+    selectedAttributes.value.set(attributeId, [value])
   }
 
   // Emit selected attributes
