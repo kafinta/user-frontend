@@ -18,10 +18,10 @@
               :key="value"
               @click="toggleAttributeValue(attribute.id, value)"
               :class="[
-                'px-3 py-1 rounded-full text-sm cursor-pointer border transition-colors',
+                'py-2 px-5 text-sm font-medium duration-500 ease-in-out rounded-md cursor-pointer border',
                 isAttributeValueSelected(attribute.id, value)
-                  ? 'bg-accent-400 text-white border-accent-400'
-                  : 'bg-white text-secondary border-accent-200 hover:border-accent-400'
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-white text-secondary border-accent-200 hover:text-primary hover:border-primary focus:border-primary focus:text-primary'
               ]"
             >
               {{ value }}
