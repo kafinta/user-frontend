@@ -2,11 +2,13 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useFiltersStore } from '../stores/filters'
+import { storeToRefs } from 'pinia'
 
 export function useProductFilters() {
   const route = useRoute()
   const router = useRouter()
   const filtersStore = useFiltersStore()
+  const { selectedSubcategory } = storeToRefs(filtersStore)
 
   // Initialize from URL query parameters
   const selectedCategoryId = ref<number | null>(
@@ -41,7 +43,7 @@ export function useProductFilters() {
   const subcategories = computed(() => filtersStore.subcategories)
 
   // Get the selected subcategory details
-  const selectedSubcategoryDetails = computed(() => filtersStore.selectedSubcategory)
+  const selectedSubcategoryDetails = computed(() => selectedSubcategory.value)
 
   // Get loading state directly as a computed property
   const isLoading = computed(() => filtersStore.isLoading)
@@ -76,6 +78,9 @@ export function useProductFilters() {
       // If we have a subcategory ID, fetch its details
       if (subId) {
         fetchSubcategoryDetails(subId)
+      } else {
+        // Clear selected subcategory if no ID in URL
+        selectedSubcategory.value = null;
       }
     }
   }, { deep: true })
@@ -94,6 +99,11 @@ export function useProductFilters() {
     // Fetch subcategories if both params are present
     if (selectedCategoryId.value && selectedLocationId.value) {
       await fetchSubcategories()
+    }
+
+    // If we have a subcategory ID in the URL, fetch its details
+    if (selectedSubcategoryId.value) {
+      await fetchSubcategoryDetails(selectedSubcategoryId.value)
     }
   })
 
@@ -126,6 +136,7 @@ export function useProductFilters() {
     selectedCategoryId.value = null
     selectedLocationId.value = null
     selectedSubcategoryId.value = null
+    selectedSubcategory.value = null
     updateQueryParams(null, null, null)
   }
 
