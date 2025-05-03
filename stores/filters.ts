@@ -15,11 +15,19 @@ export interface Location {
   image_path?: string
 }
 
+export interface Attribute {
+  id: number
+  name: string
+  values: string[]
+}
+
 export interface Subcategory {
   id: number
   name: string
-  category_id: number
-  location_id: number
+  category_id?: number
+  location_id?: number
+  image_path?: string | null
+  attributes?: Attribute[]
 }
 
 export const useFiltersStore = defineStore('filters', () => {
@@ -27,6 +35,7 @@ export const useFiltersStore = defineStore('filters', () => {
   const categories = ref<Category[]>([])
   const locations = ref<Location[]>([])
   const subcategories = ref<Subcategory[]>([])
+  const selectedSubcategory = ref<Subcategory | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
@@ -60,7 +69,7 @@ export const useFiltersStore = defineStore('filters', () => {
   async function fetchCategories() {
     isLoading.value = true
     error.value = null
-    
+
     const storedCategories = loadFromStorage('categories')
     if (storedCategories) {
       categories.value = storedCategories
@@ -70,7 +79,7 @@ export const useFiltersStore = defineStore('filters', () => {
 
     try {
       const response = await useCustomFetch<{ data: Category[] }>('api/categories/')
-      
+
       if (response.data) {
         categories.value = response.data
         saveToStorage('categories', response.data)
@@ -88,7 +97,7 @@ export const useFiltersStore = defineStore('filters', () => {
   async function fetchLocations() {
     isLoading.value = true
     error.value = null
-    
+
     const storedLocations = loadFromStorage('locations')
     if (storedLocations) {
       locations.value = storedLocations
@@ -98,7 +107,7 @@ export const useFiltersStore = defineStore('filters', () => {
 
     try {
       const response = await useCustomFetch<{ data: Location[] }>('api/locations/')
-      
+
       if (response.data) {
         locations.value = response.data
         saveToStorage('locations', response.data)
@@ -117,14 +126,41 @@ export const useFiltersStore = defineStore('filters', () => {
     isLoading.value = true
     error.value = null
     subcategories.value = []
-    
+
     try {
       const response = await useCustomFetch<{ data: { subcategories: Subcategory[] } }>(
         `api/subcategories/?category_id=${category_id}&location_id=${location_id}`
       )
-      
+
       if (response.data?.subcategories) {
         subcategories.value = response.data.subcategories
+        return true
+      }
+      return false
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'An unknown error occurred'
+      return false
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  async function fetchSubcategoryDetails(subcategory_id: number) {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const response = await useCustomFetch<{
+        status: string,
+        status_code: number,
+        message: string,
+        data: {
+          subcategory: Subcategory
+        }
+      }>(`api/subcategories/${subcategory_id}`)
+
+      if (response.data?.subcategory) {
+        selectedSubcategory.value = response.data.subcategory
         return true
       }
       return false
@@ -141,12 +177,14 @@ export const useFiltersStore = defineStore('filters', () => {
     categories,
     locations,
     subcategories,
+    selectedSubcategory,
     isLoading,
     error,
 
     // Actions
     fetchCategories,
     fetchLocations,
-    fetchSubcategories
+    fetchSubcategories,
+    fetchSubcategoryDetails
   }
 })
