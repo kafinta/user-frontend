@@ -1,7 +1,8 @@
 <template>
   <LayoutsMarketplace class="px-4 sm:px-6 relative">
-    <UiTypographyH2 v-if="search">Search results for <b>{{$route.query.query}}</b></UiTypographyH2>
-    <UiTypographyH2 v-else>Browse <b>{{$route.query.query}}</b></UiTypographyH2>
+    <UiTypographyH2 v-if="search">Search results for <b>{{ $route.query.query }}</b></UiTypographyH2>
+    <UiTypographyH2 v-else>Browse {{ productFilters.selectedSubcategoryDetails?.name }}</UiTypographyH2>
+    <UiBreadcrumbs :model="breadcrumbItems" />
     <div class="flex justify-between items-center">
       <UiButtonsPrimary @clicked="openDialog=true" class="lg:hidden">
         <div class="flex gap-5">
@@ -47,10 +48,41 @@
   </LayoutsMarketplace>
 </template>
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, computed } from "vue";
+import { useRoute } from "vue-router";
+import { useProductFilters } from "@/composables/useProductFilters";
 
+const route = useRoute();
+const productFilters = useProductFilters();
 const openDialog = ref(false);
+const search = computed(() => !!route.query.query);
 
+const breadcrumbItems = computed(() => {
+  const items = [];
+  // Add category to breadcrumb if selected
+  if (productFilters.selectedCategory) {
+    items.push({
+      label: productFilters.selectedCategory.name,
+      route: '/marketplace/categories'
+    });
+  }
+
+  // Add location to breadcrumb if selected
+  if (productFilters.selectedLocation) {
+    items.push({
+      label: productFilters.selectedLocation.name,
+      route: '/marketplace/locations'
+    });
+  }
+
+  // Add current page (Subcategories)
+  items.push({
+    label: productFilters.selectedSubcategoryDetails?.name,
+    active: true
+  });
+
+  return items;
+});
 // Pagination functions
 const prev = () => {
   // Implement previous page logic
@@ -61,4 +93,26 @@ const next = () => {
   // Implement next page logic
   console.log('Next page');
 };
+
+// Initialize subcategory details on mount
+onMounted(async () => {
+  // Check if we have IDs in the URL
+  const categoryId = route.query.category ? Number(route.query.category) : null;
+  const locationId = route.query.location ? Number(route.query.location) : null;
+  const subcategoryId = route.query.subcategory ? Number(route.query.subcategory) : null;
+
+  // If we have parameters but not selected items, load them
+  if (categoryId && !productFilters.selectedCategory) {
+    productFilters.selectCategory(categoryId);
+  }
+
+  if (locationId && !productFilters.selectedLocation) {
+    productFilters.selectLocation(locationId);
+  }
+
+  // If we have a subcategory ID, select it
+  if (subcategoryId && !productFilters.selectedSubcategoryDetails) {
+    productFilters.selectSubcategory(subcategoryId);
+  }
+});
 </script>
