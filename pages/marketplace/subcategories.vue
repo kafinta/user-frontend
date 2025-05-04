@@ -102,26 +102,31 @@ const selectionMessage = computed(() => {
 })
 
 async function selectSubcategory(id) {
-  // Fetch subcategory details first to get attributes
-  await productFilters.selectSubcategory(id)
+  // Get the current category and location IDs directly from the store
+  const categoryId = productFilters.selectedCategoryId.value
+  const locationId = productFilters.selectedLocationId.value
 
   // Create the query parameters
   const query = {
-    subcategory: id,
-    category: productFilters.selectedCategoryId?.value,
-    location: productFilters.selectedLocationId?.value
+    subcategory: id
   }
 
-  // Navigate to products page
+  if (categoryId) query.category = categoryId
+  if (locationId) query.location = locationId
+
+  // Navigate first
   await router.push({
     path: '/marketplace/products',
     query
   })
+
+  // Update the state after navigation
+  productFilters.selectSubcategory(id)
 }
 
 onMounted(async () => {
-  const categoryId = route.query.category;
-  const locationId = route.query.location;
+  const categoryId = route.query.category ? Number(route.query.category) : null;
+  const locationId = route.query.location ? Number(route.query.location) : null;
 
   // If we have parameters but not selected items, load them
   if (categoryId && !productFilters.selectedCategory) {
@@ -133,7 +138,7 @@ onMounted(async () => {
   }
 
   // Only fetch subcategories if we have both a category and location
-  if (productFilters.selectedCategoryId?.value && productFilters.selectedLocationId?.value) {
+  if (productFilters.selectedCategoryId.value && productFilters.selectedLocationId.value) {
     await productFilters.fetchSubcategories();
   } else if (categoryId && locationId) {
     // If we have the IDs in the URL but they're not in the state yet,
