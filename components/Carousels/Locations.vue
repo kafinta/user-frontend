@@ -7,12 +7,8 @@
     ></Skeleton>
   </div>
 
-  <li v-else-if="error">
-    <UiTypographyP>Error loading locations... Try again later.</UiTypographyP>
-  </li>
-
   <Carousel 
-    v-else 
+    v-else-if="!isLoading && locations" 
     :value="locations" 
     :numVisible="numVisibleItems" 
     :numScroll="1" 
@@ -23,7 +19,7 @@
 
   >
     <template #item="slotProps" >
-      <div class="mx-2">
+      <div class="mx-2 list-none">
         <UiCards
           @clicked="selectLocation(slotProps.data.id)"
           :title="slotProps.data.name" 
@@ -33,6 +29,12 @@
       </div>
     </template>
   </Carousel>
+
+  <li v-else class="list-none text-center">
+    <UiTypographyP>Error loading locations... Try again later.</UiTypographyP>
+  </li>
+
+
 </template>
 
 <script setup>
