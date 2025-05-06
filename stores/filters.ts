@@ -15,10 +15,15 @@ export interface Location {
   image_path?: string
 }
 
+export interface AttributeValue {
+  id: number
+  name: string
+}
+
 export interface Attribute {
   id: number
   name: string
-  values: string[]
+  values: AttributeValue[]
 }
 
 export interface Subcategory {
