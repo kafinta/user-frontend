@@ -15,16 +15,16 @@
           <div class="flex flex-wrap gap-2">
             <div
               v-for="value in attribute.values"
-              :key="value"
-              @click="toggleAttributeValue(attribute.id, value)"
+              :key="value.id"
+              @click="toggleAttributeValue(attribute.id, value.id, value.name)"
               :class="[
                 'py-2 px-5 text-sm font-medium duration-500 ease-in-out rounded-md cursor-pointer border',
-                isAttributeValueSelected(attribute.id, value)
+                isAttributeValueSelected(attribute.id, value.id)
                   ? 'bg-primary text-white border-primary'
                   : 'bg-white text-secondary border-accent-200 hover:text-primary hover:border-primary focus:border-primary focus:text-primary'
               ]"
             >
-              {{ value }}
+              {{ value.name }}
             </div>
           </div>
         </div>
@@ -49,27 +49,28 @@ import { storeToRefs } from 'pinia'
 const filtersStore = useFiltersStore()
 const { selectedSubcategory, isLoading, error } = storeToRefs(filtersStore)
 
-// Selected attribute values
+// Selected attribute values - Map of attributeId -> { id, name }
 const selectedAttributes = ref(new Map())
 
 // Get subcategory details
 const subcategoryDetails = computed(() => selectedSubcategory.value)
 
 // Check if an attribute value is selected
-function isAttributeValueSelected(attributeId, value) {
+function isAttributeValueSelected(attributeId, valueId) {
   if (!selectedAttributes.value.has(attributeId)) return false
-  return selectedAttributes.value.get(attributeId)[0] === value
+  const selectedValue = selectedAttributes.value.get(attributeId)
+  return selectedValue.id === valueId
 }
 
 // Toggle attribute value selection
-function toggleAttributeValue(attributeId, value) {
+function toggleAttributeValue(attributeId, valueId, valueName) {
   // If the value is already selected, deselect it
   if (selectedAttributes.value.has(attributeId) &&
-      selectedAttributes.value.get(attributeId)[0] === value) {
+      selectedAttributes.value.get(attributeId).id === valueId) {
     selectedAttributes.value.delete(attributeId)
   } else {
     // Otherwise, set this value as the only selected value for this attribute
-    selectedAttributes.value.set(attributeId, [value])
+    selectedAttributes.value.set(attributeId, { id: valueId, name: valueName })
   }
 
   // Emit selected attributes
@@ -80,11 +81,14 @@ function toggleAttributeValue(attributeId, value) {
 function emitSelectedAttributes() {
   const result = {}
 
-  selectedAttributes.value.forEach((values, attributeId) => {
+  selectedAttributes.value.forEach((selectedValue, attributeId) => {
     // Find the attribute name
     const attribute = subcategoryDetails.value?.attributes.find(attr => attr.id === attributeId)
     if (attribute) {
-      result[attribute.name] = values
+      result[attribute.name] = {
+        id: selectedValue.id,
+        name: selectedValue.name
+      }
     }
   })
 
