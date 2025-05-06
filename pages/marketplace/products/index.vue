@@ -4,7 +4,7 @@
     <UiTypographyH2 v-else>Browse {{ productFilters.selectedSubcategoryDetails?.name }}</UiTypographyH2>
     <UiBreadcrumbs :model="breadcrumbItems" />
     <div class="flex justify-between items-center">
-      <UiButtonsPrimary @clicked="openDialog=true" class="lg:hidden">
+      <UiButtonsPrimary @clicked="openDialog=true" class="lg:hidden mt-6">
         <div class="flex gap-5">
           <p>Filters</p>
           <UiIconsFilter class="w-5 flex m-0" />
@@ -12,10 +12,10 @@
       </UiButtonsPrimary>
     </div>
 
-    <div class="mt-10 relative flex flex-col lg:flex-row">
+    <div class="mt-10 relative flex flex-col lg:flex-row gap-6">
       <!-- Fixed sidebar for filters -->
       <div class="hidden lg:block w-1/4 2xl:w-1/5">
-        <div class="sticky top-20 pr-5 max-h-[calc(100vh-120px)] overflow-y-auto">
+        <div class="sticky top-20 max-h-[calc(100vh - 120px)] overflow-y-auto">
           <Filter />
         </div>
       </div>
