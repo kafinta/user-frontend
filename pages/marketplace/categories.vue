@@ -29,12 +29,13 @@ import {onMounted, computed} from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useProductFilters } from '@/composables/useProductFilters'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const filtersStore = useFiltersStore()
 const { categories, isLoading, error } = storeToRefs(filtersStore)
 const productFilters = useProductFilters()
 const router = useRouter()
+const route = useRoute()
 
 
 
@@ -52,26 +53,26 @@ const selectionMessage = computed(() => {
 async function selectCategory(id) {
   // Get the current location ID directly from the store
   const locationId = productFilters.selectedLocationId?.value
-  
+
   // Create the query parameters
   const query = { category: id }
   if (locationId) {
     query.location = locationId
   }
-  
+
   // Navigate first
   await router.push({
     path: locationId ? '/marketplace/subcategories' : '/marketplace/locations',
     query
   })
-  
+
   // Update the state after navigation
   productFilters.selectCategory(id)
 }
 
 const breadcrumbItems = computed(() => {
   const items = [];
-  
+
   // Add location to breadcrumb if selected
   if (productFilters.selectedLocation) {
     items.push({
@@ -79,19 +80,19 @@ const breadcrumbItems = computed(() => {
       route: '/marketplace/locations'
     });
   }
-  
+
   // Add current page (Categories)
   items.push({
     label: 'Categories',
     active: true
   });
-  
+
   return items;
 });
 
 onMounted(async () => {
   // Check if we have a location in the URL but not in the state
-  const locationId = router.currentRoute.value.query.location;
+  const locationId = route.query.location ? Number(route.query.location) : null;
   if (locationId && !productFilters.selectedLocation) {
     productFilters.selectLocation(locationId);
   }
