@@ -137,17 +137,8 @@ onMounted(async () => {
     productFilters.selectLocation(locationId);
   }
 
-  // Only fetch subcategories if we have both a category and location
-  if (productFilters.selectedCategoryId.value && productFilters.selectedLocationId.value) {
-    await productFilters.fetchSubcategories();
-  } else if (categoryId && locationId) {
-    // If we have the IDs in the URL but they're not in the state yet,
-    // we need to wait for the selectCategory and selectLocation to complete
-    // before fetching subcategories
-    await Promise.all([
-      productFilters.selectCategory(categoryId),
-      productFilters.selectLocation(locationId)
-    ]);
+  // Fetch subcategories if both category and location are available
+  if (categoryId && locationId) {
     await productFilters.fetchSubcategories();
   }
 })
