@@ -1,15 +1,21 @@
 <template>
   <LayoutsMarketplace class="px-4 sm:px-6 relative">
-    <UiTypographyH2 v-if="search">Search results for <b>{{ $route.query.query }}</b></UiTypographyH2>
-    <UiTypographyH2 v-else>Browse {{ productFilters.selectedSubcategoryDetails?.name }}</UiTypographyH2>
-    <UiBreadcrumbs :model="breadcrumbItems" />
-    <div class="flex justify-between items-center">
-      <UiButtonsPrimary @clicked="openDialog=true" class="lg:hidden mt-6">
-        <div class="flex gap-5">
-          <p>Filters</p>
-          <UiIconsFilter class="w-5 flex m-0" />
-        </div>
-      </UiButtonsPrimary>
+    <div class="flex justify-between items-center flex-wrap gap-6">
+      <div>
+        <UiTypographyH2 v-if="search">Search results for <b>{{ $route.query.query }}</b></UiTypographyH2>
+        <UiTypographyH2 v-else>Browse {{ productFilters.selectedSubcategoryDetails?.name }}</UiTypographyH2>
+        <UiBreadcrumbs :model="breadcrumbItems" />
+      </div>
+
+      <div class="flex gap-2 lg:flex-col justify-stretch items-end">
+        <UiButtonsPrimary :to="marketplace/locations">Change subcategory</UiButtonsPrimary>
+        <UiButtonsPrimary @clicked="openDialog=true" class="lg:hidden">
+          <div class="flex gap-5">
+            <p>Filters</p>
+            <UiIconsFilter class="w-5 flex m-0" />
+          </div>
+        </UiButtonsPrimary> 
+      </div>
     </div>
 
     <div class="mt-10 relative flex flex-col lg:flex-row gap-6">
