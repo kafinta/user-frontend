@@ -10,24 +10,35 @@
       </div>
 
       <div v-else-if="subcategoryDetails && subcategoryDetails.attributes && subcategoryDetails.attributes.length > 0">
-        <div v-for="attribute in subcategoryDetails.attributes" :key="attribute.id" class="mb-6">
-          <h3 class="font-medium text-secondary mb-2">{{ attribute.name }}</h3>
-          <div class="flex flex-wrap gap-2">
-            <div
-              v-for="value in attribute.values"
-              :key="value.id"
-              @click="toggleAttributeValue(attribute.id, value.id, value.name)"
-              :class="[
-                'py-2 px-5 text-sm font-medium duration-500 ease-in-out rounded-md cursor-pointer border',
-                isAttributeValueSelected(attribute.id, value.id)
-                  ? 'bg-primary text-white border-primary'
-                  : 'bg-white text-secondary border-accent-200 hover:text-primary hover:border-primary focus:border-primary focus:text-primary'
-              ]"
-            >
-              {{ value.name }}
-            </div>
-          </div>
-        </div>
+        <AccordionIndex :allowMultiple="true">
+          <AccordionItem
+            v-for="attribute in subcategoryDetails.attributes"
+            :key="attribute.id"
+            :active="true"
+            container_class="border-b border-accent-200 pb-2 mb-2"
+          >
+            <template #accordion-trigger>
+              <h3 class="font-medium text-secondary py-2">{{ attribute.name }}</h3>
+            </template>
+            <template #accordion-content>
+              <div class="flex flex-wrap gap-2 py-2">
+                <div
+                  v-for="value in attribute.values"
+                  :key="value.id"
+                  @click="toggleAttributeValue(attribute.id, value.id, value.name)"
+                  :class="[
+                    'py-2 px-5 text-sm font-medium duration-500 ease-in-out rounded-md cursor-pointer border',
+                    isAttributeValueSelected(attribute.id, value.id)
+                      ? 'bg-primary text-white border-primary'
+                      : 'bg-white text-secondary border-accent-200 hover:text-primary hover:border-primary focus:border-primary focus:text-primary'
+                  ]"
+                >
+                  {{ value.name }}
+                </div>
+              </div>
+            </template>
+          </AccordionItem>
+        </AccordionIndex>
       </div>
 
       <div v-else-if="error" class="text-red-500">
@@ -45,6 +56,8 @@
 import { ref, computed, watch } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
+import AccordionIndex from '~/components/Accordion/Index.vue'
+import AccordionItem from '~/components/Accordion/Item.vue'
 
 const filtersStore = useFiltersStore()
 const { selectedSubcategory, isLoading, error } = storeToRefs(filtersStore)
