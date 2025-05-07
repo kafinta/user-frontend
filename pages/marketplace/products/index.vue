@@ -15,7 +15,7 @@
     <div class="mt-10 relative flex flex-col lg:flex-row gap-6">
       <!-- Fixed sidebar for filters -->
       <div class="hidden lg:block w-1/4 2xl:w-1/5">
-        <div class="sticky top-20 max-h-[calc(100vh - 120px)] overflow-y-auto">
+        <div class="sticky top-20 h-screen overflow-y-auto max-h-[calc(100vh - 140px)]">
           <Filter />
         </div>
       </div>
