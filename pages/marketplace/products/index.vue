@@ -8,7 +8,7 @@
       </div>
 
       <div class="flex gap-2 lg:flex-col justify-stretch items-end">
-        <UiButtonsPrimary :to="marketplace/locations">Change subcategory</UiButtonsPrimary>
+        <UiButtonsPrimary :url="{ name: 'marketplace-subcategories' }">Change subcategory</UiButtonsPrimary>
         <UiButtonsPrimary @clicked="openDialog=true" class="lg:hidden">
           <div class="flex gap-5">
             <p>Filters</p>
