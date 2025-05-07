@@ -27,8 +27,8 @@
               We couldn't find any items that match your selection.
             </UiTypographyP>
             <div class="mt-4 flex gap-4 items-center justify-center">
-              <UiButtonsPrimary @click="router.push('/marketplace/categories')">Change Category</UiButtonsPrimary>
-              <UiButtonsPrimary @click="router.push('/marketplace/locations')">Change Room</UiButtonsPrimary>
+              <UiButtonsPrimary :url="{name: 'marketplace-categories'}">Change Category</UiButtonsPrimary>
+              <UiButtonsPrimary :url="{name: 'marketplace-locations'}">Change Room</UiButtonsPrimary>
             </div>
           </div>
         </li>
