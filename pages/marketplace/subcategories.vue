@@ -7,8 +7,8 @@
           <UiBreadcrumbs :model="breadcrumbItems" />
         </div>
         <div class="flex gap-2 lg:flex-col justify-stretch items-end">
-          <UiButtonsPrimary @clicked="router.push({name: 'marketplace-categories'})">Change Category</UiButtonsPrimary>
-          <UiButtonsPrimary @clicked="router.push({name: 'marketplace-locations'})">Change Room</UiButtonsPrimary>
+          <UiButtonsPrimary :url="{name: 'marketplace-categories'}">Change Category</UiButtonsPrimary>
+          <UiButtonsPrimary :url="{name: 'marketplace-locations'}">Change Room</UiButtonsPrimary>
         </div>
       </div>
       <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-16">

@@ -6,7 +6,7 @@
           <UiTypographyH2>{{ selectionMessage }}</UiTypographyH2>
           <UiBreadcrumbs :model="breadcrumbItems" />
         </div>
-        <UiButtonsPrimary v-if="productFilters.selectedCategory" @clicked="$router.push({name: 'marketplace-categories'})">Change Category</UiButtonsPrimary>
+        <UiButtonsPrimary v-if="productFilters.selectedCategory" :url="{name: 'marketplace-categories'}">Change Category</UiButtonsPrimary>
       </div>
       <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-12">
         <li v-if="isLoading" v-for="n in 12" :key="n">
