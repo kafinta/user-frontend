@@ -2,11 +2,11 @@
   <aside class="lg:border-r lg:border-accent-200 lg:pr-4 w-full">
     <UiTypographyP class="mb-4 font-medium text-lg hidden lg:block">Filters</UiTypographyP>
     <div class="space-y-4">
-      <div v-if="isLoading" class="animate-pulse">
-        <div class="h-6 bg-accent-200 rounded w-1/2 mb-2"></div>
-        <div class="h-4 bg-accent-200 rounded w-full mb-1"></div>
-        <div class="h-4 bg-accent-200 rounded w-full mb-1"></div>
-        <div class="h-4 bg-accent-200 rounded w-full mb-1"></div>
+      <div v-if="isLoading" class="space-y-4">
+        <Skeleton height="32px" />
+        <Skeleton height="15rem" />
+        <Skeleton height="32px" />
+        <Skeleton height="15rem" />
       </div>
 
       <div v-else-if="subcategoryDetails && subcategoryDetails.attributes && subcategoryDetails.attributes.length > 0">
