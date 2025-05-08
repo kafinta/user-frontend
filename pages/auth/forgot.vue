@@ -1,88 +1,65 @@
 <template>
-  <div class="flex select-none">
-    <div style="" class="background hidden lg:flex w-2/3 bg-cover bg-center py-5 px-10 relative flex-col justify-end">
-      <div class="bg-white rounded-md bg-opacity-80 p-5 w-full">
-        <h1 class="text-2xl text-secondary">With the top of the line products and services available, my home has never looked or felt better. Amazing platform, definitely recommend!</h1>
+  <div class="flex justify-center items-center h-screen">
 
-        <p class="text-base 2xl:text-lg text-primary mt-5">Olivia Rhye</p>
-        <p class="text-sm text-secondary 2xl:text-base">Founder, Catalog</p>
+    <div class="w-full max-w-md mx-auto rounded-xl p-5 border-accent-200 border space-y-8">
+      <NavigationLogo @click="returnHome()" class="w-48 mx-auto" />
+      <div v-if="!verification_passed">
+        <UiTypographyH2 class="font-medium text-3xl  text-secondary text-center">Verify your email.</UiTypographyH2>
+        <UiTypographyP class="text-sm text-secondary text-center">We sent a six digit code to your email. Enter it below to verify your account</UiTypographyP>
 
-      </div>
-    </div>
-
-    <div class="w-full lg:w-1/2 h-screen flex items-center justify-center mx-auto px-6 md:px-8 lg:px-10 relative">
-      <NavigationLogo @click="returnHome()" class="absolute top-5 left-10 w-36 lg:hidden" :class="is_small ? 'hidden' : ''" />
-      <form @submit.prevent="verify()" action="" class="w-full md:w-2/3 lg:w-full rounded-xl p-5" :class="is_small ? 'p-0' : verification_passed ? 'hidden' : ''">
-        <h1 :class="is_small ? 'text-2xl' : ''" class="font-medium text-3xl w-fit text-secondary">Verify your email.</h1>
-        <p :class="is_small ? 'mb-4' : ''" class="text-sm text-secondary mb-8">We sent a six digit code to your email. Enter it below to verify your account</p>
-
-        <div class="grid gap-4">
-          <FormInput :centerText="true" label="Verification code" v-model:inputValue="code" placeholder="X X X X X X"></FormInput>
+        <form @submit.prevent="verify()" class="grid gap-4 mt-8">
+          <InputOtp v-model="code" :length="6" integerOnly class="justify-between"/>
           <FormButton :loading="loadingState">Verify</FormButton>
-        </div>
-      </form>
+        </form>
+      </div>
 
-      <form @submit.prevent="updatePassword()" action="" class="w-full md:w-2/3 lg:w-full rounded-xl p-5" :class="is_small ? 'p-0' : verification_passed ? 'block' : 'hidden'">
-        <h1 :class="is_small ? 'text-2xl' : ''" class="font-medium text-3xl w-fit text-secondary">Reset your password</h1>
-        <p :class="is_small ? 'mb-4' : ''" class="text-sm text-secondary mb-8">Choose a new password to use with your account.</p>
 
-        <div class="grid gap-4">
+      <div v-else>
+        <h1 class="font-medium text-3xl w-fit text-secondary">Reset your password</h1>
+        <p class="text-sm text-secondary mb-8">Choose a new password to use with your account.</p>
+
+        <form @submit.prevent="updatePassword()" class="grid gap-4 mt-8">
           <FormInput label="New password" v-model:inputValue="new_password" placeholder="Enter your new password"></FormInput>
           <FormButton :loading="loadingStatePassword">Update Password</FormButton>
-        </div>
-      </form> 
+        </form>
+      </div> 
     </div>
   </div>
-
 </template>
 
-<script>
+<script setup>
 definePageMeta({
   middleware: ['auth'],
   authOnly: true
 })
-export default {
-  data() {
-    return {
-      error_state: false,
-      code: '',
-      is_small: false,
-      loadingState: false,
-      loadingStatePassword: false,
-      new_password: '',
-      verification_passed: false,
-    }
-  },
 
-  methods: {
-    verify(){
-      this.loadingState = true
-      setTimeout(() => {
-        this.verification_passed = true
-      }, 2000);
-    },
+import { ref } from "vue";
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
-    updatePassword(){
-      this.loadingStatePassword = true
-      setTimeout(() => {
-        this.$router.push({path: 'username-buying', params: {username: stewart}})
-      }, 2000);
-    },
+const code = ref('');
+const verification_passed = ref(false);
+const loadingState = ref(false);
+const loadingStatePassword = ref(false);
+const new_password = ref('');
 
-    returnHome(){
-      this.$router.push({path: '/'})
-    }
-  },
-  
-  created(){
-    if (process.client && window.innerWidth <= 320) {
-      this.is_small = true
-    }
-  },
+function verify(){
+  loadingState.value = true;
+  setTimeout(() => {
+    loadingState.value = false;
+    verification_passed.value = true;
+  }, 2000);
+}
+
+function updatePassword(){
+  loadingStatePassword.value = true;
+  setTimeout(() => {
+    loadingStatePassword.value = false;
+    router.push({name: 'auth-login'});
+  }, 2000);
+}
+
+function returnHome(){
+  router.push({path: '/'})
 }
 </script>
-<style>
-.background {
-  background: url('/images/forgot.jpg');
-}
-</style>
