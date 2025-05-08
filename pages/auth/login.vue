@@ -16,8 +16,8 @@
           <InputText id="password_label" type="password" v-model="password" fluid />
           <label for="password_label">Password</label>
         </FloatLabel>
-        <nuxt-link to="/auth/forgot" :class="error_state ? 'hidden' : 'block'" class="mb-5 text-sm text-secondary text-opacity-50 hover:text-opacity-100 duration-500 ease-in-out">Forgot password?</nuxt-link>
-        <FormButton :loading="loadingState">Sign In</FormButton>
+        <nuxt-link to="/auth/forgot" class="mb-5 text-sm text-secondary text-opacity-50 hover:text-opacity-100 duration-500 ease-in-out">Forgot password?</nuxt-link>
+        <FormButton :loading="isLoading">Sign In</FormButton>
 
         <p class="text-sm w-fit mx-auto mt-2 text-secondary text-center">Not a member yet? <nuxt-link to="/auth/signup" class="duration-500 ease-in-out hover:text-primary">Create Account</nuxt-link></p>
       </form>
@@ -30,7 +30,7 @@
 <script setup>
 definePageMeta({
   middleware: ['auth'],
-  authOnly: true  // Only accessible when NOT authenticated
+  authOnly: true  // Only accessible when NOT authenticated, else redirect to home page
 });
 import { useRouter } from 'vue-router';
 import { ref } from "vue";
@@ -43,8 +43,6 @@ const authStore = useAuthStore();
 const { message, isLoading, status } = storeToRefs(authStore);
 const router = useRouter();
 
-let loadingState = ref(false);
-let error_state = ref(false);
 const email = ref();
 const password = ref();
 
@@ -55,7 +53,6 @@ async function handleSignin() {
       email: email.value,
       password: password.value,
     });
-    console.log(status.value)
     if(status.value === 'success') {
       toast.add({
         severity: 'success',
