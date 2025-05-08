@@ -1,74 +1,81 @@
 <template>
-  <transition name="slide-fade" >
+  <transition name="slide-fade">
     <nav class="fixed z-100 top-0 left-0 w-4/6 md:w-1/4 lg:w-1/5 xl:w-1/6 flex flex-col justify-between bg-secondary h-screen">
+      <!-- Top section with logo and navigation links -->
       <div class="mt-6">
         <div class="px-8">
-          <NavigationLogoInverted class="w-36 text-white"/>
+          <NavigationLogoInverted class="w-36 text-white" />
         </div>
 
         <div class="mt-6">
-          <nuxt-link v-if="!isSeller" :to="{name: 'username-selling-onboarding'}">
-            <NavigationSideMenu menu_text="Onboarding" :is_active="onboardingActive" :isSeller="!isSeller">
-              <UiIconsProfile />
-            </NavigationSideMenu>
-          </nuxt-link>
-
-          <nuxt-link :to="{name: 'username-selling-dashboard'}">
-            <NavigationSideMenu menu_text="Dashboard" :is_active="dashboardActive" :isSeller="isSeller">
-              <UiIconsOverview />
-            </NavigationSideMenu>
-          </nuxt-link>
-
-          <nuxt-link :to="{name: 'username-selling-products'}">
-            <NavigationSideMenu menu_text="Products" :is_active="productsActive" :isSeller="isSeller">
-              <UiIconsGigs />
-            </NavigationSideMenu>
-          </nuxt-link>
-
-          <nuxt-link :to="{name: 'username-selling-orders'}">
-            <NavigationSideMenu menu_text="Orders" :is_active="OrdersActive" :isSeller="isSeller">
-              <UiIconsCart />
-            </NavigationSideMenu>
-          </nuxt-link>
-
-          <nuxt-link :to="{name: 'username-selling-earnings'}">
-            <NavigationSideMenu menu_text="Earnings" :is_active="earningsActive" :isSeller="isSeller">
-              <UiIconsTransactions />
-            </NavigationSideMenu>
-          </nuxt-link>
+          <!-- Navigation menu items -->
+          <template v-for="(item, index) in navigationItems" :key="index">
+            <nuxt-link
+              v-if="item.showWhen ? item.showWhen() : true"
+              :to="item.to"
+            >
+              <NavigationSideMenu
+                :menu_text="item.text"
+                :is_active="isRouteActive(item.route)"
+                :isSeller="item.requiresSeller ? isSeller : true"
+              >
+                <component :is="iconComponents[item.icon]" />
+              </NavigationSideMenu>
+            </nuxt-link>
+          </template>
         </div>
       </div>
 
+      <!-- Bottom section with user profile and actions -->
       <div class="p-4 bg-accent-600 rounded-t-3xl">
+        <!-- User profile section -->
         <div class="flex items-center gap-5">
           <div class="relative flex w-fit">
-            <UserProfilePicture :username="username" :large_dimensions="true"/>
-            <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="true" :is_displayed="true"/>
+            <UserProfilePicture :username="username" :large_dimensions="true" />
+            <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="true" :is_displayed="true" />
           </div>
 
           <div>
             <UiTypographyP class="text-white">{{ username }}</UiTypographyP>
             <p class="text-green-500 text-sm">$0.00</p>
           </div>
-          
         </div>
 
+        <!-- Switch mode button -->
         <div>
-          <UiButtonsPrimary @clicked="$router.push({name: 'username-buying-dashboard'})" class="mt-4 bg-primary" :standout="true" :flexdisplay="true">Switch to Buying</UiButtonsPrimary>
+          <UiButtonsPrimary
+            @clicked="switchToBuying"
+            class="mt-4 bg-primary"
+            :standout="true"
+            :flexdisplay="true"
+          >
+            Switch to Buying
+          </UiButtonsPrimary>
         </div>
 
+        <!-- Profile and settings shortcuts -->
         <div class="mt-2 flex gap-2 w-full">
-          <nuxt-link to="/username/profile" class="block rounded-md p-2 text-white hover:text-primary duration-500 ease-in-out group bg-secondary hover:bg-accent-500 w-1/2">
+          <nuxt-link
+            :to="{ name: 'username-profile', params: { username } }"
+            class="block rounded-md p-2 text-white hover:text-primary duration-500 ease-in-out group bg-secondary hover:bg-accent-500 w-1/2"
+          >
             <UiIconsProfile class="w-5 h-5 mx-auto" />
             <p class="text-white group-hover:text-primary duration-500 ease-in-out text-sm text-center mt-1">Profile</p>
           </nuxt-link>
-          <nuxt-link to="/username/settings" class="block rounded-md p-2 text-white hover:text-primary duration-500 ease-in-out group bg-secondary hover:bg-accent-500 w-1/2">
+          <nuxt-link
+            :to="{ name: 'username-settings', params: { username } }"
+            class="block rounded-md p-2 text-white hover:text-primary duration-500 ease-in-out group bg-secondary hover:bg-accent-500 w-1/2"
+          >
             <UiIconsSettings class="w-5 h-5 mx-auto" />
             <p class="text-white group-hover:text-primary duration-500 ease-in-out text-sm text-center mt-1">Settings</p>
           </nuxt-link>
         </div>
 
-        <button to="/sellers/settings" class="rounded-md p-3 text-white hover:text-primary duration-500 ease-in-out group bg-secondary hover:bg-accent-500 flex items-center gap-3 justify-center w-full mt-2">
+        <!-- Logout button -->
+        <button
+          @click="logout"
+          class="rounded-md p-3 text-white hover:text-primary duration-500 ease-in-out group bg-secondary hover:bg-accent-500 flex items-center gap-3 justify-center w-full mt-2"
+        >
           <UiIconsSettings class="w-5 h-5 max-w-fit" />
           <span class="text-white group-hover:text-primary duration-500 ease-in-out text-sm">Log out</span>
         </button>
@@ -77,64 +84,130 @@
   </transition>
 </template>
 
-<script>
-export default {
-  props: {
-    username:String,
-    isSeller: {
-      type: Boolean,
-      default: false
-    },
+<script setup>
+import { onMounted, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+
+// Import icon components
+import UiIconsProfile from '~/components/Ui/Icons/Profile.vue';
+import UiIconsOverview from '~/components/Ui/Icons/Overview.vue';
+import UiIconsGigs from '~/components/Ui/Icons/Gigs.vue';
+import UiIconsCart from '~/components/Ui/Icons/Cart.vue';
+import UiIconsTransactions from '~/components/Ui/Icons/Transactions.vue';
+
+// Map icon names to their component references
+const iconComponents = {
+  'UiIconsProfile': UiIconsProfile,
+  'UiIconsOverview': UiIconsOverview,
+  'UiIconsGigs': UiIconsGigs,
+  'UiIconsCart': UiIconsCart,
+  'UiIconsTransactions': UiIconsTransactions
+};
+
+// Props with validation
+const props = defineProps({
+  username: {
+    type: String,
+    required: true
   },
+  isSeller: {
+    type: Boolean,
+    default: false
+  }
+});
 
-  data() {
-    return {
-      onboardingActive: false,
-      dashboardActive: false,
-      gigsActive: false,
-      OrdersActive: false,
-      earningsActive: false,
-      productsActive: false
-    };
+// Router and route
+const router = useRouter();
+const route = useRoute();
+
+// Navigation items configuration
+const navigationItems = [
+  {
+    text: 'Onboarding',
+    route: 'onboarding',
+    to: { name: 'username-selling-onboarding', params: { username: props.username } },
+    icon: 'UiIconsProfile',
+    requiresSeller: false,
+    showWhen: () => !props.isSeller
   },
-
-  methods: {
-    checkOnboarding(){
-      if (this.isSeller === false) {
-        this.$router.push({name: 'username-selling-onboarding'})
-      }
-    },
-
-    routeCheck(){
-
-      if (this.$route.name.includes('onboarding')) {
-        this.onboardingActive = true
-      }
-      if (this.$route.name.includes('dashboard')) {
-        this.dashboardActive = true
-        this.checkOnboarding()
-      }
-      if (window.location.pathname.includes('products')) {
-        this.productsActive = true
-        this.checkOnboarding()
-      }
-      if (window.location.pathname.includes('orders')) {
-        this.OrdersActive = true
-        this.checkOnboarding()
-      }
-      if (window.location.pathname.includes('earnings')) {
-        this.earningsActive = true
-        this.checkOnboarding()
-      }
-    },
+  {
+    text: 'Dashboard',
+    route: 'dashboard',
+    to: { name: 'username-selling-dashboard', params: { username: props.username } },
+    icon: 'UiIconsOverview',
+    requiresSeller: true
   },
-
-  mounted() {
-    // this.getUser()
-    this.routeCheck()
+  {
+    text: 'Products',
+    route: 'products',
+    to: { name: 'username-selling-products', params: { username: props.username } },
+    icon: 'UiIconsGigs',
+    requiresSeller: true
   },
-}
+  {
+    text: 'Orders',
+    route: 'orders',
+    to: { name: 'username-selling-orders', params: { username: props.username } },
+    icon: 'UiIconsCart',
+    requiresSeller: true
+  },
+  {
+    text: 'Earnings',
+    route: 'earnings',
+    to: { name: 'username-selling-earnings', params: { username: props.username } },
+    icon: 'UiIconsTransactions',
+    requiresSeller: true
+  }
+];
+
+// Check if a route is active based on the current route
+const isRouteActive = (routeSegment) => {
+  // Check both route name and path to handle different routing scenarios
+  return (
+    (route.name && route.name.includes(routeSegment)) ||
+    (route.path && route.path.includes(routeSegment))
+  );
+};
+
+// Check if user needs to be redirected to onboarding
+const checkOnboardingRedirect = () => {
+  // Only redirect if user is not a seller and trying to access seller features
+  if (!props.isSeller &&
+      route.name &&
+      route.name.includes('selling') &&
+      !route.name.includes('onboarding')) {
+    router.push({
+      name: 'username-selling-onboarding',
+      params: { username: props.username }
+    });
+  }
+};
+
+// Navigation methods
+const switchToBuying = () => {
+  router.push({
+    name: 'username-buying-dashboard',
+    params: { username: props.username }
+  });
+};
+
+const logout = () => {
+  // Implement logout functionality
+  console.log('Logging out...');
+  // Call your auth store logout method here
+  // router.push('/auth/login');
+};
+
+// Watch for route changes to update active states
+watch(
+  () => route.path,
+  () => {
+    checkOnboardingRedirect();
+  }
+);
+
+// Initialize on component mount
+onMounted(() => {
+  checkOnboardingRedirect();
+});
 </script>
-
-<style>
-</style>
