@@ -1,6 +1,7 @@
 // middleware/auth.ts
 import { defineNuxtRouteMiddleware, navigateTo } from '#app';
 import { useAuthStore } from '~/stores/auth';
+import { useToast } from 'primevue/usetoast';
 
 export default defineNuxtRouteMiddleware((to) => {
   // Skip middleware on server side
@@ -21,6 +22,15 @@ export default defineNuxtRouteMiddleware((to) => {
   // Check if route requires verification
   const requiresVerification = to.meta.requiresVerification === true
 
+  // Check if route requires specific roles
+  const requiredRoles = to.meta.requiredRoles as string[] || []
+
+  // Check if route requires seller role
+  const requiresSeller = to.meta.requiresSeller === true || requiredRoles.includes('seller')
+
+  // Check if route requires customer role
+  const requiresCustomer = to.meta.requiresCustomer === true || requiredRoles.includes('customer')
+
   // Handle redirect logic
 
   // If the route requires authentication and the user is not authenticated
@@ -34,6 +44,66 @@ export default defineNuxtRouteMiddleware((to) => {
   // If the route requires verification and the user needs verification
   if (requiresVerification && authStore.needsVerification) {
     return navigateTo('/auth/verify')
+  }
+
+  // If the user is authenticated, check for required roles
+  if (authStore.isAuthenticated && (requiresSeller || requiresCustomer || requiredRoles.length > 0)) {
+    // If roles haven't been loaded yet, fetch them
+    if (authStore.roles.length === 0) {
+      // We need to fetch roles first, but middleware doesn't support async
+      // So we'll redirect to a loading page that will fetch roles and then redirect back
+      // For now, we'll just check if the user has the required roles based on what's in localStorage
+
+      // Fetch roles in the background
+      authStore.fetchRoles().catch(error => {
+        console.error('Failed to fetch roles in middleware:', error)
+      })
+    }
+
+    // Check if user has required roles
+    const hasRequiredRoles = requiredRoles.length === 0 ||
+      requiredRoles.some(role => authStore.hasRole(role))
+
+    // Check for specific role requirements
+    const hasSeller = !requiresSeller || authStore.isSeller
+    const hasCustomer = !requiresCustomer || authStore.isCustomer
+
+    // If user doesn't have required roles, redirect to appropriate page
+    if (!(hasRequiredRoles && hasSeller && hasCustomer)) {
+      // Only show toast on client side
+      if (import.meta.client) {
+        try {
+          const toast = useToast()
+          toast.add({
+            severity: 'error',
+            summary: 'Access Denied',
+            detail: 'You do not have the required permissions to access this page',
+            life: 5000
+          })
+        } catch (error) {
+          console.error('Failed to show toast:', error)
+        }
+      }
+
+      // Redirect to home or dashboard based on available roles
+      if (authStore.user && authStore.user.username) {
+        if (authStore.isSeller) {
+          return navigateTo({
+            name: 'username-selling-dashboard',
+            params: { username: authStore.user.username }
+          })
+        } else if (authStore.isCustomer) {
+          return navigateTo({
+            name: 'username-buying-dashboard',
+            params: { username: authStore.user.username }
+          })
+        } else {
+          return navigateTo('/')
+        }
+      } else {
+        return navigateTo('/')
+      }
+    }
   }
 
   // If the route is a verification route and the user is already verified
