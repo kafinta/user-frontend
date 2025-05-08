@@ -1,53 +1,99 @@
 <template>
   <div class="flex w-full select-none">
-    <NavigationSideBarBuying :username="username" :class="menu_revealed ? 'translate-x-0' : '-translate-x-full'" class="md:translate-x-0 duration-150 ease-in-out" />
-    <div class="w-4/5 md:w-1/4 lg:w-1/5 xl:w-1/6 hidden md:block"></div>
-    <SharedBackdrop :show="menu_revealed" @close="toggleMenu()" />
+    <!-- Sidebar navigation - visible on all screens (md+) or when toggled (mobile) -->
+    <NavigationSideBarBuying
+      :username="username"
+      :class="[
+        'duration-150 ease-in-out md:translate-x-0',
+        menuRevealed ? 'translate-x-0' : '-translate-x-full'
+      ]"
+    />
 
-    <nav class="flex mx-auto items-center max-h-fit justify-between px-6 py-4 bg-white w-full z-10 fixed md:hidden">
+    <!-- Spacer div to maintain layout when sidebar is visible -->
+    <div class="w-4/5 md:w-1/4 lg:w-1/5 xl:w-1/6 hidden md:block"></div>
+
+    <!-- Backdrop overlay when mobile menu is open -->
+    <SharedBackdrop :show="menuRevealed" @close="toggleMenu" />
+
+    <!-- Mobile navigation header -->
+    <nav class="flex mx-auto items-center justify-between px-6 py-4 bg-white w-full z-10 fixed md:hidden">
       <div class="w-36">
-        <NavigationLogo @logoClicked="$router.push({name: '/'})"></NavigationLogo>
+        <NavigationLogo @logoClicked="navigateToHome"></NavigationLogo>
       </div>
 
-      <div class="flex md:hidden" @click="toggleMenu">
+      <!-- Mobile menu toggle button -->
+      <button
+        class="flex md:hidden"
+        @click="toggleMenu"
+        aria-label="Toggle menu"
+      >
         <div class="w-8">
-          <div :class="(mobile_nav ? 'transition transform rotate-45 items-center w-8' : 'transition w-8') + ' ' + (BlockBackground ? 'bg-primary' : 'bg-primary')" class="block cursor-pointer" style="height: 3px;"></div>
-          <div :class="(mobile_nav ? 'transition transform -rotate-45 item-center w-8 -mt-0.5' : 'transition w-8 mt-1.5') + ' ' + (BlockBackground ? 'bg-primary' : 'bg-primary')"  class="block cursor-pointer" style="height: 3px;"></div>
+          <div
+            class="block cursor-pointer bg-primary"
+            :class="[
+              mobileNavOpen ? 'transition transform rotate-45 items-center w-8' : 'transition w-8',
+            ]"
+            style="height: 3px;"
+          ></div>
+          <div
+            class="block cursor-pointer bg-primary"
+            :class="[
+              mobileNavOpen ? 'transition transform -rotate-45 item-center w-8 -mt-0.5' : 'transition w-8 mt-1.5',
+            ]"
+            style="height: 3px;"
+          ></div>
         </div>
-      </div>    
+      </button>
     </nav>
 
+    <!-- Main content area -->
     <div class="w-full md:w-3/4 lg:w-4/5 xl:w-5/6 mt-12 md:mt-0 left-0">
-      <UiTypographyH3 v-show="page_title" class="py-3 px-6 md:px-8 lg:px-10 border-b border-accent-200">{{ page_title }}</UiTypographyH3>
-      <div class="py-6 px-6 md:px-8 lg:px-10 mx-auto min-h-screen">
-        <slot />
-      </div>
-    </div>
+      <!-- Page title header -->
+      <UiTypographyH3
+        v-if="pageTitle"
+        class="py-3 px-6 md:px-8 lg:px-10 border-b border-accent-200"
+      >
+        {{ pageTitle }}
+      </UiTypographyH3>
 
+      <!-- Main content -->
+      <main class="px-6 md:px-8 lg:px-10 py-6 mx-auto min-h-screen">
+        <slot />
+      </main>
+    </div>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      online_presence: true,
-      menu_revealed: false,
-      mobile_nav: false,
-      username: this.$route.params.username
-    }
-  },
+<script setup>
+import { ref, computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
-  props: { 
-    BlockBackground: Boolean,
-    page_title: String,
-  },
+// Props with validation
+const props = defineProps({
+  pageTitle: {
+    type: String,
+    default: ''
+  }
+});
 
-  methods: {
-    toggleMenu(){
-      this.mobile_nav = !this.mobile_nav
-      this.menu_revealed = !this.menu_revealed
-    },
-  },
+// Route and router for navigation
+const route = useRoute();
+const router = useRouter();
+
+// Reactive state
+const menuRevealed = ref(false);
+const mobileNavOpen = ref(false);
+
+// Computed properties
+const username = computed(() => route.params.username || 'username');
+
+// Methods
+function toggleMenu() {
+  menuRevealed.value = !menuRevealed.value;
+  mobileNavOpen.value = !mobileNavOpen.value;
+}
+
+function navigateToHome() {
+  router.push({ name: '/' });
 }
 </script>
