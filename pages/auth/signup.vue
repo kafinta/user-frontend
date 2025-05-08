@@ -1,7 +1,7 @@
 <template>
   <div class="flex justify-center items-center h-screen">
     <main class="w-full max-w-md mx-auto rounded-xl p-5 border-accent-200 border space-y-8">
-      <NavigationLogo @click="returnHome()" class="w-48 mx-auto" />
+      <NavigationLogo @click="router.push('/');" class="w-48 mx-auto" />
 
       <div>
         <UiTypographyH2 class="font-medium text-3xl  text-secondary text-center">Create account.</UiTypographyH2>
@@ -33,7 +33,7 @@
 definePageMeta({
   middleware: ['auth'],
   authOnly: true
-})
+});
 import { useRouter } from 'vue-router';
 import { ref } from "vue";
 import { storeToRefs } from 'pinia';
@@ -49,10 +49,6 @@ const email = ref('');
 const username = ref('');
 const password = ref('');
 
-function returnHome() {
-  router.push('/');
-}
-
 async function handleSignup() {
   try {
     authStore.clearMessages();
@@ -65,15 +61,15 @@ async function handleSignup() {
       toast.add({
         severity: 'success',
         summary: 'Success',
-        detail: message.value, // Fixed: Need to use .value for refs
+        detail: message.value,
         life: 3000,
       });
       router.push({name: 'auth-verify'});
-    } else if (status.value === 'error') { // Fixed: Using status.value
+    } else if (status.value === 'error') {
       toast.add({
         severity: 'error',
         summary: 'Error',
-        detail: message.value, // Fixed: Need to use .value for refs
+        detail: message.value,
         life: 3000,
       });
     }
