@@ -3,7 +3,7 @@
     <div class="max-w-7xl 2xl:max-w-8xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-5 py-4">
       <div class="w-36">
         <NavigationLogo @logoClicked="$router.push({path: '/'})" />
-      </div> 
+      </div>
 
       <form @submit.prevent="pushSearch" class="w-1/2 md:flex relative hidden">
         <input @focus="focus()" @input="$emit('input', $event.target.value)" v-model="search_input" class="w-full flex justify-center py-3 px-4 border text-sm outline-none border-secondary ring-0 focus:outline-none focus:border-primary active:border-primary rounded-md active:text-primary focus:text-primary text-secondary border-opacity-20 active:border-opacity-100 focus:border-opacity-100 duration-300 ease-out bg-white" autocomplete="off" ref="input" type="text" placeholder="What are you looking for?" />
@@ -59,63 +59,95 @@
           <UiIconsSearch :class="keep_button_hovered ? 'text-primary' : 'text-secondary'" class=" group-hover:text-primary w-5 h-5 duration-500 ease-in-out"></UiIconsSearch>
           <span :class="keep_button_hovered ? 'text-primary border-primary' : ''">Search</span>
         </UiButtonsSecondary>
-        
+
         <NavigationMenu class="flex justify-end" @revealMenu="toggleMenu()" />
       </div>
-      <NavigationNavBarUserMobile :menu_revealed="toggle_menu" :isSeller="isSeller" :signedIn="signedIn"></NavigationNavBarUserMobile> 
+      <NavigationNavBarUserMobile :menu_revealed="toggle_menu" :isSeller="isSeller" :signedIn="signedIn"></NavigationNavBarUserMobile>
     </div>
 
   </nav>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      toggle_menu: false,
-      user_options: false,
-      search_input: ''
-    };
+<script setup>
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '~/stores/auth'
+
+// Props with defaults
+const props = defineProps({
+  is_online: Boolean,
+  signedIn: {
+    type: Boolean,
+    default: false
   },
-  props: {
-    is_online: Boolean,
-    signedIn: {
-      type: Boolean,
-      default: false
-    },
-    isSeller: {
-      type: Boolean,
-      default: false
-    },
-    username: {
-      default: 'testing',
-      type: String
-    },
-    profileImagePath: String,
-    keep_button_hovered: Boolean
+  isSeller: {
+    type: Boolean,
+    default: false
   },
-  methods: {
-    toggleMenu() {
-      this.toggle_menu = !this.toggle_menu;
-    },
-    focus() {
-      this.$refs.input.focus();
-    },
-    pushSearch() {
-      this.$router.push({ name: 'marketplace-products', query: { query: this.search_input } });
-      this.$location.reload();
-    },
-    toggleOptions() {
-      this.user_options = !this.user_options;
-    },
-    toggleCart() {
-      this.openCart = !this.openCart;
-    },
-    toggleSearchBox(){
-      this.$emit("toggleSearchBox")
-    },
+  username: {
+    default: 'testing',
+    type: String
   },
-  mounted() {
-  },
+  profileImagePath: String,
+  keep_button_hovered: Boolean
+})
+
+// Emits
+const emit = defineEmits(['cartClicked', 'toggleSearchBox', 'input'])
+
+// Router
+const router = useRouter()
+
+// Auth store
+const authStore = useAuthStore()
+
+// Refs
+const input = ref(null)
+const userOptions = ref(null)
+
+// Reactive state
+const toggle_menu = ref(false)
+const user_options = ref(false)
+const search_input = ref('')
+
+// Computed properties
+const isAuthenticated = computed(() => authStore.isAuthenticated)
+const currentUsername = computed(() => authStore.user?.username || props.username)
+const userIsSeller = computed(() => authStore.isSeller)
+
+// Methods
+function toggleMenu() {
+  toggle_menu.value = !toggle_menu.value
+}
+
+function focus() {
+  input.value?.focus()
+}
+
+function pushSearch() {
+  router.push({ name: 'marketplace-products', query: { query: search_input.value } })
+  window.location.reload()
+}
+
+function toggleOptions() {
+  user_options.value = !user_options.value
+}
+
+function toggleSearchBox() {
+  emit('toggleSearchBox')
+}
+
+function logout() {
+  authStore.logout().then(() => {
+    router.push('/auth/login')
+    user_options.value = false
+  })
+}
+
+// Click outside to close user options
+if (import.meta.client) {
+  onClickOutside(userOptions, () => {
+    user_options.value = false
+  })
 }
 </script>
