@@ -2,7 +2,7 @@
   <div class="flex justify-center items-center h-screen">
 
     <main class="w-full max-w-md mx-auto rounded-xl p-5 border-accent-200 border space-y-8">
-      <NavigationLogo @click="returnHome()" class="w-48 mx-auto" />
+      <NavigationLogo @click="router.push('/');" class="w-48 mx-auto" />
       <div>
         <UiTypographyH2 class="font-medium text-3xl  text-secondary text-center">Welcome back.</UiTypographyH2>
         <UiTypographyP class="text-sm text-secondary text-center">Enter your details to resume your session.</UiTypographyP>
@@ -57,15 +57,15 @@ async function handleSignin() {
       toast.add({
         severity: 'success',
         summary: 'Success',
-        detail: message.value, // Fixed: Need to use .value for refs
+        detail: message.value,
         life: 3000,
       });
       router.push({name: 'auth-verify'});
-    } else if (status.value === 'error') { // Fixed: Using status.value
+    } else if (status.value === 'error') {
       toast.add({
         severity: 'error',
         summary: 'Error',
-        detail: message.value, // Fixed: Need to use .value for refs
+        detail: message.value,
         life: 3000,
       });
     }
@@ -79,8 +79,3 @@ async function handleSignin() {
   }
 }
 </script>
-<style>
-.background {
-  background: url('/images/login.jpg');
-}
-</style>
