@@ -1,7 +1,7 @@
 <template>
   <div class="flex justify-center items-center h-screen">
     <div class="w-full max-w-md mx-auto rounded-xl p-5 border-accent-200 border space-y-8">
-      <NavigationLogo @click="returnHome()" class="w-48 mx-auto" />
+      <NavigationLogo @click="router.push('/');" class="w-48 mx-auto" />
 
       <div>
         <UiTypographyH2 class="font-medium text-3xl  text-secondary text-center">Verify your email.</UiTypographyH2>
