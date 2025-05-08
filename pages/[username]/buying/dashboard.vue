@@ -37,15 +37,14 @@
   </LayoutsBuyerDashboard>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-    }
-  },
-}
+<script setup>
+definePageMeta({
+  middleware: ['auth'],
+  requiresAuth: true,
+  requiresVerification: true
+});
 </script>
 
 <style>
 
-</style> 
+</style>
