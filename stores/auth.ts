@@ -17,7 +17,7 @@ interface ApiResponse {
   status_code: number
   message: string
   data?: {
-    account?: User
+    user?: User
     auth_token?: string
     token_type?: string
   }
@@ -99,8 +99,8 @@ export const useAuthStore = defineStore('auth', () => {
         setToken(response.data.auth_token)
       }
       
-      if (response?.data?.account) {
-        setUser(response.data.account)
+      if (response?.data?.user) {
+        setUser(response.data.user)
       }
       
       return {
@@ -142,8 +142,8 @@ export const useAuthStore = defineStore('auth', () => {
         setToken(response.data.auth_token)
       }
       
-      if (response?.data?.account) {
-        setUser(response.data.account)
+      if (response?.data?.user) {
+        setUser(response.data.user)
       }
       
       return {
