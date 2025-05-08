@@ -16,26 +16,71 @@
   </div>
 </template>
 <script setup>
-// definePageMeta({
-//   middleware: ['auth'],
-//   authOnly: true
-// })
+definePageMeta({
+  middleware: ['auth'],
+  isVerifyRoute: true
+})
 
 import { useRouter } from 'vue-router';
 import { ref } from "vue";
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/stores/auth';
+import { useToast } from "primevue/usetoast";
 
 const router = useRouter();
 const authStore = useAuthStore();
-const { user } = storeToRefs(authStore);
+const { user, message, status } = storeToRefs(authStore);
+const toast = useToast();
 
 const loadingState = ref(false);
-const code = ref();
+const code = ref('');
 
 const handleVerification = async () => {
+  if (!code.value || code.value.length !== 6) {
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Please enter a valid 6-digit verification code',
+      life: 3000
+    });
+    return;
+  }
+
   loadingState.value = true;
-  router.push({name: 'username-buying-dashboard', params: {username: user.value.username}});
-  loadingState.value = false;
+
+  try {
+    await authStore.verifyEmail(code.value);
+
+    if (status.value === 'success') {
+      toast.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: message.value || 'Email verified successfully',
+        life: 3000
+      });
+
+      // Redirect to dashboard
+      router.push({
+        name: 'username-buying-dashboard',
+        params: {username: user.value.username}
+      });
+    } else {
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: message.value || 'Verification failed',
+        life: 3000
+      });
+    }
+  } catch (error) {
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'An unexpected error occurred',
+      life: 3000
+    });
+  } finally {
+    loadingState.value = false;
+  }
 }
 </script>
