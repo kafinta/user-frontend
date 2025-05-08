@@ -3,13 +3,17 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useCustomFetch } from '~/composables/useCustomFetch'
 
+interface Role {
+  id: number
+  name: string
+  slug: string
+}
+
 interface User {
   id?: number | string
   email?: string
   name?: string
   username?: string
-  created_at?: string
-  updated_at?: string
 }
 
 interface ApiResponse {
@@ -20,6 +24,16 @@ interface ApiResponse {
     user?: User
     auth_token?: string
     token_type?: string
+    roles?: Role[]
+  }
+}
+
+interface RolesApiResponse {
+  status: string
+  status_code: number
+  message: string
+  data: {
+    roles: Role[]
   }
 }
 
@@ -27,6 +41,7 @@ export const useAuthStore = defineStore('auth', () => {
   // State
   const token = ref<string | null>(null)
   const user = ref<User | null>(null)
+  const roles = ref<Role[]>([])
   const isLoading = ref(false)
   const message = ref<string | null>(null)
   const status = ref<string | null>(null)
@@ -35,6 +50,9 @@ export const useAuthStore = defineStore('auth', () => {
   // Getters
   const isAuthenticated = computed(() => !!token.value)
   const needsVerification = computed(() => isAuthenticated.value && !isVerified.value)
+  const hasRole = computed(() => (roleSlug: string) => roles.value.some(role => role.slug === roleSlug))
+  const isSeller = computed(() => hasRole.value('seller'))
+  const isCustomer = computed(() => hasRole.value('customer'))
 
   // Actions
   function initialize() {
@@ -44,6 +62,7 @@ export const useAuthStore = defineStore('auth', () => {
         const storedToken = localStorage.getItem('auth_token')
         const userData = localStorage.getItem('auth_user')
         const verificationStatus = localStorage.getItem('auth_verified')
+        const storedRoles = localStorage.getItem('auth_roles')
 
         if (storedToken) {
           token.value = storedToken
@@ -55,6 +74,15 @@ export const useAuthStore = defineStore('auth', () => {
 
         if (verificationStatus === 'true') {
           isVerified.value = true
+        }
+
+        if (storedRoles) {
+          roles.value = JSON.parse(storedRoles)
+        } else if (isAuthenticated.value) {
+          // If authenticated but no roles stored, fetch them
+          fetchRoles().catch(error => {
+            console.error('Failed to fetch roles during initialization:', error)
+          })
         }
       } catch (error) {
         console.error('Failed to initialize auth from localStorage:', error)
@@ -98,6 +126,65 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  function setRoles(newRoles: Role[]) {
+    roles.value = newRoles
+
+    if (import.meta.client) {
+      if (newRoles && newRoles.length > 0) {
+        localStorage.setItem('auth_roles', JSON.stringify(newRoles))
+      } else {
+        localStorage.removeItem('auth_roles')
+      }
+    }
+  }
+
+  async function fetchRoles() {
+    if (!isAuthenticated.value) {
+      return {
+        status: 'error',
+        message: 'User is not authenticated'
+      }
+    }
+
+    isLoading.value = true
+    message.value = null
+    status.value = null
+
+    try {
+      const response = await useCustomFetch<RolesApiResponse>('/api/user/profile/roles', {
+        method: 'GET',
+        requireAuth: true
+      })
+
+      // Set status and message from response
+      status.value = response.status
+      message.value = response.message || 'User roles retrieved successfully'
+
+      // Handle roles data
+      if (response?.data?.roles) {
+        setRoles(response.data.roles)
+      }
+
+      return {
+        status: response.status,
+        message: response.message || 'User roles retrieved successfully',
+        data: response.data
+      }
+    } catch (error: any) {
+      console.error('Failed to fetch user roles:', error)
+      status.value = 'error'
+      message.value = error.message || 'Failed to fetch user roles. Please try again.'
+
+      return {
+        status: 'error',
+        message: error.message || 'Failed to fetch user roles. Please try again.',
+        error
+      }
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   async function login(credentials: { email: string, password: string }) {
     isLoading.value = true
     message.value = null
@@ -124,6 +211,11 @@ export const useAuthStore = defineStore('auth', () => {
 
       // Assume users who can login are already verified
       setVerified(true)
+
+      // Fetch user roles after successful login
+      await fetchRoles().catch(error => {
+        console.error('Failed to fetch roles after login:', error)
+      })
 
       return {
         status: response.status,
@@ -208,6 +300,7 @@ export const useAuthStore = defineStore('auth', () => {
       setToken(null)
       setUser(null)
       setVerified(false)
+      setRoles([])
 
       // Set success status and message
       status.value = 'success'
@@ -222,6 +315,7 @@ export const useAuthStore = defineStore('auth', () => {
       setToken(null)
       setUser(null)
       setVerified(false)
+      setRoles([])
 
       status.value = 'success'
       message.value = 'Successfully logged out'
@@ -286,6 +380,7 @@ export const useAuthStore = defineStore('auth', () => {
     // State
     token,
     user,
+    roles,
     isLoading,
     message,
     status,
@@ -293,12 +388,17 @@ export const useAuthStore = defineStore('auth', () => {
     // Getters
     isAuthenticated,
     needsVerification,
+    hasRole,
+    isSeller,
+    isCustomer,
 
     // Actions
     initialize,
     setToken,
     setUser,
     setVerified,
+    setRoles,
+    fetchRoles,
     login,
     signup,
     logout,
