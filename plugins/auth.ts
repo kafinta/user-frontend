@@ -1,28 +1,27 @@
 // plugins/auth.ts
 import { useAuthStore } from '~/stores/auth'
-import { useToast } from 'primevue/usetoast'
+import { useAppToast } from '~/utils/toast'
 
-export default defineNuxtPlugin(() => {
+export default defineNuxtPlugin((_nuxtApp) => {
   const authStore = useAuthStore()
 
   // Initialize auth state
   authStore.initialize()
 
-  // Centralized toast notification functions
+  // Log plugin initialization for debugging
+  console.log('Auth plugin initialized')
+
+  // Centralized toast notification functions using our standardized utility
   const notifications = {
     // Show success notification
     showSuccess: (summary: string, message: string, duration = 3000) => {
       if (import.meta.client) {
         try {
-          const toast = useToast()
-          toast.add({
-            severity: 'success',
-            summary,
-            detail: message,
-            life: duration
-          })
+          const appToast = useAppToast();
+          appToast.success(summary, message, duration);
+          console.log('Success toast notification shown:', summary, message);
         } catch (error) {
-          console.error('Failed to show toast notification:', error)
+          console.error('Failed to show success toast notification:', error);
         }
       }
     },
@@ -31,37 +30,77 @@ export default defineNuxtPlugin(() => {
     showError: (summary: string, message: string, duration = 3000) => {
       if (import.meta.client) {
         try {
-          const toast = useToast()
-          toast.add({
-            severity: 'error',
-            summary,
-            detail: message,
-            life: duration
-          })
+          const appToast = useAppToast();
+          appToast.error(summary, message, duration);
+          console.log('Error toast notification shown:', summary, message);
         } catch (error) {
-          console.error('Failed to show toast notification:', error)
+          console.error('Failed to show error toast notification:', error);
         }
       }
     },
 
     // Authentication specific notifications
     showAuthError: (message: string) => {
-      notifications.showError('Authentication Error', message || 'Authentication error')
+      if (import.meta.client) {
+        try {
+          const appToast = useAppToast();
+          appToast.authError(message || 'Authentication error');
+          console.log('Auth error notification triggered:', message);
+        } catch (error) {
+          console.error('Failed to show auth error notification:', error);
+        }
+      }
     },
 
     // Role specific notifications
     showRoleError: (message: string) => {
-      notifications.showError('Access Denied', message || 'You do not have the required permissions')
+      if (import.meta.client) {
+        try {
+          console.log('Auth plugin: Attempting to show role error notification');
+          const appToast = useAppToast();
+
+          if (!appToast) {
+            console.error('Auth plugin: appToast is not available');
+            return;
+          }
+
+          // Use setTimeout to ensure the toast is shown after component mounting
+          setTimeout(() => {
+            appToast.accessDenied(message || 'You do not have the required permissions');
+            console.log('Auth plugin: Role error notification triggered:', message);
+          }, 100);
+        } catch (error) {
+          console.error('Auth plugin: Failed to show role error notification:', error);
+        }
+      } else {
+        console.log('Auth plugin: Not showing role error notification on server side');
+      }
     },
 
     // Session expiration notification
     showSessionExpired: () => {
-      notifications.showError('Unauthorized', 'Your session has expired. Please login again.')
+      if (import.meta.client) {
+        try {
+          const appToast = useAppToast();
+          appToast.sessionExpired();
+          console.log('Session expired notification triggered');
+        } catch (error) {
+          console.error('Failed to show session expired notification:', error);
+        }
+      }
     },
 
     // Forbidden action notification
     showForbidden: () => {
-      notifications.showError('Access Denied', 'You do not have permission to perform this action.')
+      if (import.meta.client) {
+        try {
+          const appToast = useAppToast();
+          appToast.error('Access Denied', 'You do not have permission to perform this action.');
+          console.log('Forbidden action notification triggered');
+        } catch (error) {
+          console.error('Failed to show forbidden action notification:', error);
+        }
+      }
     }
   }
 
