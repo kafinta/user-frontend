@@ -1,9 +1,9 @@
 <template>
-  <LayoutsBuyerDashboard page_title="Cart">
+  <LayoutsDashboard mode="buyer" page_title="Cart">
     <ul class="grid gap-8 lg:grid-cols-2 2xl:grid-cols-3">
       <li v-for="item in 10" class="bg-accent-100 rounded-md h-72"></li>
     </ul>
-  </LayoutsBuyerDashboard>
+  </LayoutsDashboard>
 </template>
 
 <script>
@@ -48,4 +48,4 @@ export default {
 
 <style>
 
-</style> 
+</style>
