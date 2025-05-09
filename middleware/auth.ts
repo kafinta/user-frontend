@@ -51,8 +51,8 @@ export default defineNuxtRouteMiddleware((to) => {
     // If roles haven't been loaded yet, fetch them
     if (authStore.roles.length === 0) {
       // We need to fetch roles first, but middleware doesn't support async
-      // So we'll redirect to a loading page that will fetch roles and then redirect back
-      // For now, we'll just check if the user has the required roles based on what's in localStorage
+      // So we'll check if the user has the required roles based on what's in localStorage
+      // and fetch roles in the background for future requests
 
       // Fetch roles in the background
       authStore.fetchRoles().catch(error => {
@@ -70,20 +70,9 @@ export default defineNuxtRouteMiddleware((to) => {
 
     // If user doesn't have required roles, redirect to appropriate page
     if (!(hasRequiredRoles && hasSeller && hasCustomer)) {
-      // Only show toast on client side
-      if (import.meta.client) {
-        try {
-          const toast = useToast()
-          toast.add({
-            severity: 'error',
-            summary: 'Access Denied',
-            detail: 'You do not have the required permissions to access this page',
-            life: 5000
-          })
-        } catch (error) {
-          console.error('Failed to show toast:', error)
-        }
-      }
+      // Use the centralized notification system from the auth plugin
+      const { $auth } = useNuxtApp()
+      $auth.notifications.showRoleError('You do not have the required permissions to access this page')
 
       // Redirect to home or dashboard based on available roles
       if (authStore.user && authStore.user.username) {
