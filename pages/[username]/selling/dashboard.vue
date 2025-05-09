@@ -1,5 +1,5 @@
 <template>
-  <LayoutsSellerDashboard page_title="Seller Dashboard">
+  <LayoutsDashboard mode="seller" page_title="Seller Dashboard">
     <div class="border border-accent-200 rounded-md divide-y divide-x lg:divide-y-0 divide-accent-100 grid grid-cols-2 lg:grid-cols-4">
       <div class="p-5 flex gap-5 items-center">
         <img src="/images/insights/completed.svg" class="w-8 h-8" alt="">
@@ -49,12 +49,12 @@
             See All
         <UiIconsAccordion class="transform rotate-90 w-4 h-4" />
         </UiButtonsSecondary>
-      </div>      
+      </div>
       <ul class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-4">
         <ProductsCard @clicked="$router.push({name: 'username-selliing-products'})" v-for="item in 3" />
       </ul>
     </div>
-  </LayoutsSellerDashboard>
+  </LayoutsDashboard>
 
 </template>
 

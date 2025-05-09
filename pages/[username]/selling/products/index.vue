@@ -1,5 +1,5 @@
 <template>
-  <LayoutsSellerDashboard page_title="Products Overview">
+  <LayoutsDashboard mode="seller" page_title="Products Overview">
     <div class="md:flex block w-full gap-5">
       <div class="w-full">
         <div class="flex justify-between items-center w-full">
@@ -42,7 +42,7 @@
         <button @click="deleteModalOpen = false" class="text-white bg-red-600 py-2 px-5 font-medium text-base 2xl:text-lg rounded-md">Delete Anyway</button>
       </div>
     </ModalsOverlay>
-  </LayoutsSellerDashboard>
+  </LayoutsDashboard>
 </template>
 <script>
 export default {

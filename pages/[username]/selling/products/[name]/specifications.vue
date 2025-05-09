@@ -1,5 +1,5 @@
 <template>
-  <LayoutsSellerDashboard page_title="New Product">
+  <LayoutsDashboard mode="seller" page_title="New Product">
     <div class="grid grid-cols-1 place-items-center gap-6 max-w-3xl mx-auto w-full">
       <div class="flex items-center">
         <div class="text-secondary border border-accent-200 h-10 w-10 rounded-full grid place-items-center">1</div>
@@ -40,30 +40,30 @@
             <button v-for="items in 7" class="flex gap-2 p-2 rounded-md border border-accent-200 items-center">
               <div class="bg-red-600 h-5 w-5 rounded-full"></div>
               <span>Red</span>
-            </button> 
+            </button>
             <button v-for="items in 3" class="flex gap-2 p-2 rounded-md border border-accent-200 items-center">
               <div class="bg-blue-600 h-5 w-5 rounded-full"></div>
               <span>Blue</span>
-            </button> 
+            </button>
             <button v-for="items in 4" class="flex gap-2 p-2 rounded-md border border-accent-200 items-center">
               <div class="bg-purple-600 h-5 w-5 rounded-full"></div>
               <span>Purple</span>
-            </button> 
+            </button>
             <button v-for="items in 3" class="flex gap-2 p-2 rounded-md border border-accent-200 items-center">
               <div class="bg-green-600 h-5 w-5 rounded-full"></div>
               <span>Green</span>
-            </button> 
+            </button>
             <button v-for="items in 5" class="flex gap-2 p-2 rounded-md border border-accent-200 items-center">
               <div class="bg-yellow-400 h-5 w-5 rounded-full"></div>
               <span>Yellow</span>
-            </button> 
+            </button>
           </div>
         </div>
         <FormButton class="col-span-2 w-64 mx-auto">Save & Continue</FormButton>
       </form>
 
     </div>
-  </LayoutsSellerDashboard>
+  </LayoutsDashboard>
 </template>
 <script>
 export default {
