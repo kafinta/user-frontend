@@ -1,7 +1,7 @@
 // middleware/auth.ts
-import { defineNuxtRouteMiddleware, navigateTo } from '#app';
+import { defineNuxtRouteMiddleware, navigateTo, useNuxtApp } from '#app';
 import { useAuthStore } from '~/stores/auth';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '~/utils/toast';
 
 export default defineNuxtRouteMiddleware((to) => {
   // Skip middleware on server side
@@ -70,9 +70,27 @@ export default defineNuxtRouteMiddleware((to) => {
 
     // If user doesn't have required roles, redirect to appropriate page
     if (!(hasRequiredRoles && hasSeller && hasCustomer)) {
-      // Use the centralized notification system from the auth plugin
-      const { $auth } = useNuxtApp()
-      $auth.notifications.showRoleError('You do not have the required permissions to access this page')
+      // Show toast notification using our standardized utility
+      if (import.meta.client) {
+        try {
+          const appToast = useAppToast();
+          appToast.accessDenied('You do not have the required permissions to access this page');
+        } catch (error) {
+          console.error('Failed to show toast notification:', error);
+        }
+      }
+
+      // Also use the auth plugin notification system as a backup
+      try {
+        const { $auth } = useNuxtApp();
+        if ($auth && $auth.notifications) {
+          $auth.notifications.showRoleError('You do not have the required permissions to access this page');
+        } else {
+          console.error('Auth notification service not available');
+        }
+      } catch (error) {
+        console.error('Failed to show notification through auth plugin:', error);
+      }
 
       // Redirect to home or dashboard based on available roles
       if (authStore.user && authStore.user.username) {
