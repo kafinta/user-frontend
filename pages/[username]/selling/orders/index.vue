@@ -1,5 +1,5 @@
 <template>
-  <LayoutsSellerDashboard page_title="Orders Overview">
+  <LayoutsDashboard mode="seller" page_title="Orders Overview">
     <div class="flex divide-x border w-full border-accent-200 rounded-md mb-5 overflow-x-hidden">
       <button :class="active ? 'bg-secondary text-white' : 'bg-accent-200 text-secondary'" class="rounded-l-md px-5 py-3">Awaiting Fulfilment</button>
       <button :class="active ? 'bg-secondary text-white' : 'bg-accent-200 text-secondary'" class="px-5 py-3">Shipped</button>
@@ -36,7 +36,7 @@
         </div>
       </li>
     </ul>
-  </LayoutsSellerDashboard>
+  </LayoutsDashboard>
 </template>
 <script>
 export default {

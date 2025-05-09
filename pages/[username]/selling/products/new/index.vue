@@ -1,5 +1,5 @@
 <template>
-  <LayoutsSellerDashboard page_title="New Product">
+  <LayoutsDashboard mode="seller" page_title="New Product">
     <div class="grid grid-cols-1 place-items-center gap-6 max-w-3xl mx-auto w-full">
       <div class="flex items-center">
         <div class="bg-primary text-white h-10 w-10 rounded-full grid place-items-center">1</div>
@@ -25,7 +25,7 @@
         <FormButton class="lg:col-span-2 w-64 mx-auto">Save & Continue</FormButton>
       </form>
     </div>
-  </LayoutsSellerDashboard>
+  </LayoutsDashboard>
 </template>
 <script>
 export default {

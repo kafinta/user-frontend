@@ -1,5 +1,5 @@
 <template>
-  <LayoutsSellerDashboard page_title="Onboarding">
+  <LayoutsDashboard mode="seller" page_title="Onboarding">
     <div class="flex justify-between items-center p-5 border rounded-xl border-accent-200">
       <div>
         <UiTypographyH3>Percentage Completed</UiTypographyH3>
@@ -29,7 +29,7 @@
         <UiButtonsPrimary @clicked="$router.push({name: 'username-selling-onboarding-kyc'})" v-else class="mt-6">Verify KYC</UiButtonsPrimary >
       </li>
     </ul>
-  </LayoutsSellerDashboard>
+  </LayoutsDashboard>
 </template>
 <script>
 import { useOnboarding } from "@/composables/useOnboarding.ts";
@@ -42,7 +42,7 @@ export default {
       kyc_verified: false,
       percentage: onboarding.percentage
     }
-  },      
+  },
 
   mounted(){
     const {onboarding} = useOnboarding();

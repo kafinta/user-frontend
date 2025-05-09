@@ -1,5 +1,5 @@
 <template>
-  <LayoutsSellerDashboard page_title="Earnings overview">
+  <LayoutsDashboard mode="seller" page_title="Earnings overview">
     <div class="border border-accent-200 rounded-md divide-x divide-accent-100 grid grid-cols-2 lg:grid-cols-4">
       <div class="p-5 flex gap-5 items-center" v-for="item in overview" :key="item.id">
         <img :src="item.imagePath" class="w-8 h-8" alt="">
@@ -25,7 +25,7 @@
         </div>
       </div>
     </div>
-  </LayoutsSellerDashboard>
+  </LayoutsDashboard>
 </template>
 <script>
 import completed from '/images/insights/completed.svg'
