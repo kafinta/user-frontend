@@ -1,6 +1,8 @@
 <template>
   <div>
-    <Toast />
+    <!-- PrimeVue Toast with specific group -->
+    <Toast position="top-right" group="br" />
+
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
@@ -8,6 +10,30 @@
 
 </template>
 <script setup>
+import Toast from 'primevue/toast';
+import { useToast } from 'primevue/usetoast';
+import { onMounted } from 'vue';
+import { useAppToast } from '~/utils/toast';
+
+// Initialize toast service
+const toast = useToast();
+
+onMounted(() => {
+  console.log('App mounted, Toast component initialized');
+
+  // Toast system is now working correctly
+  if (process.client) {
+    try {
+      // Verify that the toast utility is available without showing a notification
+      const appToast = useAppToast();
+      if (appToast) {
+        console.log('Toast utility is available and ready');
+      }
+    } catch (error) {
+      console.error('Error checking toast utility:', error);
+    }
+  }
+});
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
