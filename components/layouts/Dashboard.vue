@@ -1,8 +1,10 @@
 <template>
   <div class="flex w-full select-none">
     <!-- Sidebar navigation - visible on all screens (md+) or when toggled (mobile) -->
-    <NavigationSideBarBuying
+    <NavigationSideBar
+      :isSeller="mode === 'seller'"
       :username="username"
+      :defaultMode="mode"
       :class="[
         'duration-150 ease-in-out md:translate-x-0',
         menuRevealed ? 'translate-x-0' : '-translate-x-full'
@@ -18,7 +20,7 @@
     <!-- Mobile navigation header -->
     <nav class="flex mx-auto items-center justify-between px-6 py-4 bg-white w-full z-10 fixed md:hidden">
       <div class="w-36">
-        <NavigationLogo @logoClicked="navigateToHome"></NavigationLogo>
+        <NavigationLogo @logoClicked="handleLogoClick"></NavigationLogo>
       </div>
 
       <!-- Mobile menu toggle button -->
@@ -73,6 +75,12 @@ const props = defineProps({
   pageTitle: {
     type: String,
     default: ''
+  },
+  // Mode can be 'seller' or 'buyer'
+  mode: {
+    type: String,
+    default: 'buyer',
+    validator: (value) => ['seller', 'buyer'].includes(value)
   }
 });
 
@@ -93,7 +101,14 @@ function toggleMenu() {
   mobileNavOpen.value = !mobileNavOpen.value;
 }
 
-function navigateToHome() {
-  router.push({ name: '/' });
+// Handle logo click based on mode
+function handleLogoClick() {
+  if (props.mode === 'seller') {
+    // Reload page (seller behavior)
+    window.location.reload();
+  } else {
+    // Navigate to home (buyer behavior)
+    router.push({ name: '/' });
+  }
 }
 </script>
