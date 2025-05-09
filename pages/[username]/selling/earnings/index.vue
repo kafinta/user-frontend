@@ -27,40 +27,43 @@
     </div>
   </LayoutsDashboard>
 </template>
-<script>
+<script setup>
+definePageMeta({
+  middleware: ['auth'],
+  requiresAuth: true,
+  requiresVerification: true,
+  requiresSeller: true
+});
+
+import { ref } from 'vue';
 import completed from '/images/insights/completed.svg'
 import paid from '/images/insights/paid.svg'
 import pending from '/images/insights/pending.svg'
-  export default {
-    data() {
-      return {
-        overview: [
-          {
-            id: 1,
-            title: "Withdrawn Funds",
-            amount: 0.00,
-            imagePath: completed
-          },
-          {
-            id: 2,
-            title: "Pending Funds",
-            amount: 0.00,
-            imagePath: pending
-          },
-          {
-            id: 3,
-            title: "Available Funds",
-            amount: 0.00,
-            imagePath: paid
-          },
-          {
-            id: 4,
-            title: "Total Earnings",
-            amount: 0.00,
-            imagePath: paid
-          },
-        ]
-      }
-    },
-  }
+
+const overview = ref([
+  {
+    id: 1,
+    title: "Withdrawn Funds",
+    amount: 0.00,
+    imagePath: completed
+  },
+  {
+    id: 2,
+    title: "Pending Funds",
+    amount: 0.00,
+    imagePath: pending
+  },
+  {
+    id: 3,
+    title: "Available Funds",
+    amount: 0.00,
+    imagePath: paid
+  },
+  {
+    id: 4,
+    title: "Total Earnings",
+    amount: 0.00,
+    imagePath: paid
+  },
+]);
 </script>

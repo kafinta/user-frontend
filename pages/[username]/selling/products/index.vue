@@ -44,15 +44,18 @@
     </ModalsOverlay>
   </LayoutsDashboard>
 </template>
-<script>
-export default {
-  data() {
-    return {
-      products: true,
-      deleteModalOpen: false
-    }
-  },
-}
+<script setup>
+definePageMeta({
+  middleware: ['auth'],
+  requiresAuth: true,
+  requiresVerification: true,
+  requiresSeller: true
+});
+
+import { ref } from 'vue';
+
+const products = ref(true);
+const deleteModalOpen = ref(false);
 </script>
 <style>
   .gig-img {

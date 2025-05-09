@@ -38,17 +38,20 @@
     </ul>
   </LayoutsDashboard>
 </template>
-<script>
-export default {
-  data() {
-    return {
-      image: '',
-      status: 'pending',
-      orders: 10,
-      active: true
-    }
-  }
-}
+<script setup>
+definePageMeta({
+  middleware: ['auth'],
+  requiresAuth: true,
+  requiresVerification: true,
+  requiresSeller: true
+});
+
+import { ref } from 'vue';
+
+const image = ref('');
+const status = ref('pending');
+const orders = ref(10);
+const active = ref(true);
 </script>
 <style>
 th, td {
