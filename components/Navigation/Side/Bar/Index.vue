@@ -128,8 +128,7 @@
 <script setup>
 import { onMounted, watch, computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-// We'll use authStore in future implementations if needed
-// import { useAuthStore } from '~/stores/auth';
+import { useAuthStore } from '~/stores/auth';
 
 // Import icon components
 import UiIconsProfile from '~/components/Ui/Icons/Profile.vue';
@@ -170,8 +169,7 @@ const props = defineProps({
 // Router and route
 const router = useRouter();
 const route = useRoute();
-// We'll use authStore in future implementations if needed
-// const authStore = useAuthStore();
+const authStore = useAuthStore();
 
 // Track current mode (seller or buyer)
 const currentMode = ref(props.defaultMode);
@@ -296,11 +294,29 @@ const becomeASeller = () => {
   });
 };
 
-const logout = () => {
-  // Implement logout functionality
-  console.log('Logging out...');
-  // Call your auth store logout method here
-  // router.push('/auth/login');
+const logout = async () => {
+  try {
+    // Call auth store logout method
+    const result = await authStore.logout();
+
+    // Show success notification using the centralized notification system
+    const { $auth } = useNuxtApp();
+    if (result.status === 'success') {
+      $auth.notifications.showSuccess('Logged Out', result.message || 'Successfully logged out');
+    } else {
+      $auth.notifications.showAuthError(result.message || 'Logout failed');
+    }
+
+    // Redirect to login page
+    router.push('/auth/login');
+  } catch (error) {
+    console.error('Logout error:', error);
+    const { $auth } = useNuxtApp();
+    $auth.notifications.showAuthError('An unexpected error occurred during logout');
+
+    // Still redirect to login page even if there's an error
+    router.push('/auth/login');
+  }
 };
 
 // Watch for route changes to update active states and current mode
