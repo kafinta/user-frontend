@@ -8,20 +8,37 @@
         </div>
 
         <div class="mt-6">
-          <!-- Navigation menu items -->
-          <template v-for="(item, index) in navigationItems" :key="index">
-            <nuxt-link
-              v-if="item.showWhen ? item.showWhen() : true"
-              :to="item.to"
-            >
-              <NavigationSideMenu
-                :menu_text="item.text"
-                :is_active="isRouteActive(item.route)"
-                :isSeller="item.requiresSeller ? isSeller : true"
+          <!-- Navigation menu items - conditional rendering based on mode -->
+          <!-- Seller navigation items -->
+          <template v-if="currentMode === 'seller'">
+            <template v-for="(item, index) in sellerNavigationItems" :key="`seller-${index}`">
+              <nuxt-link
+                v-if="item.showWhen ? item.showWhen() : true"
+                :to="item.to"
               >
-                <component :is="iconComponents[item.icon]" />
-              </NavigationSideMenu>
-            </nuxt-link>
+                <NavigationSideMenu
+                  :menu_text="item.text"
+                  :is_active="isRouteActive(item.route)"
+                  :isSeller="item.requiresSeller ? isSeller : true"
+                >
+                  <component :is="iconComponents[item.icon]" />
+                </NavigationSideMenu>
+              </nuxt-link>
+            </template>
+          </template>
+
+          <!-- Buyer navigation items -->
+          <template v-else>
+            <template v-for="(item, i) in buyerNavigationItems" :key="`buyer-${i}`">
+              <nuxt-link :to="item.to">
+                <NavigationSideMenu
+                  :menu_text="item.text"
+                  :is_active="isRouteActive(item.route)"
+                >
+                  <component :is="iconComponents[item.icon]" />
+                </NavigationSideMenu>
+              </nuxt-link>
+            </template>
           </template>
         </div>
       </div>
@@ -41,15 +58,39 @@
           </div>
         </div>
 
-        <!-- Switch mode button -->
+        <!-- Switch mode buttons - conditional based on current mode and roles -->
         <div>
+          <!-- When in seller mode, show switch to buying -->
           <UiButtonsPrimary
+            v-if="currentMode === 'seller'"
             @clicked="switchToBuying"
             class="mt-4 bg-primary"
             :standout="true"
             :flexdisplay="true"
           >
             Switch to Buying
+          </UiButtonsPrimary>
+
+          <!-- When in buyer mode and user is a seller, show switch to selling -->
+          <UiButtonsPrimary
+            v-else-if="isSeller"
+            @clicked="switchToSelling"
+            class="mt-4 bg-primary"
+            :standout="true"
+            :flexdisplay="true"
+          >
+            Switch to Selling
+          </UiButtonsPrimary>
+
+          <!-- When in buyer mode and user is not a seller, show become a seller -->
+          <UiButtonsPrimary
+            v-else
+            @clicked="becomeASeller"
+            class="mt-4 bg-primary"
+            :standout="true"
+            :flexdisplay="true"
+          >
+            Become a Seller
           </UiButtonsPrimary>
         </div>
 
@@ -85,8 +126,10 @@
 </template>
 
 <script setup>
-import { onMounted, watch } from 'vue';
+import { onMounted, watch, computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+// We'll use authStore in future implementations if needed
+// import { useAuthStore } from '~/stores/auth';
 
 // Import icon components
 import UiIconsProfile from '~/components/Ui/Icons/Profile.vue';
@@ -94,6 +137,7 @@ import UiIconsOverview from '~/components/Ui/Icons/Overview.vue';
 import UiIconsGigs from '~/components/Ui/Icons/Gigs.vue';
 import UiIconsCart from '~/components/Ui/Icons/Cart.vue';
 import UiIconsTransactions from '~/components/Ui/Icons/Transactions.vue';
+import UiIconsSettings from '~/components/Ui/Icons/Settings.vue';
 
 // Map icon names to their component references
 const iconComponents = {
@@ -101,7 +145,8 @@ const iconComponents = {
   'UiIconsOverview': UiIconsOverview,
   'UiIconsGigs': UiIconsGigs,
   'UiIconsCart': UiIconsCart,
-  'UiIconsTransactions': UiIconsTransactions
+  'UiIconsTransactions': UiIconsTransactions,
+  'UiIconsSettings': UiIconsSettings
 };
 
 // Props with validation
@@ -113,15 +158,35 @@ const props = defineProps({
   isSeller: {
     type: Boolean,
     default: false
+  },
+  // Default mode can be 'seller' or 'buyer'
+  defaultMode: {
+    type: String,
+    default: 'seller',
+    validator: (value) => ['seller', 'buyer'].includes(value)
   }
 });
 
 // Router and route
 const router = useRouter();
 const route = useRoute();
+// We'll use authStore in future implementations if needed
+// const authStore = useAuthStore();
 
-// Navigation items configuration
-const navigationItems = [
+// Track current mode (seller or buyer)
+const currentMode = ref(props.defaultMode);
+
+// Determine current mode based on route
+const updateCurrentMode = () => {
+  if (route.name && route.name.includes('selling')) {
+    currentMode.value = 'seller';
+  } else if (route.name && route.name.includes('buying')) {
+    currentMode.value = 'buyer';
+  }
+};
+
+// Seller navigation items configuration
+const sellerNavigationItems = computed(() => [
   {
     text: 'Onboarding',
     route: 'onboarding',
@@ -158,7 +223,30 @@ const navigationItems = [
     icon: 'UiIconsTransactions',
     requiresSeller: true
   }
-];
+]);
+
+// Buyer navigation items configuration
+const buyerNavigationItems = computed(() => [
+  {
+    text: 'Dashboard',
+    route: 'dashboard',
+    to: { name: 'username-buying-dashboard', params: { username: props.username } },
+    icon: 'UiIconsOverview'
+  },
+  {
+    text: 'Cart',
+    route: 'cart',
+    to: { name: 'username-buying-cart', params: { username: props.username } },
+    icon: 'UiIconsCart'
+  },
+  // Uncomment when orders page is ready
+  // {
+  //   text: 'Orders',
+  //   route: 'orders',
+  //   to: { name: 'username-buying-orders', params: { username: props.username } },
+  //   icon: 'UiIconsTransactions'
+  // }
+]);
 
 // Check if a route is active based on the current route
 const isRouteActive = (routeSegment) => {
@@ -185,8 +273,25 @@ const checkOnboardingRedirect = () => {
 
 // Navigation methods
 const switchToBuying = () => {
+  currentMode.value = 'buyer';
   router.push({
     name: 'username-buying-dashboard',
+    params: { username: props.username }
+  });
+};
+
+const switchToSelling = () => {
+  currentMode.value = 'seller';
+  router.push({
+    name: 'username-selling-dashboard',
+    params: { username: props.username }
+  });
+};
+
+const becomeASeller = () => {
+  currentMode.value = 'seller';
+  router.push({
+    name: 'username-selling-onboarding',
     params: { username: props.username }
   });
 };
@@ -198,16 +303,18 @@ const logout = () => {
   // router.push('/auth/login');
 };
 
-// Watch for route changes to update active states
+// Watch for route changes to update active states and current mode
 watch(
   () => route.path,
   () => {
+    updateCurrentMode();
     checkOnboardingRedirect();
   }
 );
 
 // Initialize on component mount
 onMounted(() => {
+  updateCurrentMode();
   checkOnboardingRedirect();
 });
 </script>
