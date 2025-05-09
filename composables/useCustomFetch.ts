@@ -2,9 +2,6 @@
 import type { UseFetchOptions } from '#app'
 import type { NitroFetchRequest, NitroFetchOptions } from 'nitropack'
 import { defu } from 'defu'
-import { useToast } from 'primevue/usetoast'
-import { getCurrentInstance } from 'vue'
-
 export function useCustomFetch<T>(
   url: NitroFetchRequest,
   options: Omit<NitroFetchOptions<NitroFetchRequest>, 'method'> & {
@@ -14,10 +11,6 @@ export function useCustomFetch<T>(
 ) {
   const { requireAuth = false, method = 'GET', ...restOptions } = options
   const config = useRuntimeConfig()
-
-  // Only use toast if we're in a component context
-  const instance = getCurrentInstance()
-  const toast = instance ? useToast() : null
 
   // Get token from localStorage directly
   const getAuthToken = (): string | null => {
@@ -54,14 +47,12 @@ export function useCustomFetch<T>(
           // Clear auth data
           localStorage.removeItem('auth_token')
           localStorage.removeItem('auth_user')
-          // Show toast notification using PrimeVue only if toast is available
-          if (toast) {
-            toast.add({
-              severity: 'error',
-              summary: 'Unauthorized',
-              detail: 'Your session has expired. Please login again.',
-              life: 3000
-            })
+          // Use the centralized notification system from the auth plugin
+          try {
+            const { $auth } = useNuxtApp()
+            $auth.notifications.showSessionExpired()
+          } catch (error) {
+            console.error('Failed to show notification:', error)
           }
 
           // Redirect to login if needed
@@ -69,13 +60,13 @@ export function useCustomFetch<T>(
         }
       } else if (response.status === 403) {
         // Forbidden - user doesn't have required permissions
-        if (import.meta.client && toast) {
-          toast.add({
-            severity: 'error',
-            summary: 'Access Denied',
-            detail: 'You do not have permission to perform this action.',
-            life: 3000
-          })
+        if (import.meta.client) {
+          try {
+            const { $auth } = useNuxtApp()
+            $auth.notifications.showForbidden()
+          } catch (error) {
+            console.error('Failed to show notification:', error)
+          }
         }
       }
     }
