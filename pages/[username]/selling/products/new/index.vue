@@ -27,17 +27,19 @@
     </div>
   </LayoutsDashboard>
 </template>
-<script>
-export default {
-  data(){
-    return {
-    }
-  },
+<script setup>
+definePageMeta({
+  middleware: ['auth'],
+  requiresAuth: true,
+  requiresVerification: true,
+  requiresSeller: true
+});
 
-  methods: {
-    createProduct(){
-      this.$router.push({name: 'username-selling-products-new-specifications'})
-    }
-  }
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+function createProduct() {
+  router.push({ name: 'username-selling-products-new-specifications' });
 }
 </script>

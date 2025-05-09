@@ -31,35 +31,44 @@
     </ul>
   </LayoutsDashboard>
 </template>
-<script>
-import { useOnboarding } from "@/composables/useOnboarding.ts";
-import onboarding from "~/middleware/onboarding";
-export default {
-  data(){
-    return {
-      email_verified: true,
-      profile_created: false,
-      kyc_verified: false,
-      percentage: onboarding.percentage
-    }
-  },
+<script setup>
+definePageMeta({
+  middleware: ['auth'],
+  requiresAuth: true,
+  requiresVerification: true
+  // Note: We don't require seller role for onboarding since this is where users become sellers
+});
 
-  mounted(){
-    const {onboarding} = useOnboarding();
-    document.documentElement.style.setProperty('--percent', `${onboarding.percentage}%`);
-    if (this.email_verified === true) {
-      onboarding.percentage =+ 20
-      this.percentage =+ 20
-    }
-    if (this.profile_created === true) {
-      this.percentage =+ 40
-    }
-    if (this.kyc_verified === true) {
-      this.percentage =+ 40
-    }
-    if (this.percentage == 100) {
-      this.$router.push({name: 'username-selling-dashboard'})
-    }
-  },
-}
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useOnboarding } from "@/composables/useOnboarding.ts";
+import onboardingMiddleware from "~/middleware/onboarding";
+
+const router = useRouter();
+const email_verified = ref(true);
+const profile_created = ref(false);
+const kyc_verified = ref(false);
+const percentage = ref(onboardingMiddleware.percentage);
+
+onMounted(() => {
+  const { onboarding } = useOnboarding();
+  document.documentElement.style.setProperty('--percent', `${onboarding.percentage}%`);
+
+  if (email_verified.value === true) {
+    onboarding.percentage += 20;
+    percentage.value += 20;
+  }
+
+  if (profile_created.value === true) {
+    percentage.value += 40;
+  }
+
+  if (kyc_verified.value === true) {
+    percentage.value += 40;
+  }
+
+  if (percentage.value == 100) {
+    router.push({ name: 'username-selling-dashboard' });
+  }
+});
 </script>

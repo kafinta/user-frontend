@@ -65,17 +65,19 @@
     </div>
   </LayoutsDashboard>
 </template>
-<script>
-export default {
-  data(){
-    return {
-    }
-  },
+<script setup>
+definePageMeta({
+  middleware: ['auth'],
+  requiresAuth: true,
+  requiresVerification: true,
+  requiresSeller: true
+});
 
-  methods: {
-    updateProduct(){
-      this.$router.push({name: 'username-selling-products-new-images'})
-    },
-  }
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+function updateProduct() {
+  router.push({ name: 'username-selling-products-new-images' });
 }
 </script>

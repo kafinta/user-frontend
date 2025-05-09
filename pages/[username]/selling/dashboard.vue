@@ -58,46 +58,44 @@
 
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      username: 'Quadri',
-      description_edit: false,
-      date: '',
-      tabs: [
-        {
-          id: 1,
-          title: 'Active Orders',
-          count: 0,
-          active: true
-        },
-        {
-          id: 2,
-          title: 'Completed Orders',
-          active: false
-        },
-        {
-          id: 3,
-          title: 'Canceled Orders',
-          active: false
-        },
-      ]
-    }
-  },
+<script setup>
+definePageMeta({
+  middleware: ['auth'],
+  requiresAuth: true,
+  requiresVerification: true,
+  requiresSeller: true
+});
 
-  computed: {
-  },
+// Original script content converted to setup script
+import { ref, onMounted } from 'vue';
 
-  methods: {
+const username = ref('Quadri');
+const description_edit = ref(false);
+const date = ref('');
+const tabs = ref([
+  {
+    id: 1,
+    title: 'Active Orders',
+    count: 0,
+    active: true
   },
+  {
+    id: 2,
+    title: 'Completed Orders',
+    active: false
+  },
+  {
+    id: 3,
+    title: 'Canceled Orders',
+    active: false
+  },
+]);
 
-  mounted(){
-    setTimeout(() => {
-      this.date = new Date()
-    }, 2000);
-  },
-}
+onMounted(() => {
+  setTimeout(() => {
+    date.value = new Date();
+  }, 2000);
+});
 </script>
 
 <style>
