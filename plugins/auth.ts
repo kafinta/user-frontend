@@ -87,6 +87,10 @@ export default defineNuxtPlugin(() => {
           return { status: 'success', message: 'Roles already loaded' }
         },
 
+        logout: async () => {
+          return await authStore.logout()
+        },
+
         // Notifications (centralized)
         notifications
       }
