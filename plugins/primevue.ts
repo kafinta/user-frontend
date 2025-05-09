@@ -19,7 +19,7 @@ const MyPreset = definePreset(Aura, {
         900: '#27220c',
         950: '#141106'
       },
-      
+
       surface: {
         '50': '#f2f2f2',
         '100': '#e6e6e6',
@@ -49,7 +49,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       }
     },
   });
-  
+
   // Add ToastService
   nuxtApp.vueApp.use(ToastService);
 });
