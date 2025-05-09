@@ -8,6 +8,11 @@
           </div>
           <UiTypographyH3 class="text-center mt-4 mb-3">{{username}}</UiTypographyH3>
 
+          <!-- User Roles -->
+          <div class="flex justify-center mb-4">
+            <UserProfileRoles />
+          </div>
+
           <div class="border-t border-accent-200 grid grid-cols-1 gap-4 pt-4">
             <div class="flex items-center justify-between">
               <div class="flex gap-3 items-center">
@@ -43,20 +48,40 @@
   </LayoutsSellerDashboard>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      username: 'Quadri',
-    }
-  },
+<script setup>
+import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { useAuthStore } from '~/stores/auth'
 
-  methods: {
+// Define page meta for authentication
+definePageMeta({
+  middleware: ['auth'],
+  requiresAuth: true,
+  requiresVerification: true
+})
 
-  },
+// Get route and auth store
+const route = useRoute()
+const authStore = useAuthStore()
+
+// Get username from route params or auth store
+const username = computed(() => {
+  return route.params.username || authStore.user?.username || 'User'
+})
+
+// State for description editing
+const description_edit = ref(false)
+
+// Toggle description edit mode
+function toggleDescription() {
+  description_edit.value = !description_edit.value
+}
+
+// Fetch user roles if authenticated
+if (authStore.isAuthenticated && authStore.roles.length === 0) {
+  authStore.fetchRoles()
 }
 </script>
 
 <style>
-
 </style>
