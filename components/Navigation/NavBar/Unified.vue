@@ -27,41 +27,52 @@
       <div class="hidden md:flex flex-shrink-0">
         <!-- Authenticated User Menu -->
         <ul v-if="isAuthenticated" class="flex gap-2 md:gap-3 lg:gap-5 items-center">
-          <!-- Role-based navigation -->
-          <li v-if="isSeller && showRoleSwitch">
-            <UiButtonsSecondary @clicked="switchToSelling" class="text-sm whitespace-nowrap">Switch to Selling</UiButtonsSecondary>
-          </li>
-          <li v-if="isCustomer && showRoleSwitch">
-            <UiButtonsSecondary @clicked="switchToBuying" class="text-sm whitespace-nowrap">Dashboard</UiButtonsSecondary>
+          <li v-if="showMarketplaceLink">
+            <UiButtonsSecondary :url="{path: '/marketplace/'}" class="text-sm whitespace-nowrap">Marketplace</UiButtonsSecondary>
           </li>
 
-          <!-- Optional features -->
-          <li v-if="showCart">
-            <button @click="$emit('cartClicked')" class="p-2 transition-colors duration-200 relative">
+          <!-- Role-based navigation -->
+          <li v-if="isSeller">
+            <UiButtonsSecondary @clicked="switchToSelling" class="text-sm whitespace-nowrap">Switch to Selling</UiButtonsSecondary>
+          </li>
+
+          <!-- Cart icon -->
+          <li>
+            <button title="Cart" @click="$emit('cartClicked')" class="p-2 transition-colors duration-200 relative">
               <UiIconsCart class="w-5 h-5 text-secondary hover:text-primary transition-colors duration-200" />
-              <!-- Optional cart item count badge could be added here -->
+              <Badge value="1" size="small" v-if="hasNotifications" class="h-2 w-2 -top-0.5 -right-0.5 absolute scale-75"></Badge>
+            </button>
+          </li>
+
+          <!-- Notification icon -->
+          <li>
+            <button title="Notifications" class="p-2 transition-colors duration-200 relative">
+              <UiIconsNotifications class="w-5 h-5 text-secondary hover:text-primary transition-colors duration-200" />
+              <Badge value="1" size="small" v-if="hasNotifications" class="h-2 w-2 -top-0.5 -right-0.5 absolute scale-75"></Badge>
             </button>
           </li>
 
           <!-- User profile dropdown (common for authenticated users) -->
           <li class="relative">
-            <UserProfilePicture @click="toggleOptions()" :large_dimensions="true" :username="username" class="cursor-pointer" />
+            <button @click="toggleOptions()" class="profile-trigger" title="Click to open user menu">
+              <UserProfilePicture :large_dimensions="true" :username="username" class="cursor-pointer" />
+            </button>
 
-            <div ref="userOptions" :class="user_options ? 'grid gap-1' : 'hidden'" class="p-2 px-3 rounded-md border border-accent-200 text-secondary absolute bg-white right-0 w-56 mt-4 z-50">
-              <div class="flex gap-5 items-center py-2">
-                <UserProfilePicture @click="toggleOptions()" :custom_dimensions="true" :username="username" class="cursor-pointer w-12" />
+            <div ref="userOptions" v-show="user_options" class="p-2 px-3 rounded-md border border-accent-200 text-secondary absolute bg-white right-0 w-56 mt-2 z-50 shadow-md">
+              <div class="flex gap-3 items-center py-2">
+                <UserProfilePicture :custom_dimensions="true" :username="username" class="w-10" />
                 <div>
                   <UiTypographyP><span class="font-medium">{{ username }}</span></UiTypographyP>
-                  <UiTypographyP v-if="isSeller">Seller</UiTypographyP>
-                  <UiTypographyP v-else>Customer</UiTypographyP>
+                  <UiTypographyP v-if="isSeller" class="text-xs">Seller</UiTypographyP>
+                  <UiTypographyP v-else class="text-xs">Customer</UiTypographyP>
                 </div>
               </div>
-              <hr>
-              <NuxtLink :to="{name: 'username-buying-dashboard', params: {username: username}}" class="w-full hover:bg-accent-100 py-2 px-4 rounded cursor-pointer mt-1">Dashboard</NuxtLink>
-              <NuxtLink :to="{name: 'username-profile', params: {username: username}}" class="w-full hover:bg-accent-100 py-2 px-4 rounded cursor-pointer">Profile</NuxtLink>
-              <NuxtLink :to="{name: 'username-buying-dashboard', params: {username: username}}" class="w-full hover:bg-accent-100 py-2 px-4 rounded cursor-pointer mb-1">Orders</NuxtLink>
-              <hr>
-              <button @click="logout" class="w-full hover:bg-accent-100 py-2 px-4 rounded cursor-pointer text-left mt-1">Log out</button>
+              <hr class="my-1">
+              <NuxtLink :to="{name: 'username-buying-dashboard', params: {username: username}}" class="block w-full hover:bg-accent-100 py-2 px-3 rounded cursor-pointer mt-1 text-sm">Dashboard</NuxtLink>
+              <NuxtLink :to="{name: 'username-profile', params: {username: username}}" class="block w-full hover:bg-accent-100 py-2 px-3 rounded cursor-pointer text-sm">Profile</NuxtLink>
+              <NuxtLink :to="{name: 'username-buying-dashboard', params: {username: username}}" class="block w-full hover:bg-accent-100 py-2 px-3 rounded cursor-pointer mb-1 text-sm">Orders</NuxtLink>
+              <hr class="my-1">
+              <button @click="logout" class="w-full hover:bg-accent-100 py-2 px-3 rounded cursor-pointer text-left mt-1 text-sm">Log out</button>
             </div>
           </li>
         </ul>
@@ -103,8 +114,7 @@
         :signedIn="isAuthenticated"
         :username="username"
         :showMarketplaceLink="showMarketplaceLink"
-        :showCart="showCart"
-        :showRoleSwitch="showRoleSwitch"
+        :hasNotifications="hasNotifications"
         @cartClicked="$emit('cartClicked')"
         @logout="logout"
       />
@@ -119,15 +129,6 @@ import { useAuthStore } from '~/stores/auth'
 
 // Props with defaults
 const props = defineProps({
-  // Feature flags
-  showCart: {
-    type: Boolean,
-    default: true
-  },
-  showRoleSwitch: {
-    type: Boolean,
-    default: true
-  },
   showMarketplaceLink: {
     type: Boolean,
     default: true
@@ -179,6 +180,7 @@ const userOptions = ref(null)
 const menuRevealed = ref(false)
 const user_options = ref(false)
 const search_input = ref('')
+const hasNotifications = ref(true) // Set to true to show the notification indicator by default
 
 // Computed properties
 const isAuthenticated = computed(() => props.signedIn !== undefined ? props.signedIn : authStore.isAuthenticated)
@@ -196,6 +198,7 @@ function focus() {
 }
 
 function toggleOptions() {
+  console.log('Toggle options clicked')
   user_options.value = !user_options.value
 }
 
@@ -231,6 +234,9 @@ function switchToSelling() {
   }
 }
 
+// Function removed as Dashboard button was removed
+// Kept as a comment in case it needs to be restored in the future
+/*
 function switchToBuying() {
   console.log('Dashboard clicked')
   const route = {
@@ -244,6 +250,7 @@ function switchToBuying() {
     console.error('Navigation error:', error)
   }
 }
+*/
 
 function navigateTo(path) {
   console.log('Navigate to:', path)
@@ -272,7 +279,10 @@ function logout() {
 
 // Handle click outside to close user options
 function handleClickOutside(event) {
-  if (userOptions.value && !userOptions.value.contains(event.target)) {
+  // Check if the click was outside the dropdown and not on the profile picture
+  if (userOptions.value &&
+      !userOptions.value.contains(event.target) &&
+      !event.target.closest('.profile-trigger')) {
     user_options.value = false
   }
 }
