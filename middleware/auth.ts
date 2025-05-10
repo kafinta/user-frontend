@@ -1,7 +1,6 @@
 // middleware/auth.ts
 import { defineNuxtRouteMiddleware, navigateTo, useNuxtApp } from '#app';
 import { useAuthStore } from '~/stores/auth';
-import { useAppToast } from '~/utils/toast';
 
 export default defineNuxtRouteMiddleware((to) => {
   // Skip middleware on server side
@@ -70,17 +69,7 @@ export default defineNuxtRouteMiddleware((to) => {
 
     // If user doesn't have required roles, redirect to appropriate page
     if (!(hasRequiredRoles && hasSeller && hasCustomer)) {
-      // Show toast notification using our standardized utility
-      if (import.meta.client) {
-        try {
-          const appToast = useAppToast();
-          appToast.accessDenied('You do not have the required permissions to access this page');
-        } catch (error) {
-          console.error('Failed to show toast notification:', error);
-        }
-      }
-
-      // Also use the auth plugin notification system as a backup
+      // Use the auth plugin notification system
       try {
         const { $auth } = useNuxtApp();
         if ($auth && $auth.notifications) {
