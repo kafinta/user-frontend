@@ -1,6 +1,14 @@
 <template>
   <div class="bg-white">
-    <NavigationNavBarUserSearch :keep_button_hovered="search_button_hovered" @toggleSearchBox="toggleSearch()" @cartClicked="toggleCart" :signedIn="loggedIn" :isSeller="seller"/>
+    <NavigationNavBarUnified
+      :keep_button_hovered="search_button_hovered"
+      @toggleSearchBox="toggleSearch()"
+      @cartClicked="toggleCart"
+      :signedIn="loggedIn"
+      :isSeller="seller"
+      :showCart="true"
+      :showMarketplaceLink="false"
+    />
     <Search @toggleSearchBox="toggleSearch()" :searchBoxState="searchBox" />
     <div class="mt-16 mb-8 py-6 min-h-screen">
       <slot/>
