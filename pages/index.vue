@@ -2,7 +2,11 @@
   <div class="select-none">
     <Search @toggleSearchBox="toggleSearch()" :searchBoxState="searchBox" />
     <header>
-      <NavigationNavBar :keep_button_hovered="search_button_hovered" @toggleSearchBox="toggleSearch()"/>
+      <NavigationNavBar
+        :keep_button_hovered="search_button_hovered"
+        @toggleSearchBox="toggleSearch()"
+        :showMarketplaceLink="true"
+      />
       <div class="py-36 lg:py-48 2xl:py-56 hero-bg grid place-items-center">
         <Container class="flex justify-between w-full">
           <div class="w-full md:w-2/3 lg:w-1/2">
@@ -32,7 +36,7 @@
 
           <div>
             <UiTypographyH3 class="flex items-center gap-3 mb-2">
-              <span> <img src="/images/icons/checked_circle.svg" class="w-7 h-7" alt=""> </span> 
+              <span> <img src="/images/icons/checked_circle.svg" class="w-7 h-7" alt=""> </span>
               The best for every budget
             </UiTypographyH3>
             <UiTypographyP>Find high-quality services at every price point. No hourly rates, just project-based pricing.</UiTypographyP>
@@ -40,7 +44,7 @@
 
           <div>
             <UiTypographyH3 class="flex items-center gap-3 mb-2">
-              <span> <img src="/images/icons/checked_circle.svg" class="w-7 h-7" alt=""> </span> 
+              <span> <img src="/images/icons/checked_circle.svg" class="w-7 h-7" alt=""> </span>
               Quality work done quickly
             </UiTypographyH3>
             <UiTypographyP>Find the right freelancer to begin working on your project within minutes.</UiTypographyP>
@@ -48,7 +52,7 @@
 
           <div>
             <UiTypographyH3 class="flex items-center gap-3 mb-2">
-              <span> <img src="/images/icons/checked_circle.svg" class="w-7 h-7" alt=""> </span> 
+              <span> <img src="/images/icons/checked_circle.svg" class="w-7 h-7" alt=""> </span>
               Protected payments, every time
             </UiTypographyH3>
             <UiTypographyP>Always know what you'll pay upfront. Your payment isn't released until you receive the product or approve the work.</UiTypographyP>
@@ -56,7 +60,7 @@
 
           <div>
             <UiTypographyH3 class="font-medium text-lg text-secondary flex items-center gap-3 mb-2">
-              <span> <img src="/images/icons/checked_circle.svg" class="w-7 h-7" alt=""> </span> 
+              <span> <img src="/images/icons/checked_circle.svg" class="w-7 h-7" alt=""> </span>
               24/7 support
             </UiTypographyH3>
             <UiTypographyP>Questions? Our round-the-clock support team is available to help anytime, anywhere.</UiTypographyP>
@@ -95,8 +99,8 @@
           <UiButtonsTertiary :flexdisplay="true"
           @clicked="selectCategory(item.id)" >
             {{  truncateText(item.name, {
-              maxWidth: 15,       
-              breakpoints: { 
+              maxWidth: 15,
+              breakpoints: {
                 desktop: true,
               }
             }) }}
@@ -136,19 +140,19 @@ const toggleSearch = () => {
 async function selectCategory(id) {
   // Get the current location ID directly from the store
   const locationId = productFilters.selectedLocationId?.value
-  
+
   // Create the query parameters
   const query = { category: id }
   if (locationId) {
     query.location = locationId
   }
-  
+
   // Navigate first
   await router.push({
     path: locationId ? '/marketplace/subcategories' : '/marketplace/locations',
     query
   })
-  
+
   // Update the state after navigation
   productFilters.selectCategory(id)
 }
