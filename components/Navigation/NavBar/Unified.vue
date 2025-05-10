@@ -32,15 +32,15 @@
             <UiButtonsSecondary @clicked="switchToSelling" class="text-sm whitespace-nowrap">Switch to Selling</UiButtonsSecondary>
           </li>
           <li v-if="isCustomer && showRoleSwitch">
-            <UiButtonsSecondary @clicked="switchToBuying" class="text-sm whitespace-nowrap">Switch to Buying</UiButtonsSecondary>
+            <UiButtonsSecondary @clicked="switchToBuying" class="text-sm whitespace-nowrap">Dashboard</UiButtonsSecondary>
           </li>
 
           <!-- Optional features -->
           <li v-if="showCart">
-            <UiButtonsTertiary :flexdisplay="true" @clicked="$emit('cartClicked')" class="text-sm">
-              <UiIconsCart class="w-5" />
-              <span class="whitespace-nowrap">Cart</span>
-            </UiButtonsTertiary>
+            <button @click="$emit('cartClicked')" class="p-2 transition-colors duration-200 relative">
+              <UiIconsCart class="w-5 h-5 text-secondary hover:text-primary transition-colors duration-200" />
+              <!-- Optional cart item count badge could be added here -->
+            </button>
           </li>
 
           <!-- User profile dropdown (common for authenticated users) -->
@@ -81,7 +81,7 @@
       </div>
 
       <!-- Mobile Menu Toggle -->
-      <div class="flex items-center gap-6">
+      <div class="flex items-center gap-6 md:hidden">
         <UiButtonsSecondary @clicked="toggleSearchBox()" class="flex gap-2 group items-center md:hidden">
           <UiIconsSearch :class="keep_button_hovered ? 'text-primary' : 'text-secondary'" class="group-hover:text-primary w-5 h-5 duration-500 ease-in-out"></UiIconsSearch>
           <span :class="keep_button_hovered ? 'text-primary border-primary' : ''">Search</span>
@@ -232,7 +232,7 @@ function switchToSelling() {
 }
 
 function switchToBuying() {
-  console.log('Switch to buying clicked')
+  console.log('Dashboard clicked')
   const route = {
     name: 'username-buying-dashboard',
     params: { username: username.value }
