@@ -1,11 +1,9 @@
 <template>
   <div class="bg-white">
-    <NavigationNavBarUnified
+    <NavigationNavBar
       :keep_button_hovered="search_button_hovered"
       @toggleSearchBox="toggleSearch()"
       @cartClicked="toggleCart"
-      :signedIn="loggedIn"
-      :isSeller="seller"
       :showCart="true"
       :showMarketplaceLink="false"
     />
@@ -31,8 +29,6 @@ export default {
       searchBox: false,
       search_button_hovered: false,
       openCart: false,
-      loggedIn: true,
-      seller: true,
     }
   },
 
