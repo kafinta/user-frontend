@@ -34,7 +34,7 @@
           <UiButtonsTertiary class="flex gap-3 items-center justify-start w-full" :flexdisplay="true">
             <div class="relative">
               <UiIconsNotifications class="w-5 h-5" />
-              <UiIconsPopup v-if="hasNotifications" class="h-2 w-2 -top-0.5 right-0 absolute"></UiIconsPopup>
+              <Badge value="1" size="small" v-if="hasNotifications" class="h-2 w-2 -top-0.5 -right-0.5 absolute scale-75"></Badge>
             </div>
             <span>Notifications</span>
           </UiButtonsTertiary>
@@ -61,7 +61,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useAuthStore } from '~/stores/auth'
 
 // Auth store
