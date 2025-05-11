@@ -109,10 +109,6 @@
       <!-- Mobile Menu (rendered conditionally) -->
       <NavigationNavBarMobile
         :menu_revealed="menuRevealed"
-        :isSeller="isSeller"
-        :isCustomer="isCustomer"
-        :signedIn="isAuthenticated"
-        :username="username"
         :showMarketplaceLink="showMarketplaceLink"
         :hasNotifications="hasNotifications"
         @cartClicked="$emit('cartClicked')"
@@ -123,7 +119,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '~/stores/auth'
 
@@ -135,25 +131,7 @@ const props = defineProps({
   },
 
   // UI state
-  keep_button_hovered: Boolean,
-
-  // User data
-  signedIn: {
-    type: Boolean,
-    default: undefined
-  },
-  username: {
-    type: String,
-    default: undefined
-  },
-  isSeller: {
-    type: Boolean,
-    default: undefined
-  },
-  isCustomer: {
-    type: Boolean,
-    default: undefined
-  }
+  keep_button_hovered: Boolean
 })
 
 // Emits
@@ -182,11 +160,13 @@ const user_options = ref(false)
 const search_input = ref('')
 const hasNotifications = ref(true) // Set to true to show the notification indicator by default
 
-// Computed properties
-const isAuthenticated = computed(() => props.signedIn !== undefined ? props.signedIn : authStore.isAuthenticated)
-const username = computed(() => props.username !== undefined ? props.username : authStore.user?.username || 'user')
-const isSeller = computed(() => props.isSeller !== undefined ? props.isSeller : authStore.isSeller)
-const isCustomer = computed(() => props.isCustomer !== undefined ? props.isCustomer : authStore.isCustomer)
+// Computed properties - directly from auth store
+const isAuthenticated = computed(() => authStore.isAuthenticated)
+const username = computed(() => authStore.user?.username || 'user')
+// isSeller is used in the template for conditional rendering
+const isSeller = computed(() => authStore.isSeller)
+// isCustomer is used in the template for conditional rendering
+const isCustomer = computed(() => authStore.isCustomer)
 
 // Methods
 function toggleMenu() {
@@ -234,24 +214,6 @@ function switchToSelling() {
   }
 }
 
-// Function removed as Dashboard button was removed
-// Kept as a comment in case it needs to be restored in the future
-/*
-function switchToBuying() {
-  console.log('Dashboard clicked')
-  const route = {
-    name: 'username-buying-dashboard',
-    params: { username: username.value }
-  }
-  emit('switchMode', { mode: 'buyer', route })
-  try {
-    router.push(route)
-  } catch (error) {
-    console.error('Navigation error:', error)
-  }
-}
-*/
-
 function navigateTo(path) {
   console.log('Navigate to:', path)
   emit('navigate', { path, type: 'button' })
@@ -266,8 +228,9 @@ function logout() {
   console.log('Logout clicked')
   emit('logout')
   try {
+    // Just call logout - the auth store will handle page reload
     authStore.logout().then(() => {
-      router.push('/auth/login')
+      // Close the user options menu before page reload
       user_options.value = false
     })
   } catch (error) {
