@@ -119,11 +119,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vsue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '~/stores/auth';
 
-// Props with defaults
+// Props with validation - only UI-related props remain
 const props = defineProps({
   showMarketplaceLink: {
     type: Boolean,
@@ -132,7 +132,7 @@ const props = defineProps({
 
   // UI state
   keep_button_hovered: Boolean
-})
+});
 
 // Emits
 const emit = defineEmits([
@@ -142,7 +142,7 @@ const emit = defineEmits([
   'navigate',
   'switchMode',
   'logout'
-])
+]);
 
 // Router
 const router = useRouter()
