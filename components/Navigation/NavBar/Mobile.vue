@@ -61,29 +61,18 @@
 </template>
 
 <script setup>
-// Props with validation
+import { computed } from 'vue'
+import { useAuthStore } from '~/stores/auth'
+
+// Auth store
+const authStore = useAuthStore()
+
+// Props with validation - only UI-related props remain
 const props = defineProps({
   menu_revealed: {
     type: Boolean,
     default: false
   },
-  signedIn: {
-    type: Boolean,
-    default: false
-  },
-  isSeller: {
-    type: Boolean,
-    default: false
-  },
-  isCustomer: {
-    type: Boolean,
-    default: false
-  },
-  username: {
-    type: String,
-    default: 'user'
-  },
-  profileImagePath: String,
   showMarketplaceLink: {
     type: Boolean,
     default: true
@@ -101,6 +90,12 @@ const props = defineProps({
     default: true
   }
 })
+
+// Computed properties - directly from auth store
+const signedIn = computed(() => authStore.isAuthenticated)
+const username = computed(() => authStore.user?.username || 'user')
+const isSeller = computed(() => authStore.isSeller)
+const isCustomer = computed(() => authStore.isCustomer)
 
 // Emit events
 const emit = defineEmits(['cartClicked', 'logout'])
