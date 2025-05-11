@@ -306,6 +306,11 @@ export const useAuthStore = defineStore('auth', () => {
       status.value = 'success'
       message.value = 'Successfully logged out'
 
+      // Reload the page instead of redirecting to login
+      if (import.meta.client) {
+        window.location.reload()
+      }
+
       return {
         status: 'success',
         message: 'Successfully logged out'
@@ -319,6 +324,11 @@ export const useAuthStore = defineStore('auth', () => {
 
       status.value = 'success'
       message.value = 'Successfully logged out'
+
+      // Reload the page instead of redirecting to login, even on error
+      if (import.meta.client) {
+        window.location.reload()
+      }
 
       return {
         status: 'success',
