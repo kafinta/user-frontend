@@ -59,9 +59,9 @@ import '@splidejs/vue-splide/css'
 // Define Splide options
 const splideOptions = {
   type: 'loop',
-  perPage: 3, // Default for large screens
+  perPage: 3, // 3 slides on large screens
   perMove: 1,
-  gap: '.5rem',
+  gap: '1rem',
   lazyLoad: 'nearby',
   arrows: true,
   pagination: false, // No pagination dots
@@ -70,27 +70,35 @@ const splideOptions = {
   fixedWidth: false, // Use percentage-based sizing for larger screens
   rewind: true, // Allow rewinding from last to first slide
   padding: { right: 0, left: 0 }, // No padding for larger screens (no peek)
+  speed: 400, // Animation speed
+
+  // IMPORTANT: In Splide, breakpoints define the max-width where settings apply
+  // So 1024 means "apply these settings when width <= 1024px"
   breakpoints: {
-    // Breakpoints are defined from smallest to largest
-    640: {
-      perPage: 1,
-      fixedWidth: '90%', // 90% width on mobile
-      focus: 'center', // Center focus for even peek on both sides
-      padding: { right: '5%', left: '5%' }, // Small padding for peek effect on mobile
+    1280: { // For screens <= 1280px
+      perPage: 3, // Still 3 slides but with explicit settings
+      fixedWidth: false,
+      focus: 0,
+      padding: { right: 0, left: 0 },
     },
-    768: {
-      perPage: 1,
-      fixedWidth: '80%', // 70% width on tablet
-      focus: 'center', // Center focus for even peek on both sides
-      padding: { right: '10%', left: '10%' }, // Even padding on both sides for peek effect
-    },
-    1024: {
+    1024: { // For screens <= 1024px (desktop)
       perPage: 2, // 2 slides on desktop (medium screens)
       fixedWidth: false, // Use percentage-based sizing
       focus: 0, // Focus on first slide
       padding: { right: 0, left: 0 }, // No padding (no peek)
     },
-    // Default for large screens is 3 slides (defined above)
+    768: { // For screens <= 768px (tablet)
+      perPage: 1,
+      fixedWidth: '70%', // 70% width on tablet as requested
+      focus: 'center', // Center focus for even peek on both sides
+      padding: { right: '15%', left: '15%' }, // Even padding on both sides for peek effect
+    },
+    640: { // For screens <= 640px (mobile)
+      perPage: 1,
+      fixedWidth: '90%', // 90% width on mobile as requested
+      focus: 'center', // Center focus for even peek on both sides
+      padding: { right: '5%', left: '5%' }, // Small padding for peek effect on mobile
+    },
   },
 }
 
