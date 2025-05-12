@@ -9,7 +9,7 @@
           </div>
           <UiButtonsSecondary @clicked="navigateToAllLocations" class="flex gap-1 items-center">
             See All
-            <UiIconsAccordion class="transform rotate-90 w-4 h-4" />
+            <UiIconsChevron class="transform rotate-90 w-4 h-4" />
           </UiButtonsSecondary>
         </div>
         <ul class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-3 mt-6">
