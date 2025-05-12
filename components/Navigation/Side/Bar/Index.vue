@@ -12,7 +12,7 @@
           <!-- Navigation menu items - conditional rendering based on mode -->
           <!-- Seller navigation items -->
           <template v-if="currentMode === 'seller'">
-            <template v-for="(item, index) in sellerNavigationItems" :key="`seller-${index}`">
+            <template v-for="item in sellerNavigationItems" :key="item.text">
               <nuxt-link
                 v-if="item.showWhen ? item.showWhen() : true"
                 :to="item.to"
@@ -21,6 +21,7 @@
                   :menu_text="item.text"
                   :is_active="isRouteActive(item.route)"
                   :isSeller="item.requiresSeller ? isSeller : true"
+                  :disabled="onboardingActive && item.text !== 'Onboarding'"
                 >
                   <component :is="iconComponents[item.icon]" />
                 </NavigationSideMenu>
@@ -30,7 +31,7 @@
 
           <!-- Buyer navigation items -->
           <template v-else>
-            <template v-for="(item, i) in buyerNavigationItems" :key="`buyer-${i}`">
+            <template v-for="item in buyerNavigationItems" :key="item.text">
               <nuxt-link :to="item.to">
                 <NavigationSideMenu
                   :menu_text="item.text"
@@ -151,6 +152,7 @@
 import { onMounted, watch, computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '~/stores/auth';
+import { useOnboarding } from '~/composables/useOnboarding';
 
 // Import icon components
 import UiIconsProfile from '~/components/Ui/Icons/Profile.vue';
@@ -226,7 +228,8 @@ const sellerNavigationItems = computed(() => [
     to: { name: 'username-selling-onboarding', params: { username: props.username } },
     icon: 'UiIconsProfile',
     requiresSeller: false,
-    showWhen: () => !props.isSeller
+    // Always show onboarding when it's active or when user is not a seller
+    showWhen: () => onboardingState.isOnboardingActive.value || !props.isSeller
   },
   {
     text: 'Dashboard',
@@ -280,6 +283,15 @@ const buyerNavigationItems = computed(() => [
   //   icon: 'UiIconsTransactions'
   // }
 ]);
+
+// Get onboarding state
+const onboardingState = useOnboarding();
+
+// Check if onboarding is active
+const onboardingActive = computed(() => {
+  // Consider onboarding active if onboarding state is active
+  return onboardingState.isOnboardingActive.value;
+});
 
 // Check if a route is active based on the current route
 const isRouteActive = (routeSegment) => {
