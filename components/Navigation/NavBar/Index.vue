@@ -83,10 +83,10 @@
             <UiButtonsSecondary :url="{path: '/marketplace/'}" class="text-sm whitespace-nowrap">Marketplace</UiButtonsSecondary>
           </li>
           <li>
-            <UiButtonsSecondary @clicked="navigateTo('/auth/login')" class="text-sm whitespace-nowrap">Sign In</UiButtonsSecondary>
+            <UiButtonsSecondary :url="{path: '/auth/login'}" class="text-sm whitespace-nowrap">Sign In</UiButtonsSecondary>
           </li>
           <li>
-            <UiButtonsPrimary @clicked="navigateTo('/auth/signup')" class="text-sm whitespace-nowrap">Sign Up</UiButtonsPrimary>
+            <UiButtonsPrimary :url="{path: '/auth/signup'}" class="text-sm whitespace-nowrap">Sign Up</UiButtonsPrimary>
           </li>
         </ul>
       </div>
