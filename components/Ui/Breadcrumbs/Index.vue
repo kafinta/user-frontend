@@ -5,14 +5,14 @@
       <li>
         <slot name="home">
           <nuxt-link :to="homeRoute" class="breadcrumb-link" aria-label="Home">
-            <i class="hover:text-primary duration-300 pi pi-home"></i>
+            <UiIconsHome class="w-5 h-5 hover:text-primary duration-300" />
           </nuxt-link>
         </slot>
       </li>
 
       <!-- First separator -->
       <li v-if="validatedModel.length > 0" aria-hidden="true">
-        <i class="pi pi-angle-right"></i>
+        <UiIconsAccordion class="w-3 h-3 rotate-90" />
       </li>
 
       <!-- Dynamic breadcrumb items -->
@@ -36,7 +36,7 @@
 
         <!-- Add separator except after the last item -->
         <li v-if="index < validatedModel.length - 1" aria-hidden="true">
-          <i class="pi pi-angle-right"></i>
+          <UiIconsAccordion class="w-3 h-3 rotate-90" />
         </li>
       </template>
     </ol>
