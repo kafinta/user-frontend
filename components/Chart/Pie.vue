@@ -28,16 +28,23 @@ export default {
     }
   },
   computed: {
+    // Get the actual value, handling both primitive values and ref objects
+    actualValue() {
+      // Check if value is a ref object with a value property
+      if (this.value && typeof this.value === 'object' && 'value' in this.value) {
+        return Number(this.value.value) || 0;
+      }
+      // Otherwise treat as a primitive
+      return Number(this.value) || 0;
+    },
     percentage() {
-      // Ensure we have valid numbers and handle edge cases
-      const val = Number(this.value) || 0;
+      // Use actualValue to calculate percentage
       const maximum = Number(this.max) || 100;
-      return (val / maximum) * 100;
+      return (this.actualValue / maximum) * 100;
     },
     formattedValue() {
-      // Ensure we have a valid number
-      const val = Number(this.value) || 0;
-      return this.decimals > 0 ? val.toFixed(this.decimals) : Math.round(val);
+      // Use actualValue for formatting
+      return this.decimals > 0 ? this.actualValue.toFixed(this.decimals) : Math.round(this.actualValue);
     },
     displayValue() {
       return `${this.formattedValue}${this.isPercent ? '%' : ''}`;
