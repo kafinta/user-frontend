@@ -12,7 +12,7 @@
 
       <!-- First separator -->
       <li v-if="validatedModel.length > 0" aria-hidden="true">
-        <UiIconsAccordion class="w-3 h-3 rotate-90" />
+        <UiIconsChevron class="w-3 h-3 rotate-90" />
       </li>
 
       <!-- Dynamic breadcrumb items -->
@@ -36,7 +36,7 @@
 
         <!-- Add separator except after the last item -->
         <li v-if="index < validatedModel.length - 1" aria-hidden="true">
-          <UiIconsAccordion class="w-3 h-3 rotate-90" />
+          <UiIconsChevron class="w-3 h-3 rotate-90" />
         </li>
       </template>
     </ol>
