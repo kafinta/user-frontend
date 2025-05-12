@@ -42,11 +42,15 @@ const props = defineProps({
   isSeller: {
     type: Boolean,
     default: true
+  },
+  disabled: {
+    type: Boolean,
+    default: false
   }
 });
 
 // Computed properties for better performance
-const isDisabled = computed(() => !props.isSeller);
+const isDisabled = computed(() => props.disabled || (!props.isSeller && props.menu_text !== 'Onboarding'));
 
 const iconColorClass = computed(() => {
   if (isDisabled.value) return 'text-accent-400';
