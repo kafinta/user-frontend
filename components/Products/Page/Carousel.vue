@@ -12,12 +12,12 @@
     <div class="glide__arrows flex justify-between h-fit absolute w-full px-6" data-glide-el="controls">
         <button class="glide__arrow glide__arrow--left" data-glide-dir="<">
           <div class="bg-secondary aspect-square rounded-full p-1.5 hover:bg-primary duration-300 bg-opacity-75">
-            <UiIconsAccordion class="w-7 h-7 -rotate-90 text-white" />
+            <UiIconsChevron class="w-7 h-7 -rotate-90 text-white" />
           </div>
         </button>
         <button class="glide__arrow glide__arrow--right" data-glide-dir=">">
           <div class="bg-secondary aspect-square rounded-full p-1.5 hover:bg-primary duration-300 bg-opacity-75">
-            <UiIconsAccordion class="w-7 h-7 rotate-90 text-white" />
+            <UiIconsChevron class="w-7 h-7 rotate-90 text-white" />
           </div>
         </button>
     </div>
