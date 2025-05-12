@@ -12,7 +12,7 @@
     >
       <!-- This slot will handle the title/header of the accordion and is the part you click on -->
       <slot name="accordion-trigger"></slot>
-      <UiIconsAccordion :class="item.rotate ? 'rotate-0' : 'rotate-180'" class="w-4 h-4 transition-all"/>
+      <UiIconsChevron :class="item.rotate ? 'rotate-0' : 'rotate-180'" class="w-4 h-4 transition-all"/>
     </div>
 
     <transition
