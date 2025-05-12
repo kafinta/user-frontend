@@ -132,7 +132,7 @@ import { useAuthStore } from '~/stores/auth';
 
 // Import icon components
 import UiIconsProfile from '~/components/Ui/Icons/Profile.vue';
-import UiIconsOverview from '~/components/Ui/Icons/Overview.vue';
+import UiIconsHome from '~/components/Ui/Icons/Home.vue';
 import UiIconsGigs from '~/components/Ui/Icons/Gigs.vue';
 import UiIconsCart from '~/components/Ui/Icons/Cart.vue';
 import UiIconsTransactions from '~/components/Ui/Icons/Transactions.vue';
@@ -141,7 +141,7 @@ import UiIconsSettings from '~/components/Ui/Icons/Settings.vue';
 // Map icon names to their component references
 const iconComponents = {
   'UiIconsProfile': UiIconsProfile,
-  'UiIconsOverview': UiIconsOverview,
+  'UiIconsHome': UiIconsHome,
   'UiIconsGigs': UiIconsGigs,
   'UiIconsCart': UiIconsCart,
   'UiIconsTransactions': UiIconsTransactions,
@@ -197,7 +197,7 @@ const sellerNavigationItems = computed(() => [
     text: 'Dashboard',
     route: 'dashboard',
     to: { name: 'username-selling-dashboard', params: { username: props.username } },
-    icon: 'UiIconsOverview',
+    icon: 'UiIconsHome',
     requiresSeller: true
   },
   {
@@ -229,7 +229,7 @@ const buyerNavigationItems = computed(() => [
     text: 'Dashboard',
     route: 'dashboard',
     to: { name: 'username-buying-dashboard', params: { username: props.username } },
-    icon: 'UiIconsOverview'
+    icon: 'UiIconsHome'
   },
   {
     text: 'Cart',
