@@ -42,20 +42,19 @@ definePageMeta({
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useOnboarding } from "@/composables/useOnboarding.ts";
-import onboardingMiddleware from "~/middleware/onboarding";
 
 const router = useRouter();
 const email_verified = ref(true);
 const profile_created = ref(false);
 const kyc_verified = ref(false);
-const percentage = ref(onboardingMiddleware.percentage);
+const percentage = ref(0);
 
 onMounted(() => {
-  const { onboarding } = useOnboarding();
-  document.documentElement.style.setProperty('--percent', `${onboarding.percentage}%`);
+  // Reset percentage to calculate fresh
+  percentage.value = 0;
 
+  // Calculate percentage based on completed steps
   if (email_verified.value === true) {
-    onboarding.percentage += 20;
     percentage.value += 20;
   }
 
@@ -67,7 +66,15 @@ onMounted(() => {
     percentage.value += 40;
   }
 
-  if (percentage.value == 100) {
+  // Update the onboarding composable for potential use elsewhere
+  const { onboarding } = useOnboarding();
+  onboarding.percentage = percentage.value;
+
+  // Set CSS variable if needed for other components
+  document.documentElement.style.setProperty('--percent', `${percentage.value}%`);
+
+  // Redirect if all steps are completed
+  if (percentage.value >= 100) {
     router.push({ name: 'username-selling-dashboard' });
   }
 });
