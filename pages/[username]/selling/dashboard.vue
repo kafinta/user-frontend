@@ -35,7 +35,7 @@
         <UiTypographyH3>Active Orders</UiTypographyH3>
         <UiButtonsSecondary @clicked="$router.push({name: 'username-selling-orders'})" class="flex gap-1 items-center">
             See All
-          <UiIconsAccordion class="transform rotate-90 w-4 h-4" />
+          <UiIconsChevron class="transform rotate-90 w-4 h-4" />
         </UiButtonsSecondary>
       </div>
       <ul class="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 mt-4">
@@ -47,7 +47,7 @@
         <UiTypographyH3>Top Products</UiTypographyH3>
         <UiButtonsSecondary @clicked="$router.push({name: 'username-selling-products'})" class="flex gap-1 items-center">
             See All
-        <UiIconsAccordion class="transform rotate-90 w-4 h-4" />
+        <UiIconsChevron class="transform rotate-90 w-4 h-4" />
         </UiButtonsSecondary>
       </div>
       <ul class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-4">
