@@ -8,27 +8,43 @@
         </div>
       </div>
 
-      <Carousel 
-        v-if="professionals.length"
-        :value="professionals" 
-        :numVisible="numVisibleItems" 
-        :numScroll="1" 
-        :responsiveOptions="responsiveOptions" 
-        :showIndicators="false"
-        circular
-        containerClass="mt-5"
-      >
-        <template #item="slotProps">
-          <div class="mx-2 list-none">
-            <ProductsCard class=""
-              :title="slotProps.data.title" 
-              :image="slotProps.data.backgroundImagePath" 
-              :urlPath="slotProps.data.urlPath" 
-            />
-          </div>
-        </template>
-      </Carousel>
-      <div v-else class="mt-5">
+      <!-- Splide Carousel -->
+      <div v-if="professionals.length" class="mt-5">
+        <Splide
+          :options="splideOptions"
+          :aria-label="'Trending Products carousel'"
+        >
+          <SplideSlide v-for="professional in professionals" :key="professional.id">
+            <div class="carousel-item-wrapper">
+              <ProductsCard
+                :title="professional.title"
+                :image="professional.backgroundImagePath"
+                :urlPath="professional.urlPath"
+              />
+            </div>
+          </SplideSlide>
+
+          <!-- Custom arrows using slots -->
+          <template #arrows="{ splide }">
+            <div class="splide__arrows">
+              <button
+                class="splide__arrow splide__arrow--prev"
+                @click="splide.go('<')"
+              >
+                <UiIconsArrow class="w-4 h-4 rotate-180" />
+              </button>
+              <button
+                class="splide__arrow splide__arrow--next"
+                @click="splide.go('>')"
+              >
+                <UiIconsArrow class="w-4 h-4" />
+              </button>
+            </div>
+          </template>
+        </Splide>
+      </div>
+
+      <div v-if="!professionals.length" class="mt-5">
         <UiTypographyP>No professionals found</UiTypographyP>
       </div>
     </div>
@@ -36,45 +52,49 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useWindowSize } from '@vueuse/core'
+import { Splide, SplideSlide } from '@splidejs/vue-splide'
+// Import Splide CSS
+import '@splidejs/vue-splide/css'
 
-const { width } = useWindowSize()
+// Define Splide options
+const splideOptions = {
+  type: 'loop',
+  perPage: 3, // Default for large screens
+  perMove: 1,
+  gap: '.5rem',
+  lazyLoad: 'nearby',
+  arrows: true,
+  pagination: false, // No pagination dots
+  autoplay: false,
+  focus: 0, // Focus on first slide
+  fixedWidth: false, // Use percentage-based sizing for larger screens
+  rewind: true, // Allow rewinding from last to first slide
+  padding: { right: 0, left: 0 }, // No padding for larger screens (no peek)
+  breakpoints: {
+    // Breakpoints are defined from smallest to largest
+    640: {
+      perPage: 1,
+      fixedWidth: '90%', // 90% width on mobile
+      focus: 'center', // Center focus for even peek on both sides
+      padding: { right: '5%', left: '5%' }, // Small padding for peek effect on mobile
+    },
+    768: {
+      perPage: 1,
+      fixedWidth: '80%', // 70% width on tablet
+      focus: 'center', // Center focus for even peek on both sides
+      padding: { right: '10%', left: '10%' }, // Even padding on both sides for peek effect
+    },
+    1024: {
+      perPage: 2, // 2 slides on desktop (medium screens)
+      fixedWidth: false, // Use percentage-based sizing
+      focus: 0, // Focus on first slide
+      padding: { right: 0, left: 0 }, // No padding (no peek)
+    },
+    // Default for large screens is 3 slides (defined above)
+  },
+}
 
-const responsiveOptions = [
-  {
-    breakpoint: '1280px',
-    numVisible: 3,
-    numScroll: 1
-  },
-  {
-    breakpoint: '1024px',
-    numVisible: 2,
-    numScroll: 1
-  },
-  {
-    breakpoint: '768px',
-    numVisible: 2,
-    numScroll: 1
-  },
-  {
-    breakpoint: '640px',
-    numVisible: 1,
-    numScroll: 1
-  }
-];
-
-const numVisibleItems = computed(() => {
-  const currentWidth = width.value
-  
-  for (let i = responsiveOptions.length - 1; i >= 0; i--) {
-    if (currentWidth <= parseInt(responsiveOptions[i].breakpoint)) {
-      return responsiveOptions[i].numVisible
-    }
-  }
-  
-  return responsiveOptions[0].numVisible
-})
+// No skeleton loading needed for this component as we're not showing skeletons
 
 const professionals = [
   {
@@ -127,3 +147,68 @@ const professionals = [
   },
 ];
 </script>
+
+<style scoped>
+/* Splide styles */
+.carousel-item-wrapper {
+  padding: 0 8px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom Splide styles */
+:deep(.splide__arrow) {
+  background: black;
+  width: 2.5rem;
+  height: 2.5rem;
+  opacity: .8;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+  z-index: 10;
+}
+
+:deep(.splide__arrow:hover) {
+  background: var(--primary-500, #C9B14F);
+}
+
+:deep(.splide__arrow svg) {
+  fill: white;
+  width: 1.2em;
+  height: 1.2em;
+}
+
+/* Make sure the carousel takes full width */
+:deep(.splide) {
+  width: 100%;
+  position: relative;
+}
+
+/* Position arrows inside the padding area */
+:deep(.splide__arrows) {
+  position: absolute;
+  width: calc(100% - 2rem);
+  top: 50%;
+  left: 1rem;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 10;
+}
+
+:deep(.splide__arrow) {
+  position: relative;
+  transform: none;
+  top: auto;
+  left: auto;
+  right: auto;
+  pointer-events: auto;
+}
+
+/* Remove negative margins that cause overflow */
+:deep(.splide__list) {
+  margin: 0 !important;
+}
+</style>
