@@ -24,20 +24,20 @@
   </div>
 </template>
 <script>
-import Glide from '@glidejs/glide'
+// import Glide from '@glidejs/glide'
 export default {
   mounted(){
-    const productsSlider = document.querySelectorAll(`.pictures`);
-    productsSlider.forEach((picture) => {
-      new Glide(picture, {
-        type: 'carousel',
-        focusAt: 'center',
-        gap: 0,
-        peek: 0,
-        animationDuration: 500,
-        perView: 1
-      }).mount();
-    });
+    // const productsSlider = document.querySelectorAll(`.pictures`);
+    // productsSlider.forEach((picture) => {
+    //   new Glide(picture, {
+    //     type: 'carousel',
+    //     focusAt: 'center',
+    //     gap: 0,
+    //     peek: 0,
+    //     animationDuration: 500,
+    //     perView: 1
+    //   }).mount();
+    // });
   }
 }
 </script>
