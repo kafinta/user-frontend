@@ -1,4 +1,4 @@
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useAuthStore } from '~/stores/auth';
 
 export function useOnboarding() {
@@ -9,29 +9,26 @@ export function useOnboarding() {
   const phoneVerified = ref(false);
   const profileCreated = ref(false);
   const kycVerified = ref(false);
+  const isClient = ref(false);
 
   // Create a computed property for email verification that properly tracks auth state
   const emailVerified = computed(() => {
-    console.log('Computing emailVerified, auth.isVerified:', auth.isVerified);
+    if (!isClient.value) return false;
     return auth.isVerified === true;
-  });
-
-  // Debug auth state
-  console.log('Auth store state:', {
-    isVerified: auth.isVerified,
-    isAuthenticated: auth.isAuthenticated,
-    user: auth.user
   });
 
   // Computed percentage that automatically updates when any verification state changes
   const percentage = computed(() => {
+    if (!isClient.value) return 0;
+    
     let total = 0;
 
     console.log('Calculating percentage with states:', {
       emailVerified: emailVerified.value,
       phoneVerified: phoneVerified.value,
       profileCreated: profileCreated.value,
-      kycVerified: kycVerified.value
+      kycVerified: kycVerified.value,
+      isClient: isClient.value
     });
 
     if (emailVerified.value) {
@@ -52,6 +49,16 @@ export function useOnboarding() {
 
     console.log('Final calculated percentage:', total);
     return total;
+  });
+
+  // Set isClient to true on mount
+  onMounted(() => {
+    isClient.value = true;
+    console.log('Onboarding composable mounted, auth state:', {
+      isVerified: auth.isVerified,
+      isAuthenticated: auth.isAuthenticated,
+      user: auth.user
+    });
   });
 
   // Watch for changes in auth verification state
