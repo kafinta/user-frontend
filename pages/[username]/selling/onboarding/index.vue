@@ -14,8 +14,8 @@
         <UiTypographyH3>Verify Email</UiTypographyH3>
         <UiTypographyP>We need to verify your access to the email you used during registration.</UiTypographyP>
         <ClientOnly>
-          <UiButtonsPrimary v-if="onboardingState.emailVerified" disabled class="mt-6">Verified</UiButtonsPrimary>
-          <UiButtonsPrimary :url="{path: 'username-'}" v-else class="mt-6">Verify Email</UiButtonsPrimary >
+          <UiButtonsPrimary v-if="onboardingState.emailVerified.value" disabled class="mt-6">Verified</UiButtonsPrimary>
+          <UiButtonsPrimary :url="{path: 'email'}" v-else class="mt-6">Verify Email</UiButtonsPrimary >
         </ClientOnly>
       </li>
       <li class="p-5 rounded-xl border border-accent-200">
