@@ -1,7 +1,7 @@
 <template>
   <div class="grid grid-cols-2 gap-5">
     <div v-for="item in breakdown" :key="item.id">
-      <ChartPie :value="item.value" :max="5" />
+      <ChartPie :value="item.value" :max="5" :decimals="hasDecimal(item.value) ? 1 : 0" />
       <UiTypographyP class="text-center mt-3">{{ item.title}}</UiTypographyP>
     </div>
   </div>
@@ -32,6 +32,11 @@ export default {
           title: 'Shipping'
         },
       ]
+    }
+  },
+  methods: {
+    hasDecimal(value) {
+      return value % 1 !== 0;
     }
   }
 }
