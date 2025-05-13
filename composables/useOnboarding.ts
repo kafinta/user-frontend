@@ -1,7 +1,7 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import { useAuthStore } from '~/stores/auth';
 
-export function useOnboarding() {
+export const useOnboarding = () => {
   const auth = useAuthStore();
 
   // Create a reactive state that persists across component instances
@@ -20,35 +20,16 @@ export function useOnboarding() {
   // Computed percentage that automatically updates when any verification state changes
   const percentage = computed(() => {
     if (!isClient.value) return 0;
+
+    const steps = [
+      emailVerified.value,
+      phoneVerified.value,
+      profileCreated.value,
+      kycVerified.value
+    ];
     
-    let total = 0;
-
-    console.log('Calculating percentage with states:', {
-      emailVerified: emailVerified.value,
-      phoneVerified: phoneVerified.value,
-      profileCreated: profileCreated.value,
-      kycVerified: kycVerified.value,
-      isClient: isClient.value
-    });
-
-    if (emailVerified.value) {
-      total += 15; // Email verification is 15%
-    }
-
-    if (phoneVerified.value) {
-      total += 15; // Phone verification is 15%
-    }
-
-    if (profileCreated.value) {
-      total += 35; // Basic info is 35%
-    }
-
-    if (kycVerified.value) {
-      total += 35; // Identity verification is 35%
-    }
-
-    console.log('Final calculated percentage:', total);
-    return total;
+    const completedSteps = steps.filter(step => step === true).length;
+    return (completedSteps / steps.length) * 100;
   });
 
   // Set isClient to true on mount
@@ -117,4 +98,4 @@ export function useOnboarding() {
     resetOnboarding,
     completeOnboarding
   };
-}
+};
