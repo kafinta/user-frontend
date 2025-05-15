@@ -8,18 +8,27 @@
         </div>
       </div>
 
-      <!-- Splide Carousel -->
-      <div v-if="professionals.length" class="mt-5">
+      <!-- Loading state -->
+      <div v-if="isLoading" class="flex space-x-4 w-full mt-5">
+        <Skeleton
+          v-for="n in numVisibleItems"
+          :key="n"
+          height="15rem"
+        ></Skeleton>
+      </div>
+
+      <!-- Content loaded successfully -->
+      <div v-else-if="products.length" class="mt-5">
         <Splide
           :options="splideOptions"
           :aria-label="'Trending Products carousel'"
         >
-          <SplideSlide v-for="professional in professionals" :key="professional.id">
+          <SplideSlide v-for="product in products" :key="product.id">
             <div class="carousel-item-wrapper">
               <ProductsCard
-                :title="professional.title"
-                :image="professional.backgroundImagePath"
-                :urlPath="professional.urlPath"
+                :title="product.title"
+                :image="product.image_path"
+                :review="product.rating || 4.5"
               />
             </div>
           </SplideSlide>
@@ -44,179 +53,162 @@
         </Splide>
       </div>
 
-      <div v-if="!professionals.length" class="mt-5">
-        <UiTypographyP>No professionals found</UiTypographyP>
+      <!-- Error state - only shown when not loading and either there's an error or no products -->
+      <div v-else class="list-none text-center mt-5">
+        <UiTypographyP v-if="error">{{ error }}</UiTypographyP>
+        <UiTypographyP v-else>No trending products available. Check back later.</UiTypographyP>
       </div>
     </div>
   </Container>
 </template>
 
 <script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useWindowSize } from '@vueuse/core'
 import { Splide, SplideSlide } from '@splidejs/vue-splide'
-// Import Splide CSS
+// Import Splide CSS - only import once if not already imported by another component
 import '@splidejs/vue-splide/css'
+// Import shared carousel styles
+import '~/assets/css/carousel.css'
+import { useRouter } from 'vue-router'
 
-// Define Splide options
+const router = useRouter()
+const { width } = useWindowSize()
+
+// State management
+const isLoading = ref(true)
+const error = ref(null)
+const products = ref([])
+
+// Define Splide options with optimized settings specific to TopProducts
 const splideOptions = {
   type: 'loop',
-  perPage: 3, // 3 slides on large screens
+  perPage: 4, // 4 slides on extra large screens
   perMove: 1,
   gap: '1rem',
-  lazyLoad: 'nearby',
+  lazyLoad: 'nearby', // Only load nearby slides
   arrows: true,
-  pagination: false, // No pagination dots
-  autoplay: false,
-  focus: 0, // Focus on first slide
-  fixedWidth: false, // Use percentage-based sizing for larger screens
-  rewind: true, // Allow rewinding from last to first slide
-  padding: { right: 0, left: 0 }, // No padding for larger screens (no peek)
-  speed: 400, // Animation speed
+  pagination: false, // No pagination dots for better performance
+  autoplay: false, // Disable autoplay for better performance
+  focus: 0,
+  fixedWidth: false,
+  rewind: true,
+  padding: { right: 0, left: 0 },
+  speed: 400,
+  waitForTransition: false, // Don't wait for transition to end before allowing another
+  easing: 'cubic-bezier(0.25, 1, 0.5, 1)', // Optimized easing function
 
-  // IMPORTANT: In Splide, breakpoints define the max-width where settings apply
-  // So 1024 means "apply these settings when width <= 1024px"
   breakpoints: {
     1280: { // For screens <= 1280px
-      perPage: 3, // Still 3 slides but with explicit settings
+      perPage: 3,
       fixedWidth: false,
-      focus: 0,
-      padding: { right: 0, left: 0 },
     },
-    1024: { // For screens <= 1024px (desktop)
-      perPage: 2, // 2 slides on desktop (medium screens)
-      fixedWidth: false, // Use percentage-based sizing
-      focus: 0, // Focus on first slide
-      padding: { right: 0, left: 0 }, // No padding (no peek)
+    1024: { // For screens <= 1024px
+      perPage: 2,
+      fixedWidth: false,
     },
-    768: { // For screens <= 768px (tablet)
+    768: { // For screens <= 768px
       perPage: 1,
-      fixedWidth: '70%', // 70% width on tablet as requested
-      focus: 'center', // Center focus for even peek on both sides
-      padding: { right: '15%', left: '15%' }, // Even padding on both sides for peek effect
+      fixedWidth: '70%',
+      focus: 'center',
+      padding: { right: '15%', left: '15%' },
     },
-    640: { // For screens <= 640px (mobile)
+    640: { // For screens <= 640px
       perPage: 1,
-      fixedWidth: '90%', // 90% width on mobile as requested
-      focus: 'center', // Center focus for even peek on both sides
-      padding: { right: '5%', left: '5%' }, // Small padding for peek effect on mobile
+      fixedWidth: '90%',
+      focus: 'center',
+      padding: { right: '5%', left: '5%' },
     },
   },
 }
 
-// No skeleton loading needed for this component as we're not showing skeletons
+// For skeleton loading placeholders
+const numVisibleItems = computed(() => {
+  const currentWidth = width.value
 
-const professionals = [
-  {
-      id: 1,
-      title: 'Architects and Building Designers',
-      backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674243546/kafinta/professionals/architecture_pfqxd1.jpg',
-      urlPath: 'architects'
-  },
-  {
-      id: 2,
-      title: 'General Contractors',
-      backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674243547/kafinta/professionals/contractors_lh7l0e.jpg',
-      urlPath: 'contractors'
-  },
-  {
-      id: 3,
-      title: 'Interior Designers & Decorators',
-      backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674493506/kafinta/professionals/interior_design_pqrjoi.jpg',
-      urlPath: 'interior'
-  },
-  {
-      id: 4,
-      title: 'Landscape Contractors',
-      backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674243718/kafinta/professionals/landscape_hu1kew.jpg',
-      urlPath: 'landscape'
-  },
-  {
-      id: 5,
-      title: 'Stone, Paver & Concrete',
-      backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674494156/kafinta/professionals/concrete_2_m4mxvu.jpg',
-      urlPath: 'concrete'
-  },
-  {
-      id: 6,
-      title: 'Swimming Pool Builders',
-      backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674243925/kafinta/professionals/swimming_pool_kzttut.jpg',
-      urlPath: 'pool'
-  },
-  {
-      id: 7,
-      title: 'Home Remodeling',
-      backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674244002/kafinta/professionals/remodeling_fizg3u.jpg',
-      urlPath: 'remodeling'
-  },
-  {
-      id: 8,
-      title: 'Accessory Dwelling Units',
-      backgroundImagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674244070/kafinta/professionals/dwelling_units_b7fsmx.jpg',
-      urlPath: 'dwelling'
-  },
-];
+  if (currentWidth >= 1280) return 4
+  if (currentWidth >= 1024) return 3
+  if (currentWidth >= 768) return 2
+  return 1
+})
+
+// Fetch products data
+async function fetchTopProducts() {
+  isLoading.value = true
+  error.value = null
+
+  try {
+    // In a real app, this would be an API call
+    // const response = await useCustomFetch<{ data: Product[] }>('api/products/trending')
+
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    // Mock data - in production this would come from the API
+    products.value = [
+      {
+        id: 1,
+        title: 'Modern Sofa Set',
+        image_path: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674243546/kafinta/professionals/architecture_pfqxd1.jpg',
+        rating: 4.8
+      },
+      {
+        id: 2,
+        title: 'Dining Table Set',
+        image_path: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674243547/kafinta/professionals/contractors_lh7l0e.jpg',
+        rating: 4.5
+      },
+      {
+        id: 3,
+        title: 'Bedroom Furniture',
+        image_path: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674493506/kafinta/professionals/interior_design_pqrjoi.jpg',
+        rating: 4.7
+      },
+      {
+        id: 4,
+        title: 'Outdoor Furniture',
+        image_path: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674243718/kafinta/professionals/landscape_hu1kew.jpg',
+        rating: 4.3
+      },
+      {
+        id: 5,
+        title: 'Kitchen Cabinets',
+        image_path: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674494156/kafinta/professionals/concrete_2_m4mxvu.jpg',
+        rating: 4.6
+      },
+      {
+        id: 6,
+        title: 'Bathroom Fixtures',
+        image_path: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674243925/kafinta/professionals/swimming_pool_kzttut.jpg',
+        rating: 4.4
+      },
+      {
+        id: 7,
+        title: 'Home Decor',
+        image_path: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674244002/kafinta/professionals/remodeling_fizg3u.jpg',
+        rating: 4.9
+      },
+      {
+        id: 8,
+        title: 'Lighting Fixtures',
+        image_path: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674244070/kafinta/professionals/dwelling_units_b7fsmx.jpg',
+        rating: 4.2
+      }
+    ]
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Failed to load trending products'
+    console.error('Error fetching top products:', err)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Fetch products when component is mounted
+onMounted(() => {
+  fetchTopProducts()
+})
 </script>
 
 <style scoped>
-/* Splide styles */
-.carousel-item-wrapper {
-  padding: 0 8px;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Custom Splide styles */
-:deep(.splide__arrow) {
-  background: black;
-  width: 2.5rem;
-  height: 2.5rem;
-  opacity: .8;
-  border-radius: 50%;
-  transition: background-color 0.3s ease;
-  z-index: 10;
-}
-
-:deep(.splide__arrow:hover) {
-  background: var(--primary-500, #C9B14F);
-}
-
-:deep(.splide__arrow svg) {
-  fill: white;
-  width: 1.2em;
-  height: 1.2em;
-}
-
-/* Make sure the carousel takes full width */
-:deep(.splide) {
-  width: 100%;
-  position: relative;
-}
-
-/* Position arrows inside the padding area */
-:deep(.splide__arrows) {
-  position: absolute;
-  width: calc(100% - 2rem);
-  top: 50%;
-  left: 1rem;
-  transform: translateY(-50%);
-  display: flex;
-  justify-content: space-between;
-  pointer-events: none;
-  z-index: 10;
-}
-
-:deep(.splide__arrow) {
-  position: relative;
-  transform: none;
-  top: auto;
-  left: auto;
-  right: auto;
-  pointer-events: auto;
-}
-
-/* Remove negative margins that cause overflow */
-:deep(.splide__list) {
-  margin: 0 !important;
-}
+/* Component-specific styles only - shared styles are in assets/css/carousel.css */
 </style>
