@@ -91,10 +91,13 @@
         </div>
       </div>
 
+      <!-- Loading state -->
       <div v-if="isLoading" class="col-span-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        <Skeleton v-for="n in 12" height="42px" />
+        <Skeleton v-for="n in 12" :key="n" height="42px" />
       </div>
-      <ul v-else-if="!isLoading && categories" class="col-span-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+      <!-- Content loaded successfully -->
+      <ul v-else-if="categories && categories.length" class="col-span-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <li v-for="item in categories" :key="item.id">
           <UiButtonsTertiary :flexdisplay="true"
           @clicked="selectCategory(item.id)" >
@@ -107,9 +110,12 @@
           </UiButtonsTertiary>
         </li>
       </ul>
-      <li v-else>
-        <UiTypographyP>Error loading catgories... Try again later.</UiTypographyP>
-      </li>
+
+      <!-- Error state - only shown when not loading and either there's an error or no categories -->
+      <div v-else class="col-span-2 text-center py-4">
+        <UiTypographyP v-if="error">{{ error }}</UiTypographyP>
+        <UiTypographyP v-else>No categories available. Try again later.</UiTypographyP>
+      </div>
 
     </Container>
     <NavigationFooter />
@@ -128,7 +134,7 @@ const productFilters = useProductFilters()
 
 
 const filtersStore = useFiltersStore()
-const { categories, isLoading  } = storeToRefs(filtersStore)
+const { categories, isLoading, error } = storeToRefs(filtersStore)
 
 const searchBox = ref(false);
 const search_button_hovered = ref(false);
