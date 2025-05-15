@@ -60,6 +60,8 @@ import { useRouter } from 'vue-router'
 import { Splide, SplideSlide } from '@splidejs/vue-splide'
 // Import Splide CSS
 import '@splidejs/vue-splide/css'
+// Import shared carousel styles
+import '~/assets/css/carousel.css'
 
 const router = useRouter()
 const productFilters = useProductFilters()
@@ -67,20 +69,24 @@ const filtersStore = useFiltersStore()
 const { locations, isLoading, error } = storeToRefs(filtersStore)
 const { width } = useWindowSize()
 
-// Define Splide options
+// Define Splide options with optimized settings specific to Locations
 const splideOptions = {
   type: 'loop',
   perPage: 5, // Default for large screens
   perMove: 1,
   gap: '.5rem',
-  lazyLoad: 'nearby',
+  lazyLoad: 'nearby', // Only load nearby slides for better performance
   arrows: true,
-  pagination: false, // No pagination dots
-  autoplay: false,
+  pagination: false, // No pagination dots for better performance
+  autoplay: false, // Disable autoplay for better performance
   focus: 0, // Focus on first slide
   fixedWidth: false, // Use percentage-based sizing for larger screens
   rewind: true, // Allow rewinding from last to first slide
   padding: { right: 0, left: 0 }, // No padding for larger screens (no peek)
+  speed: 400, // Animation speed
+  waitForTransition: false, // Don't wait for transition to end before allowing another
+  easing: 'cubic-bezier(0.25, 1, 0.5, 1)', // Optimized easing function
+
   breakpoints: {
     // Breakpoints are defined from smallest to largest
     640: {
@@ -104,6 +110,16 @@ const splideOptions = {
   },
 }
 
+// For skeleton loading placeholders
+const numVisibleItems = computed(() => {
+  const currentWidth = width.value
+
+  if (currentWidth >= 1280) return 5
+  if (currentWidth >= 1024) return 4
+  if (currentWidth >= 768) return 2
+  return 1
+})
+
 async function selectLocation(id) {
   // Get the current category ID directly from the store
   const categoryId = productFilters.selectedCategoryId?.value
@@ -124,16 +140,6 @@ async function selectLocation(id) {
   productFilters.selectLocation(id)
 }
 
-// For skeleton loading placeholders
-const numVisibleItems = computed(() => {
-  const currentWidth = width.value
-
-  if (currentWidth >= 1280) return 5
-  if (currentWidth >= 1024) return 3
-  if (currentWidth >= 768) return 2
-  return 1
-})
-
 // Fetch locations when component is mounted
 onMounted(async () => {
   await filtersStore.fetchLocations()
@@ -141,56 +147,5 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-:deep(.splide__arrow) {
-  background: black;
-  width: 3rem;
-  height: 3rem;
-  opacity: .8;
-  border-radius: 50%;
-  transition: background-color 0.3s ease;
-  z-index: 10;
-}
-
-:deep(.splide__arrow:hover) {
-  background: var(--primary-500, #C9B14F);
-}
-
-:deep(.splide__arrow svg) {
-  fill: white;
-  width: 1.2em;
-  height: 1.2em;
-}
-
-/* Make sure the carousel takes full width */
-:deep(.splide) {
-  width: 100%;
-  position: relative;
-}
-
-/* Position arrows inside the padding area */
-:deep(.splide__arrows) {
-  position: absolute;
-  width: calc(100% - 2rem);
-  top: 50%;
-  left: 1rem;
-  transform: translateY(-50%);
-  display: flex;
-  justify-content: space-between;
-  pointer-events: none;
-  z-index: 10;
-}
-
-:deep(.splide__arrow) {
-  position: relative;
-  transform: none;
-  top: auto;
-  left: auto;
-  right: auto;
-  pointer-events: auto;
-}
-
-/* Remove negative margins that cause overflow */
-/* :deep(.splide__list) {
-  margin: 0 !important;
-} */
+/* Component-specific styles only - shared styles are in assets/css/carousel.css */
 </style>
