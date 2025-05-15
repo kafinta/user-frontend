@@ -1,4 +1,5 @@
 <template>
+  <!-- Loading state -->
   <div v-if="isLoading" class="flex space-x-4 w-full mt-5">
     <Skeleton
       v-for="n in numVisibleItems"
@@ -7,7 +8,8 @@
     ></Skeleton>
   </div>
 
-  <div v-if="!isLoading && locations.length" class="mt-5">
+  <!-- Content loaded successfully -->
+  <div v-else-if="locations.length" class="mt-5">
     <Splide
       :options="splideOptions"
       :aria-label="'Locations carousel'"
@@ -41,8 +43,10 @@
     </Splide>
   </div>
 
-  <div v-else class="list-none text-center">
-    <UiTypographyP>Error loading locations... Try again later.</UiTypographyP>
+  <!-- Error state - only shown when not loading and either there's an error or no locations -->
+  <div v-else class="list-none text-center mt-5">
+    <UiTypographyP v-if="error">{{ error }}</UiTypographyP>
+    <UiTypographyP v-else>No locations available. Try again later.</UiTypographyP>
   </div>
 </template>
 
@@ -60,13 +64,13 @@ import '@splidejs/vue-splide/css'
 const router = useRouter()
 const productFilters = useProductFilters()
 const filtersStore = useFiltersStore()
-const { locations, isLoading } = storeToRefs(filtersStore)
+const { locations, isLoading, error } = storeToRefs(filtersStore)
 const { width } = useWindowSize()
 
 // Define Splide options
 const splideOptions = {
   type: 'loop',
-  perPage: 4, // Default for large screens
+  perPage: 5, // Default for large screens
   perMove: 1,
   gap: '.5rem',
   lazyLoad: 'nearby',
@@ -92,7 +96,7 @@ const splideOptions = {
       padding: { right: 0, left: 0 }, // No padding for tablet (no peek)
     },
     1024: {
-      perPage: 3,
+      perPage: 4,
       fixedWidth: false,
       focus: 0,
       padding: { right: 0, left: 0 }, // No padding for desktop (no peek)
