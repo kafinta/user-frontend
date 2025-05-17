@@ -36,9 +36,9 @@ import { useRouter } from 'vue-router';
 import { ref } from "vue";
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/stores/auth';
-import { useToast } from "primevue/usetoast";
+import { useAppToast } from "~/utils/toast";
 
-const toast = useToast();
+const toast = useAppToast();
 const authStore = useAuthStore();
 const { message, isLoading, status } = storeToRefs(authStore);
 const router = useRouter();
@@ -54,28 +54,13 @@ async function handleSignin() {
       password: password.value,
     });
     if(status.value === 'success') {
-      toast.add({
-        severity: 'success',
-        summary: 'Success',
-        detail: message.value,
-        life: 3000,
-      });
+      toast.success('Success', message.value || 'Login successful');
       router.push({name: 'auth-verify'});
     } else if (status.value === 'error') {
-      toast.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: message.value,
-        life: 3000,
-      });
+      toast.error('Error', message.value || 'Login failed. Please try again.');
     }
   } catch (error) {
-    toast.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: 'An unexpected error occurred',
-      life: 3000,
-    });
+    toast.error('Error', 'An unexpected error occurred');
   }
 }
 </script>

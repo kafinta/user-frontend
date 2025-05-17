@@ -38,12 +38,12 @@ import { useRouter } from 'vue-router';
 import { ref } from "vue";
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/stores/auth';
-import { useToast } from "primevue/usetoast";
+import { useAppToast } from "~/utils/toast";
 
 const authStore = useAuthStore();
 const { message, isLoading, status } = storeToRefs(authStore);
 const router = useRouter();
-const toast = useToast();
+const toast = useAppToast();
 
 const email = ref('');
 const username = ref('');
@@ -51,35 +51,38 @@ const password = ref('');
 
 async function handleSignup() {
   try {
+    console.log('Starting signup process...');
     authStore.clearMessages();
-    await authStore.signup({
+
+    // Debug auth state before signup
+    authStore.debugAuthState();
+
+    const result = await authStore.signup({
       email: email.value,
       password: password.value,
       username: username.value
     });
+
+    console.log('Signup result:', result);
+
+    // Debug auth state after signup
+    authStore.debugAuthState();
+
     if(status.value === 'success') {
-      toast.add({
-        severity: 'success',
-        summary: 'Success',
-        detail: message.value,
-        life: 3000,
-      });
-      router.push({name: 'auth-verify'});
+      console.log('Showing success toast...');
+      toast.success('Success', message.value || 'Account created successfully');
+
+      // Add a small delay before navigation to ensure toast is shown
+      setTimeout(() => {
+        router.push({name: 'auth-verify'});
+      }, 500);
     } else if (status.value === 'error') {
-      toast.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: message.value,
-        life: 3000,
-      });
+      console.log('Showing error toast...');
+      toast.error('Error', message.value || 'Signup failed. Please try again.');
     }
   } catch (error) {
-    toast.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: 'An unexpected error occurred',
-      life: 3000,
-    });
+    console.error('Signup error:', error);
+    toast.error('Error', 'An unexpected error occurred');
   }
 }
 </script>
