@@ -63,15 +63,24 @@ export const useAppToast = () => {
    * Show a success toast notification
    */
   const success = (summary: string, detail: string, duration = TOAST_DURATIONS.SHORT) => {
-    if (!toast) return;
+    if (!toast) {
+      console.error('Toast service not available in success method');
+      return;
+    }
 
-    toast.add({
-      severity: 'success',
-      summary,
-      detail,
-      life: duration,
-      group: TOAST_GROUP
-    });
+    console.log('Showing success toast:', summary, detail);
+
+    try {
+      toast.add({
+        severity: 'success',
+        summary,
+        detail,
+        life: duration,
+        group: TOAST_GROUP
+      });
+    } catch (error) {
+      console.error('Error showing success toast:', error);
+    }
   };
 
   /**
@@ -108,15 +117,24 @@ export const useAppToast = () => {
    * Show an error toast notification
    */
   const error = (summary: string, detail: string, duration = TOAST_DURATIONS.MEDIUM) => {
-    if (!toast) return;
+    if (!toast) {
+      console.error('Toast service not available in error method');
+      return;
+    }
 
-    toast.add({
-      severity: 'error',
-      summary,
-      detail,
-      life: duration,
-      group: TOAST_GROUP
-    });
+    console.log('Showing error toast:', summary, detail);
+
+    try {
+      toast.add({
+        severity: 'error',
+        summary,
+        detail,
+        life: duration,
+        group: TOAST_GROUP
+      });
+    } catch (error) {
+      console.error('Error showing error toast:', error);
+    }
   };
 
   /**
