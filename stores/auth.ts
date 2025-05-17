@@ -25,6 +25,8 @@ interface ApiResponse {
     auth_token?: string
     token_type?: string
     roles?: Role[]
+    verification_token?: string
+    verified?: boolean
   }
 }
 
@@ -55,7 +57,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isCustomer = computed(() => hasRole.value('customer'))
 
   // Actions
-  function initialize() {
+  async function initialize() {
     // Run on app initialization
     if (import.meta.client) {
       try {
@@ -82,6 +84,13 @@ export const useAuthStore = defineStore('auth', () => {
           // If authenticated but no roles stored, fetch them
           fetchRoles().catch(error => {
             console.error('Failed to fetch roles during initialization:', error)
+          })
+        }
+
+        // If authenticated, check email verification status from the server
+        if (isAuthenticated.value) {
+          checkEmailVerificationStatus().catch(error => {
+            console.error('Failed to check email verification status during initialization:', error)
           })
         }
       } catch (error) {
@@ -260,6 +269,12 @@ export const useAuthStore = defineStore('auth', () => {
         setUser(response.data.user)
       }
 
+      // Store verification token if provided
+      const verificationToken = response?.data?.verification_token
+      if (verificationToken && import.meta.client) {
+        localStorage.setItem('verification_token', verificationToken)
+      }
+
       // Explicitly set verification status to false for new signups
       setVerified(false)
 
@@ -296,11 +311,8 @@ export const useAuthStore = defineStore('auth', () => {
         console.error('Logout API call failed:', error)
       })
 
-      // Clear local state
-      setToken(null)
-      setUser(null)
-      setVerified(false)
-      setRoles([])
+      // Clear all authentication data
+      clearAuthData()
 
       // Set success status and message
       status.value = 'success'
@@ -316,11 +328,8 @@ export const useAuthStore = defineStore('auth', () => {
         message: 'Successfully logged out'
       }
     } catch (error: any) {
-      // Clear local state regardless of API result
-      setToken(null)
-      setUser(null)
-      setVerified(false)
-      setRoles([])
+      // Clear all authentication data regardless of API result
+      clearAuthData()
 
       status.value = 'success'
       message.value = 'Successfully logged out'
@@ -345,34 +354,272 @@ export const useAuthStore = defineStore('auth', () => {
     status.value = null
   }
 
+  function clearAuthData() {
+    // Clear state
+    token.value = null
+    user.value = null
+    roles.value = []
+    isVerified.value = false
+
+    // Clear localStorage if on client
+    if (import.meta.client) {
+      localStorage.removeItem('auth_token')
+      localStorage.removeItem('auth_user')
+      localStorage.removeItem('auth_verified')
+      localStorage.removeItem('auth_roles')
+      localStorage.removeItem('verification_token')
+    }
+
+    return {
+      status: 'success',
+      message: 'Authentication data cleared'
+    }
+  }
+
+  function debugAuthState() {
+    console.log('Auth Store State:', {
+      token: token.value ? 'Present (not shown for security)' : 'Not present',
+      user: user.value,
+      roles: roles.value,
+      isAuthenticated: isAuthenticated.value,
+      isVerified: isVerified.value,
+      needsVerification: needsVerification.value,
+      status: status.value,
+      message: message.value
+    })
+
+    // Check localStorage if on client
+    if (import.meta.client) {
+      console.log('Auth localStorage:', {
+        auth_token: localStorage.getItem('auth_token') ? 'Present (not shown for security)' : 'Not present',
+        auth_user: localStorage.getItem('auth_user'),
+        auth_verified: localStorage.getItem('auth_verified'),
+        auth_roles: localStorage.getItem('auth_roles'),
+        verification_token: localStorage.getItem('verification_token') ? 'Present (not shown for security)' : 'Not present'
+      })
+    }
+
+    return {
+      status: 'success',
+      message: 'Auth state logged to console'
+    }
+  }
+
   async function verifyEmail(verificationCode: string) {
     isLoading.value = true
     message.value = null
     status.value = null
 
     try {
-      // In a real implementation, you would call your API to verify the email
-      // For now, we'll simulate a successful verification
+      // Call the API to verify the email with the code
+      const response = await useCustomFetch<ApiResponse>('/api/verify-email/code', {
+        method: 'POST',
+        body: { code: verificationCode },
+        requireAuth: true
+      })
 
-      // Simulate API call
-      // const response = await useCustomFetch<ApiResponse>('/api/user/verify-email', {
-      //   method: 'POST',
-      //   body: { code: verificationCode },
-      //   requireAuth: true
-      // })
+      // Set status and message from response
+      status.value = response.status
+      message.value = response.message || 'Email verified successfully'
 
-      // For demo purposes, we'll just set the user as verified
-      setVerified(true)
-
-      status.value = 'success'
-      message.value = 'Email verified successfully'
+      if (response.status === 'success') {
+        setVerified(true)
+      }
 
       return {
-        status: 'success',
-        message: 'Email verified successfully'
+        status: response.status,
+        message: response.message || 'Email verified successfully',
+        data: response.data
       }
     } catch (error: any) {
       console.error('Email verification failed:', error)
+      status.value = 'error'
+      message.value = error.message || 'Verification failed. Please try again.'
+
+      return {
+        status: 'error',
+        message: error.message || 'Verification failed. Please try again.',
+        error
+      }
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  async function verifyEmailWithToken(token?: string) {
+    isLoading.value = true
+    message.value = null
+    status.value = null
+
+    // If token is not provided, try to get it from localStorage
+    let verificationToken = token
+    if (!verificationToken && import.meta.client) {
+      const storedToken = localStorage.getItem('verification_token')
+      if (storedToken) {
+        verificationToken = storedToken
+      }
+    }
+
+    // If still no token, return error
+    if (!verificationToken) {
+      status.value = 'error'
+      message.value = 'Verification token not found'
+      isLoading.value = false
+      return {
+        status: 'error',
+        message: 'Verification token not found'
+      }
+    }
+
+    try {
+      // Call the API to verify the email with the token
+      const response = await useCustomFetch<ApiResponse>('/api/verify-email/token', {
+        method: 'POST',
+        body: { token: verificationToken },
+        requireAuth: true
+      })
+
+      // Set status and message from response
+      status.value = response.status
+      message.value = response.message || 'Email verified successfully'
+
+      if (response.status === 'success') {
+        setVerified(true)
+      }
+
+      return {
+        status: response.status,
+        message: response.message || 'Email verified successfully',
+        data: response.data
+      }
+    } catch (error: any) {
+      console.error('Email verification with token failed:', error)
+      status.value = 'error'
+      message.value = error.message || 'Verification failed. Please try again.'
+
+      return {
+        status: 'error',
+        message: error.message || 'Verification failed. Please try again.',
+        error
+      }
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  async function requestEmailVerification() {
+    isLoading.value = true
+    message.value = null
+    status.value = null
+
+    try {
+      // Call the API to request a new verification code
+      const response = await useCustomFetch<ApiResponse>('/api/user/resend-verification-email', {
+        method: 'POST',
+        requireAuth: true
+      })
+
+      // Set status and message from response
+      status.value = response.status
+      message.value = response.message || 'Verification code sent successfully'
+
+      return {
+        status: response.status,
+        message: response.message || 'Verification code sent successfully',
+        data: response.data
+      }
+    } catch (error: any) {
+      console.error('Failed to request email verification:', error)
+      status.value = 'error'
+      message.value = error.message || 'Failed to send verification code. Please try again.'
+
+      return {
+        status: 'error',
+        message: error.message || 'Failed to send verification code. Please try again.',
+        error
+      }
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  async function checkEmailVerificationStatus() {
+    isLoading.value = true
+    message.value = null
+    status.value = null
+
+    try {
+      // Call the API to check email verification status
+      const response = await useCustomFetch<ApiResponse>('/api/user/email-verification-status', {
+        method: 'GET',
+        requireAuth: true
+      })
+
+      // Set status and message from response
+      status.value = response.status
+      message.value = response.message || 'Email verification status retrieved'
+
+      // Update verification status based on API response
+      if (response.status === 'success' && response.data) {
+        const isEmailVerified = response.data.verified === true
+        setVerified(isEmailVerified)
+      }
+
+      return {
+        status: response.status,
+        message: response.message || 'Email verification status retrieved',
+        data: response.data
+      }
+    } catch (error: any) {
+      console.error('Failed to check email verification status:', error)
+      status.value = 'error'
+      message.value = error.message || 'Failed to check verification status. Please try again.'
+
+      return {
+        status: 'error',
+        message: error.message || 'Failed to check verification status. Please try again.',
+        error
+      }
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  async function verifyEmailWithDirectLink(token: string) {
+    isLoading.value = true
+    message.value = null
+    status.value = null
+
+    try {
+      // Call the API to verify the email with the token via direct link
+      const response = await useCustomFetch<ApiResponse>(`/api/verify-email/${token}`, {
+        method: 'GET'
+      })
+
+      // Set status and message from response
+      status.value = response.status
+      message.value = response.message || 'Email verified successfully'
+
+      if (response.status === 'success') {
+        setVerified(true)
+
+        // If the user wasn't authenticated before, but the verification includes auth data
+        if (!isAuthenticated.value && response.data?.auth_token) {
+          setToken(response.data.auth_token)
+        }
+
+        if (!user.value && response.data?.user) {
+          setUser(response.data.user)
+        }
+      }
+
+      return {
+        status: response.status,
+        message: response.message || 'Email verified successfully',
+        data: response.data
+      }
+    } catch (error: any) {
+      console.error('Email verification with direct link failed:', error)
       status.value = 'error'
       message.value = error.message || 'Verification failed. Please try again.'
 
@@ -413,6 +660,12 @@ export const useAuthStore = defineStore('auth', () => {
     signup,
     logout,
     verifyEmail,
-    clearMessages
+    verifyEmailWithToken,
+    verifyEmailWithDirectLink,
+    requestEmailVerification,
+    checkEmailVerificationStatus,
+    clearMessages,
+    clearAuthData,
+    debugAuthState
   }
 })
