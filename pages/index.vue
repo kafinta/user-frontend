@@ -113,7 +113,7 @@
 
       <!-- Error state - only shown when not loading and either there's an error or no categories -->
       <div v-else class="col-span-2 text-center py-4">
-        <UiTypographyP v-if="error">{{ error }}</UiTypographyP>
+        <UiTypographyP v-if="error">Error fetching categories. Try again later.</UiTypographyP>
         <UiTypographyP v-else>No categories available. Try again later.</UiTypographyP>
       </div>
 
