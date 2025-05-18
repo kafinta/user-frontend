@@ -114,16 +114,20 @@ async function handleSignup() {
 function navigateAfterAuth() {
   const { user, isVerified } = storeToRefs(authStore);
 
+  console.log('Navigating after auth with user:', user.value, 'isVerified:', isVerified.value);
+
   if (!isVerified.value) {
     // If not verified, go to verification page
-    router.push({ name: 'auth-verify' });
+    console.log('User not verified, redirecting to verification page');
+    router.push('/auth/verify?fromSignup=true');
   } else if (user.value && user.value.username) {
     // If verified and we have a username, go to dashboard
-    router.push({
-      name: 'username-buying-dashboard',
-      params: { username: user.value.username }
-    });
+    console.log('User verified, navigating to dashboard for user:', user.value.username);
+
+    // Use direct path navigation instead of named route to avoid potential issues
+    router.push(`/${user.value.username}/buying/dashboard`);
   } else {
+    console.log('No username available, navigating to home page');
     // Fallback to home page
     router.push('/');
   }
