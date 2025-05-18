@@ -45,7 +45,7 @@
 
   <!-- Error state - only shown when not loading and either there's an error or no locations -->
   <div v-else class="list-none text-center mt-5">
-    <UiTypographyP v-if="error">{{ error }}</UiTypographyP>
+    <UiTypographyP v-if="error">Error fetching locations. Try again later.</UiTypographyP>
     <UiTypographyP v-else>No locations available. Try again later.</UiTypographyP>
   </div>
 </template>
