@@ -1,6 +1,5 @@
 import { defineNuxtPlugin } from "#app";
 import PrimeVue from "primevue/config";
-import ToastService from 'primevue/toastservice';
 import Aura from '@primeuix/themes/aura';
 import { definePreset } from '@primeuix/themes';
 
@@ -49,7 +48,4 @@ export default defineNuxtPlugin((nuxtApp) => {
       }
     },
   });
-
-  // Add ToastService
-  nuxtApp.vueApp.use(ToastService);
 });
