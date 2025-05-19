@@ -135,4 +135,16 @@ export default defineNuxtRouteMiddleware((to) => {
     // Allow access to verification page
     return
   }
+
+  // If the user is on the verification page but doesn't need verification, redirect to dashboard
+  if (isVerifyRoute && authStore.isAuthenticated && !authStore.needsVerification) {
+    if (authStore.user && authStore.user.username) {
+      return navigateTo({
+        name: 'username-buying-dashboard',
+        params: { username: authStore.user.username }
+      })
+    } else {
+      return navigateTo('/')
+    }
+  }
 })
