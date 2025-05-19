@@ -1,384 +1,530 @@
-// stores/auth.ts
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useCustomFetch } from '~/composables/useCustomFetch'
 
-interface Role {
+// Types
+export interface Role {
   id: number
   name: string
   slug: string
 }
 
-interface User {
+export interface User {
   id?: number | string
   email?: string
   name?: string
   username?: string
+  email_verified_at?: string | null
 }
 
 interface ApiResponse {
-  status: string
-  status_code: number
+  success: boolean
   message: string
   data?: {
     user?: User
-    auth_token?: string
-    token_type?: string
+    email_verification_required?: boolean
+    verification_email_sent?: boolean
+    email_verified?: boolean
     roles?: Role[]
-    verification_token?: string
-    verified?: boolean
   }
 }
 
 interface RolesApiResponse {
-  status: string
-  status_code: number
+  success: boolean
   message: string
   data: {
     roles: Role[]
   }
 }
 
+// Response type for actions
+interface ActionResponse {
+  status: string
+  message: string
+  data?: any
+  error?: any
+  [key: string]: any
+}
+
+// Helper functions
+function log(message: string, ...args: any[]): void {
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(message, ...args);
+  }
+}
+
+function logError(message: string, error: any): void {
+  if (process.env.NODE_ENV !== 'production') {
+    console.error(message, error);
+  } else {
+    console.error(message);
+  }
+}
+
 export const useAuthStore = defineStore('auth', () => {
   // State
-  const token = ref<string | null>(null)
   const user = ref<User | null>(null)
   const roles = ref<Role[]>([])
   const isLoading = ref(false)
   const message = ref<string | null>(null)
   const status = ref<string | null>(null)
   const isVerified = ref(false)
+  const error = ref<string | null>(null)
 
   // Getters
-  const isAuthenticated = computed(() => !!token.value)
+  const isAuthenticated = computed(() => !!user.value)
   const needsVerification = computed(() => isAuthenticated.value && !isVerified.value)
   const hasRole = computed(() => (roleSlug: string) => roles.value.some(role => role.slug === roleSlug))
   const isSeller = computed(() => hasRole.value('seller'))
   const isCustomer = computed(() => hasRole.value('customer'))
 
-  // Actions
-  async function initialize() {
-    // Run on app initialization
-    if (import.meta.client) {
-      try {
-        const storedToken = localStorage.getItem('auth_token')
-        const userData = localStorage.getItem('auth_user')
-        const verificationStatus = localStorage.getItem('auth_verified')
-        const storedRoles = localStorage.getItem('auth_roles')
+  // Storage helpers
+  function saveToStorage(key: string, data: any) {
+    if (!import.meta.client) return
 
-        if (storedToken) {
-          token.value = storedToken
-        }
-
-        if (userData) {
-          user.value = JSON.parse(userData)
-        }
-
-        if (verificationStatus === 'true') {
-          isVerified.value = true
-        }
-
-        if (storedRoles) {
-          roles.value = JSON.parse(storedRoles)
-        } else if (isAuthenticated.value) {
-          // If authenticated but no roles stored, fetch them
-          fetchRoles().catch(error => {
-            console.error('Failed to fetch roles during initialization:', error)
-          })
-        }
-
-        // If authenticated, check email verification status from the server
-        if (isAuthenticated.value) {
-          checkEmailVerificationStatus().catch(error => {
-            console.error('Failed to check email verification status during initialization:', error)
-          })
-        }
-      } catch (error) {
-        console.error('Failed to initialize auth from localStorage:', error)
-        message.value = 'Failed to initialize authentication'
-        status.value = 'error'
-      }
+    try {
+      localStorage.setItem(key, JSON.stringify({
+        data,
+        timestamp: Date.now()
+      }))
+    } catch (error) {
+      console.error('Error saving to localStorage', error)
     }
   }
 
-  function setToken(newToken: string | null) {
-    token.value = newToken
+  function loadFromStorage(key: string) {
+    if (!import.meta.client) return null
 
-    if (import.meta.client) {
-      if (newToken) {
-        localStorage.setItem('auth_token', newToken)
-      } else {
-        localStorage.removeItem('auth_token')
+    try {
+      const stored = localStorage.getItem(key)
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        // Check if data is less than 1 hour old for auth data
+        const isRecent = (Date.now() - parsed.timestamp) < (1 * 60 * 60 * 1000)
+        return isRecent ? parsed.data : null
       }
+      return null
+    } catch (error) {
+      console.error('Error loading from localStorage', error)
+      return null
     }
   }
 
+  // Helper methods
+  /**
+   * Standard response formatter for actions
+   */
+  const formatResponse = (
+    success: boolean,
+    responseMessage: string,
+    responseData?: any,
+    error?: any,
+    additionalProps?: Record<string, any>
+  ): ActionResponse => {
+    return {
+      status: success ? 'success' : 'error',
+      message: responseMessage,
+      ...(responseData ? { data: responseData } : {}),
+      ...(error ? { error } : {}),
+      ...(additionalProps || {})
+    };
+  };
+
+  /**
+   * Set loading state and clear messages
+   */
+  function startLoading(): void {
+    isLoading.value = true;
+    message.value = null;
+    status.value = null;
+    error.value = null;
+  }
+
+  // Basic state management
   function setUser(newUser: User | null) {
-    user.value = newUser
-
-    if (import.meta.client && newUser) {
-      localStorage.setItem('auth_user', JSON.stringify(newUser))
-    } else if (import.meta.client) {
-      localStorage.removeItem('auth_user')
-    }
+    user.value = newUser;
   }
 
   function setVerified(verified: boolean) {
-    isVerified.value = verified
-
-    if (import.meta.client) {
-      if (verified) {
-        localStorage.setItem('auth_verified', 'true')
-      } else {
-        localStorage.removeItem('auth_verified')
-      }
-    }
+    isVerified.value = verified;
   }
 
   function setRoles(newRoles: Role[]) {
-    roles.value = newRoles
+    roles.value = newRoles;
+  }
 
-    if (import.meta.client) {
-      if (newRoles && newRoles.length > 0) {
-        localStorage.setItem('auth_roles', JSON.stringify(newRoles))
-      } else {
-        localStorage.removeItem('auth_roles')
+  // Actions
+
+  /**
+   * Initialize the auth store by checking if the user is authenticated
+   */
+  async function initialize() {
+    if (!import.meta.client) return;
+
+    try {
+      log('Initializing auth store');
+      startLoading();
+
+      // Try to load user from storage first
+      const storedUser = loadFromStorage('user');
+      const storedRoles = loadFromStorage('roles');
+
+      if (storedUser) {
+        setUser(storedUser);
+        setVerified(!!storedUser.email_verified_at);
+
+        if (storedRoles) {
+          setRoles(storedRoles);
+        }
+
+        log('Loaded user from storage');
       }
+
+      // Always verify with the server
+      const response = await useCustomFetch<ApiResponse>('/api/user/profile', {
+        method: 'GET'
+      }).catch(error => {
+        log('Profile fetch failed during initialization:', error);
+
+        // Clear auth data if we get a 401
+        if (error.response?.status === 401 && user.value) {
+          clearAuthData();
+        }
+
+        return { success: false, message: 'Failed to fetch profile' } as ApiResponse;
+      });
+
+      if (response.success && response.data?.user) {
+        // Update user data
+        setUser(response.data.user);
+        setVerified(!!response.data.user.email_verified_at);
+        saveToStorage('user', response.data.user);
+
+        log(`User authenticated: ${response.data.user.username}`);
+
+        // Fetch roles
+        await fetchRoles();
+      } else {
+        // Clear auth data if we're not authenticated
+        if (user.value) {
+          clearAuthData();
+        }
+        log('User not authenticated');
+      }
+    } catch (err) {
+      logError('Failed to initialize auth:', err);
+      error.value = err instanceof Error ? err.message : 'Failed to initialize authentication';
+      status.value = 'error';
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  async function fetchRoles() {
+  /**
+   * Fetch user roles from the API
+   */
+  async function fetchRoles(): Promise<ActionResponse> {
     if (!isAuthenticated.value) {
-      return {
-        status: 'error',
-        message: 'User is not authenticated'
-      }
+      return formatResponse(false, 'User is not authenticated');
     }
 
-    isLoading.value = true
-    message.value = null
-    status.value = null
+    // Try to load from storage first
+    const storedRoles = loadFromStorage('roles');
+    if (storedRoles) {
+      setRoles(storedRoles);
+      return formatResponse(true, 'User roles loaded from cache', { roles: storedRoles });
+    }
+
+    startLoading();
 
     try {
       const response = await useCustomFetch<RolesApiResponse>('/api/user/profile/roles', {
-        method: 'GET',
-        requireAuth: true
-      })
+        method: 'GET'
+      });
 
-      // Set status and message from response
-      status.value = response.status
-      message.value = response.message || 'User roles retrieved successfully'
+      status.value = response.success ? 'success' : 'error';
+      message.value = response.message || 'User roles retrieved successfully';
 
-      // Handle roles data
       if (response?.data?.roles) {
-        setRoles(response.data.roles)
+        setRoles(response.data.roles);
+        saveToStorage('roles', response.data.roles);
       }
 
-      return {
-        status: response.status,
-        message: response.message || 'User roles retrieved successfully',
-        data: response.data
-      }
-    } catch (error: any) {
-      console.error('Failed to fetch user roles:', error)
-      status.value = 'error'
-      message.value = error.message || 'Failed to fetch user roles. Please try again.'
+      return formatResponse(
+        response.success,
+        message.value || 'User roles retrieved',
+        response.data
+      );
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch user roles';
+      error.value = errorMessage;
+      status.value = 'error';
 
-      return {
-        status: 'error',
-        message: error.message || 'Failed to fetch user roles. Please try again.',
-        error
-      }
+      return formatResponse(
+        false,
+        errorMessage,
+        undefined,
+        err
+      );
     } finally {
-      isLoading.value = false
+      isLoading.value = false;
     }
   }
 
-  async function login(credentials: { email: string, password: string }) {
-    isLoading.value = true
-    message.value = null
-    status.value = null
+  /**
+   * Log in a user with email and password
+   */
+  async function login(credentials: { email: string, password: string, remember_me?: boolean }): Promise<ActionResponse> {
+    startLoading();
 
     try {
+      log(`Attempting login for: ${credentials.email}`);
+
+      // Force a CSRF token refresh before login
+      if (import.meta.client) {
+        try {
+          await $fetch('/sanctum/csrf-cookie', {
+            credentials: 'include',
+            method: 'GET',
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              'Accept': 'application/json'
+            }
+          });
+        } catch (csrfError) {
+          // Continue with login attempt even if CSRF refresh fails
+          console.error('CSRF refresh failed, continuing with login attempt', csrfError);
+        }
+      }
+
+      // Use useCustomFetch for consistent error handling
       const response = await useCustomFetch<ApiResponse>('/api/user/login', {
         method: 'POST',
         body: credentials
-      })
+      });
 
-      // Set status and message from response
-      status.value = response.status
-      message.value = response.message || 'Login successful'
+      if (response.success && response.data?.user) {
+        // Update user data
+        setUser(response.data.user);
+        setVerified(!!response.data.user.email_verified_at);
+        saveToStorage('user', response.data.user);
 
-      // Handle auth token and user data
-      if (response?.data?.auth_token) {
-        setToken(response.data.auth_token)
+        status.value = 'success';
+        message.value = response.message || 'Login successful';
+
+        // Fetch user roles after successful login
+        await fetchRoles();
+
+        // Transfer guest cart to user cart after login
+        try {
+          await useCustomFetch('/api/cart/transfer-after-login', {
+            method: 'GET'
+          });
+        } catch (cartError) {
+          // Non-critical error, just log it
+          console.error('Failed to transfer guest cart', cartError);
+        }
+
+        return formatResponse(
+          true,
+          message.value,
+          response.data,
+          undefined,
+          {
+            needsVerification: !response.data.user.email_verified_at
+          }
+        );
+      } else {
+        status.value = 'error';
+        message.value = response.message || 'Login failed';
+
+        return formatResponse(
+          false,
+          message.value,
+          response.data
+        );
       }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Login failed. Please try again.';
+      error.value = errorMessage;
+      status.value = 'error';
 
-      if (response?.data?.user) {
-        setUser(response.data.user)
-      }
-
-      // Assume users who can login are already verified
-      setVerified(true)
-
-      // Fetch user roles after successful login
-      await fetchRoles().catch(error => {
-        console.error('Failed to fetch roles after login:', error)
-      })
-
-      return {
-        status: response.status,
-        message: response.message || 'Login successful',
-        data: response.data
-      }
-    } catch (error: any) {
-      console.error('Login failed:', error)
-      status.value = 'error'
-      message.value = error.message || 'Login failed. Please try again.'
-
-      return {
-        message: error.message || 'Login failed. Please try again.',
-        error
-      }
+      return formatResponse(
+        false,
+        errorMessage,
+        undefined,
+        err
+      );
     } finally {
-      isLoading.value = false
+      isLoading.value = false;
     }
   }
 
-  async function signup(userData: { email: string, password: string, username: string }) {
-    isLoading.value = true
-    message.value = null
-    status.value = null
+  /**
+   * Sign up a new user
+   */
+  async function signup(userData: {
+    email: string,
+    password: string,
+    username: string,
+    phone_number?: string
+  }): Promise<ActionResponse> {
+    startLoading();
 
     try {
       const response = await useCustomFetch<ApiResponse>('/api/user/signup', {
         method: 'POST',
         body: userData
-      })
+      });
 
-      // Set status and message from response
-      status.value = response.status
-      message.value = response.message || 'Account created successfully'
+      if (response.success && response.data?.user) {
+        status.value = 'success';
+        message.value = response.message || 'Account created successfully';
 
-      // Handle auth token and user data
-      if (response?.data?.auth_token) {
-        setToken(response.data.auth_token)
+        // Update user data
+        setUser(response.data.user);
+        saveToStorage('user', response.data.user);
+
+        // Check if email verification is required
+        const emailVerificationRequired = response.data.email_verification_required === true;
+        setVerified(!emailVerificationRequired);
+
+        // Fetch roles if available
+        await fetchRoles();
+
+        return formatResponse(
+          true,
+          message.value,
+          response.data,
+          undefined,
+          {
+            emailVerificationRequired: emailVerificationRequired,
+            verificationEmailSent: response.data.verification_email_sent === true
+          }
+        );
+      } else {
+        status.value = 'error';
+        message.value = response.message || 'Signup failed. Please try again.';
+
+        return formatResponse(
+          false,
+          message.value,
+          response.data
+        );
       }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Signup failed. Please try again.';
+      error.value = errorMessage;
+      status.value = 'error';
 
-      if (response?.data?.user) {
-        setUser(response.data.user)
-      }
-
-      // Store verification token if provided
-      const verificationToken = response?.data?.verification_token
-      if (verificationToken && import.meta.client) {
-        localStorage.setItem('verification_token', verificationToken)
-      }
-
-      // Explicitly set verification status to false for new signups
-      setVerified(false)
-
-      return {
-        status: response.status,
-        message: response.message || 'Account created successfully',
-        data: response.data
-      }
-    } catch (error: any) {
-      console.error('Signup failed:', error)
-      status.value = 'error'
-      message.value = error.message || 'Signup failed. Please try again.'
-
-      return {
-        message: error.message || 'Signup failed. Please try again.',
-        error
-      }
+      return formatResponse(
+        false,
+        errorMessage,
+        undefined,
+        err
+      );
     } finally {
-      isLoading.value = false
+      isLoading.value = false;
     }
   }
 
-  async function logout() {
-    isLoading.value = true
-    message.value = null
-    status.value = null
+  /**
+   * Log out the current user
+   */
+  async function logout(): Promise<ActionResponse> {
+    startLoading();
 
     try {
-      // Optional: API call to invalidate token on server
-      await useCustomFetch('/api/user/logout', {
-        method: 'POST',
-        requireAuth: true
+      // Call the logout API endpoint
+      await useCustomFetch('/api/logout', {
+        method: 'POST'
       }).catch((error) => {
-        console.error('Logout API call failed:', error)
-      })
+        console.error('Logout API call failed, continuing with local logout', error);
+      });
 
       // Clear all authentication data
-      clearAuthData()
+      clearAuthData();
 
-      // Set success status and message
-      status.value = 'success'
-      message.value = 'Successfully logged out'
-
-      // Reload the page instead of redirecting to login
+      // Clear storage
       if (import.meta.client) {
-        window.location.reload()
+        try {
+          localStorage.removeItem('user');
+          localStorage.removeItem('roles');
+        } catch (e) {
+          console.error('Failed to clear localStorage', e);
+        }
       }
 
-      return {
-        status: 'success',
-        message: 'Successfully logged out'
-      }
-    } catch (error: any) {
-      // Clear all authentication data regardless of API result
-      clearAuthData()
+      status.value = 'success';
+      message.value = 'Successfully logged out';
 
-      status.value = 'success'
-      message.value = 'Successfully logged out'
-
-      // Reload the page instead of redirecting to login, even on error
+      // Reload the page to reset all app state
       if (import.meta.client) {
-        window.location.reload()
+        window.location.reload();
       }
 
-      return {
-        status: 'success',
-        message: 'Successfully logged out',
-        error
+      return formatResponse(
+        true,
+        'Successfully logged out'
+      );
+    } catch (err) {
+      // Clear auth data regardless of API result
+      clearAuthData();
+
+      // Clear storage
+      if (import.meta.client) {
+        try {
+          localStorage.removeItem('user');
+          localStorage.removeItem('roles');
+        } catch (e) {
+          console.error('Failed to clear localStorage', e);
+        }
       }
+
+      status.value = 'success';
+      message.value = 'Successfully logged out';
+
+      // Reload page even on error
+      if (import.meta.client) {
+        window.location.reload();
+      }
+
+      return formatResponse(
+        true,
+        'Successfully logged out'
+      );
     } finally {
-      isLoading.value = false
+      isLoading.value = false;
     }
   }
 
+  /**
+   * Clear message and status
+   */
   function clearMessages() {
-    message.value = null
-    status.value = null
+    message.value = null;
+    status.value = null;
   }
 
-  function clearAuthData() {
-    // Clear state
-    token.value = null
-    user.value = null
-    roles.value = []
-    isVerified.value = false
+  /**
+   * Clear all authentication data
+   */
+  function clearAuthData(): ActionResponse {
+    user.value = null;
+    roles.value = [];
+    isVerified.value = false;
 
-    // Clear localStorage if on client
-    if (import.meta.client) {
-      localStorage.removeItem('auth_token')
-      localStorage.removeItem('auth_user')
-      localStorage.removeItem('auth_verified')
-      localStorage.removeItem('auth_roles')
-      localStorage.removeItem('verification_token')
-    }
-
-    return {
-      status: 'success',
-      message: 'Authentication data cleared'
-    }
+    return formatResponse(
+      true,
+      'Authentication data cleared'
+    );
   }
 
-  function debugAuthState() {
-    console.log('Auth Store State:', {
-      token: token.value ? 'Present (not shown for security)' : 'Not present',
+  /**
+   * Debug helper to log the current auth state
+   */
+  function debugAuthState(): Record<string, any> {
+    const state = {
       user: user.value,
       roles: roles.value,
       isAuthenticated: isAuthenticated.value,
@@ -386,262 +532,353 @@ export const useAuthStore = defineStore('auth', () => {
       needsVerification: needsVerification.value,
       status: status.value,
       message: message.value
-    })
+    };
 
-    // Check localStorage if on client
-    if (import.meta.client) {
-      console.log('Auth localStorage:', {
-        auth_token: localStorage.getItem('auth_token') ? 'Present (not shown for security)' : 'Not present',
-        auth_user: localStorage.getItem('auth_user'),
-        auth_verified: localStorage.getItem('auth_verified'),
-        auth_roles: localStorage.getItem('auth_roles'),
-        verification_token: localStorage.getItem('verification_token') ? 'Present (not shown for security)' : 'Not present'
-      })
-    }
-
-    return {
-      status: 'success',
-      message: 'Auth state logged to console'
-    }
+    log('Auth Store State:', state);
+    return state;
   }
 
-  async function verifyEmail(verificationCode: string) {
-    isLoading.value = true
-    message.value = null
-    status.value = null
+  /**
+   * Verify email with a verification code
+   */
+  async function verifyEmail(verificationCode: string): Promise<ActionResponse> {
+    startLoading();
 
     try {
       // Call the API to verify the email with the code
       const response = await useCustomFetch<ApiResponse>('/api/verify-email/code', {
         method: 'POST',
-        body: { code: verificationCode },
-        requireAuth: true
-      })
+        body: { code: verificationCode }
+      });
 
-      // Set status and message from response
-      status.value = response.status
-      message.value = response.message || 'Email verified successfully'
+      const isSuccess = response.success === true ||
+                       (response.data && response.data.email_verified === true);
 
-      if (response.status === 'success') {
-        setVerified(true)
+      if (isSuccess) {
+        setVerified(true);
+        status.value = 'success';
+        message.value = response.message || 'Email verified successfully';
+
+        // Update user data if present in response
+        if (response.data?.user) {
+          setUser(response.data.user);
+          saveToStorage('user', response.data.user);
+        } else {
+          // Fetch user profile if not included in the verification response
+          try {
+            const profileResponse = await useCustomFetch<ApiResponse>('/api/user/profile', {
+              method: 'GET'
+            });
+
+            if (profileResponse.success && profileResponse.data?.user) {
+              setUser(profileResponse.data.user);
+              saveToStorage('user', profileResponse.data.user);
+            }
+          } catch (profileError) {
+            console.error('Failed to fetch profile after verification', profileError);
+          }
+        }
+
+        // Fetch roles after verification
+        await fetchRoles();
+
+        return formatResponse(
+          true,
+          message.value,
+          response.data,
+          undefined,
+          { success: true }
+        );
+      } else {
+        status.value = 'error';
+        message.value = response.message || 'Verification failed';
+
+        return formatResponse(
+          false,
+          message.value,
+          response.data,
+          undefined,
+          { success: false }
+        );
       }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Verification failed. Please try again.';
+      error.value = errorMessage;
+      status.value = 'error';
 
-      return {
-        status: response.status,
-        message: response.message || 'Email verified successfully',
-        data: response.data
-      }
-    } catch (error: any) {
-      console.error('Email verification failed:', error)
-      status.value = 'error'
-      message.value = error.message || 'Verification failed. Please try again.'
-
-      return {
-        status: 'error',
-        message: error.message || 'Verification failed. Please try again.',
-        error
-      }
+      return formatResponse(
+        false,
+        errorMessage,
+        undefined,
+        err
+      );
     } finally {
-      isLoading.value = false
+      isLoading.value = false;
     }
   }
 
-  async function verifyEmailWithToken(token?: string) {
-    isLoading.value = true
-    message.value = null
-    status.value = null
+  /**
+   * Verify email with a token
+   */
+  async function verifyEmailWithToken(token?: string): Promise<ActionResponse> {
+    startLoading();
 
-    // If token is not provided, try to get it from localStorage
-    let verificationToken = token
-    if (!verificationToken && import.meta.client) {
-      const storedToken = localStorage.getItem('verification_token')
-      if (storedToken) {
-        verificationToken = storedToken
-      }
-    }
-
-    // If still no token, return error
-    if (!verificationToken) {
-      status.value = 'error'
-      message.value = 'Verification token not found'
-      isLoading.value = false
-      return {
-        status: 'error',
-        message: 'Verification token not found'
-      }
+    // Return error if no token provided
+    if (!token) {
+      status.value = 'error';
+      message.value = 'Verification token not found';
+      isLoading.value = false;
+      return formatResponse(
+        false,
+        'Verification token not found'
+      );
     }
 
     try {
       // Call the API to verify the email with the token
       const response = await useCustomFetch<ApiResponse>('/api/verify-email/token', {
         method: 'POST',
-        body: { token: verificationToken },
-        requireAuth: true
-      })
+        body: { token }
+      });
 
-      // Set status and message from response
-      status.value = response.status
-      message.value = response.message || 'Email verified successfully'
+      if (response.success) {
+        setVerified(true);
+        status.value = 'success';
+        message.value = response.message || 'Email verified successfully';
 
-      if (response.status === 'success') {
-        setVerified(true)
+        // Update user data if included in response
+        if (response.data?.user) {
+          setUser(response.data.user);
+          saveToStorage('user', response.data.user);
+        } else {
+          // Fetch profile if not included
+          try {
+            const profileResponse = await useCustomFetch<ApiResponse>('/api/user/profile', {
+              method: 'GET'
+            });
+
+            if (profileResponse.success && profileResponse.data?.user) {
+              setUser(profileResponse.data.user);
+              saveToStorage('user', profileResponse.data.user);
+            }
+          } catch (profileError) {
+            console.error('Failed to fetch profile after token verification', profileError);
+          }
+        }
+
+        // Fetch roles after verification
+        await fetchRoles();
+
+        return formatResponse(
+          true,
+          message.value,
+          response.data,
+          undefined,
+          { success: true }
+        );
+      } else {
+        status.value = 'error';
+        message.value = response.message || 'Verification failed';
+
+        return formatResponse(
+          false,
+          message.value,
+          response.data,
+          undefined,
+          { success: false }
+        );
       }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Verification failed. Please try again.';
+      error.value = errorMessage;
+      status.value = 'error';
 
-      return {
-        status: response.status,
-        message: response.message || 'Email verified successfully',
-        data: response.data
-      }
-    } catch (error: any) {
-      console.error('Email verification with token failed:', error)
-      status.value = 'error'
-      message.value = error.message || 'Verification failed. Please try again.'
-
-      return {
-        status: 'error',
-        message: error.message || 'Verification failed. Please try again.',
-        error
-      }
+      return formatResponse(
+        false,
+        errorMessage,
+        undefined,
+        err
+      );
     } finally {
-      isLoading.value = false
+      isLoading.value = false;
     }
   }
 
-  async function requestEmailVerification() {
-    isLoading.value = true
-    message.value = null
-    status.value = null
+  /**
+   * Request a new verification email
+   */
+  async function requestEmailVerification(): Promise<ActionResponse> {
+    startLoading();
 
     try {
-      // Call the API to request a new verification code
+      // Request a new verification code
       const response = await useCustomFetch<ApiResponse>('/api/user/resend-verification-email', {
-        method: 'POST',
-        requireAuth: true
-      })
+        method: 'POST'
+      });
 
-      // Set status and message from response
-      status.value = response.status
-      message.value = response.message || 'Verification code sent successfully'
+      status.value = response.success ? 'success' : 'error';
+      message.value = response.message || 'Verification email sent successfully';
 
-      return {
-        status: response.status,
-        message: response.message || 'Verification code sent successfully',
-        data: response.data
-      }
-    } catch (error: any) {
-      console.error('Failed to request email verification:', error)
-      status.value = 'error'
-      message.value = error.message || 'Failed to send verification code. Please try again.'
+      return formatResponse(
+        response.success,
+        message.value,
+        response.data
+      );
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to send verification email';
+      error.value = errorMessage;
+      status.value = 'error';
 
-      return {
-        status: 'error',
-        message: error.message || 'Failed to send verification code. Please try again.',
-        error
-      }
+      return formatResponse(
+        false,
+        errorMessage,
+        undefined,
+        err
+      );
     } finally {
-      isLoading.value = false
+      isLoading.value = false;
     }
   }
 
-  async function checkEmailVerificationStatus() {
-    isLoading.value = true
-    message.value = null
-    status.value = null
+  /**
+   * Check the current email verification status
+   */
+  async function checkEmailVerificationStatus(): Promise<ActionResponse> {
+    startLoading();
 
     try {
-      // Call the API to check email verification status
+      // Check email verification status
       const response = await useCustomFetch<ApiResponse>('/api/user/email-verification-status', {
-        method: 'GET',
-        requireAuth: true
-      })
+        method: 'GET'
+      });
 
-      // Set status and message from response
-      status.value = response.status
-      message.value = response.message || 'Email verification status retrieved'
+      if (response.success) {
+        status.value = 'success';
+        message.value = response.message || 'Email verification status retrieved';
 
-      // Update verification status based on API response
-      if (response.status === 'success' && response.data) {
-        const isEmailVerified = response.data.verified === true
-        setVerified(isEmailVerified)
+        // Update verification status
+        if (response.data) {
+          setVerified(response.data.email_verified === true);
+        }
+
+        return formatResponse(
+          true,
+          message.value,
+          response.data,
+          undefined,
+          { isVerified: response.data?.email_verified === true }
+        );
+      } else {
+        status.value = 'error';
+        message.value = response.message || 'Failed to retrieve verification status';
+
+        return formatResponse(
+          false,
+          message.value,
+          response.data
+        );
       }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to check verification status';
+      error.value = errorMessage;
+      status.value = 'error';
 
-      return {
-        status: response.status,
-        message: response.message || 'Email verification status retrieved',
-        data: response.data
-      }
-    } catch (error: any) {
-      console.error('Failed to check email verification status:', error)
-      status.value = 'error'
-      message.value = error.message || 'Failed to check verification status. Please try again.'
-
-      return {
-        status: 'error',
-        message: error.message || 'Failed to check verification status. Please try again.',
-        error
-      }
+      return formatResponse(
+        false,
+        errorMessage,
+        undefined,
+        err
+      );
     } finally {
-      isLoading.value = false
+      isLoading.value = false;
     }
   }
 
-  async function verifyEmailWithDirectLink(token: string) {
-    isLoading.value = true
-    message.value = null
-    status.value = null
+  /**
+   * Verify email with a direct link
+   */
+  async function verifyEmailWithDirectLink(token: string): Promise<ActionResponse> {
+    startLoading();
 
     try {
-      // Call the API to verify the email with the token via direct link
+      // Verify email with direct link
       const response = await useCustomFetch<ApiResponse>(`/api/verify-email/${token}`, {
         method: 'GET'
-      })
+      });
 
-      // Set status and message from response
-      status.value = response.status
-      message.value = response.message || 'Email verified successfully'
+      if (response.success) {
+        setVerified(true);
+        status.value = 'success';
+        message.value = response.message || 'Email verified successfully';
 
-      if (response.status === 'success') {
-        setVerified(true)
+        // Update user data if included
+        if (response.data?.user) {
+          setUser(response.data.user);
+          saveToStorage('user', response.data.user);
+        } else {
+          // Fetch profile if not included
+          try {
+            const profileResponse = await useCustomFetch<ApiResponse>('/api/user/profile', {
+              method: 'GET'
+            });
 
-        // If the user wasn't authenticated before, but the verification includes auth data
-        if (!isAuthenticated.value && response.data?.auth_token) {
-          setToken(response.data.auth_token)
+            if (profileResponse.success && profileResponse.data?.user) {
+              setUser(profileResponse.data.user);
+              saveToStorage('user', profileResponse.data.user);
+            }
+          } catch (profileError) {
+            console.error('Failed to fetch profile after direct link verification', profileError);
+          }
         }
 
-        if (!user.value && response.data?.user) {
-          setUser(response.data.user)
-        }
-      }
+        // Fetch roles
+        await fetchRoles();
 
-      return {
-        status: response.status,
-        message: response.message || 'Email verified successfully',
-        data: response.data
-      }
-    } catch (error: any) {
-      console.error('Email verification with direct link failed:', error)
-      status.value = 'error'
-      message.value = error.message || 'Verification failed. Please try again.'
+        return formatResponse(
+          true,
+          message.value,
+          response.data,
+          undefined,
+          { success: true }
+        );
+      } else {
+        status.value = 'error';
+        message.value = response.message || 'Verification failed';
 
-      return {
-        status: 'error',
-        message: error.message || 'Verification failed. Please try again.',
-        error
+        return formatResponse(
+          false,
+          message.value,
+          response.data,
+          undefined,
+          { success: false }
+        );
       }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Verification failed. Please try again.';
+      error.value = errorMessage;
+      status.value = 'error';
+
+      return formatResponse(
+        false,
+        errorMessage,
+        undefined,
+        err
+      );
     } finally {
-      isLoading.value = false
+      isLoading.value = false;
     }
   }
 
   return {
     // State
-    token,
     user,
     roles,
     isLoading,
     message,
     status,
     isVerified,
+    error,
+
     // Getters
     isAuthenticated,
     needsVerification,
@@ -649,23 +886,34 @@ export const useAuthStore = defineStore('auth', () => {
     isSeller,
     isCustomer,
 
-    // Actions
+    // Storage helpers
+    saveToStorage,
+    loadFromStorage,
+
+    // Authentication actions
     initialize,
-    setToken,
-    setUser,
-    setVerified,
-    setRoles,
-    fetchRoles,
     login,
     signup,
     logout,
+
+    // Email verification actions
     verifyEmail,
     verifyEmailWithToken,
     verifyEmailWithDirectLink,
     requestEmailVerification,
     checkEmailVerificationStatus,
+
+    // Role management
+    fetchRoles,
+
+    // State management
+    setUser,
+    setVerified,
+    setRoles,
     clearMessages,
     clearAuthData,
+
+    // Debugging
     debugAuthState
   }
 })
