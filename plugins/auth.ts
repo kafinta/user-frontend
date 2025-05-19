@@ -1,6 +1,6 @@
 // plugins/auth.ts
 import { useAuthStore } from '~/stores/auth'
-import { useAppToast } from '~/utils/toast'
+import { useAppToast } from '~/utils/toastify'
 
 export default defineNuxtPlugin((_nuxtApp) => {
   const authStore = useAuthStore()
@@ -104,6 +104,59 @@ export default defineNuxtPlugin((_nuxtApp) => {
     }
   }
 
+  // Auth error handling functions
+  const authErrorHandlers = {
+    /**
+     * Handle unauthorized (401) responses
+     * @param skipRedirect Whether to skip the redirect to login page
+     * @returns Object with status and message
+     */
+    handleUnauthorized: (skipRedirect = false) => {
+      if (import.meta.client) {
+        const route = useRoute()
+        const currentPath = route.fullPath
+
+        // Don't redirect or show notifications if we're on auth pages
+        const isAuthPage = currentPath.includes('/auth/login') ||
+                          currentPath.includes('/auth/signup') ||
+                          currentPath.includes('/auth/verify')
+
+        if (!isAuthPage) {
+          // Show session expired notification
+          notifications.showSessionExpired()
+
+          // Only redirect if not on an auth page and redirect is not skipped
+          if (!skipRedirect) {
+            navigateTo({
+              path: '/auth/login',
+              query: { redirect: currentPath }
+            })
+          }
+        }
+      }
+
+      return {
+        status: 'error',
+        message: 'Unauthorized. Please log in again.'
+      }
+    },
+
+    /**
+     * Handle forbidden (403) responses
+     * @returns Object with status and message
+     */
+    handleForbidden: () => {
+      if (import.meta.client) {
+        notifications.showForbidden()
+      }
+
+      return {
+        status: 'error',
+        message: 'Forbidden. You do not have permission to access this resource.'
+      }
+    }
+  }
+
   // Provide auth utility methods to the app
   return {
     provide: {
@@ -131,7 +184,11 @@ export default defineNuxtPlugin((_nuxtApp) => {
         },
 
         // Notifications (centralized)
-        notifications
+        notifications,
+
+        // Auth error handlers
+        handleUnauthorized: authErrorHandlers.handleUnauthorized,
+        handleForbidden: authErrorHandlers.handleForbidden
       }
     }
   }
