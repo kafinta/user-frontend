@@ -1,107 +1,178 @@
-import type { NitroFetchRequest, NitroFetchOptions } from 'nitropack'
-import { defu } from 'defu'
+import type { NitroFetchRequest, NitroFetchOptions } from 'nitropack';
+import { defu } from 'defu';
+import { unref } from 'vue';
 
-// Define CSRF token management
-let csrfTokenPromise: Promise<any> | null = null;
-let csrfTokenObtained = false;
+// Singleton for CSRF token management
+const csrfManager = {
+  tokenPromise: null as Promise<void> | null,
+  tokenObtained: false,
 
-// Function to get cookie value by name
-function getCookieValue(name: string): string | undefined {
-  if (import.meta.server) return undefined;
+  // Get CSRF token if needed
+  async ensureToken() {
+    if (import.meta.server) return Promise.resolve();
 
-  const cookies = document.cookie.split(';');
-  for (let i = 0; i < cookies.length; i++) {
-    const cookie = cookies[i].trim();
-    // Check if this cookie starts with the name we're looking for
-    if (cookie.startsWith(name + '=')) {
-      return decodeURIComponent(cookie.substring(name.length + 1));
-    }
-  }
-  return undefined;
-}
-
-async function getCsrfToken() {
-  if (import.meta.client) {
-    // Skip if we've already obtained a token in this session
-    if (csrfTokenObtained && getCookieValue('XSRF-TOKEN')) {
+    // Skip if we already have a valid token
+    if (this.tokenObtained && this.getCookie('XSRF-TOKEN')) {
       return Promise.resolve();
     }
 
-    if (!csrfTokenPromise) {
-      const config = useRuntimeConfig();
-      const endpoint = `${config.public.base_url}/sanctum/csrf-cookie`;
+    if (!this.tokenPromise) {
+      const endpoint = `/sanctum/csrf-cookie`;
 
-      csrfTokenPromise = $fetch(endpoint, {
+      // Only log in development
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('Fetching CSRF token from:', endpoint);
+      }
+
+      this.tokenPromise = $fetch(endpoint, {
         credentials: 'include',
         method: 'GET',
         headers: {
-          'X-Requested-With': 'XMLHttpRequest'
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'application/json'
         }
-      }).then(() => {
-        const token = getCookieValue('XSRF-TOKEN');
+      })
+      .then(() => {
+        const token = this.getCookie('XSRF-TOKEN');
+
         if (token) {
-          csrfTokenObtained = true;
+          if (process.env.NODE_ENV !== 'production') {
+            console.log('CSRF token obtained');
+          }
+          this.tokenObtained = true;
         } else {
-          csrfTokenObtained = false;
+          console.warn('CSRF cookie not found after fetch');
+          this.tokenObtained = false;
         }
-        return;
-      }).catch(error => {
+
+        // Only log cookie status in development
+        if (process.env.NODE_ENV !== 'production') {
+          this.logCookieStatus();
+        }
+      })
+      .catch(error => {
         console.error('Failed to get CSRF token:', error);
-        csrfTokenPromise = null; // Reset so we can try again next time
-        csrfTokenObtained = false;
-        return;
+        this.tokenPromise = null;
+        this.tokenObtained = false;
       });
     }
-    return csrfTokenPromise;
+
+    return this.tokenPromise;
+  },
+
+  // Get cookie by name
+  getCookie(name: string): string | undefined {
+    if (import.meta.server) return undefined;
+
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+      return decodeURIComponent(parts.pop()?.split(';').shift() || '');
+    }
+    return undefined;
+  },
+
+  // Check if all required cookies are present
+  logCookieStatus() {
+    if (import.meta.server) return;
+
+    const hasXsrf = !!this.getCookie('XSRF-TOKEN');
+    const hasSession = !!this.getCookie('kafinta_session');
+
+    // Only log in development
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('Cookie status:', {
+        'XSRF-TOKEN': hasXsrf ? 'present' : 'missing',
+        'kafinta_session': hasSession ? 'present' : 'missing'
+      });
+    }
+
+    if (!hasSession) {
+      console.warn('Session cookie missing! Server authentication will fail.');
+    }
   }
-  return Promise.resolve();
-}
+};
 
 export async function useCustomFetch<T>(
   url: NitroFetchRequest,
   options: Omit<NitroFetchOptions<NitroFetchRequest>, 'method'> & {
-    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS' | 'CONNECT' | 'TRACE'
+    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS'
     skipCsrf?: boolean
   } = {}
 ) {
-  const { method = 'GET', skipCsrf = false, ...restOptions } = options
-  const config = useRuntimeConfig()
+  const { method = 'GET', skipCsrf = false, ...restOptions } = options;
 
-  // Ensure url is a string if it's a Ref
-  const resolvedUrl = typeof url === 'string'
-    ? url
-    : unref(url)
+  // Ensure URL is relative to leverage the proxy
+  let resolvedUrl = unref(url);
 
-  // Get CSRF token first if needed (for non-GET requests)
-  if (import.meta.client && !skipCsrf && method !== 'GET') {
-    await getCsrfToken();
-  }
-
-  // Get the CSRF token from cookie after ensuring it's set
-  const csrfToken = import.meta.client ? getCookieValue('XSRF-TOKEN') : undefined;
-
-  const defaults: NitroFetchOptions<NitroFetchRequest> = {
-    baseURL: config.public.base_url,
-    credentials: 'include', // Critical for cookie auth
-    ...(method ? { method } : {}),
-    headers: {
-      'accept': 'application/json, text/plain, */*',
-      'content-type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest', // Important for Laravel to recognize AJAX requests
-      ...(csrfToken ? { 'X-XSRF-TOKEN': csrfToken } : {})
+  // If URL starts with http, extract the path to make it relative
+  if (typeof resolvedUrl === 'string' && resolvedUrl.startsWith('http')) {
+    // Only log in development
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Converting absolute URL to relative for proxy compatibility:', resolvedUrl);
+    }
+    try {
+      const urlObj = new URL(resolvedUrl);
+      resolvedUrl = urlObj.pathname + urlObj.search;
+    } catch (e) {
+      console.error('Failed to parse URL:', e);
     }
   }
 
-  // Merge defaults with user provided options
-  const params = defu(restOptions, defaults)
-
-  // For non-GET requests, get CSRF token first (unless skipCsrf is true)
-  if (import.meta.client && method !== 'GET' && !skipCsrf) {
-    return getCsrfToken().then(() => {
-      return $fetch<T>(resolvedUrl, params)
-    })
+  // For CSRF-requiring methods, ensure we have a token first
+  if (import.meta.client && !skipCsrf && method !== 'GET') {
+    await csrfManager.ensureToken();
   }
 
-  // For GET requests or if skipCsrf is true, proceed without CSRF token
-  return $fetch<T>(resolvedUrl, params)
+  // Get the CSRF token
+  const csrfToken = import.meta.client ? csrfManager.getCookie('XSRF-TOKEN') : undefined;
+
+  // Log request information in development only
+  if (import.meta.client && process.env.NODE_ENV !== 'production') {
+    csrfManager.logCookieStatus();
+    console.log(`Making ${method} request to ${resolvedUrl}`);
+  }
+
+  // Create default options with proper credentials and headers
+  const defaults: NitroFetchOptions<NitroFetchRequest> = {
+    // Ensure we're using relative URLs to leverage the proxy
+    baseURL: '',
+    credentials: 'include', // Critical for sending cookies
+    method,
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+      ...(csrfToken ? { 'X-XSRF-TOKEN': csrfToken } : {})
+    }
+  };
+
+  // Merge defaults with user options (user options take precedence)
+  const params = defu(restOptions, defaults);
+
+  try {
+    const response = await $fetch<T>(resolvedUrl, params);
+    return response;
+  } catch (error: any) {
+    // Only log detailed errors in development
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(`Error in ${method} request to ${resolvedUrl}:`, error);
+    } else {
+      // In production, log minimal information
+      console.error(`API Error: ${error.message || 'Unknown error'}`);
+    }
+
+    // Check for authentication issues
+    if (error.response?.status === 401) {
+      console.warn('Authentication error - likely session cookie issues');
+
+      // Try refreshing the CSRF token in case that helps
+      if (import.meta.client) {
+        csrfManager.tokenObtained = false;
+        csrfManager.tokenPromise = null;
+      }
+    }
+
+    throw error;
+  }
 }
