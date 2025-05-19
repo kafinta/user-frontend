@@ -8,97 +8,83 @@ export default defineNuxtPlugin((_nuxtApp) => {
   // Initialize auth state
   authStore.initialize()
 
-  // Log plugin initialization for debugging
-  console.log('Auth plugin initialized')
+  // Only log in development
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('Auth plugin initialized')
+  }
 
-  // Centralized toast notification functions using our standardized utility
+  // Create a simplified notification system
   const notifications = {
-    // Show success notification
-    showSuccess: (summary: string, message: string, duration = 3000) => {
-      if (import.meta.client) {
-        try {
-          const appToast = useAppToast();
-          appToast.success(summary, message, duration);
-          console.log('Success toast notification shown:', summary, message);
-        } catch (error) {
-          console.error('Failed to show success toast notification:', error);
+    /**
+     * Show a notification with the specified type
+     */
+    show: (type: 'success' | 'info' | 'warn' | 'error', summary: string, message?: string, duration = 3000) => {
+      if (!import.meta.client) return
+
+      try {
+        const appToast = useAppToast()
+        appToast[type](summary, message, duration)
+
+        // Only log in development
+        if (process.env.NODE_ENV !== 'production') {
+          console.log(`${type} notification shown:`, summary, message)
+        }
+      } catch (error) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.error(`Failed to show ${type} notification:`, error)
         }
       }
     },
 
-    // Show error notification
-    showError: (summary: string, message: string, duration = 3000) => {
-      if (import.meta.client) {
-        try {
-          const appToast = useAppToast();
-          appToast.error(summary, message, duration);
-          console.log('Error toast notification shown:', summary, message);
-        } catch (error) {
-          console.error('Failed to show error toast notification:', error);
+    // Convenience methods
+    success: (summary: string, message?: string, duration = 3000) =>
+      notifications.show('success', summary, message, duration),
+
+    info: (summary: string, message?: string, duration = 3000) =>
+      notifications.show('info', summary, message, duration),
+
+    warn: (summary: string, message?: string, duration = 3000) =>
+      notifications.show('warn', summary, message, duration),
+
+    error: (summary: string, message?: string, duration = 3000) =>
+      notifications.show('error', summary, message, duration),
+
+    // Special notifications
+    accessDenied: (message = 'You do not have the required permissions') => {
+      if (!import.meta.client) return
+
+      try {
+        const appToast = useAppToast()
+        appToast.accessDenied(message)
+      } catch (error) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('Failed to show access denied notification:', error)
         }
       }
     },
 
-    // Authentication specific notifications
-    showAuthError: (message: string) => {
-      if (import.meta.client) {
-        try {
-          const appToast = useAppToast();
-          appToast.authError(message || 'Authentication error');
-          console.log('Auth error notification triggered:', message);
-        } catch (error) {
-          console.error('Failed to show auth error notification:', error);
+    authError: (message = 'Authentication error') => {
+      if (!import.meta.client) return
+
+      try {
+        const appToast = useAppToast()
+        appToast.authError(message)
+      } catch (error) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('Failed to show auth error notification:', error)
         }
       }
     },
 
-    // Role specific notifications
-    showRoleError: (message: string) => {
-      if (import.meta.client) {
-        try {
-          console.log('Auth plugin: Attempting to show role error notification');
-          const appToast = useAppToast();
+    sessionExpired: (message = 'Your session has expired. Please log in again.') => {
+      if (!import.meta.client) return
 
-          if (!appToast) {
-            console.error('Auth plugin: appToast is not available');
-            return;
-          }
-
-          // Use setTimeout to ensure the toast is shown after component mounting
-          setTimeout(() => {
-            appToast.accessDenied(message || 'You do not have the required permissions');
-            console.log('Auth plugin: Role error notification triggered:', message);
-          }, 100);
-        } catch (error) {
-          console.error('Auth plugin: Failed to show role error notification:', error);
-        }
-      } else {
-        console.log('Auth plugin: Not showing role error notification on server side');
-      }
-    },
-
-    // Session expiration notification
-    showSessionExpired: () => {
-      if (import.meta.client) {
-        try {
-          const appToast = useAppToast();
-          appToast.sessionExpired();
-          console.log('Session expired notification triggered');
-        } catch (error) {
-          console.error('Failed to show session expired notification:', error);
-        }
-      }
-    },
-
-    // Forbidden action notification
-    showForbidden: () => {
-      if (import.meta.client) {
-        try {
-          const appToast = useAppToast();
-          appToast.error('Access Denied', 'You do not have permission to perform this action.');
-          console.log('Forbidden action notification triggered');
-        } catch (error) {
-          console.error('Failed to show forbidden action notification:', error);
+      try {
+        const appToast = useAppToast()
+        appToast.sessionExpired(message)
+      } catch (error) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('Failed to show session expired notification:', error)
         }
       }
     }
@@ -108,30 +94,30 @@ export default defineNuxtPlugin((_nuxtApp) => {
   const authErrorHandlers = {
     /**
      * Handle unauthorized (401) responses
-     * @param skipRedirect Whether to skip the redirect to login page
-     * @returns Object with status and message
      */
     handleUnauthorized: (skipRedirect = false) => {
-      if (import.meta.client) {
-        const route = useRoute()
-        const currentPath = route.fullPath
+      if (!import.meta.client) {
+        return { status: 'error', message: 'Unauthorized' }
+      }
 
-        // Don't redirect or show notifications if we're on auth pages
-        const isAuthPage = currentPath.includes('/auth/login') ||
-                          currentPath.includes('/auth/signup') ||
-                          currentPath.includes('/auth/verify')
+      const route = useRoute()
+      const currentPath = route.fullPath
 
-        if (!isAuthPage) {
-          // Show session expired notification
-          notifications.showSessionExpired()
+      // Don't redirect or show notifications if we're on auth pages
+      const isAuthPage = currentPath.includes('/auth/login') ||
+                        currentPath.includes('/auth/signup') ||
+                        currentPath.includes('/auth/verify')
 
-          // Only redirect if not on an auth page and redirect is not skipped
-          if (!skipRedirect) {
-            navigateTo({
-              path: '/auth/login',
-              query: { redirect: currentPath }
-            })
-          }
+      if (!isAuthPage) {
+        // Show session expired notification
+        notifications.sessionExpired()
+
+        // Only redirect if not on an auth page and redirect is not skipped
+        if (!skipRedirect) {
+          navigateTo({
+            path: '/auth/login',
+            query: { redirect: currentPath }
+          })
         }
       }
 
@@ -143,17 +129,42 @@ export default defineNuxtPlugin((_nuxtApp) => {
 
     /**
      * Handle forbidden (403) responses
-     * @returns Object with status and message
      */
     handleForbidden: () => {
       if (import.meta.client) {
-        notifications.showForbidden()
+        notifications.accessDenied('You do not have permission to access this resource')
       }
 
       return {
         status: 'error',
         message: 'Forbidden. You do not have permission to access this resource.'
       }
+    }
+  }
+
+  // Navigation helpers
+  const navigation = {
+    /**
+     * Navigate to the appropriate dashboard based on user roles
+     */
+    toDashboard: () => {
+      if (!authStore.isAuthenticated || !authStore.user?.username) {
+        return navigateTo('/')
+      }
+
+      if (authStore.isSeller) {
+        return navigateTo({
+          name: 'username-selling-dashboard',
+          params: { username: authStore.user.username }
+        })
+      } else if (authStore.isCustomer) {
+        return navigateTo({
+          name: 'username-buying-dashboard',
+          params: { username: authStore.user.username }
+        })
+      }
+
+      return navigateTo('/')
     }
   }
 
@@ -164,6 +175,8 @@ export default defineNuxtPlugin((_nuxtApp) => {
         // Authentication
         isAuthenticated: () => authStore.isAuthenticated,
         getUser: () => authStore.user,
+        isVerified: () => authStore.isVerified,
+        needsVerification: () => authStore.needsVerification,
 
         // Roles
         getRoles: () => authStore.roles,
@@ -179,16 +192,23 @@ export default defineNuxtPlugin((_nuxtApp) => {
           return { status: 'success', message: 'Roles already loaded' }
         },
 
+        login: async (credentials: { email: string, password: string, remember_me?: boolean }) => {
+          return await authStore.login(credentials)
+        },
+
         logout: async () => {
           return await authStore.logout()
         },
 
-        // Notifications (centralized)
+        // Notifications
         notifications,
 
-        // Auth error handlers
+        // Error handlers
         handleUnauthorized: authErrorHandlers.handleUnauthorized,
-        handleForbidden: authErrorHandlers.handleForbidden
+        handleForbidden: authErrorHandlers.handleForbidden,
+
+        // Navigation
+        navigation
       }
     }
   }
