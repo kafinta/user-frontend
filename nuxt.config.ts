@@ -3,18 +3,22 @@ import Components from 'unplugin-vue-components/vite';
 import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 
 export default defineNuxtConfig({
-  // ssr: true,
   modules:[
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
     '@nuxt/image',
   ],
 
-
+  // Server configuration
+  devServer: {
+    port: 3000,
+    host: 'localhost'
+  },
 
   plugins: [
     '~/plugins/primevue.ts',
     '~/plugins/auth.ts',
+    '~/plugins/toastify.ts',
   ],
 
   image: {
@@ -34,12 +38,30 @@ export default defineNuxtConfig({
       Components({
         resolvers: [PrimeVueResolver()]
       })
-    ]
+    ],
+    server: {
+      proxy: {
+        '/api': {
+          target: 'http://127.0.0.1:8000',
+          changeOrigin: true,
+          secure: false,
+          ws: true,
+          rewrite: (path: string) => path
+        },
+        '/sanctum': {
+          target: 'http://127.0.0.1:8000',
+          changeOrigin: true,
+          secure: false,
+          ws: true,
+          rewrite: (path: string) => path
+        }
+      }
+    }
   },
 
   runtimeConfig: {
     public: {
-      base_url: 'http://127.0.0.1:8000/',
+      base_url: 'http://127.0.0.1:8000',
       imageBaseUrl: 'http://127.0.0.1:8000/storage'
     },
   },
