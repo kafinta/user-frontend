@@ -38,7 +38,7 @@ interface RolesApiResponse {
 }
 
 // Simple response type for actions
-interface SimpleResponse {
+export interface SimpleResponse {
   success: boolean
   message: string
   status: string
