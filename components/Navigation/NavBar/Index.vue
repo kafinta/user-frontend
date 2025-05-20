@@ -122,6 +122,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '~/stores/auth';
+import { useAppToast } from '~/utils/toastify';
 
 // Props with validation - only UI-related props remain
 const props = defineProps({
@@ -165,7 +166,8 @@ const isAuthenticated = computed(() => authStore.isAuthenticated)
 const username = computed(() => authStore.user?.username || 'user')
 // isSeller is used in the template for conditional rendering
 const isSeller = computed(() => authStore.isSeller)
-// isCustomer is used in the template for conditional rendering
+// isCustomer is used in the template for conditional rendering - keep for future use
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const isCustomer = computed(() => authStore.isCustomer)
 
 // Methods
@@ -214,6 +216,8 @@ function switchToSelling() {
   }
 }
 
+// This function is kept for future use
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function navigateTo(path) {
   console.log('Navigate to:', path)
   emit('navigate', { path, type: 'button' })
@@ -224,17 +228,35 @@ function navigateTo(path) {
   }
 }
 
-function logout() {
+async function logout() {
   console.log('Logout clicked')
   emit('logout')
+
+  // Initialize toast
+  const toast = useAppToast()
+
   try {
-    // Just call logout - the auth store will handle page reload
-    authStore.logout().then(() => {
-      // Close the user options menu before page reload
-      user_options.value = false
-    })
+    // Show loading toast
+    toast.info('Logging out', 'Please wait...')
+
+    // Call logout and handle the response
+    const response = await authStore.logout()
+
+    // Close the user options menu before page reload
+    user_options.value = false
+
+    if (response.success) {
+      // Success toast - though this may not be seen due to page reload
+      toast.success('Success', response.message || 'Logged out successfully')
+    } else {
+      // Error toast
+      toast.error('Error', response.message || 'Failed to log out')
+      console.error('Logout failed:', response)
+    }
   } catch (error) {
     console.error('Logout error:', error)
+    // Show error toast
+    toast.error('Error', 'An unexpected error occurred during logout')
     // For testing, we'll still close the menu
     user_options.value = false
   }
@@ -250,10 +272,24 @@ function handleClickOutside(event) {
   }
 }
 
+// Check authentication status
+function checkAuthStatus() {
+  // This function can be used to check auth status when needed
+  // Currently just a placeholder for future use
+}
+
 // Lifecycle hooks
 onMounted(() => {
   if (import.meta.client) {
     document.addEventListener('click', handleClickOutside)
+
+    // Check auth status on mount
+    checkAuthStatus()
+
+    // Initialize auth store if needed
+    if (!authStore.isAuthenticated && !authStore.isLoading) {
+      authStore.initialize();
+    }
   }
 })
 
