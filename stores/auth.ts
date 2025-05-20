@@ -142,12 +142,10 @@ export const useAuthStore = defineStore('auth', () => {
   async function initialize() {
     // Skip full initialization on server
     if (import.meta.server) {
-      log('Skipping full auth initialization on server');
       return;
     }
 
     try {
-      log('Initializing auth store');
       startLoading();
 
       // Try to load user from storage first
@@ -161,16 +159,12 @@ export const useAuthStore = defineStore('auth', () => {
         if (storedRoles) {
           setRoles(storedRoles);
         }
-
-        log('Loaded user from storage');
       }
 
       // Always verify with the server
       const response = await useCustomFetch<ApiResponse>('/api/user/profile', {
         method: 'GET'
       }).catch(error => {
-        log('Profile fetch failed during initialization:', error);
-
         // Clear auth data if we get a 401
         if (error.response?.status === 401 && user.value) {
           clearAuthData();
@@ -179,22 +173,40 @@ export const useAuthStore = defineStore('auth', () => {
         return { success: false, message: 'Failed to fetch profile' } as ApiResponse;
       });
 
-      if (response.success && response.data?.user) {
-        // Update user data
-        setUser(response.data.user);
-        setVerified(!!response.data.user.email_verified_at);
-        saveToStorage('user', response.data.user);
+      // Check if the response has a success status or contains a success message
+      // Add more comprehensive checks for different response formats
+      const isSuccess = response.success === true ||
+                       (response.status === 'success') ||
+                       (response.status_code === 200) ||
+                       (response.status === 200) ||
+                       (response.message && (
+                         response.message.includes('success') ||
+                         response.message.includes('Success') ||
+                         response.message.includes('retrieved') ||
+                         response.message.includes('Retrieved') ||
+                         response.message.includes('Profile')
+                       )) ||
+                       (response.data && response.data.user);
 
-        log(`User authenticated: ${response.data.user.username}`);
+      // Check if we have user data in the response
+      const userData = response.data?.user;
+
+      if (isSuccess && userData) {
+        // Update user data
+        setUser(userData);
+        setVerified(!!userData.email_verified_at);
+        saveToStorage('user', userData);
 
         // Fetch roles
         await fetchRoles();
-      } else {
+      } else if (isSuccess && !userData && user.value) {
+        // Response was successful but didn't contain user data
+        // If we already have a user in state, keep it
+      } else if (!isSuccess) {
         // Clear auth data if we're not authenticated
         if (user.value) {
           clearAuthData();
         }
-        log('User not authenticated');
       }
     } catch (err) {
       logError('Failed to initialize auth:', err);
