@@ -45,10 +45,6 @@ const csrfManager = {
           this.tokenObtained = false;
         }
 
-        // Only log cookie status in development
-        if (process.env.NODE_ENV !== 'production') {
-          this.logCookieStatus();
-        }
       })
       .catch(error => {
         console.error('Failed to get CSRF token:', error);
@@ -72,24 +68,7 @@ const csrfManager = {
     return undefined;
   },
 
-  // Check if all required cookies are present
   logCookieStatus() {
-    if (import.meta.server) return;
-
-    const hasXsrf = !!this.getCookie('XSRF-TOKEN');
-    const hasSession = !!this.getCookie('kafinta_session');
-
-    // Only log in development
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('Cookie status:', {
-        'XSRF-TOKEN': hasXsrf ? 'present' : 'missing',
-        'kafinta_session': hasSession ? 'present' : 'missing'
-      });
-    }
-
-    if (!hasSession) {
-      console.warn('Session cookie missing! Server authentication will fail.');
-    }
   }
 };
 
@@ -129,7 +108,6 @@ export async function useCustomFetch<T>(
 
   // Log request information in development only
   if (import.meta.client && process.env.NODE_ENV !== 'production') {
-    csrfManager.logCookieStatus();
     console.log(`Making ${method} request to ${resolvedUrl}`);
   }
 
@@ -162,15 +140,10 @@ export async function useCustomFetch<T>(
       console.error(`API Error: ${error.message || 'Unknown error'}`);
     }
 
-    // Check for authentication issues
-    if (error.response?.status === 401) {
-      console.warn('Authentication error - likely session cookie issues');
-
-      // Try refreshing the CSRF token in case that helps
-      if (import.meta.client) {
-        csrfManager.tokenObtained = false;
-        csrfManager.tokenPromise = null;
-      }
+    // Reset CSRF token on authentication errors
+    if (error.response?.status === 401 && import.meta.client) {
+      csrfManager.tokenObtained = false;
+      csrfManager.tokenPromise = null;
     }
 
     throw error;
