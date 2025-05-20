@@ -53,7 +53,7 @@
 
         <!-- Logout button -->
         <li>
-          <UiButtonsTertiary @clicked="$emit('logout')" class="w-full text-left">Log out</UiButtonsTertiary>
+          <UiButtonsTertiary @clicked="handleLogout" class="w-full text-left">Log out</UiButtonsTertiary>
         </li>
       </ul>
     </div>
@@ -63,6 +63,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useAuthStore } from '~/stores/auth'
+import { useAppToast } from '~/utils/toastify'
 
 // Auth store
 const authStore = useAuthStore()
@@ -97,6 +98,37 @@ const username = computed(() => authStore.user?.username || 'user')
 const isSeller = computed(() => authStore.isSeller)
 const isCustomer = computed(() => authStore.isCustomer)
 
+// This section previously contained auth status checking code
+// Removed as part of cleanup
+
 // Emit events
 const emit = defineEmits(['cartClicked', 'logout'])
+
+// Handle logout
+async function handleLogout() {
+  // Initialize toast
+  const toast = useAppToast()
+
+  try {
+    // Show loading toast
+    toast.info('Logging out', 'Please wait...')
+
+    // Emit the logout event to parent component
+    emit('logout')
+
+    // Call logout and handle the response
+    const response = await authStore.logout()
+
+    if (response.success) {
+      // Success toast - though this may not be seen due to page reload
+      toast.success('Success', response.message || 'Logged out successfully')
+    } else {
+      // Error toast
+      toast.error('Error', response.message || 'Failed to log out')
+    }
+  } catch (error) {
+    // Show error toast
+    toast.error('Error', 'An unexpected error occurred during logout')
+  }
+}
 </script>
