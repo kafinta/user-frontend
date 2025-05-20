@@ -39,10 +39,10 @@ import { useRouter } from 'vue-router';
 import { ref, onMounted } from "vue";
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/stores/auth';
-import { useAppToast } from "~/utils/toast";
+import { useAppToast } from "~/utils/toastify";
 
 const authStore = useAuthStore();
-const { message, isLoading, isAuthenticated } = storeToRefs(authStore);
+const { isLoading } = storeToRefs(authStore);
 const router = useRouter();
 const toast = useAppToast();
 
@@ -50,25 +50,25 @@ const email = ref('');
 const username = ref('');
 const password = ref('');
 
-// Clear any previous messages when the component is mounted
 onMounted(() => {
   authStore.clearMessages();
-
-  // If user is already authenticated, redirect them
-  if (isAuthenticated.value) {
-    navigateAfterAuth();
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('Signup page mounted, auth state:', {
+      isAuthenticated: authStore.isAuthenticated,
+      isVerified: authStore.isVerified,
+      user: authStore.user
+    });
   }
 });
 
 async function handleSignup() {
   try {
-    // Clear any previous messages
     authStore.clearMessages();
 
-    console.log('Attempting signup with:', {
-      email: email.value,
-      username: username.value
-    });
+    if (!email.value || !username.value || !password.value) {
+      toast.error('Error', 'Please fill in all fields');
+      return;
+    }
 
     const result = await authStore.signup({
       email: email.value,
@@ -76,60 +76,34 @@ async function handleSignup() {
       username: username.value
     });
 
-    console.log('Signup result:', result);
-    console.log('Auth state after signup:', {
-      isAuthenticated: authStore.isAuthenticated,
-      user: authStore.user,
-      needsVerification: authStore.needsVerification,
-      isVerified: authStore.isVerified
-    });
+    // Debug log to see the result
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('Signup result:', result);
+    }
 
-    // Check if we have user data and email verification is required, regardless of status
-    if (result.data?.user) {
-      toast.success('Success', 'Account created successfully');
+    // Check if the result is successful or if the message indicates success
+    if (result.success || (result.message && result.message.includes('Successfully'))) {
+      // Force success to true if the message indicates success
+      result.success = true;
+      result.status = 'success';
+      toast.success(result.message || 'Account created successfully');
 
       // Check if email verification is required
-      const emailVerificationRequired = result.emailVerificationRequired === true;
-      console.log('Email verification required:', emailVerificationRequired);
-
-      if (emailVerificationRequired) {
+      if (result.emailVerificationRequired) {
         // Navigate to verification page
-        console.log('Redirecting to verification page');
-        router.push('/auth/verify?fromSignup=true');
+        setTimeout(() => {
+          router.push('/auth/verify?fromSignup=true');
+        }, 500);
       } else {
         // Navigate to dashboard or home
-        console.log('No verification needed, proceeding to dashboard');
-        navigateAfterAuth();
+        router.push('/');
       }
     } else {
-      console.log('Signup failed:', message.value);
-      toast.error('Error', message.value || 'Signup failed. Please try again.');
+      toast.error(result.message || 'Signup failed. Please try again.');
     }
-  } catch (error) {
-    console.error('Signup error:', error);
+  } catch (err) {
+    console.error('Signup error:', err);
     toast.error('Error', 'An unexpected error occurred');
-  }
-}
-
-function navigateAfterAuth() {
-  const { user, isVerified } = storeToRefs(authStore);
-
-  console.log('Navigating after auth with user:', user.value, 'isVerified:', isVerified.value);
-
-  if (!isVerified.value) {
-    // If not verified, go to verification page
-    console.log('User not verified, redirecting to verification page');
-    router.push('/auth/verify?fromSignup=true');
-  } else if (user.value && user.value.username) {
-    // If verified and we have a username, go to dashboard
-    console.log('User verified, navigating to dashboard for user:', user.value.username);
-
-    // Use direct path navigation instead of named route to avoid potential issues
-    router.push(`/${user.value.username}/buying/dashboard`);
-  } else {
-    console.log('No username available, navigating to home page');
-    // Fallback to home page
-    router.push('/');
   }
 }
 </script>
