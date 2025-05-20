@@ -20,6 +20,8 @@ export interface User {
 interface ApiResponse {
   success: boolean
   message: string
+  status?: string
+  status_code?: number
   data?: {
     user?: User
     email_verification_required?: boolean
@@ -177,16 +179,7 @@ export const useAuthStore = defineStore('auth', () => {
       // Add more comprehensive checks for different response formats
       const isSuccess = response.success === true ||
                        (response.status === 'success') ||
-                       (response.status_code === 200) ||
-                       (response.status === 200) ||
-                       (response.message && (
-                         response.message.includes('success') ||
-                         response.message.includes('Success') ||
-                         response.message.includes('retrieved') ||
-                         response.message.includes('Retrieved') ||
-                         response.message.includes('Profile')
-                       )) ||
-                       (response.data && response.data.user);
+                       (response.status_code === 200);
 
       // Check if we have user data in the response
       const userData = response.data?.user;
