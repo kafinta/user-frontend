@@ -37,12 +37,11 @@ interface RolesApiResponse {
   }
 }
 
-// Response type for actions
-interface ActionResponse {
-  status: string
+// Simple response type for actions
+interface SimpleResponse {
+  success: boolean
   message: string
-  data?: any
-  error?: any
+  status: string
   [key: string]: any
 }
 
@@ -111,24 +110,6 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // Helper methods
-  /**
-   * Standard response formatter for actions
-   */
-  const formatResponse = (
-    success: boolean,
-    responseMessage: string,
-    responseData?: any,
-    error?: any,
-    additionalProps?: Record<string, any>
-  ): ActionResponse => {
-    return {
-      status: success ? 'success' : 'error',
-      message: responseMessage,
-      ...(responseData ? { data: responseData } : {}),
-      ...(error ? { error } : {}),
-      ...(additionalProps || {})
-    };
-  };
 
   /**
    * Set loading state and clear messages
@@ -159,7 +140,11 @@ export const useAuthStore = defineStore('auth', () => {
    * Initialize the auth store by checking if the user is authenticated
    */
   async function initialize() {
-    if (!import.meta.client) return;
+    // Skip full initialization on server
+    if (import.meta.server) {
+      log('Skipping full auth initialization on server');
+      return;
+    }
 
     try {
       log('Initializing auth store');
@@ -223,16 +208,25 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * Fetch user roles from the API
    */
-  async function fetchRoles(): Promise<ActionResponse> {
+  async function fetchRoles(): Promise<SimpleResponse> {
     if (!isAuthenticated.value) {
-      return formatResponse(false, 'User is not authenticated');
+      return {
+        success: false,
+        message: 'User is not authenticated',
+        status: 'error'
+      };
     }
 
     // Try to load from storage first
     const storedRoles = loadFromStorage('roles');
     if (storedRoles) {
       setRoles(storedRoles);
-      return formatResponse(true, 'User roles loaded from cache', { roles: storedRoles });
+      return {
+        success: true,
+        message: 'User roles loaded from cache',
+        status: 'success',
+        roles: storedRoles
+      };
     }
 
     startLoading();
@@ -250,22 +244,22 @@ export const useAuthStore = defineStore('auth', () => {
         saveToStorage('roles', response.data.roles);
       }
 
-      return formatResponse(
-        response.success,
-        message.value || 'User roles retrieved',
-        response.data
-      );
+      return {
+        success: response.success,
+        message: message.value || 'User roles retrieved',
+        status: status.value,
+        data: response.data
+      };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch user roles';
       error.value = errorMessage;
       status.value = 'error';
 
-      return formatResponse(
-        false,
-        errorMessage,
-        undefined,
-        err
-      );
+      return {
+        success: false,
+        message: errorMessage,
+        status: 'error'
+      };
     } finally {
       isLoading.value = false;
     }
@@ -274,87 +268,128 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * Log in a user with email and password
    */
-  async function login(credentials: { email: string, password: string, remember_me?: boolean }): Promise<ActionResponse> {
+  async function login(credentials: { email: string, password: string, remember_me?: boolean }): Promise<{
+    success: boolean,
+    message: string,
+    status: string,
+    needsVerification?: boolean
+  }> {
     startLoading();
 
     try {
-      log(`Attempting login for: ${credentials.email}`);
-
-      // Force a CSRF token refresh before login
-      if (import.meta.client) {
-        try {
-          await $fetch('/sanctum/csrf-cookie', {
-            credentials: 'include',
-            method: 'GET',
-            headers: {
-              'X-Requested-With': 'XMLHttpRequest',
-              'Accept': 'application/json'
-            }
-          });
-        } catch (csrfError) {
-          // Continue with login attempt even if CSRF refresh fails
-          console.error('CSRF refresh failed, continuing with login attempt', csrfError);
-        }
-      }
-
       // Use useCustomFetch for consistent error handling
       const response = await useCustomFetch<ApiResponse>('/api/user/login', {
         method: 'POST',
         body: credentials
       });
 
-      if (response.success && response.data?.user) {
-        // Update user data
-        setUser(response.data.user);
-        setVerified(!!response.data.user.email_verified_at);
-        saveToStorage('user', response.data.user);
+      // Debug log to see the actual API response
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('Login API response:', response);
+      }
 
+      // Check for success in different ways
+      if (response.success === true ||
+          (response.message && (
+            response.message.includes('success') ||
+            response.message.includes('Success') ||
+            response.message.includes('logged in')
+          ))) {
+
+        // Set status to success
         status.value = 'success';
         message.value = response.message || 'Login successful';
 
-        // Fetch user roles after successful login
-        await fetchRoles();
+        // Handle user data if available
+        if (response.data?.user) {
+          setUser(response.data.user);
+          setVerified(!!response.data.user.email_verified_at);
+          saveToStorage('user', response.data.user);
 
-        // Transfer guest cart to user cart after login
-        try {
-          await useCustomFetch('/api/cart/transfer-after-login', {
-            method: 'GET'
-          });
-        } catch (cartError) {
-          // Non-critical error, just log it
-          console.error('Failed to transfer guest cart', cartError);
-        }
+          // Fetch user roles after successful login
+          await fetchRoles();
 
-        return formatResponse(
-          true,
-          message.value,
-          response.data,
-          undefined,
-          {
+          // Transfer guest cart to user cart after login (non-critical)
+          useCustomFetch('/api/cart/transfer-after-login', { method: 'GET' })
+            .catch(() => {}); // Ignore errors
+
+          // Create response object with user data
+          const responseObj = {
+            success: true,
+            message: message.value,
+            status: 'success',
             needsVerification: !response.data.user.email_verified_at
+          };
+
+          // Debug log the final response object
+          if (process.env.NODE_ENV !== 'production') {
+            console.log('Login response object being returned:', responseObj);
           }
-        );
+
+          return responseObj;
+        } else {
+          // If no user data but success message, try to fetch profile
+          try {
+            const profileResponse = await useCustomFetch<ApiResponse>('/api/user/profile', {
+              method: 'GET'
+            });
+
+            if (profileResponse.success && profileResponse.data?.user) {
+              setUser(profileResponse.data.user);
+              setVerified(!!profileResponse.data.user.email_verified_at);
+              saveToStorage('user', profileResponse.data.user);
+
+              // Fetch roles
+              await fetchRoles();
+
+              // Create response object with user data from profile
+              const responseObj = {
+                success: true,
+                message: message.value,
+                status: 'success',
+                needsVerification: !profileResponse.data.user.email_verified_at
+              };
+
+              // Debug log
+              if (process.env.NODE_ENV !== 'production') {
+                console.log('Login response object (from profile):', responseObj);
+              }
+
+              return responseObj;
+            }
+          } catch (profileError) {
+            console.error('Failed to fetch profile after login:', profileError);
+          }
+
+          // If we still don't have user data, return success but indicate verification might be needed
+          return {
+            success: true,
+            message: message.value,
+            status: 'success',
+            needsVerification: true // Assume verification might be needed
+          };
+        }
       } else {
+        // Handle error case
         status.value = 'error';
         message.value = response.message || 'Login failed';
 
-        return formatResponse(
-          false,
-          message.value,
-          response.data
-        );
+        return {
+          success: false,
+          message: message.value,
+          status: 'error'
+        };
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed. Please try again.';
       error.value = errorMessage;
       status.value = 'error';
 
-      return formatResponse(
-        false,
-        errorMessage,
-        undefined,
-        err
-      );
+      return {
+        success: false,
+        message: errorMessage,
+        status: 'error'
+      };
     } finally {
       isLoading.value = false;
     }
@@ -368,7 +403,13 @@ export const useAuthStore = defineStore('auth', () => {
     password: string,
     username: string,
     phone_number?: string
-  }): Promise<ActionResponse> {
+  }): Promise<{
+    success: boolean,
+    message: string,
+    status: string,
+    emailVerificationRequired?: boolean,
+    verificationEmailSent?: boolean
+  }> {
     startLoading();
 
     try {
@@ -377,52 +418,108 @@ export const useAuthStore = defineStore('auth', () => {
         body: userData
       });
 
-      if (response.success && response.data?.user) {
+      // Debug log to see the actual API response
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('Signup API response:', response);
+      }
+
+      // Check if we have a successful response with a message but no user data
+      // This handles the case where the backend returns success but with a different structure
+      if (response.success === true || (response.message && response.message.includes('Successfully'))) {
+        // Set the status to success
         status.value = 'success';
         message.value = response.message || 'Account created successfully';
 
-        // Update user data
-        setUser(response.data.user);
-        saveToStorage('user', response.data.user);
+        // Create a default user if not provided in the response
+        const userInfo = response.data?.user || {
+          email: userData.email,
+          username: userData.username
+        };
 
-        // Check if email verification is required
-        const emailVerificationRequired = response.data.email_verification_required === true;
+        // Update user data if available
+        setUser(userInfo);
+        saveToStorage('user', userInfo);
+
+        // Check if email verification is required (default to true if not specified)
+        const emailVerificationRequired = response.data?.email_verification_required === true || true;
         setVerified(!emailVerificationRequired);
 
         // Fetch roles if available
         await fetchRoles();
 
-        return formatResponse(
-          true,
-          message.value,
-          response.data,
-          undefined,
-          {
-            emailVerificationRequired: emailVerificationRequired,
-            verificationEmailSent: response.data.verification_email_sent === true
-          }
-        );
-      } else {
-        status.value = 'error';
-        message.value = response.message || 'Signup failed. Please try again.';
+        // Create the response object
+        const responseObj = {
+          success: true,
+          message: message.value,
+          status: 'success', // Explicitly set to 'success' instead of using status.value
+          emailVerificationRequired: emailVerificationRequired,
+          verificationEmailSent: response.data?.verification_email_sent === true || false
+        };
 
-        return formatResponse(
-          false,
-          message.value,
-          response.data
-        );
+        // Debug log the final response object
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('Signup response object being returned:', responseObj);
+        }
+
+        return responseObj;
+      } else {
+        // Check if the message indicates success despite the response structure
+        if (response.message && response.message.includes('Successfully')) {
+          // Handle as success even if the response structure is unexpected
+          status.value = 'success';
+          message.value = response.message;
+
+          // Create a default user
+          const userInfo = {
+            email: userData.email,
+            username: userData.username
+          };
+
+          // Update user data
+          setUser(userInfo);
+          saveToStorage('user', userInfo);
+
+          // Assume email verification is required
+          const emailVerificationRequired = true;
+          setVerified(!emailVerificationRequired);
+
+          // Create the response object
+          const responseObj = {
+            success: true,
+            message: message.value,
+            status: 'success',
+            emailVerificationRequired: emailVerificationRequired,
+            verificationEmailSent: false
+          };
+
+          // Debug log
+          if (process.env.NODE_ENV !== 'production') {
+            console.log('Signup response object (from message check):', responseObj);
+          }
+
+          return responseObj;
+        } else {
+          // Handle as error
+          status.value = 'error';
+          message.value = response.message || 'Signup failed. Please try again.';
+
+          return {
+            success: false,
+            message: message.value,
+            status: 'error' // Explicitly set to 'error' instead of using status.value
+          };
+        }
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Signup failed. Please try again.';
       error.value = errorMessage;
       status.value = 'error';
 
-      return formatResponse(
-        false,
-        errorMessage,
-        undefined,
-        err
-      );
+      return {
+        success: false,
+        message: errorMessage,
+        status: 'error' // Explicitly set to 'error' instead of using status.value
+      };
     } finally {
       isLoading.value = false;
     }
@@ -431,7 +528,7 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * Log out the current user
    */
-  async function logout(): Promise<ActionResponse> {
+  async function logout(): Promise<SimpleResponse> {
     startLoading();
 
     try {
@@ -463,10 +560,11 @@ export const useAuthStore = defineStore('auth', () => {
         window.location.reload();
       }
 
-      return formatResponse(
-        true,
-        'Successfully logged out'
-      );
+      return {
+        success: true,
+        message: 'Successfully logged out',
+        status: 'success'
+      };
     } catch (err) {
       // Clear auth data regardless of API result
       clearAuthData();
@@ -489,10 +587,11 @@ export const useAuthStore = defineStore('auth', () => {
         window.location.reload();
       }
 
-      return formatResponse(
-        true,
-        'Successfully logged out'
-      );
+      return {
+        success: true,
+        message: 'Successfully logged out',
+        status: 'success'
+      };
     } finally {
       isLoading.value = false;
     }
@@ -509,15 +608,16 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * Clear all authentication data
    */
-  function clearAuthData(): ActionResponse {
+  function clearAuthData(): SimpleResponse {
     user.value = null;
     roles.value = [];
     isVerified.value = false;
 
-    return formatResponse(
-      true,
-      'Authentication data cleared'
-    );
+    return {
+      success: true,
+      message: 'Authentication data cleared',
+      status: 'success'
+    };
   }
 
   /**
@@ -541,7 +641,11 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * Verify email with a verification code
    */
-  async function verifyEmail(verificationCode: string): Promise<ActionResponse> {
+  async function verifyEmail(verificationCode: string): Promise<{
+    success: boolean,
+    message: string,
+    status: string
+  }> {
     startLoading();
 
     try {
@@ -551,8 +655,20 @@ export const useAuthStore = defineStore('auth', () => {
         body: { code: verificationCode }
       });
 
+      // Debug log to see the actual API response
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('Verify email API response:', response);
+      }
+
+      // Check for success in different ways
       const isSuccess = response.success === true ||
-                       (response.data && response.data.email_verified === true);
+        (response.data && response.data.email_verified === true) ||
+        (response.message && (
+          response.message.includes('verified') ||
+          response.message.includes('Verified') ||
+          response.message.includes('success') ||
+          response.message.includes('Success')
+        ));
 
       if (isSuccess) {
         setVerified(true);
@@ -582,36 +698,39 @@ export const useAuthStore = defineStore('auth', () => {
         // Fetch roles after verification
         await fetchRoles();
 
-        return formatResponse(
-          true,
-          message.value,
-          response.data,
-          undefined,
-          { success: true }
-        );
+        // Create response object
+        const responseObj = {
+          success: true,
+          message: message.value,
+          status: 'success'
+        };
+
+        // Debug log the final response object
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('Verify email response object being returned:', responseObj);
+        }
+
+        return responseObj;
       } else {
         status.value = 'error';
         message.value = response.message || 'Verification failed';
 
-        return formatResponse(
-          false,
-          message.value,
-          response.data,
-          undefined,
-          { success: false }
-        );
+        return {
+          success: false,
+          message: message.value,
+          status: 'error'
+        };
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Verification failed. Please try again.';
       error.value = errorMessage;
       status.value = 'error';
 
-      return formatResponse(
-        false,
-        errorMessage,
-        undefined,
-        err
-      );
+      return {
+        success: false,
+        message: errorMessage,
+        status: 'error'
+      };
     } finally {
       isLoading.value = false;
     }
@@ -620,7 +739,7 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * Verify email with a token
    */
-  async function verifyEmailWithToken(token?: string): Promise<ActionResponse> {
+  async function verifyEmailWithToken(token?: string): Promise<SimpleResponse> {
     startLoading();
 
     // Return error if no token provided
@@ -628,10 +747,11 @@ export const useAuthStore = defineStore('auth', () => {
       status.value = 'error';
       message.value = 'Verification token not found';
       isLoading.value = false;
-      return formatResponse(
-        false,
-        'Verification token not found'
-      );
+      return {
+        success: false,
+        message: 'Verification token not found',
+        status: 'error'
+      };
     }
 
     try {
@@ -641,7 +761,22 @@ export const useAuthStore = defineStore('auth', () => {
         body: { token }
       });
 
-      if (response.success) {
+      // Debug log to see the actual API response
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('Verify email with token API response:', response);
+      }
+
+      // Check for success in different ways
+      const isSuccess = response.success === true ||
+        (response.data && response.data.email_verified === true) ||
+        (response.message && (
+          response.message.includes('verified') ||
+          response.message.includes('Verified') ||
+          response.message.includes('success') ||
+          response.message.includes('Success')
+        ));
+
+      if (isSuccess) {
         setVerified(true);
         status.value = 'success';
         message.value = response.message || 'Email verified successfully';
@@ -669,36 +804,41 @@ export const useAuthStore = defineStore('auth', () => {
         // Fetch roles after verification
         await fetchRoles();
 
-        return formatResponse(
-          true,
-          message.value,
-          response.data,
-          undefined,
-          { success: true }
-        );
+        // Create response object
+        const responseObj = {
+          success: true,
+          message: message.value,
+          status: 'success',
+          data: response.data
+        };
+
+        // Debug log the final response object
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('Verify email with token response object being returned:', responseObj);
+        }
+
+        return responseObj;
       } else {
         status.value = 'error';
         message.value = response.message || 'Verification failed';
 
-        return formatResponse(
-          false,
-          message.value,
-          response.data,
-          undefined,
-          { success: false }
-        );
+        return {
+          success: false,
+          message: message.value,
+          status: 'error',
+          data: response.data
+        };
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Verification failed. Please try again.';
       error.value = errorMessage;
       status.value = 'error';
 
-      return formatResponse(
-        false,
-        errorMessage,
-        undefined,
-        err
-      );
+      return {
+        success: false,
+        message: errorMessage,
+        status: 'error'
+      };
     } finally {
       isLoading.value = false;
     }
@@ -707,7 +847,11 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * Request a new verification email
    */
-  async function requestEmailVerification(): Promise<ActionResponse> {
+  async function requestEmailVerification(): Promise<{
+    success: boolean,
+    message: string,
+    status: string
+  }> {
     startLoading();
 
     try {
@@ -716,25 +860,46 @@ export const useAuthStore = defineStore('auth', () => {
         method: 'POST'
       });
 
-      status.value = response.success ? 'success' : 'error';
+      // Debug log to see the actual API response
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('Request verification email API response:', response);
+      }
+
+      // Check for success in different ways
+      const isSuccess = response.success === true ||
+        (response.message && (
+          response.message.includes('sent') ||
+          response.message.includes('Sent') ||
+          response.message.includes('success') ||
+          response.message.includes('Success')
+        ));
+
+      status.value = isSuccess ? 'success' : 'error';
       message.value = response.message || 'Verification email sent successfully';
 
-      return formatResponse(
-        response.success,
-        message.value,
-        response.data
-      );
+      // Create response object with explicit boolean type for success
+      const responseObj = {
+        success: Boolean(isSuccess), // Convert to boolean to fix TypeScript error
+        message: message.value,
+        status: isSuccess ? 'success' : 'error'
+      };
+
+      // Debug log the final response object
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('Request verification email response object being returned:', responseObj);
+      }
+
+      return responseObj;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to send verification email';
       error.value = errorMessage;
       status.value = 'error';
 
-      return formatResponse(
-        false,
-        errorMessage,
-        undefined,
-        err
-      );
+      return {
+        success: false,
+        message: errorMessage,
+        status: 'error'
+      };
     } finally {
       isLoading.value = false;
     }
@@ -743,7 +908,7 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * Check the current email verification status
    */
-  async function checkEmailVerificationStatus(): Promise<ActionResponse> {
+  async function checkEmailVerificationStatus(): Promise<SimpleResponse> {
     startLoading();
 
     try {
@@ -752,43 +917,66 @@ export const useAuthStore = defineStore('auth', () => {
         method: 'GET'
       });
 
-      if (response.success) {
+      // Debug log to see the actual API response
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('Check email verification status API response:', response);
+      }
+
+      // Check for success in different ways
+      const isSuccess = response.success === true ||
+        (response.message && (
+          response.message.includes('status') ||
+          response.message.includes('Status') ||
+          response.message.includes('retrieved') ||
+          response.message.includes('Retrieved') ||
+          response.message.includes('success') ||
+          response.message.includes('Success')
+        ));
+
+      if (isSuccess) {
         status.value = 'success';
         message.value = response.message || 'Email verification status retrieved';
 
         // Update verification status
-        if (response.data) {
-          setVerified(response.data.email_verified === true);
+        const isEmailVerified = response.data?.email_verified === true;
+        setVerified(isEmailVerified);
+
+        // Create response object
+        const responseObj = {
+          success: true,
+          message: message.value,
+          status: 'success',
+          data: response.data,
+          isVerified: isEmailVerified
+        };
+
+        // Debug log the final response object
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('Check email verification status response object being returned:', responseObj);
         }
 
-        return formatResponse(
-          true,
-          message.value,
-          response.data,
-          undefined,
-          { isVerified: response.data?.email_verified === true }
-        );
+        return responseObj;
       } else {
         status.value = 'error';
         message.value = response.message || 'Failed to retrieve verification status';
 
-        return formatResponse(
-          false,
-          message.value,
-          response.data
-        );
+        return {
+          success: false,
+          message: message.value,
+          status: 'error',
+          data: response.data
+        };
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to check verification status';
       error.value = errorMessage;
       status.value = 'error';
 
-      return formatResponse(
-        false,
-        errorMessage,
-        undefined,
-        err
-      );
+      return {
+        success: false,
+        message: errorMessage,
+        status: 'error'
+      };
     } finally {
       isLoading.value = false;
     }
@@ -797,7 +985,7 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * Verify email with a direct link
    */
-  async function verifyEmailWithDirectLink(token: string): Promise<ActionResponse> {
+  async function verifyEmailWithDirectLink(token: string): Promise<SimpleResponse> {
     startLoading();
 
     try {
@@ -806,7 +994,22 @@ export const useAuthStore = defineStore('auth', () => {
         method: 'GET'
       });
 
-      if (response.success) {
+      // Debug log to see the actual API response
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('Verify email with direct link API response:', response);
+      }
+
+      // Check for success in different ways
+      const isSuccess = response.success === true ||
+        (response.data && response.data.email_verified === true) ||
+        (response.message && (
+          response.message.includes('verified') ||
+          response.message.includes('Verified') ||
+          response.message.includes('success') ||
+          response.message.includes('Success')
+        ));
+
+      if (isSuccess) {
         setVerified(true);
         status.value = 'success';
         message.value = response.message || 'Email verified successfully';
@@ -834,67 +1037,69 @@ export const useAuthStore = defineStore('auth', () => {
         // Fetch roles
         await fetchRoles();
 
-        return formatResponse(
-          true,
-          message.value,
-          response.data,
-          undefined,
-          { success: true }
-        );
+        // Create response object
+        const responseObj = {
+          success: true,
+          message: message.value,
+          status: 'success',
+          data: response.data
+        };
+
+        // Debug log the final response object
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('Verify email with direct link response object being returned:', responseObj);
+        }
+
+        return responseObj;
       } else {
         status.value = 'error';
         message.value = response.message || 'Verification failed';
 
-        return formatResponse(
-          false,
-          message.value,
-          response.data,
-          undefined,
-          { success: false }
-        );
+        return {
+          success: false,
+          message: message.value,
+          status: 'error',
+          data: response.data
+        };
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Verification failed. Please try again.';
       error.value = errorMessage;
       status.value = 'error';
 
-      return formatResponse(
-        false,
-        errorMessage,
-        undefined,
-        err
-      );
+      return {
+        success: false,
+        message: errorMessage,
+        status: 'error'
+      };
     } finally {
       isLoading.value = false;
     }
   }
 
   return {
-    // State
+    // Essential state for UI
     user,
     roles,
     isLoading,
     message,
     status,
-    isVerified,
     error,
+    isVerified,
 
-    // Getters
+    // Essential getters for navigation and permissions
     isAuthenticated,
     needsVerification,
     hasRole,
     isSeller,
     isCustomer,
 
-    // Storage helpers
-    saveToStorage,
-    loadFromStorage,
-
-    // Authentication actions
+    // Core authentication actions
     initialize,
     login,
     signup,
     logout,
+    fetchRoles,
 
     // Email verification actions
     verifyEmail,
@@ -903,17 +1108,11 @@ export const useAuthStore = defineStore('auth', () => {
     requestEmailVerification,
     checkEmailVerificationStatus,
 
-    // Role management
-    fetchRoles,
-
-    // State management
-    setUser,
-    setVerified,
-    setRoles,
+    // Clear messages
     clearMessages,
     clearAuthData,
 
-    // Debugging
-    debugAuthState
+    // Debugging (only in development)
+    ...(process.env.NODE_ENV !== 'production' ? { debugAuthState } : {})
   }
 })
