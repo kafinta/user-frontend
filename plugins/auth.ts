@@ -8,11 +8,6 @@ export default defineNuxtPlugin((_nuxtApp) => {
   // Initialize auth state
   authStore.initialize()
 
-  // Only log in development
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('Auth plugin initialized')
-  }
-
   // Create a simplified notification system
   const notifications = {
     /**
