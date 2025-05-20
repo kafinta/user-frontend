@@ -38,21 +38,21 @@
 
 <script setup>
 definePageMeta({
-  // Temporarily remove middleware to debug the issue
-  // middleware: ['auth'],
+  middleware: ['auth'],
   isVerifyRoute: true
 });
 
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/stores/auth';
-import { useAppToast } from "~/utils/toast";
+import { useAppToast } from "~/utils/toastify";
+import { useNuxtApp } from '#app';
 
 const authStore = useAuthStore();
-const { message, status } = storeToRefs(authStore);
 const router = useRouter();
+const route = useRoute();
 const toast = useAppToast();
+const { $auth } = useNuxtApp();
 
 // State variables
 const code = ref('');
@@ -65,97 +65,42 @@ onMounted(async () => {
   // Clear any previous messages
   authStore.clearMessages();
 
-  // Debug auth state
-  console.log('Auth state on verify page mount:', {
-    isAuthenticated: authStore.isAuthenticated,
-    isVerified: authStore.isVerified,
-    user: authStore.user,
-    needsVerification: authStore.needsVerification
-  });
-
-  // Check if we need to manually check authentication status
-  if (!authStore.isAuthenticated) {
-    console.log('Not authenticated, checking profile...');
-    try {
-      // Try to get user profile to check authentication status
-      const response = await useCustomFetch('/api/user/profile', {
-        method: 'GET',
-        skipCsrf: true,
-        // Skip the automatic redirect
-        onResponseError: ({ response }) => {
-          console.log('Profile check failed:', response.status);
-        }
-      });
-
-      console.log('Profile check response:', response);
-
-      if (response.success && response.data?.user) {
-        // Update user data
-        authStore.setUser(response.data.user);
-
-        // Update verification status
-        authStore.setVerified(!!response.data.user.email_verified_at);
-
-        console.log('Updated auth state:', {
-          isAuthenticated: authStore.isAuthenticated,
-          isVerified: authStore.isVerified,
-          user: authStore.user
-        });
-      }
-    } catch (error) {
-      console.error('Failed to check profile:', error);
-    }
+  // Debug auth state in development
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('Verify page mounted, auth state:', {
+      isAuthenticated: authStore.isAuthenticated,
+      isVerified: authStore.isVerified,
+      user: authStore.user,
+      needsVerification: authStore.needsVerification
+    });
   }
 
-  // If user is already verified, redirect them
+  // Check if we came from signup or login
+  const fromSignup = route.query.fromSignup === 'true';
+  const fromLogin = route.query.fromLogin === 'true';
+
+  // If user is already verified, redirect them to dashboard
   if (authStore.isAuthenticated && authStore.isVerified) {
-    console.log('User is authenticated and verified, redirecting to dashboard');
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('User is already verified, redirecting to dashboard');
+    }
     navigateToDashboard();
     return;
   }
 
-  // If user is not authenticated, check if we have a query parameter indicating we just signed up or logged in
-  if (!authStore.isAuthenticated) {
-    const route = useRoute();
-    const fromSignup = route.query.fromSignup === 'true';
-    const fromLogin = route.query.fromLogin === 'true';
-
-    if (fromSignup || fromLogin) {
-      console.log('User came from signup/login, proceeding with verification');
-      // Continue with verification even though isAuthenticated might be false
-      // This handles the case where the cookie might not be immediately recognized
-
-      // Try to check profile again after a short delay
-      setTimeout(async () => {
-        try {
-          const response = await useCustomFetch('/api/user/profile', {
-            method: 'GET',
-            skipCsrf: true
-          });
-
-          console.log('Delayed profile check:', response);
-
-          if (response.success && response.data?.user) {
-            authStore.setUser(response.data.user);
-            authStore.setVerified(!!response.data.user.email_verified_at);
-            console.log('Updated auth state after delay:', {
-              isAuthenticated: authStore.isAuthenticated,
-              user: authStore.user
-            });
-          }
-        } catch (error) {
-          console.error('Delayed profile check failed:', error);
-        }
-      }, 1000);
-    } else {
-      console.log('User is not authenticated, redirecting to login');
-      router.push('/auth/login');
-      return;
+  // If user is not authenticated and didn't come from signup/login, redirect to login
+  if (!authStore.isAuthenticated && !fromSignup && !fromLogin) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('User is not authenticated and didn\'t come from signup/login, redirecting to login');
     }
+    router.push('/auth/login');
+    return;
   }
 
-  console.log('User needs verification, requesting code');
   // Request a new verification code on page load (silently)
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('Requesting verification code silently');
+  }
   await requestNewCode(true);
 });
 
@@ -176,49 +121,26 @@ async function verifyEmail() {
   isLoading.value = true;
 
   try {
-    const result = await authStore.verifyEmail(code.value);
-    console.log('Verification result:', result);
+    // Show loading toast
+    toast.info('Verifying', 'Verifying your email...');
 
-    // Check if the verification was successful based on the result
-    if (result.success || result.status === 'success' ||
-        (result.message && result.message.toLowerCase().includes('success'))) {
-      toast.success('Success', 'Email verified successfully');
+    const result = await authStore.verifyEmail(code.value);
+
+    if (result.success) {
+      toast.success('Success', result.message || 'Email verified successfully');
 
       // Reset the form
       code.value = '';
 
-      // Check if the user state was updated
-      console.log('Auth state after verification in component:', {
-        isAuthenticated: authStore.isAuthenticated,
-        isVerified: authStore.isVerified,
-        user: authStore.user
-      });
-
-      // Fetch user profile to ensure we have the latest data
-      try {
-        const profileResponse = await useCustomFetch('/api/user/profile', {
-          method: 'GET',
-          skipCsrf: true
-        });
-
-        if (profileResponse.success && profileResponse.data?.user) {
-          authStore.setUser(profileResponse.data.user);
-          authStore.setVerified(!!profileResponse.data.user.email_verified_at);
-          console.log('User profile updated after verification in component');
-        }
-      } catch (profileError) {
-        console.error('Failed to fetch profile after verification in component:', profileError);
-      }
-
-      // Redirect to dashboard after successful verification
+      // Redirect to dashboard after successful verification with a short delay
       setTimeout(() => {
         navigateToDashboard();
       }, 1000);
     } else {
-      toast.error('Error', message.value || 'Verification failed. Please try again.');
+      toast.error('Error', result.message || 'Verification failed. Please try again.');
     }
-  } catch (error) {
-    console.error('Verification error:', error);
+  } catch (err) {
+    console.error('Verification error:', err);
     toast.error('Error', 'An unexpected error occurred. Please try again.');
   } finally {
     isLoading.value = false;
@@ -234,47 +156,23 @@ async function requestNewCode(silent = false) {
   }
 
   try {
-    // Check if we're authenticated first
-    if (!authStore.isAuthenticated) {
-      console.log('Not authenticated yet, checking profile before requesting code');
-      try {
-        const profileResponse = await useCustomFetch('/api/user/profile', {
-          method: 'GET',
-          skipCsrf: true
-        });
+    // Request the verification code
+    const result = await authStore.requestEmailVerification();
 
-        if (profileResponse.success && profileResponse.data?.user) {
-          authStore.setUser(profileResponse.data.user);
-          authStore.setVerified(!!profileResponse.data.user.email_verified_at);
-          console.log('Updated auth state before requesting code:', {
-            isAuthenticated: authStore.isAuthenticated,
-            user: authStore.user
-          });
-        } else {
-          console.log('Profile check failed, proceeding anyway');
-        }
-      } catch (profileError) {
-        console.error('Profile check failed:', profileError);
-      }
-    }
-
-    // Now request the verification code
-    await authStore.requestEmailVerification();
-
-    if (status.value === 'success') {
+    if (result.success) {
       if (!silent) {
-        toast.success('Success', message.value || 'Verification code sent successfully');
+        toast.success('Success', result.message || 'Verification code sent successfully');
       }
 
       // Start cooldown
       startCooldown();
     } else {
       if (!silent) {
-        toast.error('Error', message.value || 'Failed to send verification code');
+        toast.error('Error', result.message || 'Failed to send verification code');
       }
     }
-  } catch (error) {
-    console.error('Request code error:', error);
+  } catch (err) {
+    console.error('Request code error:', err);
     if (!silent) {
       toast.error('Error', 'An unexpected error occurred');
     }
@@ -304,16 +202,24 @@ function startCooldown() {
 
 // Navigate to dashboard after verification
 function navigateToDashboard() {
-  console.log('Navigating to dashboard with user:', authStore.user);
+  // Use the auth plugin's navigation helper if available
+  if ($auth && $auth.navigation) {
+    return $auth.navigation.toDashboard();
+  }
+
+  // Fallback to manual navigation
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('Navigating to dashboard with user:', authStore.user);
+  }
 
   if (authStore.user && authStore.user.username) {
-    // Log the route we're navigating to
-    console.log('Navigating to dashboard for user:', authStore.user.username);
-
     // Use direct path navigation instead of named route to avoid potential issues
-    router.push(`/${authStore.user.username}/buying/dashboard`);
+    if (authStore.isSeller) {
+      router.push(`/${authStore.user.username}/selling/dashboard`);
+    } else {
+      router.push(`/${authStore.user.username}/buying/dashboard`);
+    }
   } else {
-    console.log('No username available, navigating to home page');
     // Fallback to home page
     router.push('/');
   }
@@ -326,13 +232,22 @@ function debugAuth() {
 
   // Also check if we can get the profile
   useCustomFetch('/api/user/profile', {
-    method: 'GET',
-    skipCsrf: true
+    method: 'GET'
   }).then(response => {
     console.log('Profile check response:', response);
   }).catch(error => {
     console.error('Profile check failed:', error);
   });
+
+  // Check localStorage
+  try {
+    const storedUser = authStore.loadFromStorage('user');
+    const storedRoles = authStore.loadFromStorage('roles');
+    console.log('Stored user:', storedUser);
+    console.log('Stored roles:', storedRoles);
+  } catch (err) {
+    console.error('Failed to check localStorage:', err);
+  }
 
   toast.info('Debug', 'Auth state logged to console');
 }
