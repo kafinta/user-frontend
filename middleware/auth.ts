@@ -14,16 +14,8 @@ export default defineNuxtRouteMiddleware((to) => {
   const authStore = useAuthStore();
   const { $auth } = useNuxtApp();
 
-  // For debugging in development
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('Auth middleware running for route:', to.fullPath);
-    console.log('Auth state:', {
-      isAuthenticated: authStore.isAuthenticated,
-      isVerified: authStore.isVerified,
-      needsVerification: authStore.needsVerification,
-      user: authStore.user
-    });
-  }
+  // Skip middleware debugging in production
+  // This section previously contained debug logging code
 
   // Extract route requirements from meta
   const routeRequirements = {
@@ -38,11 +30,8 @@ export default defineNuxtRouteMiddleware((to) => {
 
   // Helper function to navigate to dashboard
   const navigateToDashboard = () => {
-    // First try to use the auth plugin's navigation helper
+    // Use the auth plugin's navigation helper
     if ($auth && $auth.navigation) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('Using auth plugin navigation to dashboard');
-      }
       return $auth.navigation.toDashboard();
     }
 
@@ -50,52 +39,32 @@ export default defineNuxtRouteMiddleware((to) => {
     if (authStore.user && authStore.user.username) {
       const username = authStore.user.username;
 
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('Navigating to dashboard for user:', username, 'isSeller:', authStore.isSeller, 'isCustomer:', authStore.isCustomer);
-      }
-
       if (authStore.isSeller) {
-        return navigateTo({
-          name: 'username-selling-dashboard',
-          params: { username }
-        });
+        return navigateTo(`/${username}/selling/dashboard`);
       } else if (authStore.isCustomer) {
-        return navigateTo({
-          name: 'username-buying-dashboard',
-          params: { username }
-        });
+        return navigateTo(`/${username}/buying/dashboard`);
       }
     }
 
     // Default fallback to home page
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('No user or roles found, navigating to home page');
-    }
     return navigateTo('/');
   };
 
   // Helper function to show access denied notification
   const showAccessDenied = (message = 'You do not have the required permissions to access this page') => {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('Showing access denied notification:', message);
-    }
-
-    // First try to use the auth plugin's notifications
+    // Use the auth plugin's notifications if available
     if ($auth && $auth.notifications) {
       $auth.notifications.accessDenied(message);
     } else {
-      // Fallback if notifications helper is not available
+      // Fallback to direct toast
       const toast = useAppToast();
       toast.error('Access Denied', message);
     }
 
-    // Also update the auth store status and message
+    // Update the auth store status and message
     authStore.clearMessages();
-    if (authStore.status !== 'error') {
-      // Only set these if they're not already set by another process
-      authStore.status = 'error';
-      authStore.message = message;
-    }
+    authStore.status = 'error';
+    authStore.message = message;
   };
 
   // Helper function to check if user has required roles
@@ -109,17 +78,7 @@ export default defineNuxtRouteMiddleware((to) => {
 
     // If roles haven't been loaded yet, fetch them in the background
     if (authStore.isAuthenticated && authStore.roles.length === 0) {
-      authStore.fetchRoles()
-        .then((response: SimpleResponse) => {
-          if (process.env.NODE_ENV !== 'production') {
-            console.log('Roles fetched in middleware:', response);
-          }
-        })
-        .catch(error => {
-          if (process.env.NODE_ENV !== 'production') {
-            console.error('Failed to fetch roles in middleware:', error);
-          }
-        });
+      authStore.fetchRoles();
     }
 
     // Check if user has required roles
@@ -142,51 +101,40 @@ export default defineNuxtRouteMiddleware((to) => {
   if (routeRequirements.authOnly) {
     // If user is already authenticated and verified, redirect to dashboard
     if (authStore.isAuthenticated && authStore.isVerified) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('User is authenticated and verified, redirecting from auth page to dashboard');
-      }
       return navigateToDashboard();
     }
     // Otherwise allow access to auth pages
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('Allowing access to auth page');
-    }
     return;
   }
 
   // Special case for verification page
   if (routeRequirements.isVerifyRoute) {
+    // Special handling for token verification page
+    if (to.path === '/auth/verify-token') {
+      // Always allow access to token verification page
+      // The page itself will handle redirects based on verification status
+      return;
+    }
+
+    // For code verification page
     // If user is authenticated but needs verification, allow access
     if (authStore.isAuthenticated && authStore.needsVerification) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('User needs verification, allowing access to verify page');
-      }
       return;
     }
 
     // If user is already verified, redirect to dashboard
     if (authStore.isAuthenticated && authStore.isVerified) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('User is already verified, redirecting from verify page to dashboard');
-      }
       return navigateToDashboard();
     }
 
     // If not authenticated, redirect to login
     if (!authStore.isAuthenticated) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('User is not authenticated, redirecting from verify page to login');
-      }
       return navigateTo('/auth/login');
     }
   }
 
   // Case 1: Route requires authentication but user is not authenticated
   if (routeRequirements.requiresAuth && !authStore.isAuthenticated) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('Route requires auth but user is not authenticated, redirecting to login');
-    }
-
     // Show a notification if we're not already on an auth page
     if (!to.fullPath.includes('/auth/')) {
       const toast = useAppToast();
@@ -201,10 +149,6 @@ export default defineNuxtRouteMiddleware((to) => {
 
   // Case 2: Route requires verification and user needs verification
   if (routeRequirements.requiresVerification && authStore.needsVerification) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('Route requires verification but user needs verification, redirecting to verify page');
-    }
-
     // Show a notification if we're not already on the verify page
     if (to.fullPath !== '/auth/verify') {
       const toast = useAppToast();
@@ -216,15 +160,9 @@ export default defineNuxtRouteMiddleware((to) => {
 
   // Case 3: User is authenticated but doesn't have required roles
   if (authStore.isAuthenticated && !checkRoleRequirements()) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('User does not have required roles, showing access denied and redirecting to dashboard');
-    }
     showAccessDenied('You do not have the required permissions to access this page');
     return navigateToDashboard();
   }
 
   // If we reach here, the user is allowed to access the route
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('Auth middleware completed, allowing access to route:', to.fullPath);
-  }
 })
