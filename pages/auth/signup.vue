@@ -22,7 +22,7 @@
           <label for="password_label">Password</label>
         </FloatLabel>
 
-        <FormButton :loading="isLoading">Sign Up</FormButton>
+        <FormButton :loading="buttonLoading">Sign Up</FormButton>
         <p class="text-sm w-fit mx-auto mt-2 text-secondary text-center">Already a member? <NuxtLink to="/auth/login" class="duration-500 ease-in-out hover:text-primary">Sign In</NuxtLink></p>
       </form>
     </main>
@@ -42,7 +42,8 @@ import { useAuthStore } from '~/stores/auth';
 import { useAppToast } from "~/utils/toastify";
 
 const authStore = useAuthStore();
-const { isLoading } = storeToRefs(authStore);
+// Use a separate loading state for the button instead of the auth store's loading state
+const buttonLoading = ref(false);
 const router = useRouter();
 const toast = useAppToast();
 
@@ -52,21 +53,18 @@ const password = ref('');
 
 onMounted(() => {
   authStore.clearMessages();
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('Signup page mounted, auth state:', {
-      isAuthenticated: authStore.isAuthenticated,
-      isVerified: authStore.isVerified,
-      user: authStore.user
-    });
-  }
 });
 
 async function handleSignup() {
   try {
+    // Set button loading state to true
+    buttonLoading.value = true;
+
     authStore.clearMessages();
 
     if (!email.value || !username.value || !password.value) {
       toast.error('Error', 'Please fill in all fields');
+      buttonLoading.value = false; // Reset loading state
       return;
     }
 
@@ -76,34 +74,21 @@ async function handleSignup() {
       username: username.value
     });
 
-    // Debug log to see the result
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('Signup result:', result);
-    }
-
-    // Check if the result is successful or if the message indicates success
-    if (result.success || (result.message && result.message.includes('Successfully'))) {
-      // Force success to true if the message indicates success
-      result.success = true;
-      result.status = 'success';
-      toast.success(result.message || 'Account created successfully');
-
-      // Check if email verification is required
-      if (result.emailVerificationRequired) {
-        // Navigate to verification page
-        setTimeout(() => {
-          router.push('/auth/verify?fromSignup=true');
-        }, 500);
-      } else {
-        // Navigate to dashboard or home
-        router.push('/');
-      }
+    if (result.success) {
+      toast.success('Success', result.message);
+      router.push('/auth/verify');
+      email.value = '';
+      username.value = '';
+      password.value = '';
     } else {
-      toast.error(result.message || 'Signup failed. Please try again.');
+      toast.error('Error', result.message);
     }
   } catch (err) {
     console.error('Signup error:', err);
     toast.error('Error', 'An unexpected error occurred');
+  } finally {
+    // Always reset button loading state
+    buttonLoading.value = false;
   }
 }
 </script>
