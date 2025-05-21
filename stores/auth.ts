@@ -212,6 +212,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   /**
    * Fetch user roles from the API
+   * This method should not set any messages or status that would be displayed to the user
    */
   async function fetchRoles(): Promise<SimpleResponse> {
     if (!isAuthenticated.value) {
@@ -241,8 +242,8 @@ export const useAuthStore = defineStore('auth', () => {
         method: 'GET'
       });
 
-      status.value = response.success ? 'success' : 'error';
-      message.value = response.message || 'User roles retrieved successfully';
+      // Don't update global status or message for role fetching
+      // This prevents these values from being displayed to the user
 
       if (response?.data?.roles) {
         setRoles(response.data.roles);
@@ -251,14 +252,13 @@ export const useAuthStore = defineStore('auth', () => {
 
       return {
         success: response.success,
-        message: message.value || 'User roles retrieved',
-        status: status.value,
+        message: response.message || 'User roles retrieved',
+        status: response.success ? 'success' : 'error',
         data: response.data
       };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch user roles';
-      error.value = errorMessage;
-      status.value = 'error';
+      // Don't update global error or status
 
       return {
         success: false,
@@ -449,7 +449,7 @@ export const useAuthStore = defineStore('auth', () => {
         const emailVerificationRequired = response.data?.email_verification_required === true || true;
         setVerified(!emailVerificationRequired);
 
-        // Fetch roles if available
+        // Fetch roles if available - this won't change message.value anymore
         await fetchRoles();
 
         // Create the response object
@@ -487,6 +487,9 @@ export const useAuthStore = defineStore('auth', () => {
           // Assume email verification is required
           const emailVerificationRequired = true;
           setVerified(!emailVerificationRequired);
+
+          // Fetch roles if available - this won't change message.value anymore
+          await fetchRoles();
 
           // Create the response object
           const responseObj = {
@@ -700,7 +703,7 @@ export const useAuthStore = defineStore('auth', () => {
           }
         }
 
-        // Fetch roles after verification
+        // Fetch roles after verification - this won't change message.value anymore
         await fetchRoles();
 
         // Create response object
@@ -806,7 +809,7 @@ export const useAuthStore = defineStore('auth', () => {
           }
         }
 
-        // Fetch roles after verification
+        // Fetch roles after verification - this won't change message.value anymore
         await fetchRoles();
 
         // Create response object
