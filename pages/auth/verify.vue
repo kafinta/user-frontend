@@ -21,15 +21,27 @@
           >
             {{ resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : 'Resend verification code' }}
           </button>
+          <UiTypographyP class="text-xs text-secondary mt-2">
+            Check your email for a verification link or enter the code above.
+          </UiTypographyP>
 
-          <!-- Debug button -->
-          <button
-            type="button"
-            @click="debugAuth()"
-            class="text-xs text-gray-400 hover:underline"
-          >
-            Debug Auth State
-          </button>
+          <div class="mt-4 w-full flex flex-col items-center">
+            <div v-if="checkingStatus" class="flex items-center justify-center">
+              <UiIconsLoading class="w-5 h-5 text-primary mr-2" />
+              <span class="text-sm">Checking verification status...</span>
+            </div>
+            <button
+              v-else
+              type="button"
+              @click="checkVerificationStatus()"
+              class="text-sm text-primary hover:underline"
+            >
+              I've already verified my email
+            </button>
+            <UiTypographyP v-if="lastChecked" class="text-xs text-secondary mt-1">
+              Last checked: {{ new Date(lastChecked).toLocaleTimeString() }}
+            </UiTypographyP>
+          </div>
         </div>
       </form>
     </main>
@@ -43,14 +55,15 @@ definePageMeta({
 });
 
 import { useRouter, useRoute } from 'vue-router';
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount, watch } from "vue";
+import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/stores/auth';
 import { useAppToast } from "~/utils/toastify";
 import { useNuxtApp } from '#app';
 
 const authStore = useAuthStore();
+const { isVerified } = storeToRefs(authStore);
 const router = useRouter();
-const route = useRoute();
 const toast = useAppToast();
 const { $auth } = useNuxtApp();
 
@@ -59,85 +72,121 @@ const code = ref('');
 const isLoading = ref(false);
 const resendCooldown = ref(0);
 const cooldownInterval = ref(null);
+const checkingStatus = ref(false);
+const lastChecked = ref(null);
+const autoCheckInterval = ref(null);
 
 // Check verification status on mount
 onMounted(async () => {
   // Clear any previous messages
   authStore.clearMessages();
 
-  // Debug auth state in development
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('Verify page mounted, auth state:', {
-      isAuthenticated: authStore.isAuthenticated,
-      isVerified: authStore.isVerified,
-      user: authStore.user,
-      needsVerification: authStore.needsVerification
-    });
-  }
-
-  // Check if we came from signup or login
-  const fromSignup = route.query.fromSignup === 'true';
-  const fromLogin = route.query.fromLogin === 'true';
-
   // If user is already verified, redirect them to dashboard
   if (authStore.isAuthenticated && authStore.isVerified) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('User is already verified, redirecting to dashboard');
-    }
     navigateToDashboard();
     return;
   }
 
-  // If user is not authenticated and didn't come from signup/login, redirect to login
-  if (!authStore.isAuthenticated && !fromSignup && !fromLogin) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('User is not authenticated and didn\'t come from signup/login, redirecting to login');
-    }
-    router.push('/auth/login');
-    return;
-  }
-
-  // Request a new verification code on page load (silently)
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('Requesting verification code silently');
-  }
+  // Request a new verification code silently
   await requestNewCode(true);
+
+  // Start automatic verification status checking every 30 seconds
+  startAutoCheck();
 });
 
-// Clean up interval on component unmount
+// Watch for changes in verification status
+watch(isVerified, (newValue) => {
+  if (newValue === true) {
+    // If user becomes verified, show success message and redirect
+    toast.success('Success', 'Your email has been verified successfully!');
+    setTimeout(() => {
+      navigateToDashboard();
+    }, 1500); // Short delay to show the toast
+  }
+});
+
+// Clean up intervals on component unmount
 onBeforeUnmount(() => {
   if (cooldownInterval.value) {
     clearInterval(cooldownInterval.value);
   }
+
+  if (autoCheckInterval.value) {
+    clearInterval(autoCheckInterval.value);
+  }
 });
+
+// Start automatic verification status checking
+function startAutoCheck() {
+  // Clear any existing interval
+  if (autoCheckInterval.value) {
+    clearInterval(autoCheckInterval.value);
+  }
+
+  // Check immediately
+  checkVerificationStatus(true);
+
+  // Then check every 30 seconds
+  autoCheckInterval.value = setInterval(() => {
+    checkVerificationStatus(true);
+  }, 30000); // 30 seconds
+}
+
+// Check if the user's email has been verified
+async function checkVerificationStatus(silent = false) {
+  // Don't check if already checking
+  if (checkingStatus.value) return;
+
+  checkingStatus.value = true;
+
+  try {
+    // Call the API to check verification status
+    const result = await authStore.checkEmailVerificationStatus();
+
+    // Update last checked timestamp
+    lastChecked.value = Date.now();
+
+    if (result.success && result.isVerified) {
+      if (!silent) {
+        toast.success('Success', 'Your email has been verified!');
+      }
+
+      // Short delay before redirecting
+      setTimeout(() => {
+        navigateToDashboard();
+      }, 1500);
+    } else if (!silent) {
+      toast.info('Info', 'Your email has not been verified yet.');
+    }
+  } catch (err) {
+    console.error('Check verification status error:', err);
+    if (!silent) {
+      toast.error('Error', 'Failed to check verification status.');
+    }
+  } finally {
+    checkingStatus.value = false;
+  }
+}
 
 // Verify email with code
 async function verifyEmail() {
   if (!code.value || code.value.length !== 6) {
-    toast.error('Error', 'Please enter a valid 6-digit verification code');
+    toast.error('Please enter a valid 6-digit verification code');
     return;
   }
 
   isLoading.value = true;
 
   try {
-    // Show loading toast
-    toast.info('Verifying', 'Verifying your email...');
-
     const result = await authStore.verifyEmail(code.value);
 
     if (result.success) {
-      toast.success('Success', result.message || 'Email verified successfully');
-
-      // Reset the form
+      toast.success('Success', result.message);
       code.value = '';
-
-      // Redirect to dashboard after successful verification with a short delay
-      setTimeout(() => {
-        navigateToDashboard();
-      }, 1000);
+      navigateToDashboard();
     } else {
-      toast.error('Error', result.message || 'Verification failed. Please try again.');
+      toast.error('Error', result.message);
+      code.value = '';
     }
   } catch (err) {
     console.error('Verification error:', err);
@@ -161,14 +210,14 @@ async function requestNewCode(silent = false) {
 
     if (result.success) {
       if (!silent) {
-        toast.success('Success', result.message || 'Verification code sent successfully');
+        toast.success('Success', result.message);
       }
 
       // Start cooldown
       startCooldown();
     } else {
       if (!silent) {
-        toast.error('Error', result.message || 'Failed to send verification code');
+        toast.error('Error', result.message);
       }
     }
   } catch (err) {
@@ -202,53 +251,22 @@ function startCooldown() {
 
 // Navigate to dashboard after verification
 function navigateToDashboard() {
-  // Use the auth plugin's navigation helper if available
+  // Use the auth plugin's navigation helper
   if ($auth && $auth.navigation) {
     return $auth.navigation.toDashboard();
   }
 
-  // Fallback to manual navigation
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('Navigating to dashboard with user:', authStore.user);
-  }
-
+  // Fallback to direct navigation if plugin not available
   if (authStore.user && authStore.user.username) {
-    // Use direct path navigation instead of named route to avoid potential issues
-    if (authStore.isSeller) {
-      router.push(`/${authStore.user.username}/selling/dashboard`);
-    } else {
-      router.push(`/${authStore.user.username}/buying/dashboard`);
-    }
+    const username = authStore.user.username;
+    const path = authStore.isSeller
+      ? `/${username}/selling/dashboard`
+      : `/${username}/buying/dashboard`;
+
+    router.push(path);
   } else {
-    // Fallback to home page
+    // Fallback to home page if no user
     router.push('/');
   }
-}
-
-// Debug auth state
-function debugAuth() {
-  const debug = authStore.debugAuthState();
-  console.log('Debug result:', debug);
-
-  // Also check if we can get the profile
-  useCustomFetch('/api/user/profile', {
-    method: 'GET'
-  }).then(response => {
-    console.log('Profile check response:', response);
-  }).catch(error => {
-    console.error('Profile check failed:', error);
-  });
-
-  // Check localStorage
-  try {
-    const storedUser = authStore.loadFromStorage('user');
-    const storedRoles = authStore.loadFromStorage('roles');
-    console.log('Stored user:', storedUser);
-    console.log('Stored roles:', storedRoles);
-  } catch (err) {
-    console.error('Failed to check localStorage:', err);
-  }
-
-  toast.info('Debug', 'Auth state logged to console');
 }
 </script>
