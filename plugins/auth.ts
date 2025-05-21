@@ -137,28 +137,28 @@ export default defineNuxtPlugin((_nuxtApp) => {
     }
   }
 
-  // Navigation helpers
+  // Navigation helpers - simplified role-based routing
   const navigation = {
     /**
      * Navigate to the appropriate dashboard based on user roles
      */
     toDashboard: () => {
+      // If not authenticated or no username, go to home page
       if (!authStore.isAuthenticated || !authStore.user?.username) {
         return navigateTo('/')
       }
 
+      // Get the username
+      const username = authStore.user.username
+
+      // Route based on role
       if (authStore.isSeller) {
-        return navigateTo({
-          name: 'username-selling-dashboard',
-          params: { username: authStore.user.username }
-        })
+        return navigateTo(`/${username}/selling/dashboard`)
       } else if (authStore.isCustomer) {
-        return navigateTo({
-          name: 'username-buying-dashboard',
-          params: { username: authStore.user.username }
-        })
+        return navigateTo(`/${username}/buying/dashboard`)
       }
 
+      // Default fallback
       return navigateTo('/')
     }
   }
