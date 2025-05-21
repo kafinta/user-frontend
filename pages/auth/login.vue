@@ -15,15 +15,19 @@
           <InputText id="password_label" type="password" v-model="password" fluid />
           <label for="password_label">Password</label>
         </FloatLabel>
-        <nuxt-link to="/auth/forgot" class="mb-5 text-sm text-secondary text-opacity-50 hover:text-opacity-100 duration-500 ease-in-out">Forgot password?</nuxt-link>
-        <ClientOnly>
-          <FormButton :loading="isLoading">Sign In</FormButton>
-          <template #fallback>
-            <FormButton :loading="false">Sign In</FormButton>
-          </template>
-        </ClientOnly>
+        <div class="flex justify-between items-center mb-5">
+        <nuxt-link to="/auth/forgot" class="text-sm text-secondary hover:text-primary duration-300 ease-in-out">Forgot password?</nuxt-link>
 
-        <p class="text-sm w-fit mx-auto mt-2 text-secondary text-center">Not a member yet? <nuxt-link to="/auth/signup" class="duration-500 ease-in-out hover:text-primary">Create Account</nuxt-link></p>
+        <div class="flex items-center gap-2">
+          <Checkbox v-model="remember_me" inputId="remember_me" name="size" binary checked size="small" />
+          <label for="remember_me" class="text-sm">Remember Me?</label>
+        </div>
+        </div>
+
+
+        <FormButton :loading="buttonLoading">Sign In</FormButton>
+
+        <p class="text-sm w-fit mx-auto mt-2 text-secondary text-center">Not a member yet? <nuxt-link to="/auth/signup" class="duration-300 ease-in-out hover:text-primary">Create Account</nuxt-link></p>
       </form>
     </main>
   </div>
@@ -44,7 +48,8 @@ import { useNuxtApp } from '#app';
 
 const toast = useAppToast();
 const authStore = useAuthStore();
-const { isLoading } = storeToRefs(authStore);
+// Use a separate loading state for the button instead of the auth store's loading state
+const buttonLoading = ref(false);
 const router = useRouter();
 const route = useRoute();
 const { $auth } = useNuxtApp();
@@ -56,14 +61,13 @@ const redirectPath = computed(() => {
 
 const email = ref('');
 const password = ref('');
+const remember_me = ref(true); // Default to true for now
 
 // Check authentication status when the component is mounted
 onMounted(() => {
-  // Only run on client side
   if (import.meta.client) {
     authStore.clearMessages();
 
-    // Initialize auth store if needed
     if (!authStore.isAuthenticated) {
       authStore.initialize();
     }
@@ -72,45 +76,42 @@ onMounted(() => {
 
 async function handleSignin() {
   try {
+    // Set button loading state to true
+    buttonLoading.value = true;
+
     authStore.clearMessages();
 
     if (!email.value || !password.value) {
       toast.error('Error', 'Please enter your email and password');
+      buttonLoading.value = false; // Reset loading state
       return;
     }
-
-    // Show loading toast
-    toast.info('Logging in', 'Please wait while we log you in...');
 
     const result = await authStore.login({
       email: email.value,
       password: password.value,
-      remember_me: true // Enable remember me by default
+      remember_me: remember_me.value // Use the value of the checkbox
     });
 
     if (result.success) {
-      // Show success toast
-      toast.success('Success', result.message || 'Login successful');
+      toast.success('Success', result.message);
 
-      // Check if verification is needed
       if (result.needsVerification) {
-        // Navigate to verification page
-        setTimeout(() => {
-          router.push('/auth/verify?fromLogin=true');
-        }, 500);
+        router.push('/auth/verify');
       } else {
-        // Navigate to dashboard
-        setTimeout(() => {
-          navigateToDashboard();
-        }, 500);
+        navigateToDashboard();
       }
+      email.value = '';
+      password.value = '';
     } else {
-      // Show error message
-      toast.error('Error', result.message || 'Login failed. Please try again.');
+      toast.error('Error', result.message);
     }
   } catch (err) {
     console.error('Login error:', err);
     toast.error('Error', 'An unexpected error occurred');
+  } finally {
+    // Always reset button loading state
+    buttonLoading.value = false;
   }
 }
 
@@ -123,28 +124,20 @@ function navigateToDashboard() {
   // Fallback to manual navigation
   const { user } = storeToRefs(authStore);
 
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('Navigating to dashboard with user:', user.value);
-  }
-
   // Check if there's a redirect URL in the query parameters
   if (redirectPath.value) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('Redirecting to:', redirectPath.value);
-    }
     router.push(redirectPath.value);
     return;
   }
 
   if (user.value && user.value.username) {
-    // Use direct path navigation instead of named route to avoid potential issues
-    if (authStore.isSeller) {
-      router.push(`/${user.value.username}/selling/dashboard`);
-    } else {
-      router.push(`/${user.value.username}/buying/dashboard`);
-    }
+    const username = user.user.username;
+    const path = authStore.isSeller
+      ? `/${username}/selling/dashboard`
+      : `/${username}/buying/dashboard`;
+
+    router.push(path);
   } else {
-    // Fallback to home page
     router.push('/');
   }
 }
