@@ -8,10 +8,7 @@
         <UiTypographyP class="text-sm text-secondary text-center">Enter your email to receive a verification code</UiTypographyP>
 
         <form v-if="!code" @submit.prevent="requestCode()" class="grid gap-4 mt-8">
-          <FloatLabel variant="on" class="w-full">
-            <InputText id="email_label" type="email" v-model="email" fluid/>
-            <label for="email_label">Email</label>
-          </FloatLabel>
+          <FormInput label="Email" type="email" v-model:inputValue="email" class="w-full" />
           <FormButton :loading="loadingState">Send Reset Code</FormButton>
         </form>
 

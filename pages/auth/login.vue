@@ -7,24 +7,17 @@
         <UiTypographyP class="text-sm text-secondary text-center">Enter your details to resume your session.</UiTypographyP>
       </div>
       <form @submit.prevent="handleSignin()" class="grid gap-4">
-        <FloatLabel variant="on" class="w-full">
-          <InputText id="email_label" type="email" v-model="email" fluid/>
-          <label for="email_label">Email</label>
-        </FloatLabel>
-        <FloatLabel variant="on">
-          <InputText id="password_label" type="password" v-model="password" fluid />
-          <label for="password_label">Password</label>
-        </FloatLabel>
+        <FormInput label="Email" type="email" v-model:inputValue="email" class="w-full" />
+        <FormInput label="Password" type="password" v-model:inputValue="password" class="w-full" />
         <div class="flex justify-between items-center mb-5">
         <nuxt-link to="/auth/forgot" class="text-sm text-secondary hover:text-primary duration-300 ease-in-out">Forgot password?</nuxt-link>
-
-        <div class="flex items-center gap-2">
-          <Checkbox v-model="remember_me" inputId="remember_me" name="size" binary checked size="small" />
-          <label for="remember_me" class="text-sm">Remember Me?</label>
+        <FormCheckbox 
+          v-model="remember_me" 
+          binary 
+          size="small"
+          label="Remember Me?"
+        />
         </div>
-        </div>
-
-
         <FormButton :loading="buttonLoading">Sign In</FormButton>
 
         <p class="text-sm w-fit mx-auto mt-2 text-secondary text-center">Not a member yet? <nuxt-link to="/auth/signup" class="duration-300 ease-in-out hover:text-primary">Create Account</nuxt-link></p>
