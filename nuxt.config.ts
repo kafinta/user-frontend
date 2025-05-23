@@ -1,6 +1,4 @@
 import { defineNuxtConfig } from 'nuxt/config';
-import Components from 'unplugin-vue-components/vite';
-import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 
 export default defineNuxtConfig({
   modules:[
@@ -16,7 +14,6 @@ export default defineNuxtConfig({
   },
 
   plugins: [
-    '~/plugins/primevue.ts',
     '~/plugins/auth.ts',
     '~/plugins/toastify.ts',
   ],
@@ -34,11 +31,6 @@ export default defineNuxtConfig({
   },
 
   vite: {
-    plugins: [
-      Components({
-        resolvers: [PrimeVueResolver()]
-      })
-    ],
     server: {
       proxy: {
         '/api': {
