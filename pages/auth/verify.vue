@@ -11,7 +11,6 @@
       <form @submit.prevent="verifyEmail()" class="grid gap-6 w-full">
         <InputOtp v-model="code" :length="6" integerOnly class="justify-between"/>
         <FormButton :loading="isLoading">Verify Email</FormButton>
-
         <div class="flex flex-col items-center gap-4 mt-2">
           <button
             type="button"
