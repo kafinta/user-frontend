@@ -9,18 +9,24 @@
       </div>
 
       <form @submit.prevent="handleSignup()" class="grid gap-4">
-        <FloatLabel variant="on" class="w-full">
-          <InputText id="email_label" type="email" v-model="email" fluid/>
-          <label for="email_label">Email</label>
-        </FloatLabel>
-        <FloatLabel variant="on">
-          <InputText id="username_label" type="text" v-model="username" fluid />
-          <label for="username_label">Username</label>
-        </FloatLabel>
-        <FloatLabel variant="on">
-          <InputText id="password_label" type="password" v-model="password" fluid />
-          <label for="password_label">Password</label>
-        </FloatLabel>
+        <FormInput 
+          label="Email" 
+          type="email" 
+          v-model:inputValue="email" 
+          class="w-full"
+        />
+        <FormInput 
+          label="Username" 
+          type="text" 
+          v-model:inputValue="username" 
+          class="w-full"
+        />
+        <FormInput 
+          label="Password" 
+          type="password" 
+          v-model:inputValue="password" 
+          class="w-full"
+        />
 
         <FormButton :loading="buttonLoading">Sign Up</FormButton>
         <p class="text-sm w-fit mx-auto mt-2 text-secondary text-center">Already a member? <NuxtLink to="/auth/login" class="duration-500 ease-in-out hover:text-primary">Sign In</NuxtLink></p>
