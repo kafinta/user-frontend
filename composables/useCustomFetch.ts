@@ -84,17 +84,23 @@ export async function useCustomFetch<T>(
   // Ensure URL is relative to leverage the proxy
   let resolvedUrl = unref(url);
 
-  // If URL starts with http, extract the path to make it relative
-  if (typeof resolvedUrl === 'string' && resolvedUrl.startsWith('http')) {
-    // Only log in development
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('Converting absolute URL to relative for proxy compatibility:', resolvedUrl);
-    }
-    try {
-      const urlObj = new URL(resolvedUrl);
-      resolvedUrl = urlObj.pathname + urlObj.search;
-    } catch (e) {
-      console.error('Failed to parse URL:', e);
+  // If URL starts with http, extract the path to make it relative, otherwise ensure it starts with a leading slash
+  if (typeof resolvedUrl === 'string') {
+    if (resolvedUrl.startsWith('http')) {
+      // Only log in development
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('Converting absolute URL to relative for proxy compatibility:', resolvedUrl);
+      }
+      try {
+        const urlObj = new URL(resolvedUrl);
+        resolvedUrl = urlObj.pathname + urlObj.search;
+      } catch (e) {
+        console.error('Failed to parse URL:', e);
+      }
+    } 
+    // Ensure URL starts with a leading slash for proxy to work correctly
+    else if (!resolvedUrl.startsWith('/')) {
+      resolvedUrl = '/' + resolvedUrl;
     }
   }
 
