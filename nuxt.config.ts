@@ -18,6 +18,11 @@ export default defineNuxtConfig({
     '~/plugins/toastify.ts',
   ],
 
+  // Global CSS imports
+  css: [
+    'vue3-toastify/dist/index.css'
+  ],
+
   image: {
     domains: ['127.0.0.1', 'localhost'],
     presets: {
