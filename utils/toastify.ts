@@ -25,12 +25,16 @@ export const useAppToast = () => {
     }
   }
 
-  // Default toast options
+  // Default toast options - match plugin configuration
   const defaultOptions: ToastOptions = {
     autoClose: TOAST_DURATIONS.MEDIUM,
-    position: toast.POSITION.TOP_RIGHT,
-    theme: 'light',
-    transition: toast.TRANSITIONS.BOUNCE
+    position: toast.POSITION.TOP_CENTER,
+    theme: 'colored',
+    transition: toast.TRANSITIONS.SLIDE,
+    hideProgressBar: true,
+    pauseOnHover: false,
+    pauseOnFocusLoss: false,
+    closeOnClick: true
   }
 
   /**
