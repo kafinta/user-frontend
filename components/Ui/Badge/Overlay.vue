@@ -4,7 +4,7 @@
     <slot />
     
     <!-- Badge overlay -->
-    <FormBadge
+    <Badge
       v-if="visible"
       :value="value"
       :severity="severity"
@@ -13,7 +13,7 @@
       class="absolute"
     >
       <slot name="badge">{{ value }}</slot>
-    </FormBadge>
+    </Badge>
   </div>
 </template>
 
