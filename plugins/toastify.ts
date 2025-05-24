@@ -6,8 +6,8 @@ export default defineNuxtPlugin((nuxtApp) => {
   // Configure Vue3Toastify with default options
   const options: ToastContainerOptions = {
     autoClose: 3000,
-    position: toast.POSITION.TOP_RIGHT,
-    theme: 'colored',
+    position: toast.POSITION.TOP_CENTER,
+    theme: "colored",
     clearOnUrlChange: false,
     transition: toast.TRANSITIONS.SLIDE,
     hideProgressBar: true,
