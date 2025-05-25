@@ -52,19 +52,16 @@ export default defineNuxtRouteMiddleware((to) => {
 
   // Helper function to show access denied notification
   const showAccessDenied = (message = 'You do not have the required permissions to access this page') => {
-    // Use the auth plugin's notifications if available
-    if ($auth && $auth.notifications) {
-      $auth.notifications.accessDenied(message);
+    // Use the auth plugin's toast if available, otherwise use direct toast
+    if ($auth && $auth.toast) {
+      $auth.toast.accessDenied(message);
     } else {
       // Fallback to direct toast
       const toast = useAppToast();
-      toast.error('Access Denied', message);
+      toast.accessDenied(message);
     }
 
-    // Update the auth store status and message
-    authStore.clearMessages();
-    authStore.status = 'error';
-    authStore.message = message;
+    // Note: No need to update store status/message since we use toast notifications
   };
 
   // Helper function to check if user has required roles
@@ -76,10 +73,7 @@ export default defineNuxtRouteMiddleware((to) => {
       return true;
     }
 
-    // If roles haven't been loaded yet, fetch them in the background
-    if (authStore.isAuthenticated && authStore.roles.length === 0) {
-      authStore.fetchRoles();
-    }
+    // Roles should be fetched by pages when needed, not by middleware
 
     // Check if user has required roles
     const hasRequiredRoles = requiredRoles.length === 0 ||
@@ -93,9 +87,6 @@ export default defineNuxtRouteMiddleware((to) => {
   };
 
   // MAIN MIDDLEWARE LOGIC
-
-  // Clear any previous messages when navigating to a new route
-  authStore.clearMessages();
 
   // Special case for auth pages (login/signup)
   if (routeRequirements.authOnly) {
