@@ -65,6 +65,13 @@ export const useAuthStore = defineStore('auth', () => {
   const isVerified = ref(false)
   const tokenVerificationSuccess = ref(false) // State for token verification communication
   const error = ref<string | null>(null)
+  const initialized = ref(false)
+
+  // Auto-initialize on client side when store is first accessed
+  if (import.meta.client && !initialized.value) {
+    initialize()
+    initialized.value = true
+  }
 
   // Getters
   const isAuthenticated = computed(() => !!user.value)
