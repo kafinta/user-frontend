@@ -22,9 +22,8 @@ export default defineNuxtRouteMiddleware((to) => {
     authOnly: to.meta.authOnly === true,
     isVerifyRoute: to.meta.isVerifyRoute === true,
     requiresVerification: to.meta.requiresVerification === true,
-    requiredRoles: to.meta.requiredRoles as string[] || [],
-    requiresSeller: to.meta.requiresSeller === true || (to.meta.requiredRoles as string[] || []).includes('seller'),
-    requiresCustomer: to.meta.requiresCustomer === true || (to.meta.requiredRoles as string[] || []).includes('customer')
+    requiresSeller: to.meta.requiresSeller === true,
+    requiresCustomer: to.meta.requiresCustomer === true
   };
 
   // Helper function to navigate to dashboard
@@ -54,26 +53,20 @@ export default defineNuxtRouteMiddleware((to) => {
     toast.accessDenied(message);
   };
 
-  // Helper function to check if user has required roles
-  const checkRoleRequirements = () => {
-    const { requiredRoles, requiresSeller, requiresCustomer } = routeRequirements;
+  // Simplified role checking - complex role logic should be handled at page level
+  const hasBasicRoleAccess = () => {
+    const { requiresSeller, requiresCustomer } = routeRequirements;
 
-    // If no role requirements, return true
-    if (!requiresSeller && !requiresCustomer && requiredRoles.length === 0) {
+    // If no specific role requirements, allow access
+    if (!requiresSeller && !requiresCustomer) {
       return true;
     }
 
-    // Roles should be fetched by pages when needed, not by middleware
+    // Basic role checks only
+    if (requiresSeller && !authStore.isSeller) return false;
+    if (requiresCustomer && !authStore.isCustomer) return false;
 
-    // Check if user has required roles
-    const hasRequiredRoles = requiredRoles.length === 0 ||
-      requiredRoles.some(role => authStore.hasRole(role));
-
-    // Check for specific role requirements
-    const hasSeller = !requiresSeller || authStore.isSeller;
-    const hasCustomer = !requiresCustomer || authStore.isCustomer;
-
-    return hasRequiredRoles && hasSeller && hasCustomer;
+    return true;
   };
 
   // MAIN MIDDLEWARE LOGIC
@@ -139,8 +132,8 @@ export default defineNuxtRouteMiddleware((to) => {
     return navigateTo('/auth/verify');
   }
 
-  // Case 3: User is authenticated but doesn't have required roles
-  if (authStore.isAuthenticated && !checkRoleRequirements()) {
+  // Case 3: Basic role checking (complex role logic should be handled at page level)
+  if (authStore.isAuthenticated && !hasBasicRoleAccess()) {
     showAccessDenied('You do not have the required permissions to access this page');
     return navigateToDashboard();
   }
