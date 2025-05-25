@@ -47,7 +47,7 @@ export function useOAuth() {
 
       console.log('OAuth redirect response:', response) // Debug log
 
-      if (response?.status === 'success' && response.data?.redirect_url) {
+      if (response.status === 'success' && response.data?.redirect_url) {
         // Redirect to OAuth provider
         console.log('Redirecting to:', response.data.redirect_url) // Debug log
         window.location.href = response.data.redirect_url
@@ -70,7 +70,7 @@ export function useOAuth() {
 
       const response = await authApi.authenticateWithOAuthToken(provider, accessToken)
 
-      if (response?.success) {
+      if (response.status === 'success') {
         const { user, is_new_user, oauth_provider } = response.data || {}
 
         // Use the auth API to handle successful authentication
@@ -105,7 +105,7 @@ export function useOAuth() {
 
       const response = await authApi.unlinkOAuthProvider()
 
-      if (response?.success) {
+      if (response.status === 'success') {
         toast.success('OAuth provider unlinked successfully')
         return response
       } else {
