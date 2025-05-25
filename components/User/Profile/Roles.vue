@@ -7,9 +7,9 @@
       <p>No roles assigned</p>
     </div>
     <div v-else class="flex flex-wrap gap-2">
-      <div 
-        v-for="role in roles" 
-        :key="role.id" 
+      <div
+        v-for="role in roles"
+        :key="role.id"
         class="px-3 py-1 rounded-full text-sm font-medium"
         :class="getRoleClass(role.slug)"
       >
@@ -43,6 +43,7 @@ function getRoleClass(roleSlug) {
 
 // Fetch roles if authenticated and roles are empty
 if (authStore.isAuthenticated && roles.value.length === 0) {
-  authStore.fetchRoles()
+  const authApi = useAuthApi();
+  authApi.fetchRoles();
 }
 </script>
