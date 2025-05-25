@@ -7,17 +7,17 @@
     <transition>
       <div class="fixed w-full z-130 top-[120px] md:top-32">
         <form @submit.prevent="search" v-show="searchBoxState" class="max-w-3xl mx-auto">
-          <InputGroup>
-            <InputGroupAddon>
+          <FormInputGroup>
+            <FormInputGroupAddon>
               <UiIconsSearch class="p-2 w-10 h-10" :class="gold_search_icon ? 'text-primary' : 'text-secondary'" />
-            </InputGroupAddon>
-            <InputText placeholder="Search for products, artisans services..." id="search_input" type="text" v-model="search_text" fluid/>
-            <InputGroupAddon>
-              <div @click="toggleSearchBox" class="flex cursor-pointer text-sm items-center ">
+            </FormInputGroupAddon>
+            <FormInputText placeholder="Search for products, artisans services..." id="search_input" type="text" v-model="search_text" fluid/>
+            <FormInputGroupAddon clickable @click="toggleSearchBox">
+              <div class="flex text-sm items-center ">
                 <UiIconsClose class="w-5 h-5 text-secondary" />
               </div>
-            </InputGroupAddon>
-        </InputGroup>
+            </FormInputGroupAddon>
+          </FormInputGroup>
           <div class="px-4 sm:px-6">
             <!-- <SearchSuggestionWrapper>
 
