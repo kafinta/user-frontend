@@ -106,7 +106,7 @@ async function verify() {
       body: { code: code.value }
     });
 
-    if (response?.success) {
+    if (response.status === 'success') {
       verification_passed.value = true;
       toast.success(response.message || 'Code verified successfully');
     } else {

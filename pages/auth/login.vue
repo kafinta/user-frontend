@@ -88,7 +88,7 @@ async function handleSignin() {
       }
     });
 
-    if (response?.success) {
+    if (response.status === 'success') {
       // Use the enhanced auth API to handle success
       const authApi = useAuthApi();
       await authApi.handleAuthSuccess(response);

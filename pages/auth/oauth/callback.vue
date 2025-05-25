@@ -2,7 +2,7 @@
   <div class="flex justify-center items-center h-screen">
     <div class="w-full max-w-md mx-auto rounded-xl p-8 border-accent-200 border text-center space-y-6">
       <NavigationLogo class="w-48 mx-auto" />
-      
+
       <!-- Loading State -->
       <div v-if="isProcessing" class="space-y-4">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
@@ -35,8 +35,8 @@
           <FormButton @click="retryAuth" class="w-full">
             Try Again
           </FormButton>
-          <button 
-            @click="goToLogin" 
+          <button
+            @click="goToLogin"
             class="w-full text-sm text-primary hover:underline"
           >
             Back to Login
@@ -75,7 +75,7 @@ const processOAuthCallback = async () => {
   try {
     // Extract provider from URL path or query
     const provider = route.query.provider as string || extractProviderFromPath()
-    
+
     if (!provider) {
       throw new Error('OAuth provider not specified')
     }
@@ -93,13 +93,13 @@ const processOAuthCallback = async () => {
     const authApi = useAuthApi()
     const profileResponse = await authApi.fetchProfile()
 
-    if (profileResponse?.success && profileResponse.data?.user) {
+    if (profileResponse.status === 'success' && profileResponse.data?.user) {
       // Authentication successful
       authStatus.value = 'success'
-      
+
       // Check if this is a new user (you might need to add this to the backend response)
       isNewUser.value = route.query.is_new_user === 'true'
-      
+
       // Show success message
       if (isNewUser.value) {
         toast.success(`Welcome! Your account has been created with ${providerName.value}`)
@@ -111,7 +111,7 @@ const processOAuthCallback = async () => {
       setTimeout(() => {
         authApi.navigateToDashboard()
       }, 2000)
-      
+
     } else {
       throw new Error('Authentication verification failed')
     }
@@ -131,18 +131,18 @@ const extractProviderFromPath = (): string => {
   // or from referrer if available
   const path = route.path
   const segments = path.split('/')
-  
+
   // Look for provider in various places
   if (route.query.provider) {
     return route.query.provider as string
   }
-  
+
   // Check if provider is in the path
   const providerIndex = segments.indexOf('callback') - 1
   if (providerIndex >= 0 && segments[providerIndex]) {
     return segments[providerIndex]
   }
-  
+
   return ''
 }
 
