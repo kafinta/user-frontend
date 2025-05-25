@@ -69,8 +69,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Auto-initialize on client side when store is first accessed
   if (import.meta.client && !initialized.value) {
-    initialize()
     initialized.value = true
+    // Initialize asynchronously without blocking store creation
+    nextTick(() => {
+      initialize()
+    })
   }
 
   // Getters
@@ -80,35 +83,25 @@ export const useAuthStore = defineStore('auth', () => {
   const isSeller = computed(() => hasRole.value('seller'))
   const isCustomer = computed(() => hasRole.value('customer'))
 
-  // Storage helpers
-  function saveToStorage(key: string, data: any) {
-    if (!import.meta.client) return
+  // Session validation helper
+  async function validateSession() {
+    if (import.meta.server) return false
 
     try {
-      localStorage.setItem(key, JSON.stringify({
-        data,
-        timestamp: Date.now()
-      }))
-    } catch (error) {
-      console.error('Error saving to localStorage', error)
-    }
-  }
+      const response = await useCustomFetch<ApiResponse>('/api/user/profile', {
+        method: 'GET'
+      })
 
-  function loadFromStorage(key: string) {
-    if (!import.meta.client) return null
-
-    try {
-      const stored = localStorage.getItem(key)
-      if (stored) {
-        const parsed = JSON.parse(stored)
-        // Check if data is less than 1 hour old for auth data
-        const isRecent = (Date.now() - parsed.timestamp) < (1 * 60 * 60 * 1000)
-        return isRecent ? parsed.data : null
+      if (response.status === 'success' && response.data?.user) {
+        setUser(response.data.user)
+        setVerified(!!response.data.user.email_verified_at)
+        return true
       }
-      return null
+
+      return false
     } catch (error) {
-      console.error('Error loading from localStorage', error)
-      return null
+      console.error('Session validation failed:', error)
+      return false
     }
   }
 
@@ -144,78 +137,24 @@ export const useAuthStore = defineStore('auth', () => {
   // Actions
 
   /**
-   * Validate stored user data
+   * Initialize the auth store by validating current session
    */
-  const validateStoredUser = (data: any): data is User => {
-    return data &&
-           typeof data === 'object' &&
-           typeof data.email === 'string' &&
-           typeof data.username === 'string' &&
-           data.email.length > 0 &&
-           data.username.length > 0;
-  }
-
-  /**
-   * Validate stored roles data
-   */
-  const validateStoredRoles = (data: any): data is Role[] => {
-    return Array.isArray(data) &&
-           data.every(role => typeof role === 'string' ||
-                     (typeof role === 'object' && typeof role.name === 'string'));
-  }
-
-  /**
-   * Check if stored data is expired (24 hours)
-   */
-  const isDataExpired = (timestamp: number): boolean => {
-    const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
-    return Date.now() - timestamp > TWENTY_FOUR_HOURS;
-  }
-
-  /**
-   * Initialize the auth store from localStorage with validation
-   */
-  function initialize() {
+  async function initialize() {
     // Skip initialization on server
     if (import.meta.server) {
       return;
     }
 
     try {
-      // Load user from storage with validation
-      const storedUser = loadFromStorage('user');
-      const storedRoles = loadFromStorage('roles');
+      // Validate current session with server
+      const isValid = await validateSession();
 
-      if (storedUser) {
-        // Validate user data structure
-        if (validateStoredUser(storedUser)) {
-          // Check if data is expired (if timestamp exists)
-          if ((storedUser as any)._timestamp && isDataExpired((storedUser as any)._timestamp)) {
-            logError('Stored user data expired, clearing auth data', null);
-            clearAuthData();
-            return;
-          }
-
-          setUser(storedUser);
-          setVerified(!!storedUser.email_verified_at);
-
-          // Validate and set roles
-          if (storedRoles && validateStoredRoles(storedRoles)) {
-            setRoles(storedRoles);
-          } else if (storedRoles) {
-            // Clear invalid roles but keep user
-            logError('Invalid roles data found, clearing roles', null);
-            if (import.meta.client) {
-              localStorage.removeItem('roles');
-            }
-          }
-        } else {
-          logError('Invalid user data found in storage, clearing auth data', null);
-          clearAuthData();
-        }
+      if (!isValid) {
+        // Clear any stale auth data if session is invalid
+        clearAuthData();
       }
     } catch (err) {
-      logError('Failed to initialize auth from storage:', err);
+      logError('Failed to initialize auth session:', err);
       clearAuthData();
     }
   }
@@ -237,6 +176,7 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null;
     roles.value = [];
     isVerified.value = false;
+    tokenVerificationSuccess.value = false;
 
     return {
       success: true,
@@ -308,7 +248,6 @@ export const useAuthStore = defineStore('auth', () => {
         // Update user data if included in response
         if (response.data?.user) {
           setUser(response.data.user);
-          saveToStorage('user', response.data.user);
         } else {
           // Fetch profile if not included
           try {
@@ -318,7 +257,6 @@ export const useAuthStore = defineStore('auth', () => {
 
             if (profileResponse.status === 'success' && profileResponse.data?.user) {
               setUser(profileResponse.data.user);
-              saveToStorage('user', profileResponse.data.user);
             }
           } catch (profileError) {
             console.error('Failed to fetch profile after token verification', profileError);
@@ -453,7 +391,6 @@ export const useAuthStore = defineStore('auth', () => {
         // Update user data if included
         if (response.data?.user) {
           setUser(response.data.user);
-          saveToStorage('user', response.data.user);
         } else {
           // Fetch profile if not included
           try {
@@ -463,7 +400,6 @@ export const useAuthStore = defineStore('auth', () => {
 
             if (profileResponse.status === 'success' && profileResponse.data?.user) {
               setUser(profileResponse.data.user);
-              saveToStorage('user', profileResponse.data.user);
             }
           } catch (profileError) {
             console.error('Failed to fetch profile after direct link verification', profileError);
