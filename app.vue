@@ -7,11 +7,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
-import { useAppToast } from '~/utils/toastify';
-
-onMounted(() => {
-});
+// Global app setup - no initialization needed currently
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
