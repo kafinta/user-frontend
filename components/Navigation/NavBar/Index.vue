@@ -122,6 +122,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '~/stores/auth';
+import { useAuthApi } from '~/composables/useAuthApi';
 import { useAppToast } from '~/utils/toastify';
 
 // Props with validation - only UI-related props remain
@@ -180,7 +181,6 @@ function focus() {
 }
 
 function toggleOptions() {
-  console.log('Toggle options clicked')
   user_options.value = !user_options.value
 }
 
@@ -193,7 +193,6 @@ function pushSearch() {
 }
 
 function handleLogoClick() {
-  console.log('Logo clicked')
   emit('navigate', { path: '/', type: 'logo' })
   try {
     router.push('/')
@@ -203,7 +202,6 @@ function handleLogoClick() {
 }
 
 function switchToSelling() {
-  console.log('Switch to selling clicked')
   const route = {
     name: 'username-selling-dashboard',
     params: { username: username.value }
@@ -219,7 +217,6 @@ function switchToSelling() {
 // This function is kept for future use
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function navigateTo(path) {
-  console.log('Navigate to:', path)
   emit('navigate', { path, type: 'button' })
   try {
     router.push(path)
@@ -229,25 +226,28 @@ function navigateTo(path) {
 }
 
 async function logout() {
-  console.log('Logout clicked')
   emit('logout')
 
-  // Initialize toast
+  // Initialize toast and auth API
   const toast = useAppToast()
+  const authApi = useAuthApi()
 
   try {
     // Show loading toast
     toast.info('Logging out', 'Please wait...')
 
-    // Call logout and handle the response
-    const response = await authStore.logout()
+    // Call logout using the auth API composable
+    const response = await authApi.logout()
 
     // Close the user options menu before page reload
     user_options.value = false
 
-    if (response.success) {
+    if (response.status === 'success') {
       // Success toast - though this may not be seen due to page reload
       toast.success('Success', response.message || 'Logged out successfully')
+
+      // Navigate to home page after successful logout
+      router.push('/')
     } else {
       // Error toast
       toast.error('Error', response.message || 'Failed to log out')
@@ -286,10 +286,7 @@ onMounted(() => {
     // Check auth status on mount
     checkAuthStatus()
 
-    // Initialize auth store if needed
-    if (!authStore.isAuthenticated && !authStore.isLoading) {
-      authStore.initialize();
-    }
+    // Auth store auto-initializes when first accessed
   }
 })
 
