@@ -93,7 +93,7 @@
 
       <!-- Loading state -->
       <div v-if="isLoading" class="col-span-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        <Skeleton v-for="n in 12" :key="n" height="42px" />
+        <UiSkeleton v-for="n in 12" :key="n" height="42px" />
       </div>
 
       <!-- Content loaded successfully -->
