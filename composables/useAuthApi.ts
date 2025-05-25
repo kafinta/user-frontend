@@ -11,6 +11,7 @@ interface ApiResponse {
 
 export function useAuthApi() {
   const authStore = useAuthStore();
+  const toast = useAppToast();
 
   // Define fetchRoles first so it can be used in handleAuthSuccess
   const fetchRoles = async () => {
@@ -92,25 +93,24 @@ export function useAuthApi() {
     // Navigation helper for post-auth redirects
     navigateToDashboard: () => {
       const authStore = useAuthStore();
-      const { $auth } = useNuxtApp();
 
-      // Use the auth plugin's navigation helper if available
-      if ($auth && $auth.navigation) {
-        return $auth.navigation.toDashboard();
-      }
-
-      // Fallback to direct navigation if plugin not available
-      if (authStore.user && authStore.user.username) {
-        const username = authStore.user.username;
-        const path = authStore.isSeller
-          ? `/${username}/selling/dashboard`
-          : `/${username}/buying/dashboard`;
-
-        return navigateTo(path);
-      } else {
-        // Fallback to home page if no user
+      // If not authenticated or no username, go to home page
+      if (!authStore.isAuthenticated || !authStore.user?.username) {
         return navigateTo('/');
       }
+
+      // Get the username
+      const username = authStore.user.username;
+
+      // Route based on role
+      if (authStore.isSeller) {
+        return navigateTo(`/${username}/selling/dashboard`);
+      } else if (authStore.isCustomer) {
+        return navigateTo(`/${username}/buying/dashboard`);
+      }
+
+      // Default fallback
+      return navigateTo('/');
     },
 
 
@@ -142,6 +142,54 @@ export function useAuthApi() {
       return await useCustomFetch<ApiResponse>('/api/auth/unlink-provider', {
         method: 'POST'
       });
+    },
+
+    // Auth error handling
+    handleUnauthorized: (skipRedirect = false) => {
+      if (!import.meta.client) {
+        return { status: 'error', message: 'Unauthorized' }
+      }
+
+      const route = useRoute()
+      const currentPath = route.fullPath
+
+      // Don't redirect or show notifications if we're on auth pages
+      const isAuthPage = currentPath.includes('/auth/login') ||
+                        currentPath.includes('/auth/signup') ||
+                        currentPath.includes('/auth/verify')
+
+      if (!isAuthPage) {
+        // Show session expired notification
+        toast.sessionExpired()
+
+        // Only redirect if not on an auth page and redirect is not skipped
+        if (!skipRedirect) {
+          navigateTo({
+            path: '/auth/login',
+            query: { redirect: currentPath }
+          })
+        }
+      }
+
+      return {
+        status: 'error',
+        message: 'Unauthorized. Please log in again.'
+      }
+    },
+
+    handleForbidden: () => {
+      if (import.meta.client) {
+        toast.accessDenied('You do not have permission to access this resource')
+      }
+
+      return {
+        status: 'error',
+        message: 'Forbidden. You do not have permission to access this resource.'
+      }
+    },
+
+    showAccessDenied: (message = 'You do not have the required permissions to access this page') => {
+      toast.accessDenied(message)
     }
   };
 }
