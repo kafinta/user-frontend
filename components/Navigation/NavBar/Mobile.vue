@@ -63,6 +63,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useAuthStore } from '~/stores/auth'
+import { useAuthApi } from '~/composables/useAuthApi'
 import { useAppToast } from '~/utils/toastify'
 
 // Auth store
@@ -106,8 +107,9 @@ const emit = defineEmits(['cartClicked', 'logout'])
 
 // Handle logout
 async function handleLogout() {
-  // Initialize toast
+  // Initialize toast and auth API
   const toast = useAppToast()
+  const authApi = useAuthApi()
 
   try {
     // Show loading toast
@@ -116,10 +118,10 @@ async function handleLogout() {
     // Emit the logout event to parent component
     emit('logout')
 
-    // Call logout and handle the response
-    const response = await authStore.logout()
+    // Call logout using the auth API composable
+    const response = await authApi.logout()
 
-    if (response.success) {
+    if (response.status === 'success') {
       // Success toast - though this may not be seen due to page reload
       toast.success('Success', response.message || 'Logged out successfully')
     } else {
