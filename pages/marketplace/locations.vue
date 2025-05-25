@@ -10,9 +10,7 @@
       </div>
       <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-12">
         <li v-if="isLoading" v-for="n in 12" :key="n">
-          <Skeleton
-            height="15rem"
-          ></Skeleton>
+          <UiSkeleton height="15rem" />
         </li>
         <li v-else-if="error" class="col-span-2 md:col-span-3 lg:col-span-4 place-content-center">
           <UiTypographyP>Error loading locations... Try again later.</UiTypographyP>
