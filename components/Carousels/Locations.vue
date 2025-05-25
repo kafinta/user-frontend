@@ -52,7 +52,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useWindowSize } from '@vueuse/core'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
@@ -141,10 +141,7 @@ async function selectLocation(id) {
   productFilters.selectLocation(id)
 }
 
-// Fetch locations when component is mounted
-onMounted(async () => {
-  await filtersStore.fetchLocations()
-})
+// No onMounted needed - data will be fetched when needed by pages
 </script>
 
 <style scoped>
