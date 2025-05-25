@@ -43,18 +43,14 @@
 <script setup>
 definePageMeta({
   middleware: ['auth'],
-  authOnly: true
+  guestOnly: true // Only allow unauthenticated users
 });
 
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { useRouter } from 'vue-router';
-import { storeToRefs } from 'pinia';
-import { useAuthStore } from '~/stores/auth';
 import { useAppToast } from "~/utils/toastify";
 
 const router = useRouter();
-const authStore = useAuthStore();
-const { isLoading } = storeToRefs(authStore);
 const toast = useAppToast();
 
 const code = ref('');
@@ -64,88 +60,104 @@ const loadingStatePassword = ref(false);
 const new_password = ref('');
 const email = ref('');
 
-onMounted(() => {
-  authStore.clearMessages();
-});
+
 
 async function requestCode() {
   if (!email.value) {
-    toast.error('Error', 'Please enter your email address');
+    toast.error('Please enter your email address');
     return;
   }
 
   loadingState.value = true;
 
   try {
-    // In a real implementation, you would call an API to send a reset code
-    // For now, we'll simulate a successful code sending
-    toast.info('Sending', 'Sending verification code to your email...');
+    // Direct API call in the page component
+    const response = await useCustomFetch('/api/forgot-password', {
+      method: 'POST',
+      body: { email: email.value }
+    });
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    loadingState.value = false;
-    code.value = ''; // Clear any existing code but set to empty string to show code input
-    toast.success('Success', 'Verification code sent to your email');
+    if (response?.success) {
+      code.value = ''; // Show code input form
+      toast.success(response.message || 'Verification code sent to your email');
+    } else {
+      toast.error(response?.message || 'Failed to send verification code');
+    }
   } catch (err) {
     console.error('Request code error:', err);
-    toast.error('Error', 'An unexpected error occurred. Please try again.');
+    toast.error('An unexpected error occurred. Please try again.');
+  } finally {
     loadingState.value = false;
   }
 }
 
 async function verify() {
   if (!code.value || code.value.length !== 6) {
-    toast.error('Error', 'Please enter a valid 6-digit verification code');
+    toast.error('Please enter a valid 6-digit verification code');
     return;
   }
 
   loadingState.value = true;
 
   try {
-    // In a real implementation, you would call an API to verify the reset code
-    // For now, we'll simulate a successful verification
-    toast.info('Verifying', 'Verifying your code...');
+    // Direct API call in the page component
+    const response = await useCustomFetch('/api/verify-reset-code', {
+      method: 'POST',
+      body: { code: code.value }
+    });
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    loadingState.value = false;
-    verification_passed.value = true;
-    toast.success('Success', 'Code verified successfully');
+    if (response?.success) {
+      verification_passed.value = true;
+      toast.success(response.message || 'Code verified successfully');
+    } else {
+      toast.error(response?.message || 'Invalid verification code');
+    }
   } catch (err) {
     console.error('Verification error:', err);
-    toast.error('Error', 'An unexpected error occurred. Please try again.');
+    toast.error('An unexpected error occurred. Please try again.');
+  } finally {
     loadingState.value = false;
   }
 }
 
 async function updatePassword() {
   if (!new_password.value) {
-    toast.error('Error', 'Please enter a new password');
+    toast.error('Please enter a new password');
+    return;
+  }
+
+  if (new_password.value.length < 8) {
+    toast.error('Password must be at least 8 characters long');
     return;
   }
 
   loadingStatePassword.value = true;
 
   try {
-    // In a real implementation, you would call an API to update the password
-    // For now, we'll simulate a successful password update
-    toast.info('Updating', 'Updating your password...');
+    // Direct API call in the page component
+    const response = await useCustomFetch('/api/reset-password/code', {
+      method: 'POST',
+      body: {
+        code: code.value,
+        password: new_password.value,
+        password_confirmation: new_password.value
+      }
+    });
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    if (response?.success) {
+      toast.success(response.message || 'Password updated successfully');
 
-    loadingStatePassword.value = false;
-    toast.success('Success', 'Password updated successfully');
-
-    // Redirect to login page
-    setTimeout(() => {
-      router.push('/auth/login');
-    }, 1000);
+      // Redirect to login page after a short delay
+      setTimeout(() => {
+        router.push('/auth/login');
+      }, 1500);
+    } else {
+      toast.error(response?.message || 'Failed to update password');
+    }
   } catch (err) {
     console.error('Password update error:', err);
-    toast.error('Error', 'An unexpected error occurred. Please try again.');
+    toast.error('An unexpected error occurred. Please try again.');
+  } finally {
     loadingStatePassword.value = false;
   }
 }
