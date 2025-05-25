@@ -40,7 +40,7 @@ definePageMeta({
 });
 
 import { useRouter, useRoute } from 'vue-router';
-import { ref, onMounted, computed } from "vue";
+import { ref, computed } from "vue";
 import { useAuthStore } from '~/stores/auth';
 import { useAppToast } from "~/utils/toastify";
 
@@ -60,14 +60,7 @@ const email = ref('');
 const password = ref('');
 const remember_me = ref(true); // Default to true for now
 
-// Check authentication status when the component is mounted
-onMounted(() => {
-  if (import.meta.client) {
-    if (!authStore.isAuthenticated) {
-      authStore.initialize();
-    }
-  }
-});
+// Auth store will auto-initialize when first accessed
 
 async function handleSignin() {
   try {
