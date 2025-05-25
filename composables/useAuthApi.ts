@@ -1,6 +1,6 @@
 // Types for API responses
 interface ApiResponse {
-  success: boolean;
+  status: string;
   message: string;
   data?: {
     user?: any;
@@ -18,7 +18,7 @@ export function useAuthApi() {
       method: 'GET'
     });
 
-    if (response?.success && response.data?.roles) {
+    if (response.status === 'success' && response.data?.roles) {
       authStore.setRoles(response.data.roles);
     }
 
@@ -48,7 +48,7 @@ export function useAuthApi() {
         method: 'GET'
       });
 
-      if (response?.success && response.data?.user) {
+      if (response.status === 'success' && response.data?.user) {
         authStore.setUser(response.data.user);
         authStore.setVerified(!!response.data.user.email_verified_at);
       }
@@ -63,7 +63,7 @@ export function useAuthApi() {
         method: 'POST'
       });
 
-      if (response?.success) {
+      if (response.status === 'success') {
         authStore.clearAuthData();
       }
 
@@ -75,7 +75,7 @@ export function useAuthApi() {
         method: 'GET'
       });
 
-      if (response?.success) {
+      if (response.status === 'success') {
         authStore.setVerified(response.data?.email_verified === true);
       }
 
