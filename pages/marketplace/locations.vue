@@ -23,17 +23,16 @@
   </LayoutsMarketplace>
 </template>
 <script setup>
-import {ref, onMounted, computed} from 'vue'
+import { computed } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useProductFilters } from '@/composables/useProductFilters'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 const filtersStore = useFiltersStore()
 const { locations, isLoading, error } = storeToRefs(filtersStore)
 const productFilters = useProductFilters()
 const router = useRouter()
-const route = useRoute()
 
 const breadcrumbItems = computed(() => {
   const items = [];
@@ -85,15 +84,7 @@ async function selectLocation(id) {
   productFilters.selectLocation(id)
 }
 
-onMounted(async () => {
-  // Check if we have a category in the URL but not in the state
-  const categoryId = route.query.category ? Number(route.query.category) : null;
-  if (categoryId && !productFilters.selectedCategory) {
-    productFilters.selectCategory(categoryId);
-  }
-
-  await filtersStore.fetchLocations();
-})
+// No onMounted needed - useProductFilters composable handles initialization
 </script>
 
 

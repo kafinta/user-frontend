@@ -14,7 +14,7 @@
             <p>Filters</p>
             <UiIconsFilter class="w-5 flex m-0" />
           </div>
-        </UiButtonsPrimary> 
+        </UiButtonsPrimary>
       </div>
     </div>
 
@@ -54,7 +54,7 @@
   </LayoutsMarketplace>
 </template>
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useProductFilters } from "@/composables/useProductFilters";
 
@@ -100,25 +100,5 @@ const next = () => {
   console.log('Next page');
 };
 
-// Initialize subcategory details on mount
-onMounted(async () => {
-  // Check if we have IDs in the URL
-  const categoryId = route.query.category ? Number(route.query.category) : null;
-  const locationId = route.query.location ? Number(route.query.location) : null;
-  const subcategoryId = route.query.subcategory ? Number(route.query.subcategory) : null;
-
-  // If we have parameters but not selected items, load them
-  if (categoryId && !productFilters.selectedCategory) {
-    productFilters.selectCategory(categoryId);
-  }
-
-  if (locationId && !productFilters.selectedLocation) {
-    productFilters.selectLocation(locationId);
-  }
-
-  // If we have a subcategory ID, select it
-  if (subcategoryId && !productFilters.selectedSubcategoryDetails) {
-    productFilters.selectSubcategory(subcategoryId);
-  }
-});
+// No onMounted needed - useProductFilters composable handles initialization
 </script>

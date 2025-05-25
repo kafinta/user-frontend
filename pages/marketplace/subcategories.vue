@@ -38,22 +38,16 @@
   </LayoutsMarketplace>
 </template>
 <script setup>
-import {ref, onMounted, computed} from 'vue'
+import { computed } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useProductFilters } from '@/composables/useProductFilters'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 const filtersStore = useFiltersStore()
 const { subcategories, isLoading, error } = storeToRefs(filtersStore)
 const productFilters = useProductFilters()
 const router = useRouter()
-const route = useRoute()
-
-const home = ref({
-  icon: 'pi pi-home',
-  route: '/marketplace'
-});
 
 // Define breadcrumb items
 const breadcrumbItems = computed(() => {
@@ -122,24 +116,7 @@ async function selectSubcategory(id) {
   productFilters.selectSubcategory(id)
 }
 
-onMounted(async () => {
-  const categoryId = route.query.category ? Number(route.query.category) : null;
-  const locationId = route.query.location ? Number(route.query.location) : null;
-
-  // If we have parameters but not selected items, load them
-  if (categoryId && !productFilters.selectedCategory) {
-    productFilters.selectCategory(categoryId);
-  }
-
-  if (locationId && !productFilters.selectedLocation) {
-    productFilters.selectLocation(locationId);
-  }
-
-  // Fetch subcategories if both category and location are available
-  if (categoryId && locationId) {
-    await productFilters.fetchSubcategories();
-  }
-})
+// No onMounted needed - useProductFilters composable handles initialization
 </script>
 
 

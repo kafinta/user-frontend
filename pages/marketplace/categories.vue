@@ -13,7 +13,12 @@
           <UiSkeleton height="15rem" />
         </li>
         <li v-else-if="error" class="col-span-2 md:col-span-3 lg:col-span-4 place-content-center">
-          <UiTypographyP>Error loading categories... Try again later.</UiTypographyP>
+          <div class="text-center">
+            <UiTypographyP>Error loading categories...</UiTypographyP>
+            <UiButtonsSecondary @clicked="retryFetchCategories" class="mt-4">
+              Try Again
+            </UiButtonsSecondary>
+          </div>
         </li>
         <li v-else v-for="category in categories" :key="category.id">
           <UiCards @clicked="selectCategory(category.id)" :title="category.name" :src="category.image_path" class="w-full"/>
@@ -23,17 +28,16 @@
   </LayoutsMarketplace>
 </template>
 <script setup>
-import {onMounted, computed} from 'vue'
+import { computed } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useProductFilters } from '@/composables/useProductFilters'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 const filtersStore = useFiltersStore()
 const { categories, isLoading, error } = storeToRefs(filtersStore)
 const productFilters = useProductFilters()
 const router = useRouter()
-const route = useRoute()
 
 
 
@@ -88,13 +92,11 @@ const breadcrumbItems = computed(() => {
   return items;
 });
 
-onMounted(async () => {
-  // Check if we have a location in the URL but not in the state
-  const locationId = route.query.location ? Number(route.query.location) : null;
-  if (locationId && !productFilters.selectedLocation) {
-    productFilters.selectLocation(locationId);
-  }
+// Retry function for failed requests
+async function retryFetchCategories() {
+  filtersStore.clearFailedRequest('categories')
+  await filtersStore.fetchCategories()
+}
 
-  await filtersStore.fetchCategories();
-})
+// No onMounted needed - useProductFilters composable handles initialization
 </script>
