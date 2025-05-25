@@ -66,6 +66,16 @@ export function useAuthApi() {
 
       if (response.status === 'success') {
         authStore.clearAuthData();
+
+        // Clear any remaining auth-related localStorage items (if any exist)
+        if (import.meta.client) {
+          try {
+            localStorage.removeItem('user');
+            localStorage.removeItem('roles');
+          } catch (error) {
+            // Ignore localStorage errors
+          }
+        }
       }
 
       return response;
