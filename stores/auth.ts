@@ -31,13 +31,7 @@ interface ApiResponse {
   }
 }
 
-interface RolesApiResponse {
-  success: boolean
-  message: string
-  data: {
-    roles: Role[]
-  }
-}
+// Removed RolesApiResponse - API calls handled by pages/composables
 
 // Simple response type for actions
 export interface SimpleResponse {
@@ -70,6 +64,7 @@ export const useAuthStore = defineStore('auth', () => {
   const message = ref<string | null>(null)
   const status = ref<string | null>(null)
   const isVerified = ref(false)
+  const tokenVerificationSuccess = ref(false) // State for token verification communication
   const error = ref<string | null>(null)
 
   // Getters
@@ -132,6 +127,10 @@ export const useAuthStore = defineStore('auth', () => {
     isVerified.value = verified;
   }
 
+  function setTokenVerificationSuccess(success: boolean) {
+    tokenVerificationSuccess.value = success;
+  }
+
   function setRoles(newRoles: Role[]) {
     roles.value = newRoles;
   }
@@ -139,479 +138,91 @@ export const useAuthStore = defineStore('auth', () => {
   // Actions
 
   /**
-   * Initialize the auth store by checking if the user is authenticated
+   * Validate stored user data
    */
-  async function initialize() {
-    // Skip full initialization on server
+  const validateStoredUser = (data: any): data is User => {
+    return data &&
+           typeof data === 'object' &&
+           typeof data.email === 'string' &&
+           typeof data.username === 'string' &&
+           data.email.length > 0 &&
+           data.username.length > 0;
+  }
+
+  /**
+   * Validate stored roles data
+   */
+  const validateStoredRoles = (data: any): data is Role[] => {
+    return Array.isArray(data) &&
+           data.every(role => typeof role === 'string' ||
+                     (typeof role === 'object' && typeof role.name === 'string'));
+  }
+
+  /**
+   * Check if stored data is expired (24 hours)
+   */
+  const isDataExpired = (timestamp: number): boolean => {
+    const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+    return Date.now() - timestamp > TWENTY_FOUR_HOURS;
+  }
+
+  /**
+   * Initialize the auth store from localStorage with validation
+   */
+  function initialize() {
+    // Skip initialization on server
     if (import.meta.server) {
       return;
     }
 
     try {
-      startLoading();
-
-      // Try to load user from storage first
+      // Load user from storage with validation
       const storedUser = loadFromStorage('user');
       const storedRoles = loadFromStorage('roles');
 
       if (storedUser) {
-        setUser(storedUser);
-        setVerified(!!storedUser.email_verified_at);
-
-        if (storedRoles) {
-          setRoles(storedRoles);
-        }
-      }
-
-      // Always verify with the server
-      const response = await useCustomFetch<ApiResponse>('/api/user/profile', {
-        method: 'GET'
-      }).catch(error => {
-        // Clear auth data if we get a 401
-        if (error.response?.status === 401 && user.value) {
-          clearAuthData();
-        }
-
-        return { success: false, message: 'Failed to fetch profile' } as ApiResponse;
-      });
-
-      // Check if the response has a success status or contains a success message
-      // Add more comprehensive checks for different response formats
-      const isSuccess = response.success === true ||
-                       (response.status === 'success') ||
-                       (response.status_code === 200);
-
-      // Check if we have user data in the response
-      const userData = response.data?.user;
-
-      if (isSuccess && userData) {
-        // Update user data
-        setUser(userData);
-        setVerified(!!userData.email_verified_at);
-        saveToStorage('user', userData);
-
-        // Fetch roles
-        await fetchRoles();
-      } else if (isSuccess && !userData && user.value) {
-        // Response was successful but didn't contain user data
-        // If we already have a user in state, keep it
-      } else if (!isSuccess) {
-        // Clear auth data if we're not authenticated
-        if (user.value) {
-          clearAuthData();
-        }
-      }
-    } catch (err) {
-      logError('Failed to initialize auth:', err);
-      error.value = err instanceof Error ? err.message : 'Failed to initialize authentication';
-      status.value = 'error';
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  /**
-   * Fetch user roles from the API
-   * This method should not set any messages or status that would be displayed to the user
-   */
-  async function fetchRoles(): Promise<SimpleResponse> {
-    if (!isAuthenticated.value) {
-      return {
-        success: false,
-        message: 'User is not authenticated',
-        status: 'error'
-      };
-    }
-
-    // Try to load from storage first
-    const storedRoles = loadFromStorage('roles');
-    if (storedRoles) {
-      setRoles(storedRoles);
-      return {
-        success: true,
-        message: 'User roles loaded from cache',
-        status: 'success',
-        roles: storedRoles
-      };
-    }
-
-    startLoading();
-
-    try {
-      const response = await useCustomFetch<RolesApiResponse>('/api/user/profile/roles', {
-        method: 'GET'
-      });
-
-      // Don't update global status or message for role fetching
-      // This prevents these values from being displayed to the user
-
-      if (response?.data?.roles) {
-        setRoles(response.data.roles);
-        saveToStorage('roles', response.data.roles);
-      }
-
-      return {
-        success: response.success,
-        message: response.message || 'User roles retrieved',
-        status: response.success ? 'success' : 'error',
-        data: response.data
-      };
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch user roles';
-      // Don't update global error or status
-
-      return {
-        success: false,
-        message: errorMessage,
-        status: 'error'
-      };
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  /**
-   * Log in a user with email and password
-   */
-  async function login(credentials: { email: string, password: string, remember_me?: boolean }): Promise<{
-    success: boolean,
-    message: string,
-    status: string,
-    needsVerification?: boolean
-  }> {
-    startLoading();
-
-    try {
-      // Use useCustomFetch for consistent error handling
-      const response = await useCustomFetch<ApiResponse>('/api/user/login', {
-        method: 'POST',
-        body: credentials
-      });
-
-      // Debug log to see the actual API response
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('Login API response:', response);
-      }
-
-      // Check for success in different ways
-      if (response.success === true ||
-          (response.message && (
-            response.message.includes('success') ||
-            response.message.includes('Success') ||
-            response.message.includes('logged in')
-          ))) {
-
-        // Set status to success
-        status.value = 'success';
-        message.value = response.message || 'Login successful';
-
-        // Handle user data if available
-        if (response.data?.user) {
-          setUser(response.data.user);
-          setVerified(!!response.data.user.email_verified_at);
-          saveToStorage('user', response.data.user);
-
-          // Fetch user roles after successful login
-          await fetchRoles();
-
-          // Transfer guest cart to user cart after login (non-critical)
-          useCustomFetch('/api/cart/transfer-after-login', { method: 'GET' })
-            .catch(() => {}); // Ignore errors
-
-          // Create response object with user data
-          const responseObj = {
-            success: true,
-            message: message.value,
-            status: 'success',
-            needsVerification: !response.data.user.email_verified_at
-          };
-
-          // Debug log the final response object
-          if (process.env.NODE_ENV !== 'production') {
-            console.log('Login response object being returned:', responseObj);
+        // Validate user data structure
+        if (validateStoredUser(storedUser)) {
+          // Check if data is expired (if timestamp exists)
+          if (storedUser._timestamp && isDataExpired(storedUser._timestamp)) {
+            logError('Stored user data expired, clearing auth data');
+            clearAuthData();
+            return;
           }
 
-          return responseObj;
-        } else {
-          // If no user data but success message, try to fetch profile
-          try {
-            const profileResponse = await useCustomFetch<ApiResponse>('/api/user/profile', {
-              method: 'GET'
-            });
+          setUser(storedUser);
+          setVerified(!!storedUser.email_verified_at);
 
-            if (profileResponse.success && profileResponse.data?.user) {
-              setUser(profileResponse.data.user);
-              setVerified(!!profileResponse.data.user.email_verified_at);
-              saveToStorage('user', profileResponse.data.user);
-
-              // Fetch roles
-              await fetchRoles();
-
-              // Create response object with user data from profile
-              const responseObj = {
-                success: true,
-                message: message.value,
-                status: 'success',
-                needsVerification: !profileResponse.data.user.email_verified_at
-              };
-
-              // Debug log
-              if (process.env.NODE_ENV !== 'production') {
-                console.log('Login response object (from profile):', responseObj);
-              }
-
-              return responseObj;
+          // Validate and set roles
+          if (storedRoles && validateStoredRoles(storedRoles)) {
+            setRoles(storedRoles);
+          } else if (storedRoles) {
+            // Clear invalid roles but keep user
+            logError('Invalid roles data found, clearing roles');
+            if (import.meta.client) {
+              localStorage.removeItem('roles');
             }
-          } catch (profileError) {
-            console.error('Failed to fetch profile after login:', profileError);
           }
-
-          // If we still don't have user data, return success but indicate verification might be needed
-          return {
-            success: true,
-            message: message.value,
-            status: 'success',
-            needsVerification: true // Assume verification might be needed
-          };
-        }
-      } else {
-        // Handle error case
-        status.value = 'error';
-        message.value = response.message || 'Login failed';
-
-        return {
-          success: false,
-          message: message.value,
-          status: 'error'
-        };
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Login failed. Please try again.';
-      error.value = errorMessage;
-      status.value = 'error';
-
-      return {
-        success: false,
-        message: errorMessage,
-        status: 'error'
-      };
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  /**
-   * Sign up a new user
-   */
-  async function signup(userData: {
-    email: string,
-    password: string,
-    username: string,
-    phone_number?: string
-  }): Promise<{
-    success: boolean,
-    message: string,
-    status: string,
-    emailVerificationRequired?: boolean,
-    verificationEmailSent?: boolean
-  }> {
-    startLoading();
-
-    try {
-      const response = await useCustomFetch<ApiResponse>('/api/user/signup', {
-        method: 'POST',
-        body: userData
-      });
-
-      // Debug log to see the actual API response
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('Signup API response:', response);
-      }
-
-      // Check if we have a successful response with a message but no user data
-      // This handles the case where the backend returns success but with a different structure
-      if (response.success === true || (response.message && response.message.includes('Successfully'))) {
-        // Set the status to success
-        status.value = 'success';
-        message.value = response.message || 'Account created successfully';
-
-        // Create a default user if not provided in the response
-        const userInfo = response.data?.user || {
-          email: userData.email,
-          username: userData.username
-        };
-
-        // Update user data if available
-        setUser(userInfo);
-        saveToStorage('user', userInfo);
-
-        // Check if email verification is required (default to true if not specified)
-        const emailVerificationRequired = response.data?.email_verification_required === true || true;
-        setVerified(!emailVerificationRequired);
-
-        // Fetch roles if available - this won't change message.value anymore
-        await fetchRoles();
-
-        // Create the response object
-        const responseObj = {
-          success: true,
-          message: message.value,
-          status: 'success', // Explicitly set to 'success' instead of using status.value
-          emailVerificationRequired: emailVerificationRequired,
-          verificationEmailSent: response.data?.verification_email_sent === true || false
-        };
-
-        // Debug log the final response object
-        if (process.env.NODE_ENV !== 'production') {
-          console.log('Signup response object being returned:', responseObj);
-        }
-
-        return responseObj;
-      } else {
-        // Check if the message indicates success despite the response structure
-        if (response.message && response.message.includes('Successfully')) {
-          // Handle as success even if the response structure is unexpected
-          status.value = 'success';
-          message.value = response.message;
-
-          // Create a default user
-          const userInfo = {
-            email: userData.email,
-            username: userData.username
-          };
-
-          // Update user data
-          setUser(userInfo);
-          saveToStorage('user', userInfo);
-
-          // Assume email verification is required
-          const emailVerificationRequired = true;
-          setVerified(!emailVerificationRequired);
-
-          // Fetch roles if available - this won't change message.value anymore
-          await fetchRoles();
-
-          // Create the response object
-          const responseObj = {
-            success: true,
-            message: message.value,
-            status: 'success',
-            emailVerificationRequired: emailVerificationRequired,
-            verificationEmailSent: false
-          };
-
-          // Debug log
-          if (process.env.NODE_ENV !== 'production') {
-            console.log('Signup response object (from message check):', responseObj);
-          }
-
-          return responseObj;
         } else {
-          // Handle as error
-          status.value = 'error';
-          message.value = response.message || 'Signup failed. Please try again.';
-
-          return {
-            success: false,
-            message: message.value,
-            status: 'error' // Explicitly set to 'error' instead of using status.value
-          };
+          logError('Invalid user data found in storage, clearing auth data');
+          clearAuthData();
         }
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Signup failed. Please try again.';
-      error.value = errorMessage;
-      status.value = 'error';
-
-      return {
-        success: false,
-        message: errorMessage,
-        status: 'error' // Explicitly set to 'error' instead of using status.value
-      };
-    } finally {
-      isLoading.value = false;
+      logError('Failed to initialize auth from storage:', err);
+      clearAuthData();
     }
   }
 
-  /**
-   * Log out the current user
-   */
-  async function logout(): Promise<SimpleResponse> {
-    startLoading();
+  // Removed fetchRoles - API calls should be handled by pages/composables
 
-    try {
-      // Call the logout API endpoint
-      await useCustomFetch('/api/logout', {
-        method: 'POST'
-      }).catch((error) => {
-        console.error('Logout API call failed, continuing with local logout', error);
-      });
+  // Removed login - API calls should be handled by pages
 
-      // Clear all authentication data
-      clearAuthData();
+  // Removed signup - API calls should be handled by pages
 
-      // Clear storage
-      if (import.meta.client) {
-        try {
-          localStorage.removeItem('user');
-          localStorage.removeItem('roles');
-        } catch (e) {
-          console.error('Failed to clear localStorage', e);
-        }
-      }
+  // Removed logout - API calls should be handled by pages
 
-      status.value = 'success';
-      message.value = 'Successfully logged out';
 
-      // Reload the page to reset all app state
-      if (import.meta.client) {
-        window.location.reload();
-      }
-
-      return {
-        success: true,
-        message: 'Successfully logged out',
-        status: 'success'
-      };
-    } catch (err) {
-      // Clear auth data regardless of API result
-      clearAuthData();
-
-      // Clear storage
-      if (import.meta.client) {
-        try {
-          localStorage.removeItem('user');
-          localStorage.removeItem('roles');
-        } catch (e) {
-          console.error('Failed to clear localStorage', e);
-        }
-      }
-
-      status.value = 'success';
-      message.value = 'Successfully logged out';
-
-      // Reload page even on error
-      if (import.meta.client) {
-        window.location.reload();
-      }
-
-      return {
-        success: true,
-        message: 'Successfully logged out',
-        status: 'success'
-      };
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  /**
-   * Clear message and status
-   */
-  function clearMessages() {
-    message.value = null;
-    status.value = null;
-  }
 
   /**
    * Clear all authentication data
@@ -646,103 +257,7 @@ export const useAuthStore = defineStore('auth', () => {
     return state;
   }
 
-  /**
-   * Verify email with a verification code
-   */
-  async function verifyEmail(verificationCode: string): Promise<{
-    success: boolean,
-    message: string,
-    status: string
-  }> {
-    startLoading();
-
-    try {
-      // Call the API to verify the email with the code
-      const response = await useCustomFetch<ApiResponse>('/api/verify-email/code', {
-        method: 'POST',
-        body: { code: verificationCode }
-      });
-
-      // Debug log to see the actual API response
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('Verify email API response:', response);
-      }
-
-      // Check for success in different ways
-      const isSuccess = response.success === true ||
-        (response.data && response.data.email_verified === true) ||
-        (response.message && (
-          response.message.includes('verified') ||
-          response.message.includes('Verified') ||
-          response.message.includes('success') ||
-          response.message.includes('Success')
-        ));
-
-      if (isSuccess) {
-        setVerified(true);
-        status.value = 'success';
-        message.value = response.message || 'Email verified successfully';
-
-        // Update user data if present in response
-        if (response.data?.user) {
-          setUser(response.data.user);
-          saveToStorage('user', response.data.user);
-        } else {
-          // Fetch user profile if not included in the verification response
-          try {
-            const profileResponse = await useCustomFetch<ApiResponse>('/api/user/profile', {
-              method: 'GET'
-            });
-
-            if (profileResponse.success && profileResponse.data?.user) {
-              setUser(profileResponse.data.user);
-              saveToStorage('user', profileResponse.data.user);
-            }
-          } catch (profileError) {
-            console.error('Failed to fetch profile after verification', profileError);
-          }
-        }
-
-        // Fetch roles after verification - this won't change message.value anymore
-        await fetchRoles();
-
-        // Create response object
-        const responseObj = {
-          success: true,
-          message: message.value,
-          status: 'success'
-        };
-
-        // Debug log the final response object
-        if (process.env.NODE_ENV !== 'production') {
-          console.log('Verify email response object being returned:', responseObj);
-        }
-
-        return responseObj;
-      } else {
-        status.value = 'error';
-        message.value = response.message || 'Verification failed';
-
-        return {
-          success: false,
-          message: message.value,
-          status: 'error'
-        };
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Verification failed. Please try again.';
-      error.value = errorMessage;
-      status.value = 'error';
-
-      return {
-        success: false,
-        message: errorMessage,
-        status: 'error'
-      };
-    } finally {
-      isLoading.value = false;
-    }
-  }
+  // Removed verifyEmail - this is now handled directly on pages as it's page-specific
 
   /**
    * Verify email with a token
@@ -786,6 +301,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (isSuccess) {
         setVerified(true);
+        setTokenVerificationSuccess(true); // Signal to verify page
         status.value = 'success';
         message.value = response.message || 'Email verified successfully';
 
@@ -809,8 +325,7 @@ export const useAuthStore = defineStore('auth', () => {
           }
         }
 
-        // Fetch roles after verification - this won't change message.value anymore
-        await fetchRoles();
+        // Roles should be fetched by pages/composables after verification
 
         // Create response object
         const responseObj = {
@@ -913,82 +428,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  /**
-   * Check the current email verification status
-   */
-  async function checkEmailVerificationStatus(): Promise<SimpleResponse> {
-    startLoading();
-
-    try {
-      // Check email verification status
-      const response = await useCustomFetch<ApiResponse>('/api/user/email-verification-status', {
-        method: 'GET'
-      });
-
-      // Debug log to see the actual API response
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('Check email verification status API response:', response);
-      }
-
-      // Check for success in different ways
-      const isSuccess = response.success === true ||
-        (response.message && (
-          response.message.includes('status') ||
-          response.message.includes('Status') ||
-          response.message.includes('retrieved') ||
-          response.message.includes('Retrieved') ||
-          response.message.includes('success') ||
-          response.message.includes('Success')
-        ));
-
-      if (isSuccess) {
-        status.value = 'success';
-        message.value = response.message || 'Email verification status retrieved';
-
-        // Update verification status
-        const isEmailVerified = response.data?.email_verified === true;
-        setVerified(isEmailVerified);
-
-        // Create response object
-        const responseObj = {
-          success: true,
-          message: message.value,
-          status: 'success',
-          data: response.data,
-          isVerified: isEmailVerified
-        };
-
-        // Debug log the final response object
-        if (process.env.NODE_ENV !== 'production') {
-          console.log('Check email verification status response object being returned:', responseObj);
-        }
-
-        return responseObj;
-      } else {
-        status.value = 'error';
-        message.value = response.message || 'Failed to retrieve verification status';
-
-        return {
-          success: false,
-          message: message.value,
-          status: 'error',
-          data: response.data
-        };
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to check verification status';
-      error.value = errorMessage;
-      status.value = 'error';
-
-      return {
-        success: false,
-        message: errorMessage,
-        status: 'error'
-      };
-    } finally {
-      isLoading.value = false;
-    }
-  }
+  // Removed checkEmailVerificationStatus - this is now handled directly on pages as it's page-specific
 
   /**
    * Verify email with a direct link
@@ -1042,8 +482,7 @@ export const useAuthStore = defineStore('auth', () => {
           }
         }
 
-        // Fetch roles
-        await fetchRoles();
+        // Roles should be fetched by pages/composables
 
         // Create response object
         const responseObj = {
@@ -1094,6 +533,7 @@ export const useAuthStore = defineStore('auth', () => {
     status,
     error,
     isVerified,
+    tokenVerificationSuccess,
 
     // Essential getters for navigation and permissions
     isAuthenticated,
@@ -1102,23 +542,22 @@ export const useAuthStore = defineStore('auth', () => {
     isSeller,
     isCustomer,
 
-    // Core authentication actions
+    // Core authentication actions (API calls removed - handled by pages)
     initialize,
-    login,
-    signup,
-    logout,
-    fetchRoles,
 
-    // Email verification actions
-    verifyEmail,
+    // Email verification actions (token-based methods are reusable)
     verifyEmailWithToken,
     verifyEmailWithDirectLink,
     requestEmailVerification,
-    checkEmailVerificationStatus,
 
-    // Clear messages
-    clearMessages,
+    // Clear auth data
     clearAuthData,
+
+    // Basic state setters (for composables)
+    setUser,
+    setVerified,
+    setTokenVerificationSuccess,
+    setRoles,
 
     // Debugging (only in development)
     ...(process.env.NODE_ENV !== 'production' ? { debugAuthState } : {})
