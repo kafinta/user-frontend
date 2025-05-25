@@ -9,28 +9,31 @@
       </div>
 
       <form @submit.prevent="handleSignup()" class="grid gap-4">
-        <FormInput 
-          label="Email" 
-          type="email" 
-          v-model:inputValue="email" 
+        <FormInput
+          label="Email"
+          type="email"
+          v-model:inputValue="email"
           class="w-full"
         />
-        <FormInput 
-          label="Username" 
-          type="text" 
-          v-model:inputValue="username" 
+        <FormInput
+          label="Username"
+          type="text"
+          v-model:inputValue="username"
           class="w-full"
         />
-        <FormInput 
-          label="Password" 
-          type="password" 
-          v-model:inputValue="password" 
+        <FormInput
+          label="Password"
+          type="password"
+          v-model:inputValue="password"
           class="w-full"
         />
 
         <FormButton :loading="buttonLoading">Sign Up</FormButton>
-        <p class="text-sm w-fit mx-auto mt-2 text-secondary text-center">Already a member? <NuxtLink to="/auth/login" class="duration-500 ease-in-out hover:text-primary">Sign In</NuxtLink></p>
+        <p class="text-sm w-fit -mt-2 mx-auto text-secondary text-center">Already a member? <NuxtLink to="/auth/login" class="duration-500 ease-in-out hover:text-primary">Sign In</NuxtLink></p>
       </form>
+
+      <!-- OAuth Signup Options -->
+      <AuthOAuthButtons />
     </main>
   </div>
 </template>
@@ -38,17 +41,13 @@
 <script setup>
 definePageMeta({
   middleware: ['auth'],
-  authOnly: true
+  guestOnly: true
 });
 
 import { useRouter } from 'vue-router';
-import { ref, onMounted } from "vue";
-import { storeToRefs } from 'pinia';
-import { useAuthStore } from '~/stores/auth';
+import { ref } from "vue";
 import { useAppToast } from "~/utils/toastify";
 
-const authStore = useAuthStore();
-// Use a separate loading state for the button instead of the auth store's loading state
 const buttonLoading = ref(false);
 const router = useRouter();
 const toast = useAppToast();
@@ -57,43 +56,38 @@ const email = ref('');
 const username = ref('');
 const password = ref('');
 
-onMounted(() => {
-  authStore.clearMessages();
-});
-
 async function handleSignup() {
   try {
-    // Set button loading state to true
     buttonLoading.value = true;
 
-    authStore.clearMessages();
-
     if (!email.value || !username.value || !password.value) {
-      toast.error('Error', 'Please fill in all fields');
-      buttonLoading.value = false; // Reset loading state
+      toast.error('Please fill in all fields');
       return;
     }
 
-    const result = await authStore.signup({
-      email: email.value,
-      password: password.value,
-      username: username.value
+    const response = await useCustomFetch('/api/user/signup', {
+      method: 'POST',
+      body: {
+        email: email.value,
+        password: password.value,
+        username: username.value
+      }
     });
 
-    if (result.success) {
-      toast.success('Success', result.message);
+    if (response.status === 'success') {
+      // Use the enhanced auth API to handle success
+      const authApi = useAuthApi();
+      await authApi.handleAuthSuccess(response);
+
+      toast.success(response.message);
       router.push('/auth/verify');
-      email.value = '';
-      username.value = '';
-      password.value = '';
     } else {
-      toast.error('Error', result.message);
+      toast.error(response.message);
     }
   } catch (err) {
     console.error('Signup error:', err);
-    toast.error('Error', 'An unexpected error occurred');
+    toast.error('An unexpected error occurred');
   } finally {
-    // Always reset button loading state
     buttonLoading.value = false;
   }
 }
