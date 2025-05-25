@@ -46,13 +46,11 @@ import { useRouter, useRoute } from 'vue-router';
 import { ref, onMounted } from "vue";
 import { useAuthStore } from '~/stores/auth';
 import { useAppToast } from "~/utils/toastify";
-import { useNuxtApp } from '#app';
 
 const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
 const toast = useAppToast();
-const { $auth } = useNuxtApp();
 
 // State variables
 const isLoading = ref(true);
@@ -82,30 +80,43 @@ onMounted(async () => {
   }
 
   try {
-    // Verify email with token
-    const result = await authStore.verifyEmailWithToken(token.toString());
+    // Direct API call for token verification (page-specific)
+    const response = await useCustomFetch('/api/verify-email/token', {
+      method: 'POST',
+      body: { token: token.toString() }
+    });
 
-    if (result.success) {
+    if (response?.success || response?.data?.email_verified) {
       verificationStatus.value = 'success';
       statusMessage.value = 'Email Verified Successfully';
-      toast.success('Success', result.message);
-      
+
+      // Update auth state
+      authStore.setVerified(true);
+      authStore.setTokenVerificationSuccess(true); // Signal to verify page
+
+      // Update user data if provided
+      if (response.data?.user) {
+        authStore.setUser(response.data.user);
+      }
+
+      toast.success(response.message || 'Email verified successfully');
+
       // Auto-redirect to dashboard after 3 seconds
       setTimeout(() => {
         navigateToDashboard();
       }, 3000);
     } else {
       verificationStatus.value = 'error';
-      errorMessage.value = result.message || 'Verification failed. The token may be invalid or expired.';
+      errorMessage.value = response?.message || 'Verification failed. The token may be invalid or expired.';
       statusMessage.value = 'Verification Failed';
-      toast.error('Error', errorMessage.value);
+      toast.error(errorMessage.value);
     }
   } catch (err) {
     console.error('Verification error:', err);
     verificationStatus.value = 'error';
     errorMessage.value = 'An unexpected error occurred during verification. Please try again.';
     statusMessage.value = 'Verification Failed';
-    toast.error('Error', errorMessage.value);
+    toast.error(errorMessage.value);
   } finally {
     isLoading.value = false;
   }
@@ -134,22 +145,7 @@ async function requestNewVerification() {
 
 // Navigate to dashboard after verification
 function navigateToDashboard() {
-  // Use the auth plugin's navigation helper
-  if ($auth && $auth.navigation) {
-    return $auth.navigation.toDashboard();
-  }
-
-  // Fallback to direct navigation if plugin not available
-  if (authStore.user && authStore.user.username) {
-    const username = authStore.user.username;
-    const path = authStore.isSeller
-      ? `/${username}/selling/dashboard`
-      : `/${username}/buying/dashboard`;
-    
-    router.push(path);
-  } else {
-    // Fallback to home page if no user
-    router.push('/');
-  }
+  const authApi = useAuthApi();
+  authApi.navigateToDashboard();
 }
 </script>

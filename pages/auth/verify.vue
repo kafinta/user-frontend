@@ -9,7 +9,7 @@
       </div>
 
       <form @submit.prevent="verifyEmail()" class="grid gap-6 w-full">
-        <InputOtp v-model="code" :length="6" integerOnly class="justify-between"/>
+        <FormOtpInput v-model="code" :length="6" integerOnly class="justify-between" />
         <FormButton :loading="isLoading">Verify Email</FormButton>
         <div class="flex flex-col items-center gap-4 mt-2">
           <button
@@ -53,18 +53,16 @@ definePageMeta({
   isVerifyRoute: true
 });
 
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/stores/auth';
 import { useAppToast } from "~/utils/toastify";
-import { useNuxtApp } from '#app';
 
 const authStore = useAuthStore();
 const { isVerified } = storeToRefs(authStore);
 const router = useRouter();
 const toast = useAppToast();
-const { $auth } = useNuxtApp();
 
 // State variables
 const code = ref('');
@@ -77,9 +75,6 @@ const autoCheckInterval = ref(null);
 
 // Check verification status on mount
 onMounted(async () => {
-  // Clear any previous messages
-  authStore.clearMessages();
-
   // If user is already verified, redirect them to dashboard
   if (authStore.isAuthenticated && authStore.isVerified) {
     navigateToDashboard();
@@ -97,7 +92,7 @@ onMounted(async () => {
 watch(isVerified, (newValue) => {
   if (newValue === true) {
     // If user becomes verified, show success message and redirect
-    toast.success('Success', 'Your email has been verified successfully!');
+    toast.success('Your email has been verified successfully!');
     setTimeout(() => {
       navigateToDashboard();
     }, 1500); // Short delay to show the toast
@@ -131,7 +126,23 @@ function startAutoCheck() {
   }, 30000); // 30 seconds
 }
 
-// Check if the user's email has been verified
+// Watch for token verification success from verify-token page
+watch(() => authStore.tokenVerificationSuccess, (newValue) => {
+  if (newValue) {
+    // Token verification was successful, update UI
+    toast.success('Your email has been verified!');
+
+    // Reset the state
+    authStore.setTokenVerificationSuccess(false);
+
+    // Short delay before redirecting
+    setTimeout(() => {
+      navigateToDashboard();
+    }, 1500);
+  }
+});
+
+// Check if the user's email has been verified (page-specific API call)
 async function checkVerificationStatus(silent = false) {
   // Don't check if already checking
   if (checkingStatus.value) return;
@@ -139,15 +150,20 @@ async function checkVerificationStatus(silent = false) {
   checkingStatus.value = true;
 
   try {
-    // Call the API to check verification status
-    const result = await authStore.checkEmailVerificationStatus();
+    // Direct API call on page (page-specific, not reusable)
+    const response = await useCustomFetch('/api/user/email-verification-status', {
+      method: 'GET'
+    });
 
     // Update last checked timestamp
     lastChecked.value = Date.now();
 
-    if (result.success && result.isVerified) {
+    if (response?.success && response.data?.email_verified) {
+      // Update auth state directly
+      authStore.setVerified(true);
+
       if (!silent) {
-        toast.success('Success', 'Your email has been verified!');
+        toast.success('Your email has been verified!');
       }
 
       // Short delay before redirecting
@@ -155,19 +171,19 @@ async function checkVerificationStatus(silent = false) {
         navigateToDashboard();
       }, 1500);
     } else if (!silent) {
-      toast.info('Info', 'Your email has not been verified yet.');
+      toast.info('Your email has not been verified yet.');
     }
   } catch (err) {
     console.error('Check verification status error:', err);
     if (!silent) {
-      toast.error('Error', 'Failed to check verification status.');
+      toast.error('Failed to check verification status.');
     }
   } finally {
     checkingStatus.value = false;
   }
 }
 
-// Verify email with code
+// Verify email with code (page-specific API call)
 async function verifyEmail() {
   if (!code.value || code.value.length !== 6) {
     toast.error('Please enter a valid 6-digit verification code');
@@ -177,19 +193,27 @@ async function verifyEmail() {
   isLoading.value = true;
 
   try {
-    const result = await authStore.verifyEmail(code.value);
+    // Direct API call on page (page-specific, not reusable)
+    const response = await useCustomFetch('/api/verify-email/code', {
+      method: 'POST',
+      body: { code: code.value }
+    });
 
-    if (result.success) {
-      toast.success('Success', result.message);
+    if (response?.success || response?.data?.email_verified) {
+      // Use reusable auth API to handle success
+      const authApi = useAuthApi();
+      await authApi.handleAuthSuccess(response);
+
+      toast.success(response.message || 'Email verified successfully');
       code.value = '';
       navigateToDashboard();
     } else {
-      toast.error('Error', result.message);
+      toast.error(response?.message || 'Verification failed');
       code.value = '';
     }
   } catch (err) {
     console.error('Verification error:', err);
-    toast.error('Error', 'An unexpected error occurred. Please try again.');
+    toast.error('An unexpected error occurred. Please try again.');
   } finally {
     isLoading.value = false;
   }
@@ -204,25 +228,26 @@ async function requestNewCode(silent = false) {
   }
 
   try {
-    // Request the verification code
-    const result = await authStore.requestEmailVerification();
+    // Use the auth API composable for consistency
+    const authApi = useAuthApi();
+    const result = await authApi.requestEmailVerification();
 
-    if (result.success) {
+    if (result?.success) {
       if (!silent) {
-        toast.success('Success', result.message);
+        toast.success(result.message);
       }
 
       // Start cooldown
       startCooldown();
     } else {
       if (!silent) {
-        toast.error('Error', result.message);
+        toast.error(result?.message || 'Failed to send verification email');
       }
     }
   } catch (err) {
     console.error('Request code error:', err);
     if (!silent) {
-      toast.error('Error', 'An unexpected error occurred');
+      toast.error('An unexpected error occurred');
     }
   } finally {
     if (!silent) {
@@ -250,22 +275,7 @@ function startCooldown() {
 
 // Navigate to dashboard after verification
 function navigateToDashboard() {
-  // Use the auth plugin's navigation helper
-  if ($auth && $auth.navigation) {
-    return $auth.navigation.toDashboard();
-  }
-
-  // Fallback to direct navigation if plugin not available
-  if (authStore.user && authStore.user.username) {
-    const username = authStore.user.username;
-    const path = authStore.isSeller
-      ? `/${username}/selling/dashboard`
-      : `/${username}/buying/dashboard`;
-
-    router.push(path);
-  } else {
-    // Fallback to home page if no user
-    router.push('/');
-  }
+  const authApi = useAuthApi();
+  authApi.navigateToDashboard();
 }
 </script>
