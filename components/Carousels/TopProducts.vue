@@ -10,11 +10,12 @@
 
       <!-- Loading state -->
       <div v-if="isLoading" class="flex space-x-4 w-full mt-5">
-        <Skeleton
+        <UiSkeleton
           v-for="n in numVisibleItems"
           :key="n"
           height="15rem"
-        ></Skeleton>
+          class="flex-1"
+        />
       </div>
 
       <!-- Content loaded successfully -->
