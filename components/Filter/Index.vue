@@ -3,10 +3,10 @@
     <UiTypographyP class="mb-4 font-medium text-lg hidden lg:block">Filters</UiTypographyP>
     <div class="space-y-4 pb-20">
       <div v-if="isLoading" class="space-y-4">
-        <Skeleton height="32px" />
-        <Skeleton height="15rem" />
-        <Skeleton height="32px" />
-        <Skeleton height="15rem" />
+        <UiSkeleton height="32px" />
+        <UiSkeleton height="15rem" />
+        <UiSkeleton height="32px" />
+        <UiSkeleton height="15rem" />
       </div>
 
       <div v-else-if="subcategoryDetails && subcategoryDetails.attributes && subcategoryDetails.attributes.length > 0">
