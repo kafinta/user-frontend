@@ -18,9 +18,8 @@ export interface User {
 }
 
 interface ApiResponse {
-  success: boolean
+  status: string
   message: string
-  status?: string
   status_code?: number
   data?: {
     user?: User
@@ -184,8 +183,8 @@ export const useAuthStore = defineStore('auth', () => {
         // Validate user data structure
         if (validateStoredUser(storedUser)) {
           // Check if data is expired (if timestamp exists)
-          if (storedUser._timestamp && isDataExpired(storedUser._timestamp)) {
-            logError('Stored user data expired, clearing auth data');
+          if ((storedUser as any)._timestamp && isDataExpired((storedUser as any)._timestamp)) {
+            logError('Stored user data expired, clearing auth data', null);
             clearAuthData();
             return;
           }
@@ -198,13 +197,13 @@ export const useAuthStore = defineStore('auth', () => {
             setRoles(storedRoles);
           } else if (storedRoles) {
             // Clear invalid roles but keep user
-            logError('Invalid roles data found, clearing roles');
+            logError('Invalid roles data found, clearing roles', null);
             if (import.meta.client) {
               localStorage.removeItem('roles');
             }
           }
         } else {
-          logError('Invalid user data found in storage, clearing auth data');
+          logError('Invalid user data found in storage, clearing auth data', null);
           clearAuthData();
         }
       }
@@ -289,15 +288,9 @@ export const useAuthStore = defineStore('auth', () => {
         console.log('Verify email with token API response:', response);
       }
 
-      // Check for success in different ways
-      const isSuccess = response.success === true ||
-        (response.data && response.data.email_verified === true) ||
-        (response.message && (
-          response.message.includes('verified') ||
-          response.message.includes('Verified') ||
-          response.message.includes('success') ||
-          response.message.includes('Success')
-        ));
+      // Check for success
+      const isSuccess = response.status === 'success' ||
+        (response.data && response.data.email_verified === true);
 
       if (isSuccess) {
         setVerified(true);
@@ -316,7 +309,7 @@ export const useAuthStore = defineStore('auth', () => {
               method: 'GET'
             });
 
-            if (profileResponse.success && profileResponse.data?.user) {
+            if (profileResponse.status === 'success' && profileResponse.data?.user) {
               setUser(profileResponse.data.user);
               saveToStorage('user', profileResponse.data.user);
             }
@@ -388,14 +381,8 @@ export const useAuthStore = defineStore('auth', () => {
         console.log('Request verification email API response:', response);
       }
 
-      // Check for success in different ways
-      const isSuccess = response.success === true ||
-        (response.message && (
-          response.message.includes('sent') ||
-          response.message.includes('Sent') ||
-          response.message.includes('success') ||
-          response.message.includes('Success')
-        ));
+      // Check for success
+      const isSuccess = response.status === 'success';
 
       status.value = isSuccess ? 'success' : 'error';
       message.value = response.message || 'Verification email sent successfully';
@@ -447,15 +434,9 @@ export const useAuthStore = defineStore('auth', () => {
         console.log('Verify email with direct link API response:', response);
       }
 
-      // Check for success in different ways
-      const isSuccess = response.success === true ||
-        (response.data && response.data.email_verified === true) ||
-        (response.message && (
-          response.message.includes('verified') ||
-          response.message.includes('Verified') ||
-          response.message.includes('success') ||
-          response.message.includes('Success')
-        ));
+      // Check for success
+      const isSuccess = response.status === 'success' ||
+        (response.data && response.data.email_verified === true);
 
       if (isSuccess) {
         setVerified(true);
@@ -473,7 +454,7 @@ export const useAuthStore = defineStore('auth', () => {
               method: 'GET'
             });
 
-            if (profileResponse.success && profileResponse.data?.user) {
+            if (profileResponse.status === 'success' && profileResponse.data?.user) {
               setUser(profileResponse.data.user);
               saveToStorage('user', profileResponse.data.user);
             }
