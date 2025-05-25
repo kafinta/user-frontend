@@ -158,7 +158,7 @@ async function checkVerificationStatus(silent = false) {
     // Update last checked timestamp
     lastChecked.value = Date.now();
 
-    if (response?.success && response.data?.email_verified) {
+    if (response.status === 'success' && response.data?.email_verified) {
       // Update auth state directly
       authStore.setVerified(true);
 
@@ -199,7 +199,7 @@ async function verifyEmail() {
       body: { code: code.value }
     });
 
-    if (response?.success || response?.data?.email_verified) {
+    if (response.status === 'success' || response?.data?.email_verified) {
       // Use reusable auth API to handle success
       const authApi = useAuthApi();
       await authApi.handleAuthSuccess(response);

@@ -86,7 +86,7 @@ onMounted(async () => {
       body: { token: token.toString() }
     });
 
-    if (response?.success || response?.data?.email_verified) {
+    if (response.status === 'success' || response?.data?.email_verified) {
       verificationStatus.value = 'success';
       statusMessage.value = 'Email Verified Successfully';
 
