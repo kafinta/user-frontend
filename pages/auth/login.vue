@@ -10,18 +10,25 @@
         <FormInput label="Email" type="email" v-model:inputValue="email" class="w-full" />
         <FormInput label="Password" type="password" v-model:inputValue="password" class="w-full" />
         <div class="flex justify-between items-center mb-5">
-        <nuxt-link to="/auth/forgot" class="text-sm text-secondary hover:text-primary duration-300 ease-in-out">Forgot password?</nuxt-link>
-        <FormCheckbox 
-          v-model="remember_me" 
-          binary 
-          size="small"
-          label="Remember Me?"
-        />
+          <nuxt-link to="/auth/forgot" class="text-sm text-secondary hover:text-primary duration-300 ease-in-out">Forgot password?</nuxt-link>
+          <FormCheckbox
+            v-model="remember_me"
+            binary
+            size="small"
+            label="Remember Me?"
+          />
         </div>
         <FormButton :loading="buttonLoading">Sign In</FormButton>
-
-        <p class="text-sm w-fit mx-auto mt-2 text-secondary text-center">Not a member yet? <nuxt-link to="/auth/signup" class="duration-300 ease-in-out hover:text-primary">Create Account</nuxt-link></p>
+        <p class="text-sm text-secondary text-center">
+          Not a member yet?
+          <nuxt-link to="/auth/signup" class="duration-300 ease-in-out hover:text-primary">
+            Create Account
+          </nuxt-link>
+        </p>
       </form>
+
+      <!-- OAuth Login Options -->
+      <AuthOAuthButtons />
     </main>
   </div>
 </template>
@@ -29,15 +36,13 @@
 <script setup>
 definePageMeta({
   middleware: ['auth'],
-  authOnly: true  // Only accessible when NOT authenticated, else redirect to dashboard
+  guestOnly: true  // Only accessible when NOT authenticated, else redirect to dashboard
 });
 
 import { useRouter, useRoute } from 'vue-router';
 import { ref, onMounted, computed } from "vue";
-import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/stores/auth';
 import { useAppToast } from "~/utils/toastify";
-import { useNuxtApp } from '#app';
 
 const toast = useAppToast();
 const authStore = useAuthStore();
@@ -45,7 +50,6 @@ const authStore = useAuthStore();
 const buttonLoading = ref(false);
 const router = useRouter();
 const route = useRoute();
-const { $auth } = useNuxtApp();
 
 // Check if there's a redirect parameter in the URL
 const redirectPath = computed(() => {
@@ -59,8 +63,6 @@ const remember_me = ref(true); // Default to true for now
 // Check authentication status when the component is mounted
 onMounted(() => {
   if (import.meta.client) {
-    authStore.clearMessages();
-
     if (!authStore.isAuthenticated) {
       authStore.initialize();
     }
@@ -69,69 +71,55 @@ onMounted(() => {
 
 async function handleSignin() {
   try {
-    // Set button loading state to true
     buttonLoading.value = true;
 
-    authStore.clearMessages();
-
     if (!email.value || !password.value) {
-      toast.error('Error', 'Please enter your email and password');
-      buttonLoading.value = false; // Reset loading state
+      toast.error('Please enter your email and password');
       return;
     }
 
-    const result = await authStore.login({
-      email: email.value,
-      password: password.value,
-      remember_me: remember_me.value // Use the value of the checkbox
+    // Direct API call in the page component
+    const response = await useCustomFetch('/api/user/login', {
+      method: 'POST',
+      body: {
+        email: email.value,
+        password: password.value,
+        remember_me: remember_me.value
+      }
     });
 
-    if (result.success) {
-      toast.success('Success', result.message);
+    if (response?.success) {
+      // Use the enhanced auth API to handle success
+      const authApi = useAuthApi();
+      await authApi.handleAuthSuccess(response);
 
-      if (result.needsVerification) {
+      toast.success(response.message || 'Login successful');
+
+      if (response.needsVerification || !authStore.isVerified) {
         router.push('/auth/verify');
       } else {
         navigateToDashboard();
       }
-      email.value = '';
-      password.value = '';
     } else {
-      toast.error('Error', result.message);
+      toast.error(response?.message || 'Login failed');
     }
   } catch (err) {
     console.error('Login error:', err);
-    toast.error('Error', 'An unexpected error occurred');
+    toast.error('An unexpected error occurred');
   } finally {
-    // Always reset button loading state
     buttonLoading.value = false;
   }
 }
 
 function navigateToDashboard() {
-  // Use the auth plugin's navigation helper if available
-  if ($auth && $auth.navigation) {
-    return $auth.navigation.toDashboard();
-  }
-
-  // Fallback to manual navigation
-  const { user } = storeToRefs(authStore);
-
-  // Check if there's a redirect URL in the query parameters
+  // Check if there's a redirect URL in the query parameters first
   if (redirectPath.value) {
     router.push(redirectPath.value);
     return;
   }
 
-  if (user.value && user.value.username) {
-    const username = user.user.username;
-    const path = authStore.isSeller
-      ? `/${username}/selling/dashboard`
-      : `/${username}/buying/dashboard`;
-
-    router.push(path);
-  } else {
-    router.push('/');
-  }
+  // Use the shared navigation helper
+  const authApi = useAuthApi();
+  authApi.navigateToDashboard();
 }
 </script>
