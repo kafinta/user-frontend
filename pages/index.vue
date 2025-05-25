@@ -122,7 +122,7 @@
   </div>
 </template>
 <script setup>
-import {ref, onMounted} from 'vue'
+import { ref } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
@@ -163,9 +163,7 @@ async function selectCategory(id) {
   productFilters.selectCategory(id)
 }
 
-onMounted(async () => {
-  await filtersStore.fetchCategories()
-})
+// No onMounted needed - data will be fetched when needed by pages
 
 </script>
 <style>
