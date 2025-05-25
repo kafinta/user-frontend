@@ -14,7 +14,6 @@ export default defineNuxtConfig({
   },
 
   plugins: [
-    '~/plugins/auth.ts',
     '~/plugins/toastify.ts',
   ],
 
