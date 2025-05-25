@@ -152,7 +152,9 @@
 import { onMounted, watch, computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '~/stores/auth';
+import { useAuthApi } from '~/composables/useAuthApi';
 import { useOnboarding } from '~/composables/useOnboarding';
+import { useAppToast } from '~/utils/toastify';
 
 // Import icon components
 import UiIconsProfile from '~/components/Ui/Icons/Profile.vue';
@@ -343,23 +345,24 @@ const becomeASeller = () => {
 
 const logout = async () => {
   try {
-    // Call auth store logout method
-    const result = await authStore.logout();
+    // Use the auth API composable for logout
+    const authApi = useAuthApi();
+    const result = await authApi.logout();
 
-    // Show success notification using the centralized notification system
-    const { $auth } = useNuxtApp();
+    // Show success notification using toast
+    const toast = useAppToast();
     if (result.status === 'success') {
-      $auth.notifications.showSuccess('Logged Out', result.message || 'Successfully logged out');
+      toast.success(result.message || 'Successfully logged out');
     } else {
-      $auth.notifications.showAuthError(result.message || 'Logout failed');
+      toast.error(result.message || 'Logout failed');
     }
 
     // Redirect to login page
     router.push('/auth/login');
   } catch (error) {
     console.error('Logout error:', error);
-    const { $auth } = useNuxtApp();
-    $auth.notifications.showAuthError('An unexpected error occurred during logout');
+    const toast = useAppToast();
+    toast.error('An unexpected error occurred during logout');
 
     // Still redirect to login page even if there's an error
     router.push('/auth/login');
