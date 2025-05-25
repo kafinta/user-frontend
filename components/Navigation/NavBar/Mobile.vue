@@ -34,7 +34,7 @@
           <UiButtonsTertiary class="flex gap-3 items-center justify-start w-full" :flexdisplay="true">
             <div class="relative">
               <UiIconsNotifications class="w-5 h-5" />
-              <Badge value="1" size="small" v-if="hasNotifications" class="h-2 w-2 -top-0.5 -right-0.5 absolute scale-75"></Badge>
+              <UiBadge value="1" size="small" v-if="hasNotifications" class="h-2 w-2 -top-0.5 -right-0.5 absolute scale-75"></UiBadge>
             </div>
             <span>Notifications</span>
           </UiButtonsTertiary>
