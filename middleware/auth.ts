@@ -1,5 +1,5 @@
 // middleware/auth.ts
-import { defineNuxtRouteMiddleware, navigateTo, useNuxtApp } from '#app';
+import { defineNuxtRouteMiddleware, navigateTo } from '#app';
 import { useAuthStore } from '~/stores/auth';
 import { useAppToast } from '~/utils/toastify';
 
@@ -12,7 +12,6 @@ export default defineNuxtRouteMiddleware((to) => {
 
   // Get auth store inside the middleware function to ensure it's reactive
   const authStore = useAuthStore();
-  const { $auth } = useNuxtApp();
 
   // Skip middleware debugging in production
   // This section previously contained debug logging code
@@ -30,38 +29,29 @@ export default defineNuxtRouteMiddleware((to) => {
 
   // Helper function to navigate to dashboard
   const navigateToDashboard = () => {
-    // Use the auth plugin's navigation helper
-    if ($auth && $auth.navigation) {
-      return $auth.navigation.toDashboard();
+    // If not authenticated or no username, go to home page
+    if (!authStore.isAuthenticated || !authStore.user?.username) {
+      return navigateTo('/');
     }
 
-    // Fallback if navigation helper is not available
-    if (authStore.user && authStore.user.username) {
-      const username = authStore.user.username;
+    // Get the username
+    const username = authStore.user.username;
 
-      if (authStore.isSeller) {
-        return navigateTo(`/${username}/selling/dashboard`);
-      } else if (authStore.isCustomer) {
-        return navigateTo(`/${username}/buying/dashboard`);
-      }
+    // Route based on role
+    if (authStore.isSeller) {
+      return navigateTo(`/${username}/selling/dashboard`);
+    } else if (authStore.isCustomer) {
+      return navigateTo(`/${username}/buying/dashboard`);
     }
 
-    // Default fallback to home page
+    // Default fallback
     return navigateTo('/');
   };
 
   // Helper function to show access denied notification
   const showAccessDenied = (message = 'You do not have the required permissions to access this page') => {
-    // Use the auth plugin's toast if available, otherwise use direct toast
-    if ($auth && $auth.toast) {
-      $auth.toast.accessDenied(message);
-    } else {
-      // Fallback to direct toast
-      const toast = useAppToast();
-      toast.accessDenied(message);
-    }
-
-    // Note: No need to update store status/message since we use toast notifications
+    const toast = useAppToast();
+    toast.accessDenied(message);
   };
 
   // Helper function to check if user has required roles
