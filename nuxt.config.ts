@@ -62,6 +62,12 @@ export default defineNuxtConfig({
           secure: false,
           ws: true,
           rewrite: (path: string) => path
+        },
+        '/storage': {
+          target: 'http://127.0.0.1:8000',
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path: string) => path
         }
       }
     }
@@ -69,8 +75,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      base_url: 'http://127.0.0.1:8000',
-      imageBaseUrl: 'http://127.0.0.1:8000/storage'
+      // Keep base_url for any other API configuration needs
+      base_url: 'http://127.0.0.1:8000'
     },
   },
 
