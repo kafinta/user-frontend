@@ -22,6 +22,8 @@ export default {
     }
   },
 
+
+
   mounted(){
     setTimeout(() => {
       this.first_letter = this.username.charAt(0)

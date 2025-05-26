@@ -1,14 +1,14 @@
 <template>
   <button @click="$emit('clicked')" class="cursor-pointer group rounded-xl p-3 h-full bg-secondary w-full">
     <UiTypographyH3 color="white" class="text-left h-[2lh] mb-5">{{ title }}</UiTypographyH3>
-      <NuxtImg v-if="imageLoaded !== false"
-        :src="src" 
-        class="aspect-[4/3] w-full rounded-md" 
+      <img v-if="imageLoaded !== false"
+        :src="src"
+        class="aspect-[4/3] w-full rounded-md object-cover"
         :alt="alt"
-        @error="imageLoaded = false"
-        @load="imageLoaded = true"
+        @error="handleImageError"
+        @load="handleImageLoad"
       />
-    <div 
+    <div
       v-else
       class="aspect-[4/3] w-full rounded-md bg-gray-300 flex items-center justify-center"
     >
@@ -19,7 +19,6 @@
 
 <script setup>
 import { ref } from 'vue'
-const config = useRuntimeConfig();
 
 const props = defineProps({
   src: {
@@ -36,8 +35,13 @@ const props = defineProps({
   }
 })
 
-const imageSrc = computed(() => {
-  return props.src.replace('http://localhost/', config.public.base_url)
-})
 const imageLoaded = ref(null)
+
+const handleImageError = () => {
+  imageLoaded.value = false
+}
+
+const handleImageLoad = () => {
+  imageLoaded.value = true
+}
 </script>

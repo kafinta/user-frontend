@@ -22,6 +22,8 @@ export default {
     urlPath: String,
     profileImagePath: String
   },
+
+
 }
 </script>
 
