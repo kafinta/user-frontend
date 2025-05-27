@@ -70,10 +70,8 @@ export const useAuthStore = defineStore('auth', () => {
   // Auto-initialize on client side when store is first accessed
   if (import.meta.client && !initialized.value) {
     initialized.value = true
-    // Initialize asynchronously without blocking store creation
-    nextTick(() => {
-      initialize()
-    })
+    // No automatic initialization needed - auth state will be set from login/signup responses
+    // Session validation happens in middleware when needed
   }
 
   // Getters
@@ -83,27 +81,8 @@ export const useAuthStore = defineStore('auth', () => {
   const isSeller = computed(() => hasRole.value('seller'))
   const isCustomer = computed(() => hasRole.value('customer'))
 
-  // Session validation helper
-  async function validateSession() {
-    if (import.meta.server) return false
-
-    try {
-      const response = await useCustomFetch<ApiResponse>('/api/user/profile', {
-        method: 'GET'
-      })
-
-      if (response.status === 'success' && response.data?.user) {
-        setUser(response.data.user)
-        setVerified(!!response.data.user.email_verified_at)
-        return true
-      }
-
-      return false
-    } catch (error) {
-      console.error('Session validation failed:', error)
-      return false
-    }
-  }
+  // Session validation removed - auth state comes from login/signup responses
+  // Middleware handles authentication checks when needed
 
   // Helper methods
 
@@ -137,26 +116,13 @@ export const useAuthStore = defineStore('auth', () => {
   // Actions
 
   /**
-   * Initialize the auth store by validating current session
+   * Initialize the auth store - now simplified since auth state comes from login/signup
    */
-  async function initialize() {
-    // Skip initialization on server
-    if (import.meta.server) {
-      return;
-    }
-
-    try {
-      // Validate current session with server
-      const isValid = await validateSession();
-
-      if (!isValid) {
-        // Clear any stale auth data if session is invalid
-        clearAuthData();
-      }
-    } catch (err) {
-      logError('Failed to initialize auth session:', err);
-      clearAuthData();
-    }
+  function initialize() {
+    // No automatic API calls needed
+    // Auth state will be set from login/signup responses
+    // Session validation happens in middleware when routes require authentication
+    initialized.value = true;
   }
 
   // Removed fetchRoles - API calls should be handled by pages/composables
