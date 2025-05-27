@@ -13,7 +13,20 @@ export function useAuthApi() {
   const authStore = useAuthStore();
   const toast = useAppToast();
 
-  // Define fetchRoles first so it can be used in handleAuthSuccess
+  // Helper function to handle successful auth responses
+  const handleAuthSuccess = (response: any) => {
+    if (response.data?.user) {
+      authStore.setUser(response.data.user);
+      authStore.setVerified(!!response.data.user.email_verified_at);
+    }
+
+    // Roles are NOT included in auth responses for security and performance reasons
+    // They should be fetched separately only when needed for authorization decisions
+
+    return response;
+  };
+
+  // Fetch roles only when specifically needed (e.g., after onboarding completion)
   const fetchRoles = async () => {
     const response = await useCustomFetch<ApiResponse>('/api/user/roles', {
       method: 'GET'
@@ -26,37 +39,11 @@ export function useAuthApi() {
     return response;
   };
 
-  // Helper function to handle successful auth responses
-  const handleAuthSuccess = async (response: any) => {
-    if (response.data?.user) {
-      authStore.setUser(response.data.user);
-      authStore.setVerified(!!response.data.user.email_verified_at);
-    }
-
-    // Fetch roles after setting user
-    await fetchRoles();
-
-    return response;
-  };
-
   return {
     // Helper for handling auth success
     handleAuthSuccess,
 
-    // Reusable operations that update auth state
-    fetchProfile: async () => {
-      const response = await useCustomFetch<ApiResponse>('/api/user/profile', {
-        method: 'GET'
-      });
-
-      if (response.status === 'success' && response.data?.user) {
-        authStore.setUser(response.data.user);
-        authStore.setVerified(!!response.data.user.email_verified_at);
-      }
-
-      return response;
-    },
-
+    // Fetch roles only when specifically needed
     fetchRoles,
 
     logout: async () => {
@@ -101,7 +88,7 @@ export function useAuthApi() {
     },
 
     // Navigation helper for post-auth redirects
-    navigateToDashboard: () => {
+    navigateToDashboard: async () => {
       const authStore = useAuthStore();
 
       // If not authenticated or no username, go to home page
@@ -112,6 +99,17 @@ export function useAuthApi() {
       // Get the username
       const username = authStore.user.username;
 
+      // If roles are not available, fetch them for navigation decision
+      if (authStore.roles.length === 0) {
+        try {
+          await fetchRoles();
+        } catch (error) {
+          console.error('Failed to fetch roles for navigation:', error);
+          // Fallback to generic dashboard if role fetch fails
+          return navigateTo(`/${username}/dashboard`);
+        }
+      }
+
       // Route based on role
       if (authStore.isSeller) {
         return navigateTo(`/${username}/selling/dashboard`);
@@ -119,8 +117,8 @@ export function useAuthApi() {
         return navigateTo(`/${username}/buying/dashboard`);
       }
 
-      // Default fallback
-      return navigateTo('/');
+      // Default fallback - generic dashboard or home
+      return navigateTo(`/${username}/dashboard`);
     },
 
 
