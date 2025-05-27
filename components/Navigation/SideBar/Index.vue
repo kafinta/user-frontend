@@ -17,14 +17,14 @@
                 v-if="item.showWhen ? item.showWhen() : true"
                 :to="item.to"
               >
-                <NavigationSideMenu
+                <NavigationSideBarMenu
                   :menu_text="item.text"
                   :is_active="isRouteActive(item.route)"
                   :isSeller="item.requiresSeller ? isSeller : true"
                   :disabled="onboardingActive && item.text !== 'Onboarding'"
                 >
                   <component :is="iconComponents[item.icon]" />
-                </NavigationSideMenu>
+                </NavigationSideBarMenu>
               </nuxt-link>
             </template>
           </template>
@@ -33,12 +33,12 @@
           <template v-else>
             <template v-for="item in buyerNavigationItems" :key="item.text">
               <nuxt-link :to="item.to">
-                <NavigationSideMenu
+                <NavigationSideBarMenu
                   :menu_text="item.text"
                   :is_active="isRouteActive(item.route)"
                 >
                   <component :is="iconComponents[item.icon]" />
-                </NavigationSideMenu>
+                </NavigationSideBarMenu>
               </nuxt-link>
             </template>
           </template>
