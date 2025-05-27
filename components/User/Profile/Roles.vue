@@ -41,9 +41,6 @@ function getRoleClass(roleSlug) {
   }
 }
 
-// Fetch roles if authenticated and roles are empty
-if (authStore.isAuthenticated && roles.value.length === 0) {
-  const authApi = useAuthApi();
-  authApi.fetchRoles();
-}
+// Roles should be available from login/signup response
+// If roles are needed and missing, they should be fetched at the page level, not component level
 </script>
