@@ -73,8 +73,8 @@ export function useOAuth() {
       if (response.status === 'success') {
         const { user, is_new_user, oauth_provider } = response.data || {}
 
-        // Use the auth API to handle successful authentication
-        await authApi.handleAuthSuccess(response)
+        // Handle successful authentication (no longer async)
+        authApi.handleAuthSuccess(response)
 
         if (is_new_user) {
           toast.success(`Welcome! Your account has been created with ${oauth_provider}`)
@@ -84,7 +84,7 @@ export function useOAuth() {
 
         // Navigate to appropriate page
         const authApi = useAuthApi()
-        authApi.navigateToDashboard()
+        await authApi.navigateToDashboard()
 
         return response
       } else {
