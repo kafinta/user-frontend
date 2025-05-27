@@ -26,7 +26,7 @@ export function useAuthApi() {
     return response;
   };
 
-  // Fetch roles only when specifically needed (e.g., after onboarding completion)
+  // Fetch roles only when specifically needed (mainly for middleware role checking)
   const fetchRoles = async () => {
     const response = await useCustomFetch<ApiResponse>('/api/user/roles', {
       method: 'GET'
@@ -99,26 +99,14 @@ export function useAuthApi() {
       // Get the username
       const username = authStore.user.username;
 
-      // If roles are not available, fetch them for navigation decision
-      if (authStore.roles.length === 0) {
-        try {
-          await fetchRoles();
-        } catch (error) {
-          console.error('Failed to fetch roles for navigation:', error);
-          // Fallback to generic dashboard if role fetch fails
-          return navigateTo(`/${username}/dashboard`);
-        }
-      }
-
-      // Route based on role
+      // Route based on role - all users are customers by default
+      // Only fetch roles if we need to check for seller status
       if (authStore.isSeller) {
         return navigateTo(`/${username}/selling/dashboard`);
-      } else if (authStore.isCustomer) {
+      } else {
+        // All authenticated users are customers by default
         return navigateTo(`/${username}/buying/dashboard`);
       }
-
-      // Default fallback - generic dashboard or home
-      return navigateTo(`/${username}/dashboard`);
     },
 
 
