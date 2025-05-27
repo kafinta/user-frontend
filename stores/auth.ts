@@ -47,14 +47,6 @@ function log(message: string, ...args: any[]): void {
   }
 }
 
-function logError(message: string, error: any): void {
-  if (process.env.NODE_ENV !== 'production') {
-    console.error(message, error);
-  } else {
-    console.error(message);
-  }
-}
-
 export const useAuthStore = defineStore('auth', () => {
   // State
   const user = ref<User | null>(null)
@@ -79,7 +71,8 @@ export const useAuthStore = defineStore('auth', () => {
   const needsVerification = computed(() => isAuthenticated.value && !isVerified.value)
   const hasRole = computed(() => (roleSlug: string) => roles.value.some(role => role.slug === roleSlug))
   const isSeller = computed(() => hasRole.value('seller'))
-  const isCustomer = computed(() => hasRole.value('customer'))
+  // All users have customer role by default - sellers get it after completing onboarding
+  const isCustomer = computed(() => isAuthenticated.value) // All authenticated users are customers by default
 
   // Session validation removed - auth state comes from login/signup responses
   // Middleware handles authentication checks when needed
