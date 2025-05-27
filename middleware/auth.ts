@@ -36,15 +36,13 @@ export default defineNuxtRouteMiddleware((to) => {
     // Get the username
     const username = authStore.user.username;
 
-    // Route based on role
+    // Route based on role - all users are customers by default
     if (authStore.isSeller) {
       return navigateTo(`/${username}/selling/dashboard`);
-    } else if (authStore.isCustomer) {
+    } else {
+      // All authenticated users are customers by default
       return navigateTo(`/${username}/buying/dashboard`);
     }
-
-    // Default fallback
-    return navigateTo('/');
   };
 
   // Helper function to show access denied notification
@@ -62,9 +60,10 @@ export default defineNuxtRouteMiddleware((to) => {
       return true;
     }
 
-    // Basic role checks only
+    // Basic role checks - all authenticated users are customers by default
     if (requiresSeller && !authStore.isSeller) return false;
-    if (requiresCustomer && !authStore.isCustomer) return false;
+    // Customer check is simplified since all authenticated users are customers
+    if (requiresCustomer && !authStore.isAuthenticated) return false;
 
     return true;
   };
