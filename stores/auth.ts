@@ -62,8 +62,8 @@ export const useAuthStore = defineStore('auth', () => {
   // Auto-initialize on client side when store is first accessed
   if (import.meta.client && !initialized.value) {
     initialized.value = true
-    // No automatic initialization needed - auth state will be set from login/signup responses
-    // Session validation happens in middleware when needed
+    // Check session on app load to restore auth state
+    validateSession()
   }
 
   // Getters
@@ -116,6 +116,32 @@ export const useAuthStore = defineStore('auth', () => {
     // Auth state will be set from login/signup responses
     // Session validation happens in middleware when routes require authentication
     initialized.value = true;
+  }
+
+  /**
+   * Validate current session and restore auth state if user is authenticated
+   */
+  async function validateSession() {
+    try {
+      const response = await useCustomFetch<ApiResponse>('/api/user/profile', {
+        method: 'GET'
+      });
+
+      if (response.status === 'success' && response.data?.user) {
+        // User is authenticated, restore auth state
+        setUser(response.data.user);
+        setVerified(!!response.data.user.email_verified_at);
+
+        // Optionally set roles if included in response
+        if (response.data.roles) {
+          setRoles(response.data.roles);
+        }
+      }
+    } catch (error) {
+      // Session is invalid or user is not authenticated
+      // This is normal for unauthenticated users, so we don't show errors
+      clearAuthData();
+    }
   }
 
   // Removed fetchRoles - API calls should be handled by pages/composables
@@ -427,6 +453,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     // Core authentication actions (API calls removed - handled by pages)
     initialize,
+    validateSession,
 
     // Email verification actions (token-based methods are reusable)
     verifyEmailWithToken,
