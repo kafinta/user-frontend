@@ -75,14 +75,14 @@ async function handleSignup() {
     });
 
     if (response.status === 'success') {
-      // Use the enhanced auth API to handle success
+      // Handle auth success (no longer async)
       const authApi = useAuthApi();
-      await authApi.handleAuthSuccess(response);
+      authApi.handleAuthSuccess(response);
 
-      toast.success(response.message);
+      toast.success(response.message || 'Account created successfully');
       router.push('/auth/verify');
     } else {
-      toast.error(response.message);
+      toast.error(response?.message || 'Signup failed');
     }
   } catch (err) {
     console.error('Signup error:', err);

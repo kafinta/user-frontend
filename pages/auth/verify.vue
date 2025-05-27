@@ -54,7 +54,7 @@ definePageMeta({
 });
 
 import { useRouter } from 'vue-router';
-import { ref, onMounted, onBeforeUnmount, watch } from "vue";
+import { ref, onMounted, onBeforeUnmount, watch, nextTick } from "vue";
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/stores/auth';
 import { useAppToast } from "~/utils/toastify";
@@ -72,14 +72,51 @@ const cooldownInterval = ref(null);
 const checkingStatus = ref(false);
 const lastChecked = ref(null);
 const autoCheckInterval = ref(null);
+const tokenVerificationHandler = ref(null);
 
 // Check verification status on mount
 onMounted(async () => {
   // If user is already verified, redirect them to dashboard
   if (authStore.isAuthenticated && authStore.isVerified) {
-    navigateToDashboard();
+    await navigateToDashboard();
     return;
   }
+
+  // Check if token verification was already successful (in case user navigated here after token verification)
+  if (authStore.tokenVerificationSuccess) {
+    toast.success('Your email has been verified via email link!');
+    authStore.setTokenVerificationSuccess(false);
+    setTimeout(async () => {
+      await navigateToDashboard();
+    }, 1500);
+    return;
+  }
+
+  // Listen for immediate token verification events
+  const handleTokenVerification = (event) => {
+    console.log('Received immediate token verification event:', event.detail);
+    toast.success('Your email has been verified via email link!');
+
+    // Clear intervals
+    if (autoCheckInterval.value) {
+      clearInterval(autoCheckInterval.value);
+    }
+    if (cooldownInterval.value) {
+      clearInterval(cooldownInterval.value);
+    }
+
+    // Reset store state
+    authStore.setTokenVerificationSuccess(false);
+
+    // Navigate immediately
+    setTimeout(async () => {
+      await navigateToDashboard();
+    }, 1000); // Shorter delay for immediate event
+  };
+
+  // Store handler reference for cleanup
+  tokenVerificationHandler.value = handleTokenVerification;
+  window.addEventListener('email-verified-via-token', handleTokenVerification);
 
   // Request a new verification code silently
   await requestNewCode(true);
@@ -99,7 +136,7 @@ watch(isVerified, (newValue) => {
   }
 });
 
-// Clean up intervals on component unmount
+// Clean up intervals and event listeners on component unmount
 onBeforeUnmount(() => {
   if (cooldownInterval.value) {
     clearInterval(cooldownInterval.value);
@@ -107,6 +144,11 @@ onBeforeUnmount(() => {
 
   if (autoCheckInterval.value) {
     clearInterval(autoCheckInterval.value);
+  }
+
+  // Clean up event listener
+  if (import.meta.client && tokenVerificationHandler.value) {
+    window.removeEventListener('email-verified-via-token', tokenVerificationHandler.value);
   }
 });
 
@@ -126,20 +168,34 @@ function startAutoCheck() {
   }, 30000); // 30 seconds
 }
 
-// Watch for token verification success from verify-token page
-watch(() => authStore.tokenVerificationSuccess, (newValue) => {
+// Watch for token verification success from verify-token page (fallback method)
+watch(() => authStore.tokenVerificationSuccess, async (newValue) => {
   if (newValue) {
+    // Use nextTick for immediate response
+    await nextTick();
+
     // Token verification was successful, update UI
-    toast.success('Your email has been verified!');
+    toast.success('Your email has been verified via email link!');
 
     // Reset the state
     authStore.setTokenVerificationSuccess(false);
 
+    // Clear any intervals since verification is complete
+    if (autoCheckInterval.value) {
+      clearInterval(autoCheckInterval.value);
+    }
+    if (cooldownInterval.value) {
+      clearInterval(cooldownInterval.value);
+    }
+
     // Short delay before redirecting
-    setTimeout(() => {
-      navigateToDashboard();
+    setTimeout(async () => {
+      await navigateToDashboard();
     }, 1500);
   }
+}, {
+  immediate: true, // Check immediately in case the state is already set
+  flush: 'sync' // Execute synchronously for faster response
 });
 
 // Check if the user's email has been verified (page-specific API call)
@@ -200,13 +256,13 @@ async function verifyEmail() {
     });
 
     if (response.status === 'success' || response?.data?.email_verified) {
-      // Use reusable auth API to handle success
+      // Handle auth success (no longer async)
       const authApi = useAuthApi();
-      await authApi.handleAuthSuccess(response);
+      authApi.handleAuthSuccess(response);
 
       toast.success(response.message || 'Email verified successfully');
       code.value = '';
-      navigateToDashboard();
+      await navigateToDashboard();
     } else {
       toast.error(response?.message || 'Verification failed');
       code.value = '';
@@ -274,8 +330,8 @@ function startCooldown() {
 }
 
 // Navigate to dashboard after verification
-function navigateToDashboard() {
+async function navigateToDashboard() {
   const authApi = useAuthApi();
-  authApi.navigateToDashboard();
+  await authApi.navigateToDashboard();
 }
 </script>
