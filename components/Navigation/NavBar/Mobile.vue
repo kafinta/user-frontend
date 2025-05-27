@@ -42,7 +42,7 @@
 
         <!-- Common dashboard items -->
         <li>
-          <UiButtonsTertiary :to="{name: 'username-buying-dashboard', params: {username}}" class="w-full text-left">Dashboard</UiButtonsTertiary>
+          <UiButtonsTertiary :to="dashboardRoute" class="w-full text-left">Dashboard</UiButtonsTertiary>
         </li>
         <li>
           <UiButtonsTertiary :to="{name: 'username-profile', params: {username}}" class="w-full text-left">Profile</UiButtonsTertiary>
@@ -97,7 +97,18 @@ const props = defineProps({
 const signedIn = computed(() => authStore.isAuthenticated)
 const username = computed(() => authStore.user?.username || 'user')
 const isSeller = computed(() => authStore.isSeller)
+// isCustomer - all authenticated users are customers by default, sellers get additional role after onboarding
 const isCustomer = computed(() => authStore.isCustomer)
+
+// Dashboard route based on user role - all users are customers by default
+const dashboardRoute = computed(() => {
+  if (isSeller.value) {
+    return { name: 'username-selling-dashboard', params: { username: username.value } }
+  } else {
+    // All authenticated users are customers by default
+    return { name: 'username-buying-dashboard', params: { username: username.value } }
+  }
+})
 
 // This section previously contained auth status checking code
 // Removed as part of cleanup
