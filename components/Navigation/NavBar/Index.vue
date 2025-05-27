@@ -68,7 +68,7 @@
                 </div>
               </div>
               <hr class="my-1">
-              <NuxtLink :to="{name: 'username-buying-dashboard', params: {username: username}}" class="block w-full hover:bg-accent-100 py-2 px-3 rounded cursor-pointer mt-1 text-sm">Dashboard</NuxtLink>
+              <NuxtLink :to="dashboardRoute" class="block w-full hover:bg-accent-100 py-2 px-3 rounded cursor-pointer mt-1 text-sm">Dashboard</NuxtLink>
               <NuxtLink :to="{name: 'username-profile', params: {username: username}}" class="block w-full hover:bg-accent-100 py-2 px-3 rounded cursor-pointer text-sm">Profile</NuxtLink>
               <NuxtLink :to="{name: 'username-buying-dashboard', params: {username: username}}" class="block w-full hover:bg-accent-100 py-2 px-3 rounded cursor-pointer mb-1 text-sm">Orders</NuxtLink>
               <hr class="my-1">
@@ -167,9 +167,19 @@ const isAuthenticated = computed(() => authStore.isAuthenticated)
 const username = computed(() => authStore.user?.username || 'user')
 // isSeller is used in the template for conditional rendering
 const isSeller = computed(() => authStore.isSeller)
-// isCustomer is used in the template for conditional rendering - keep for future use
+// isCustomer - all authenticated users are customers by default, sellers get additional role after onboarding
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const isCustomer = computed(() => authStore.isCustomer)
+
+// Dashboard route based on user role - all users are customers by default
+const dashboardRoute = computed(() => {
+  if (isSeller.value) {
+    return { name: 'username-selling-dashboard', params: { username: username.value } }
+  } else {
+    // All authenticated users are customers by default
+    return { name: 'username-buying-dashboard', params: { username: username.value } }
+  }
+})
 
 // Methods
 function toggleMenu() {
@@ -273,18 +283,20 @@ function handleClickOutside(event) {
 }
 
 // Check authentication status
-function checkAuthStatus() {
-  // This function can be used to check auth status when needed
-  // Currently just a placeholder for future use
+async function checkAuthStatus() {
+  // Validate session to ensure auth state is current
+  if (!authStore.isAuthenticated) {
+    await authStore.validateSession()
+  }
 }
 
 // Lifecycle hooks
-onMounted(() => {
+onMounted(async () => {
   if (import.meta.client) {
     document.addEventListener('click', handleClickOutside)
 
     // Check auth status on mount
-    checkAuthStatus()
+    await checkAuthStatus()
 
     // Auth store auto-initializes when first accessed
   }
