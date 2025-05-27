@@ -28,7 +28,7 @@
             Request New Verification Email
           </FormButton>
           <NuxtLink to="/auth/verify" class="text-sm text-primary hover:underline text-center mt-2">
-            Use verification code instead
+            Enter verification code instead
           </NuxtLink>
         </div>
       </div>
@@ -99,12 +99,22 @@ onMounted(async () => {
         authStore.setUser(response.data.user);
       }
 
+      // Immediate browser event for faster communication
+      if (import.meta.client) {
+        window.dispatchEvent(new CustomEvent('email-verified-via-token', {
+          detail: {
+            message: response.message || 'Email verified successfully',
+            timestamp: Date.now()
+          }
+        }));
+      }
+
       toast.success(response.message || 'Email verified successfully');
 
-      // Auto-redirect to dashboard after 3 seconds
-      setTimeout(() => {
-        navigateToDashboard();
-      }, 3000);
+      // Auto-redirect to dashboard after 2 seconds (shorter delay)
+      setTimeout(async () => {
+        await navigateToDashboard();
+      }, 2000);
     } else {
       verificationStatus.value = 'error';
       errorMessage.value = response?.message || 'Verification failed. The token may be invalid or expired.';
@@ -144,8 +154,8 @@ async function requestNewVerification() {
 }
 
 // Navigate to dashboard after verification
-function navigateToDashboard() {
+async function navigateToDashboard() {
   const authApi = useAuthApi();
-  authApi.navigateToDashboard();
+  await authApi.navigateToDashboard();
 }
 </script>

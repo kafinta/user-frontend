@@ -82,16 +82,19 @@ async function handleSignin() {
     });
 
     if (response.status === 'success') {
-      // Use the enhanced auth API to handle success
+      // Handle auth success (no longer async)
       const authApi = useAuthApi();
-      await authApi.handleAuthSuccess(response);
+      authApi.handleAuthSuccess(response);
 
       toast.success(response.message || 'Login successful');
 
-      if (response.needsVerification || !authStore.isVerified) {
+      // Check verification status from response or auth store
+      const needsVerification = response.data?.email_verification_required || !authStore.isVerified;
+
+      if (needsVerification) {
         router.push('/auth/verify');
       } else {
-        navigateToDashboard();
+        await navigateToDashboard();
       }
     } else {
       toast.error(response?.message || 'Login failed');
@@ -104,7 +107,7 @@ async function handleSignin() {
   }
 }
 
-function navigateToDashboard() {
+async function navigateToDashboard() {
   // Check if there's a redirect URL in the query parameters first
   if (redirectPath.value) {
     router.push(redirectPath.value);
@@ -113,6 +116,6 @@ function navigateToDashboard() {
 
   // Use the shared navigation helper
   const authApi = useAuthApi();
-  authApi.navigateToDashboard();
+  await authApi.navigateToDashboard();
 }
 </script>
