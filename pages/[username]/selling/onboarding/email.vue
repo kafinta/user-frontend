@@ -1,34 +1,51 @@
 <template>
-  <LayoutsSellerDashboard page_title="Onboarding">
-    <main class="w-full lg:w-1/2 2xl:w-1/2 mx-auto">
-      <UiTypographyH3 class="text-center">Email Verification</UiTypographyH3>
+  <LayoutsDashboard mode="seller" pageTitle="Onboarding">
+    <div class="flex justify-center items-center min-h-[calc(100vh-200px)] p-4">
+      <main class="w-full max-w-md mx-auto rounded-xl p-8 border border-accent-200 bg-white space-y-6">
+        <!-- Success Icon (when verified) -->
+        <div v-if="onboardingState.emailVerified.value" class="text-center">
+          <div class="w-20 h-20 mx-auto bg-green-200 rounded-full flex items-center justify-center mb-6">
+            <UiIconsSuccess class="w-16 h-16 text-green-600" />
+          </div>
+        </div>
 
-      <div>
-        <img src="/images/open_email.svg" alt="Open Email Icon" class="w-56 mx-auto mt-6">
-        <UiTypographyP class="mt-4">We've sent a verification code to your email. Enter the code below to verify your email.</UiTypographyP>
+        <!-- Header -->
+        <div class="text-center">
+          <UiTypographyH2 class="font-medium text-3xl text-secondary">Verify Email</UiTypographyH2>
+          <UiTypographyP class="text-sm text-secondary mt-2">
+            <span v-if="!onboardingState.emailVerified.value">Enter the verification code sent to your email address.</span>
+            <span v-else>Your email address has been successfully verified!</span>
+          </UiTypographyP>
+        </div>
 
-        <form @submit.prevent="verifyEmail()" class="grid gap-6 w-full mt-6">
-          <InputOtp v-model="code" :length="6" integerOnly class="justify-between"/>
-          <FormButton :loading="isLoading" class="max-w-64 mx-auto">Verify Email</FormButton>
+        <!-- Code Verification Form -->
+        <div v-if="!onboardingState.emailVerified.value" class="space-y-6">
+          <form @submit.prevent="verifyEmail" class="space-y-6">
+            <div class="space-y-4">
+              <FormOtpInput v-model="code" :length="6" integerOnly class="justify-center"/>
+            </div>
+            <FormButton :loading="isLoading" class="w-full">Verify Email</FormButton>
+          </form>
 
-          <div class="flex justify-center mt-2">
+          <div class="text-center">
             <button
               type="button"
-              @click="requestNewCode()"
-              class="text-sm text-primary hover:underline"
+              @click="requestNewCode"
+              class="text-sm text-secondary hover:text-primary duration-300 ease-in-out"
               :disabled="resendCooldown > 0"
             >
               {{ resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : 'Resend verification code' }}
             </button>
           </div>
-        </form>
-
-        <div v-if="isVerified" class="flex justify-center mt-6">
-          <FormButton @click="continueOnboarding" class="max-w-64">Continue Onboarding</FormButton>
         </div>
-      </div>
-    </main>
-  </LayoutsSellerDashboard>
+
+        <!-- Success/Already Verified State -->
+        <div v-else class="space-y-6 text-center">
+          <FormButton @click="continueOnboarding" class="w-full">Continue Onboarding</FormButton>
+        </div>
+      </main>
+    </div>
+  </LayoutsDashboard>
 </template>
 
 <script setup>
@@ -36,7 +53,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/stores/auth';
-import { useAppToast } from '~/utils/toast';
+import { useAppToast } from '~/utils/toastify';
 import { useOnboarding } from '@/composables/useOnboarding';
 
 definePageMeta({
@@ -59,6 +76,17 @@ const cooldownInterval = ref(null);
 
 // Check verification status on mount
 onMounted(async () => {
+  // Auth store auto-initializes when first accessed
+
+  // Fetch onboarding progress
+  await onboardingState.fetchProgress();
+
+  // If email is already verified, show success state
+  if (onboardingState.emailVerified.value) {
+    // Email is already verified, no need to request new code
+    return;
+  }
+
   if (!isVerified.value) {
     // Request a new verification code on page load
     await requestNewCode(true);
@@ -78,14 +106,19 @@ const verifyEmail = async () => {
     await authStore.verifyEmail(code.value);
 
     if (status.value === 'success') {
-      onboardingState.updateStep('email', true);
+      // Update onboarding progress
+      await onboardingState.fetchProgress();
+
+      // Show success message
       toast.success('Success', message.value || 'Email verified successfully');
 
       // Reset the form
       code.value = '';
 
-      // Immediately continue to the next onboarding step
-      continueOnboarding();
+      // Redirect to onboarding page after a brief delay
+      setTimeout(() => {
+        continueOnboarding();
+      }, 1500);
     } else {
       toast.error('Error', message.value || 'Verification failed. Please try again.');
     }
@@ -149,7 +182,10 @@ const startCooldown = () => {
 };
 
 // Continue to next onboarding step
-const continueOnboarding = () => {
+const continueOnboarding = async () => {
+  // Refresh onboarding progress before continuing
+  await onboardingState.fetchProgress();
+
   router.push({
     name: 'username-selling-onboarding',
     params: { username: route.params.username }
