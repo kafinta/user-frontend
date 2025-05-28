@@ -55,16 +55,12 @@ export const useAuthStore = defineStore('auth', () => {
   const message = ref<string | null>(null)
   const status = ref<string | null>(null)
   const isVerified = ref(false)
-  const tokenVerificationSuccess = ref(false) // State for token verification communication
+
   const error = ref<string | null>(null)
   const initialized = ref(false)
 
-  // Auto-initialize on client side when store is first accessed
-  if (import.meta.client && !initialized.value) {
-    initialized.value = true
-    // Check session on app load to restore auth state
-    validateSession()
-  }
+  // Remove auto-initialization to prevent premature session validation
+  // Session validation will be handled by middleware when routes require authentication
 
   // Getters
   const isAuthenticated = computed(() => !!user.value)
@@ -98,9 +94,7 @@ export const useAuthStore = defineStore('auth', () => {
     isVerified.value = verified;
   }
 
-  function setTokenVerificationSuccess(success: boolean) {
-    tokenVerificationSuccess.value = success;
-  }
+
 
   function setRoles(newRoles: Role[]) {
     roles.value = newRoles;
@@ -161,7 +155,7 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null;
     roles.value = [];
     isVerified.value = false;
-    tokenVerificationSuccess.value = false;
+
 
     return {
       success: true,
@@ -226,7 +220,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (isSuccess) {
         setVerified(true);
-        setTokenVerificationSuccess(true); // Signal to verify page
+
         status.value = 'success';
         message.value = response.message || 'Email verified successfully';
 
@@ -290,60 +284,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  /**
-   * Request a new verification email
-   */
-  async function requestEmailVerification(): Promise<{
-    success: boolean,
-    message: string,
-    status: string
-  }> {
-    startLoading();
 
-    try {
-      // Request a new verification code
-      const response = await useCustomFetch<ApiResponse>('/api/user/resend-verification-email', {
-        method: 'POST'
-      });
-
-      // Debug log to see the actual API response
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('Request verification email API response:', response);
-      }
-
-      // Check for success
-      const isSuccess = response.status === 'success';
-
-      status.value = isSuccess ? 'success' : 'error';
-      message.value = response.message || 'Verification email sent successfully';
-
-      // Create response object with explicit boolean type for success
-      const responseObj = {
-        success: Boolean(isSuccess), // Convert to boolean to fix TypeScript error
-        message: message.value,
-        status: isSuccess ? 'success' : 'error'
-      };
-
-      // Debug log the final response object
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('Request verification email response object being returned:', responseObj);
-      }
-
-      return responseObj;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to send verification email';
-      error.value = errorMessage;
-      status.value = 'error';
-
-      return {
-        success: false,
-        message: errorMessage,
-        status: 'error'
-      };
-    } finally {
-      isLoading.value = false;
-    }
-  }
 
   // Removed checkEmailVerificationStatus - this is now handled directly on pages as it's page-specific
 
@@ -442,7 +383,7 @@ export const useAuthStore = defineStore('auth', () => {
     status,
     error,
     isVerified,
-    tokenVerificationSuccess,
+
 
     // Essential getters for navigation and permissions
     isAuthenticated,
@@ -458,7 +399,6 @@ export const useAuthStore = defineStore('auth', () => {
     // Email verification actions (token-based methods are reusable)
     verifyEmailWithToken,
     verifyEmailWithDirectLink,
-    requestEmailVerification,
 
     // Clear auth data
     clearAuthData,
@@ -466,7 +406,7 @@ export const useAuthStore = defineStore('auth', () => {
     // Basic state setters (for composables)
     setUser,
     setVerified,
-    setTokenVerificationSuccess,
+
     setRoles,
 
     // Debugging (only in development)
