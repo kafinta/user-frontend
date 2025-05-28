@@ -20,7 +20,7 @@
         autocomplete="off"
       />
     </div>
-    
+
     <!-- Error message -->
     <div v-if="error && errorMessage" class="mt-2 text-sm text-red-600">
       {{ errorMessage }}
@@ -71,21 +71,21 @@ export default {
     inputClasses() {
       return [
         // Base styling
-        'border-secondary border-opacity-20',
-        
+        'border-accent-200',
+
         // Focus states
-        'focus:border-primary focus:border-opacity-100 focus:text-primary',
-        'active:border-primary active:border-opacity-100 active:text-primary',
-        
+        'focus:border-primary focus:border-opacity-100 focus:text-secondary',
+        'active:border-primary active:border-opacity-100 active:text-secondary',
+
         // Error states
         this.error ? 'border-red-600 focus:border-red-600 active:border-red-600' : '',
-        
+
         // Default text color
         'text-secondary',
-        
+
         // Disabled state
-        this.disabled ? 'bg-gray-50 text-gray-400 cursor-not-allowed' : '',
-        
+        this.disabled ? 'bg-accent-50 text-accent-400 cursor-not-allowed' : '',
+
         // Hover state
         !this.disabled ? 'hover:border-primary hover:border-opacity-60' : ''
       ].filter(Boolean).join(' ')
@@ -108,7 +108,7 @@ export default {
 
     otpValue(newValue) {
       this.$emit('update:modelValue', newValue)
-      
+
       // Emit complete event when all digits are filled
       if (newValue.length === this.length) {
         this.$emit('complete', newValue)
@@ -119,14 +119,14 @@ export default {
   methods: {
     setDigitsFromValue(value) {
       const cleanValue = String(value || '').slice(0, this.length)
-      this.digits = Array(this.length).fill('').map((_, index) => 
+      this.digits = Array(this.length).fill('').map((_, index) =>
         cleanValue[index] || ''
       )
     },
 
     handleInput(index, event) {
       const value = event.target.value
-      
+
       // Only allow numbers if integerOnly is true
       if (this.integerOnly && value && !/^\d$/.test(value)) {
         event.target.value = this.digits[index]
@@ -191,7 +191,7 @@ export default {
     handlePaste(event) {
       event.preventDefault()
       const pastedData = event.clipboardData.getData('text')
-      
+
       if (!pastedData) return
 
       // Clean the pasted data
@@ -201,7 +201,7 @@ export default {
       }
 
       // Fill the digits
-      this.digits = Array(this.length).fill('').map((_, index) => 
+      this.digits = Array(this.length).fill('').map((_, index) =>
         cleanData[index] || ''
       )
 

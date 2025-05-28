@@ -66,11 +66,11 @@ export default {
     inputClasses() {
       return [
         // Base styling
-        'border-secondary border-opacity-20',
+        'border-accent-200',
 
         // Focus states
-        'focus:border-primary focus:border-opacity-100 focus:text-primary',
-        'active:border-primary active:border-opacity-100 active:text-primary',
+        'focus:border-primary focus:border-opacity-100 focus:text-secondary',
+        'active:border-primary active:border-opacity-100 active:text-secondary',
 
         // Error states
         this.error ? 'border-red-600 focus:border-red-600 active:border-red-600' : '',
@@ -82,7 +82,7 @@ export default {
         'text-secondary',
 
         // Disabled state
-        this.disabled ? 'bg-gray-50 text-gray-400 cursor-not-allowed' : '',
+        this.disabled ? 'bg-accent-50 text-accent-400 cursor-not-allowed' : '',
 
         // Extra classes
         this.extraClass || ''

@@ -122,10 +122,10 @@ export default {
     triggerClasses() {
       return [
         // Base styling
-        'border-secondary border-opacity-20',
+        'border-accent-200',
 
         // Focus states
-        'focus:border-primary focus:border-opacity-100 focus:text-primary',
+        'focus:border-primary focus:border-opacity-100 focus:text-secondary',
 
         // Open state
         this.isOpen ? 'border-primary border-opacity-100' : '',
@@ -140,7 +140,7 @@ export default {
         'text-secondary',
 
         // Disabled state
-        this.disabled ? 'bg-accent-100 text-accent-400 cursor-not-allowed' : '',
+        this.disabled ? 'bg-accent-50 text-accent-400 cursor-not-allowed' : '',
 
         // Extra classes
         this.extraClass || ''
