@@ -47,7 +47,7 @@
     <div
       v-if="isOpen"
       ref="dropdown"
-      class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto"
+      class="absolute z-50 w-full mt-1 bg-white border border-accent-200 rounded-md shadow-lg max-h-60 overflow-auto"
       role="listbox"
       :aria-labelledby="`${selectId}-label`"
     >
@@ -65,7 +65,7 @@
       </div>
 
       <!-- No options message -->
-      <div v-if="options.length === 0" class="px-4 py-3 text-sm text-gray-500">
+      <div v-if="options.length === 0" class="px-4 py-3 text-sm text-accent-400">
         No options available
       </div>
     </div>
@@ -140,7 +140,7 @@ export default {
         'text-secondary',
 
         // Disabled state
-        this.disabled ? 'bg-gray-50 text-gray-400 cursor-not-allowed' : '',
+        this.disabled ? 'bg-accent-100 text-accent-400 cursor-not-allowed' : '',
 
         // Extra classes
         this.extraClass || ''
@@ -255,13 +255,13 @@ export default {
     optionClasses(option, index) {
       return [
         // Hover state
-        'hover:bg-gray-50',
+        'hover:bg-accent-100',
 
         // Selected state
         this.isSelected(option) ? 'bg-primary bg-opacity-10 text-primary' : 'text-secondary',
 
         // Highlighted state (keyboard navigation)
-        index === this.highlightedIndex ? 'bg-gray-100' : ''
+        index === this.highlightedIndex ? 'bg-accent-200' : ''
       ].filter(Boolean).join(' ')
     },
 
@@ -280,4 +280,3 @@ export default {
   }
 }
 </script>
-
