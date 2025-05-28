@@ -6,7 +6,7 @@ import { useAppToast } from '~/utils/toastify';
 // Import SimpleResponse type from auth store
 import type { SimpleResponse } from '~/stores/auth';
 
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware(async (to) => {
   // Skip middleware on server side
   if (import.meta.server) return
 
@@ -82,14 +82,11 @@ export default defineNuxtRouteMiddleware((to) => {
 
   // Special case for verification page
   if (routeRequirements.isVerifyRoute) {
-    // Special handling for token verification page
-    if (to.path === '/auth/verify-token') {
-      // Always allow access to token verification page
-      // The page itself will handle redirects based on verification status
+    // If there's a token in the URL, always allow access (token verification)
+    if (to.query.token) {
       return;
     }
 
-    // For code verification page
     // If user is authenticated but needs verification, allow access
     if (authStore.isAuthenticated && authStore.needsVerification) {
       return;
@@ -100,7 +97,7 @@ export default defineNuxtRouteMiddleware((to) => {
       return navigateToDashboard();
     }
 
-    // If not authenticated, redirect to login
+    // If not authenticated and no token, redirect to login
     if (!authStore.isAuthenticated) {
       return navigateTo('/auth/login');
     }
@@ -108,16 +105,37 @@ export default defineNuxtRouteMiddleware((to) => {
 
   // Case 1: Route requires authentication but user is not authenticated
   if (routeRequirements.requiresAuth && !authStore.isAuthenticated) {
-    // Show a notification if we're not already on an auth page
-    if (!to.fullPath.includes('/auth/')) {
-      const toast = useAppToast();
-      toast.info('Authentication Required', 'Please log in to access this page');
-    }
+    // Try to validate session first in case user has valid cookies but empty auth state
+    try {
+      await authStore.validateSession();
 
-    return navigateTo({
-      path: '/auth/login',
-      query: { redirect: to.fullPath }
-    });
+      // If session validation restored auth state, continue with middleware checks
+      if (authStore.isAuthenticated) {
+        // Re-run the verification and role checks below
+      } else {
+        // No valid session, redirect to login
+        if (!to.fullPath.includes('/auth/')) {
+          const toast = useAppToast();
+          toast.info('Authentication Required', 'Please log in to access this page');
+        }
+
+        return navigateTo({
+          path: '/auth/login',
+          query: { redirect: to.fullPath }
+        });
+      }
+    } catch (error) {
+      // Session validation failed, redirect to login
+      if (!to.fullPath.includes('/auth/')) {
+        const toast = useAppToast();
+        toast.info('Authentication Required', 'Please log in to access this page');
+      }
+
+      return navigateTo({
+        path: '/auth/login',
+        query: { redirect: to.fullPath }
+      });
+    }
   }
 
   // Case 2: Route requires verification and user needs verification
@@ -131,7 +149,19 @@ export default defineNuxtRouteMiddleware((to) => {
     return navigateTo('/auth/verify');
   }
 
-  // Case 3: Basic role checking (complex role logic should be handled at page level)
+  // Case 3: Username validation for user-specific routes
+  if (authStore.isAuthenticated && to.params.username) {
+    const urlUsername = to.params.username;
+    const userUsername = authStore.user?.username;
+
+    // Check if the username in the URL matches the authenticated user's username
+    if (urlUsername !== userUsername) {
+      showAccessDenied('You can only access your own pages');
+      return navigateToDashboard();
+    }
+  }
+
+  // Case 4: Basic role checking (complex role logic should be handled at page level)
   if (authStore.isAuthenticated && !hasBasicRoleAccess()) {
     showAccessDenied('You do not have the required permissions to access this page');
     return navigateToDashboard();
