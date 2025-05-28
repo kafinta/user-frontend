@@ -1,14 +1,21 @@
 <template>
-  <LayoutsDashboard mode="seller" pageTitle="Phone Verification">
+  <LayoutsDashboard mode="seller" pageTitle="Onboarding">
     <div class="flex justify-center items-center min-h-[calc(100vh-200px)] p-4">
       <main class="w-full max-w-md mx-auto rounded-xl p-8 border border-accent-200 bg-white space-y-6">
+        <!-- Success Icon (when verified) -->
+        <div v-if="step === 'verified'" class="text-center">
+          <div class="w-20 h-20 mx-auto bg-green-200 rounded-full flex items-center justify-center mb-6">
+            <UiIconsSuccess class="w-16 h-16 text-green-600" />
+          </div>
+        </div>
+
         <!-- Header -->
         <div class="text-center">
-          <UiTypographyH2 class="font-medium text-3xl text-secondary">Phone Verification</UiTypographyH2>
+          <UiTypographyH2 class="font-medium text-3xl text-secondary">Verify Phone</UiTypographyH2>
           <UiTypographyP class="text-sm text-secondary mt-2">
             <span v-if="step === 'phone_input'">Enter your phone number to receive a verification code.</span>
-            <span v-else-if="step === 'code_verification'">Enter the verification code sent to your phone.</span>
-            <span v-else-if="step === 'verified'">Your phone number has been successfully verified!</span>
+            <span v-else-if="step === 'code_verification'">Enter the verification code sent to your phone number.</span>
+            <span v-else>Your phone number has been successfully verified!</span>
           </UiTypographyP>
         </div>
 
@@ -53,22 +60,9 @@
           </div>
         </div>
 
-        <!-- Success Step -->
-        <div v-else-if="step === 'verified'" class="space-y-6 text-center">
-          <div class="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center">
-            <UiIconsSuccess class="w-12 h-12 text-green-600" />
-          </div>
+        <!-- Success/Already Verified Step -->
+        <div v-else class="space-y-6 text-center">
           <FormButton @click="continueOnboarding" class="w-full">Continue Onboarding</FormButton>
-        </div>
-
-        <!-- Back to Onboarding Link -->
-        <div class="text-center pt-4">
-          <NuxtLink
-            :to="{ name: 'username-selling-onboarding', params: { username: $route.params.username } }"
-            class="text-sm text-secondary hover:text-primary duration-300 ease-in-out"
-          >
-            ← Back to Onboarding
-          </NuxtLink>
         </div>
       </main>
     </div>
@@ -80,6 +74,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useCustomFetch } from '~/composables/useCustomFetch';
 import { useAppToast } from '~/utils/toastify';
+import { useOnboarding } from '@/composables/useOnboarding';
 
 definePageMeta({
   middleware: ['auth'],
@@ -90,6 +85,7 @@ definePageMeta({
 const router = useRouter();
 const route = useRoute();
 const toast = useAppToast();
+const onboarding = useOnboarding();
 
 // State variables
 const step = ref('phone_input');
@@ -102,17 +98,12 @@ const phoneError = ref('');
 
 // Check if phone is already verified
 onMounted(async () => {
-  // Check phone verification status
-  try {
-    const response = await useCustomFetch('/api/seller/phone-status', {
-      method: 'GET'
-    });
+  // Fetch onboarding progress
+  await onboarding.fetchProgress();
 
-    if (response.status === 'success' && response.data?.phone_verified) {
-      step.value = 'verified';
-    }
-  } catch (error) {
-    console.error('Failed to check phone status:', error);
+  // If phone is already verified, show verified state
+  if (onboarding.phoneVerified.value) {
+    step.value = 'verified';
   }
 });
 
@@ -173,6 +164,9 @@ const verifyCode = async () => {
     });
 
     if (response.status === 'success') {
+      // Move to verified step to show success state
+      step.value = 'verified';
+
       // Show success message
       toast.success('Success', response.message || 'Phone number verified successfully');
 
