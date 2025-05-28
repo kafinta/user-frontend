@@ -36,7 +36,7 @@
 <script setup>
 definePageMeta({
   middleware: ['auth'],
-  guestOnly: true  // Only accessible when NOT authenticated, else redirect to dashboard
+  authOnly: true  // Only accessible when NOT authenticated, else redirect to dashboard
 });
 
 import { useRouter, useRoute } from 'vue-router';
@@ -101,7 +101,10 @@ async function handleSignin() {
     }
   } catch (err) {
     console.error('Login error:', err);
-    toast.error('An unexpected error occurred');
+
+    // Extract backend error message from the error response
+    const errorMessage = err?.data?.message || err?.message || 'An unexpected error occurred';
+    toast.error(errorMessage);
   } finally {
     buttonLoading.value = false;
   }
