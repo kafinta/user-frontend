@@ -43,7 +43,7 @@
 <script setup>
 definePageMeta({
   middleware: ['auth'],
-  guestOnly: true // Only allow unauthenticated users
+  authOnly: true // Only allow unauthenticated users
 });
 
 import { ref } from "vue";
@@ -85,7 +85,10 @@ async function requestCode() {
     }
   } catch (err) {
     console.error('Request code error:', err);
-    toast.error('An unexpected error occurred. Please try again.');
+
+    // Extract backend error message from the error response
+    const errorMessage = err?.data?.message || err?.message || 'An unexpected error occurred. Please try again.';
+    toast.error(errorMessage);
   } finally {
     loadingState.value = false;
   }
@@ -114,7 +117,10 @@ async function verify() {
     }
   } catch (err) {
     console.error('Verification error:', err);
-    toast.error('An unexpected error occurred. Please try again.');
+
+    // Extract backend error message from the error response
+    const errorMessage = err?.data?.message || err?.message || 'An unexpected error occurred. Please try again.';
+    toast.error(errorMessage);
   } finally {
     loadingState.value = false;
   }
@@ -156,7 +162,10 @@ async function updatePassword() {
     }
   } catch (err) {
     console.error('Password update error:', err);
-    toast.error('An unexpected error occurred. Please try again.');
+
+    // Extract backend error message from the error response
+    const errorMessage = err?.data?.message || err?.message || 'An unexpected error occurred. Please try again.';
+    toast.error(errorMessage);
   } finally {
     loadingStatePassword.value = false;
   }
