@@ -80,24 +80,38 @@ export function useAuthApi() {
       return response;
     },
 
-    // This is reusable as it might be called from multiple places
-    requestEmailVerification: async () => {
-      return await useCustomFetch<ApiResponse>('/api/user/resend-verification-email', {
-        method: 'POST'
-      });
-    },
+
 
     // Navigation helper for post-auth redirects
     navigateToDashboard: async () => {
       const authStore = useAuthStore();
 
-      // If not authenticated or no username, go to home page
-      if (!authStore.isAuthenticated || !authStore.user?.username) {
+      // If not authenticated, go to home page
+      if (!authStore.isAuthenticated) {
+        console.log('Not authenticated, redirecting to home');
+        return navigateTo('/');
+      }
+
+      // If no username, fetch user profile first
+      if (!authStore.user?.username) {
+        console.log('No username found, fetching user profile...');
+        try {
+          await authStore.validateSession();
+        } catch (error) {
+          console.error('Failed to fetch user profile:', error);
+          return navigateTo('/');
+        }
+      }
+
+      // Check again after potential profile fetch
+      if (!authStore.user?.username) {
+        console.error('Still no username after profile fetch, redirecting to home');
         return navigateTo('/');
       }
 
       // Get the username
       const username = authStore.user.username;
+      console.log('Navigating to dashboard for user:', username);
 
       // Route based on role - all users are customers by default
       // Only fetch roles if we need to check for seller status
