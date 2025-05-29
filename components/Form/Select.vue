@@ -54,7 +54,7 @@
       <div
         v-for="(option, index) in options"
         :key="option.value || option"
-        @click="selectOption(option)"
+        @mousedown.prevent="selectOption(option)"
         @mouseenter="highlightedIndex = index"
         :class="optionClasses(option, index)"
         class="px-4 py-3 text-sm cursor-pointer transition-colors duration-150"
