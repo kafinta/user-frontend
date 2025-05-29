@@ -39,23 +39,23 @@ export default {
 
       return [
         // Base styling
-        'border-r border-l border-secondary border-opacity-10',
-        
+        'border-r border-l border-accent-200',
+
         // Size
         sizeClasses[this.inputGroup.size],
-        
+
         // Background
-        'bg-gray-50',
-        
+        'bg-accent-50',
+
         // Text color
         this.inputGroup.error ? 'text-red-600' : 'text-secondary',
-        
+
         // Clickable states
-        this.clickable && !this.inputGroup.disabled ? 'cursor-pointer hover:bg-gray-100 hover:text-primary' : '',
-        
+        this.clickable && !this.inputGroup.disabled ? 'cursor-pointer hover:bg-accent-100 hover:text-primary' : '',
+
         // Disabled state
         this.inputGroup.disabled ? 'opacity-50 cursor-not-allowed' : '',
-        
+
         // First/last child styling (remove unnecessary borders)
         'first:border-l-0 last:border-r-0'
       ].filter(Boolean).join(' ')
