@@ -28,15 +28,27 @@ export function useAuthApi() {
 
   // Fetch roles only when specifically needed (mainly for middleware role checking)
   const fetchRoles = async () => {
-    const response = await useCustomFetch<ApiResponse>('/api/user/roles', {
-      method: 'GET'
-    });
+    try {
+      const response = await useCustomFetch<ApiResponse>('/api/user/profile/roles', {
+        method: 'GET'
+      });
 
-    if (response.status === 'success' && response.data?.roles) {
-      authStore.setRoles(response.data.roles);
+      if (response.status === 'success' && response.data?.roles) {
+        authStore.setRoles(response.data.roles);
+      }
+
+      return response;
+    } catch (error) {
+      // If roles endpoint fails, try to get roles from user profile
+      console.warn('Roles endpoint failed, fetching from user profile');
+      try {
+        await authStore.validateSession();
+        return { status: 'success', message: 'Roles updated from user profile' };
+      } catch (profileError) {
+        console.error('Failed to fetch roles:', error);
+        return { status: 'error', message: 'Failed to fetch user roles' };
+      }
     }
-
-    return response;
   };
 
   return {
