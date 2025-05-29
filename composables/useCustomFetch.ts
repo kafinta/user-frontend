@@ -97,7 +97,7 @@ export async function useCustomFetch<T>(
       } catch (e) {
         console.error('Failed to parse URL:', e);
       }
-    } 
+    }
     // Ensure URL starts with a leading slash for proxy to work correctly
     else if (!resolvedUrl.startsWith('/')) {
       resolvedUrl = '/' + resolvedUrl;
@@ -117,6 +117,9 @@ export async function useCustomFetch<T>(
     console.log(`Making ${method} request to ${resolvedUrl}`);
   }
 
+  // Check if we're sending FormData (for file uploads)
+  const isFormData = restOptions.body instanceof FormData;
+
   // Create default options with proper credentials and headers
   const defaults: NitroFetchOptions<NitroFetchRequest> = {
     // Ensure we're using relative URLs to leverage the proxy
@@ -125,7 +128,8 @@ export async function useCustomFetch<T>(
     method,
     headers: {
       'Accept': 'application/json',
-      'Content-Type': 'application/json',
+      // Don't set Content-Type for FormData - let browser set it with boundary
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       'X-Requested-With': 'XMLHttpRequest',
       ...(csrfToken ? { 'X-XSRF-TOKEN': csrfToken } : {})
     }
