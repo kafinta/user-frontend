@@ -138,23 +138,28 @@ const requestNewCode = async (silent = false) => {
   }
 
   try {
-    await authStore.requestEmailVerification();
+    // Direct API call on page (page-specific, not reusable)
+    const response = await useCustomFetch('/api/user/resend-verification-email', {
+      method: 'POST'
+    });
 
-    if (status.value === 'success') {
+    if (response.status === 'success') {
       if (!silent) {
-        toast.success('Success', message.value || 'Verification code sent successfully');
+        toast.success('Success', response.message || 'Verification code sent successfully');
       }
 
       // Start cooldown
       startCooldown();
     } else {
       if (!silent) {
-        toast.error('Error', message.value || 'Failed to send verification code');
+        toast.error('Error', response?.message || 'Failed to send verification code');
       }
     }
   } catch (error) {
     if (!silent) {
-      toast.error('Error', 'An unexpected error occurred');
+      // Extract backend error message from the error response
+      const errorMessage = error?.data?.message || error?.message || 'An unexpected error occurred';
+      toast.error('Error', errorMessage);
     }
   } finally {
     if (!silent) {
