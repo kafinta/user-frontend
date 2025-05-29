@@ -300,14 +300,11 @@ async function completeOnboarding() {
       }
       if (response.data?.roles) {
         auth.setRoles(response.data.roles);
-        console.log('Roles set from onboarding response:', response.data.roles);
       } else {
         // If roles not in response, fetch them separately
-        console.log('No roles in onboarding response, fetching roles...');
         try {
           const authApi = useAuthApi();
           await authApi.fetchRoles();
-          console.log('Roles fetched successfully, isSeller:', auth.isSeller);
         } catch (error) {
           console.error('Failed to fetch roles after onboarding:', error);
         }
@@ -315,12 +312,6 @@ async function completeOnboarding() {
 
       // Wait a moment for auth store to update
       await new Promise(resolve => setTimeout(resolve, 100));
-
-      console.log('Auth state before redirect:', {
-        isAuthenticated: auth.isAuthenticated,
-        isSeller: auth.isSeller,
-        roles: auth.roles
-      });
 
       // Redirect to seller dashboard automatically
       await router.push({
