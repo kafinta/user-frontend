@@ -18,72 +18,50 @@
       <ul class="grid gap-6 lg:grid-cols-2">
         <!-- Loading skeletons -->
         <template v-if="isLoading">
-          <UiSkeleton v-for="i in 4" :key="i" height="10rem" />
+          <UiSkeleton v-for="i in 4" :key="i" height="12rem" />
         </template>
 
-        <!-- Required step cards -->
+        <!-- Dynamic required step cards -->
         <template v-else>
-          <!-- Email Verification -->
-          <li class="p-5 rounded-lg border border-accent-200">
+          <li
+            v-for="step in requiredSteps"
+            :key="step.id"
+            class="p-5 rounded-lg border border-accent-200"
+          >
             <div class="flex justify-between items-center mb-3">
-              <UiTypographyH3>Verify Email</UiTypographyH3>
+              <UiTypographyH3>{{ step.name }}</UiTypographyH3>
               <div class="flex items-center gap-2">
-                <UiIconsSuccess v-if="emailVerified" class="text-green-600 w-5 h-5" />
-                <span v-else class="bg-gray-400 w-5 h-5 rounded-full"></span>
+                <UiIconsSuccess v-if="step.completed" class="text-green-600 w-5 h-5" />
+                <span v-else class="bg-accent-400 w-5 h-5 rounded-full"></span>
               </div>
             </div>
-            <UiTypographyP class="text-sm text-gray-600 mb-4">We need to verify your access to the email you used during registration.</UiTypographyP>
-            <ClientOnly>
-              <UiButtonsPrimary v-if="emailVerified" disabled :flexdisplay="true">Verified</UiButtonsPrimary>
-              <UiButtonsPrimary :url="{ name: 'username-selling-onboarding-email', params: { username: $route.params.username } }" v-else :flexdisplay="true">Verify Email</UiButtonsPrimary>
-            </ClientOnly>
-          </li>
 
-          <!-- Phone Verification -->
-          <li class="p-5 rounded-lg border border-accent-200">
-            <div class="flex justify-between items-center mb-3">
-              <UiTypographyH3>Verify Phone</UiTypographyH3>
-              <div class="flex items-center gap-2">
-                <UiIconsSuccess v-if="phoneVerified" class="text-green-600 w-5 h-5" />
-                <span v-else class="bg-gray-400 w-5 h-5 rounded-full"></span>
-              </div>
-            </div>
-            <UiTypographyP class="text-sm text-gray-600 mb-4">Please verify your phone number to ensure secure communication.</UiTypographyP>
-            <ClientOnly>
-              <UiButtonsPrimary v-if="phoneVerified" disabled :flexdisplay="true">Verified</UiButtonsPrimary>
-              <UiButtonsPrimary :url="{ name: 'username-selling-onboarding-phone', params: { username: $route.params.username } }" v-else :flexdisplay="true">Verify Phone</UiButtonsPrimary>
-            </ClientOnly>
-          </li>
+            <!-- Benefit description -->
+            <UiTypographyP class="text-sm text-accent-600 mb-2">{{ step.benefit }}</UiTypographyP>
 
-          <!-- Business Profile -->
-          <li class="p-5 rounded-lg border border-accent-200">
-            <div class="flex justify-between items-center mb-3">
-              <UiTypographyH3>Business Profile</UiTypographyH3>
-              <div class="flex items-center gap-2">
-                <UiIconsSuccess v-if="profileCreated" class="text-green-600 w-5 h-5" />
-                <span v-else class="bg-gray-400 w-5 h-5 rounded-full"></span>
-              </div>
-            </div>
-            <UiTypographyP class="text-sm text-gray-600 mb-4">Provide your business information so that customers can learn more about you.</UiTypographyP>
-            <ClientOnly>
-              <UiButtonsPrimary v-if="profileCreated" disabled :flexdisplay="true">Completed</UiButtonsPrimary>
-              <UiButtonsPrimary :url="{ name: 'username-selling-onboarding-profile', params: { username: $route.params.username } }" v-else :flexdisplay="true">Complete Profile</UiButtonsPrimary>
-            </ClientOnly>
-          </li>
+            <!-- Estimated time -->
+            <UiTypographyP class="text-xs text-accent-500 mb-4">
+              <span class="inline-flex items-center gap-1">
+                <UiIconsClock class="w-3 h-3" />
+                {{ step.estimated_time }}
+              </span>
+            </UiTypographyP>
 
-          <!-- Seller Agreement -->
-          <li class="p-5 rounded-lg border border-accent-200">
-            <div class="flex justify-between items-center mb-3">
-              <UiTypographyH3>Seller Agreement</UiTypographyH3>
-              <div class="flex items-center gap-2">
-                <UiIconsSuccess v-if="agreementAccepted" class="text-green-600 w-5 h-5" />
-                <span v-else class="bg-gray-400 w-5 h-5 rounded-full"></span>
-              </div>
-            </div>
-            <UiTypographyP class="text-sm text-gray-600 mb-4">Review and accept our seller terms and conditions to start selling on our platform.</UiTypographyP>
             <ClientOnly>
-              <UiButtonsPrimary v-if="agreementAccepted" disabled :flexdisplay="true">Accepted</UiButtonsPrimary>
-              <UiButtonsPrimary :url="{ name: 'username-selling-onboarding-agreement', params: { username: $route.params.username } }" v-else :flexdisplay="true">Review Agreement</UiButtonsPrimary>
+              <UiButtonsPrimary
+                v-if="step.completed"
+                disabled
+                :flexdisplay="true"
+              >
+                {{ getCompletedButtonText(step.id) }}
+              </UiButtonsPrimary>
+              <UiButtonsPrimary
+                v-else
+                :url="getStepUrl(step.id)"
+                :flexdisplay="true"
+              >
+                {{ getActionButtonText(step.id) }}
+              </UiButtonsPrimary>
             </ClientOnly>
           </li>
         </template>
@@ -98,37 +76,41 @@
         <UiTypographyP class="text-green-600">You can also complete these optional steps to enhance your seller profile:</UiTypographyP>
       </div>
 
-      <div class="grid gap-4 md:grid-cols-2 mb-6">
-        <!-- KYC Verification -->
-        <div class="p-4 bg-white rounded-lg border border-green-200">
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
+        <!-- Dynamic optional step cards -->
+        <div
+          v-for="step in optionalSteps"
+          :key="step.id"
+          class="p-4 bg-white rounded-lg border border-green-200"
+        >
           <div class="flex items-center justify-between mb-2">
-            <UiTypographyH4 class="text-gray-700">KYC Verification</UiTypographyH4>
-            <span v-if="kycVerified" class="text-green-600">✅</span>
-            <span v-else class="text-gray-400">⚪</span>
+            <UiTypographyH3 class="text-accent-700">{{ step.name }}</UiTypographyH3>
+            <UiIconsSuccess v-if="step.completed" class="text-green-600 w-5 h-5" />
+            <span v-else class="bg-accent-400 w-5 h-5 rounded-full"></span>
           </div>
-          <UiTypographyP class="text-sm text-gray-600 mb-3">Increase buyer trust and unlock higher transaction limits.</UiTypographyP>
-          <UiButtonsSecondary v-if="!kycVerified" @clicked="goToKycVerification" size="small" class="w-full">
-            Verify Identity
-          </UiButtonsSecondary>
-          <UiButtonsSecondary v-else disabled size="small" class="w-full">
-            Verified
-          </UiButtonsSecondary>
-        </div>
 
-        <!-- Payment Information -->
-        <div class="p-4 bg-white rounded-lg border border-green-200">
-          <div class="flex items-center justify-between mb-2">
-            <UiTypographyH4 class="text-gray-700">Payment Setup</UiTypographyH4>
-            <span v-if="paymentInfoUpdated" class="text-green-600">✅</span>
-            <span v-else class="text-gray-400">⚪</span>
-          </div>
-          <UiTypographyP class="text-sm text-gray-600 mb-3">Set up payment details to receive payments from sales.</UiTypographyP>
-          <UiButtonsSecondary v-if="!paymentInfoUpdated" @clicked="goToPaymentInfo" size="small" class="w-full">
-            Set Up Payment
-          </UiButtonsSecondary>
-          <UiButtonsSecondary v-else disabled size="small" class="w-full">
-            Completed
-          </UiButtonsSecondary>
+          <!-- Benefit description -->
+          <UiTypographyP class="text-sm text-accent-600 mb-2 h-[3lh]">{{ step.benefit }}</UiTypographyP>
+
+          <!-- Estimated time -->
+          <UiTypographyP class="text-xs text-accent-500 mb-3">
+            <span class="inline-flex items-center gap-1">
+              <UiIconsClock class="w-3 h-3 text-secondary" />
+              {{ step.estimated_time }}
+            </span>
+          </UiTypographyP>
+
+          <UiButtonsPrimary
+            v-if="!step.completed"
+            :url="getOptionalStepUrl(step.id)"
+            size="small"
+            class="w-full"
+          >
+            {{ getOptionalActionButtonText(step.id) }}
+          </UiButtonsPrimary>
+          <UiButtonsPrimary v-else disabled size="small" class="w-full">
+            {{ getOptionalCompletedButtonText(step.id) }}
+          </UiButtonsPrimary>
         </div>
       </div>
 
@@ -170,7 +152,6 @@ import { useAppToast } from '~/utils/toastify';
 const router = useRouter();
 const auth = useAuthStore();
 const onboarding = useOnboarding();
-const authApi = useAuthApi();
 const toast = useAppToast();
 
 // Local state
@@ -181,12 +162,8 @@ const isCompletingOnboarding = ref(false);
 const canComplete = computed(() => onboarding.canComplete.value);
 const completionSummary = computed(() => onboarding.completionSummary.value);
 const missingRequiredSteps = computed(() => onboarding.missingRequiredSteps.value);
-const emailVerified = computed(() => onboarding.emailVerified.value);
-const phoneVerified = computed(() => onboarding.phoneVerified.value);
-const profileCreated = computed(() => onboarding.profileCreated.value);
-const agreementAccepted = computed(() => onboarding.agreementAccepted.value);
-const kycVerified = computed(() => onboarding.kycVerified.value);
-const paymentInfoUpdated = computed(() => onboarding.paymentInfoUpdated.value);
+const requiredSteps = computed(() => onboarding.requiredSteps.value);
+const optionalSteps = computed(() => onboarding.optionalSteps.value);
 
 // Fetch progress from API (page handles its own API call)
 async function fetchProgress() {
@@ -200,6 +177,9 @@ async function fetchProgress() {
     if (response.status === 'success' && response.data) {
       // Update the onboarding composable state
       onboarding.progress.value = response.data;
+    } else {
+      // If API fails, show a helpful message
+      toast.error('Error', 'Failed to load onboarding progress. Please refresh the page.');
     }
 
     return response;
@@ -236,19 +216,68 @@ function formatRequirement(requirement) {
   return formatted;
 }
 
-// Navigation methods for optional steps (still need click handlers for these)
-function goToKycVerification() {
-  router.push({
-    name: 'username-selling-onboarding-kyc',
-    params: { username: router.currentRoute.value.params.username }
-  });
+// Helper methods for step URLs and button text
+function getStepUrl(stepId) {
+  const routeMap = {
+    'email_verification': { name: 'username-selling-onboarding-email', params: { username: router.currentRoute.value.params.username } },
+    'phone_verification': { name: 'username-selling-onboarding-phone', params: { username: router.currentRoute.value.params.username } },
+    'profile_completion': { name: 'username-selling-onboarding-profile', params: { username: router.currentRoute.value.params.username } },
+    'agreement_acceptance': { name: 'username-selling-onboarding-agreement', params: { username: router.currentRoute.value.params.username } }
+  };
+
+  return routeMap[stepId] || { name: 'username-selling-onboarding', params: { username: router.currentRoute.value.params.username } };
 }
 
-function goToPaymentInfo() {
-  router.push({
-    name: 'username-selling-onboarding-payment',
-    params: { username: router.currentRoute.value.params.username }
-  });
+function getActionButtonText(stepId) {
+  const textMap = {
+    'email_verification': 'Verify Email',
+    'phone_verification': 'Verify Phone',
+    'profile_completion': 'Complete Profile',
+    'agreement_acceptance': 'Review Agreement'
+  };
+
+  return textMap[stepId] || 'Continue';
+}
+
+function getCompletedButtonText(stepId) {
+  const textMap = {
+    'email_verification': 'Verified',
+    'phone_verification': 'Verified',
+    'profile_completion': 'Completed',
+    'agreement_acceptance': 'Accepted'
+  };
+
+  return textMap[stepId] || 'Completed';
+}
+
+function getOptionalStepUrl(stepId) {
+  const routeMap = {
+    'kyc_verification': { name: 'username-selling-onboarding-kyc', params: { username: router.currentRoute.value.params.username } },
+    'payment_information': { name: 'username-selling-onboarding-payment', params: { username: router.currentRoute.value.params.username } },
+    'social_media': { name: 'username-selling-onboarding-social', params: { username: router.currentRoute.value.params.username } }
+  };
+
+  return routeMap[stepId] || { name: 'username-selling-onboarding', params: { username: router.currentRoute.value.params.username } };
+}
+
+function getOptionalActionButtonText(stepId) {
+  const textMap = {
+    'kyc_verification': 'Verify Identity',
+    'payment_information': 'Set Up Payment',
+    'social_media': 'Add Social Media'
+  };
+
+  return textMap[stepId] || 'Complete';
+}
+
+function getOptionalCompletedButtonText(stepId) {
+  const textMap = {
+    'kyc_verification': 'Verified',
+    'payment_information': 'Completed',
+    'social_media': 'Completed'
+  };
+
+  return textMap[stepId] || 'Completed';
 }
 
 
@@ -265,11 +294,36 @@ async function completeOnboarding() {
     if (response.status === 'success') {
       toast.success('Success', response.message || 'Onboarding completed successfully');
 
-      // Refresh auth store to update roles
-      await authApi.fetchRoles();
+      // Update auth store with new user data (including seller role)
+      if (response.data?.user) {
+        auth.setUser(response.data.user);
+      }
+      if (response.data?.roles) {
+        auth.setRoles(response.data.roles);
+        console.log('Roles set from onboarding response:', response.data.roles);
+      } else {
+        // If roles not in response, fetch them separately
+        console.log('No roles in onboarding response, fetching roles...');
+        try {
+          const authApi = useAuthApi();
+          await authApi.fetchRoles();
+          console.log('Roles fetched successfully, isSeller:', auth.isSeller);
+        } catch (error) {
+          console.error('Failed to fetch roles after onboarding:', error);
+        }
+      }
 
-      // Redirect to seller dashboard
-      router.push({
+      // Wait a moment for auth store to update
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      console.log('Auth state before redirect:', {
+        isAuthenticated: auth.isAuthenticated,
+        isSeller: auth.isSeller,
+        roles: auth.roles
+      });
+
+      // Redirect to seller dashboard automatically
+      await router.push({
         name: 'username-selling-dashboard',
         params: { username: router.currentRoute.value.params.username }
       });
