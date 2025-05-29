@@ -230,8 +230,8 @@ const sellerNavigationItems = computed(() => [
     to: { name: 'username-selling-onboarding', params: { username: props.username } },
     icon: 'UiIconsProfile',
     requiresSeller: false,
-    // Always show onboarding when it's active or when user is not a seller
-    showWhen: () => onboardingState.isOnboardingActive.value || !props.isSeller
+    // Only show onboarding when it's active (for sellers) or when user is not a seller
+    showWhen: () => !props.isSeller || onboardingState.isOnboardingActive.value
   },
   {
     text: 'Dashboard',
