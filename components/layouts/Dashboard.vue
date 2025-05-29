@@ -2,7 +2,7 @@
   <div class="flex w-full select-none">
     <!-- Sidebar navigation - visible on all screens (md+) or when toggled (mobile) -->
     <NavigationSideBar
-      :isSeller="mode === 'seller'"
+      :isSeller="isSeller"
       :username="username"
       :defaultMode="mode"
       :class="[
@@ -67,8 +67,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useAuthStore } from '~/stores/auth';
+import { useAuthApi } from '~/composables/useAuthApi';
 
 // Props with validation
 const props = defineProps({
@@ -87,6 +89,8 @@ const props = defineProps({
 // Route and router for navigation
 const route = useRoute();
 const router = useRouter();
+const authStore = useAuthStore();
+const authApi = useAuthApi();
 
 // Reactive state
 const menuRevealed = ref(false);
@@ -94,6 +98,7 @@ const mobileNavOpen = ref(false);
 
 // Computed properties
 const username = computed(() => route.params.username || 'username');
+const isSeller = computed(() => authStore.isSeller);
 
 // Methods
 function toggleMenu() {
@@ -111,4 +116,16 @@ function handleLogoClick() {
     router.push({ name: '/' });
   }
 }
+
+// Ensure roles are loaded when dashboard mounts
+onMounted(async () => {
+  // If user is authenticated but has no roles, fetch them
+  if (authStore.isAuthenticated && authStore.roles.length === 0) {
+    try {
+      await authApi.fetchRoles();
+    } catch (error) {
+      console.error('Failed to fetch user roles:', error);
+    }
+  }
+});
 </script>
