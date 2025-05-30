@@ -121,6 +121,13 @@ definePageMeta({
   requiresVerification: true
 });
 
+useHead({
+  title: 'Identity Verification | Kafinta',
+  meta: [
+    { name: 'description', content: 'Complete KYC verification to continue with seller onboarding' }
+  ]
+});
+
 const router = useRouter();
 const route = useRoute();
 const toast = useAppToast();

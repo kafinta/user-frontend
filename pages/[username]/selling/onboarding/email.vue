@@ -61,6 +61,13 @@ definePageMeta({
   requiresAuth: true
 });
 
+useHead({
+  title: 'Verify Email | Kafinta',
+  meta: [
+    { name: 'description', content: 'Verify your email address to continue with seller onboarding' }
+  ]
+});
+
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
