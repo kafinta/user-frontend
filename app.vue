@@ -7,7 +7,14 @@
 </template>
 
 <script setup>
-// Global app setup - no initialization needed currently
+// Set default title and meta
+useHead({
+  title: 'Kafinta | Home & Furniture Marketplace',
+  meta: [
+    { name: 'description', content: 'Buy and sell products on Kafinta marketplace' },
+    { name: 'viewport', content: 'width=device-width, initial-scale=1' }
+  ]
+})
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
