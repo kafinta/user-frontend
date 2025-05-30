@@ -39,6 +39,13 @@ definePageMeta({
   authOnly: true  // Only accessible when NOT authenticated, else redirect to dashboard
 });
 
+useHead({
+  title: 'Login | Kafinta',
+  meta: [
+    { name: 'description', content: 'Sign in to your Kafinta account to buy and sell products' }
+  ]
+});
+
 import { useRouter, useRoute } from 'vue-router';
 import { ref, computed } from "vue";
 import { useAuthStore } from '~/stores/auth';

@@ -70,6 +70,13 @@ definePageMeta({
   isVerifyRoute: true
 });
 
+useHead({
+  title: 'Verify Email | Kafinta',
+  meta: [
+    { name: 'description', content: 'Verify your email address to complete your Kafinta account setup' }
+  ]
+});
+
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useAuthStore } from '~/stores/auth';
 import { useAppToast } from "~/utils/toastify";

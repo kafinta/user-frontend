@@ -46,6 +46,13 @@ definePageMeta({
   authOnly: true // Only allow unauthenticated users
 });
 
+useHead({
+  title: 'Forgot Password | Kafinta',
+  meta: [
+    { name: 'description', content: 'Reset your Kafinta account password' }
+  ]
+});
+
 import { ref } from "vue";
 import { useRouter } from 'vue-router';
 import { useAppToast } from "~/utils/toastify";
