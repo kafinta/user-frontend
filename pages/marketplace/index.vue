@@ -35,6 +35,13 @@
   </LayoutsMarketplace>
 </template>
 <script setup>
+useHead({
+  title: 'Browse Marketplace | Kafinta',
+  meta: [
+    { name: 'description', content: 'Discover and shop products from top sellers on Kafinta marketplace' }
+  ]
+});
+
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useProductFilters } from '~/composables/useProductFilters';

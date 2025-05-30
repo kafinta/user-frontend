@@ -23,6 +23,13 @@
   </LayoutsMarketplace>
 </template>
 <script setup>
+useHead({
+  title: 'Browse Locations | Kafinta',
+  meta: [
+    { name: 'description', content: 'Browse products by room location on Kafinta marketplace' }
+  ]
+});
+
 import { computed } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'

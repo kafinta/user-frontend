@@ -4,7 +4,7 @@
       <div class="grid lg:grid-cols-5 gap-10 relative">
         <div class="col-span-1 lg:col-span-3">
           <ProductsPageCarousel />
-          <ProductsPageSidebar v-if="!isDesktop" class="my-5" /> 
+          <ProductsPageSidebar v-if="!isDesktop" class="my-5" />
           <hr class="lg:hidden">
 
           <ProductsPageDescription />
@@ -17,28 +17,30 @@
     </Container>
   </LayoutsMarketplace>
 </template>
-<script>
-export default {
-  data(){
-    return {
-      isDesktop: false,
-      review: 3.5,
-      review_count: 50
-    }
-  },
+<script setup>
+useHead({
+  title: 'View Product | Kafinta',
+  meta: [
+    { name: 'description', content: 'View detailed product information, specifications, and reviews on Kafinta marketplace' }
+  ]
+});
 
-  methods: {
-    handleResize() {
-      this.isDesktop = window.innerWidth >= 1024;
-    },
-  },
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 
-  mounted() {
-    this.isDesktop = window.innerWidth >= 1024;
-    window.addEventListener('resize', this.handleResize);
-  },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.handleResize);
-  },
-}
+const isDesktop = ref(false);
+const review = ref(3.5);
+const review_count = ref(50);
+
+const handleResize = () => {
+  isDesktop.value = window.innerWidth >= 1024;
+};
+
+onMounted(() => {
+  isDesktop.value = window.innerWidth >= 1024;
+  window.addEventListener('resize', handleResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize);
+});
 </script>
