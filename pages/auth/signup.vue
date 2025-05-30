@@ -44,6 +44,13 @@ definePageMeta({
   authOnly: true
 });
 
+useHead({
+  title: 'Sign Up | Kafinta',
+  meta: [
+    { name: 'description', content: 'Create your Kafinta account to start buying and selling products' }
+  ]
+});
+
 import { useRouter } from 'vue-router';
 import { ref } from "vue";
 import { useAppToast } from "~/utils/toastify";
