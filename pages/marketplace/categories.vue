@@ -28,6 +28,13 @@
   </LayoutsMarketplace>
 </template>
 <script setup>
+useHead({
+  title: 'Browse Categories | Kafinta',
+  meta: [
+    { name: 'description', content: 'Browse product categories to find what you need on Kafinta marketplace' }
+  ]
+});
+
 import { computed } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
