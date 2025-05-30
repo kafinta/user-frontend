@@ -145,6 +145,13 @@ definePageMeta({
   requiresVerification: true
 });
 
+useHead({
+  title: 'Seller Agreement | Kafinta',
+  meta: [
+    { name: 'description', content: 'Accept the seller agreement to continue with onboarding' }
+  ]
+});
+
 const router = useRouter();
 const route = useRoute();
 const toast = useAppToast();

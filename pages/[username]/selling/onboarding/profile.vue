@@ -106,6 +106,13 @@ definePageMeta({
   requiresVerification: true
 });
 
+useHead({
+  title: 'Business Profile Setup | Kafinta',
+  meta: [
+    { name: 'description', content: 'Set up your seller profile to continue with onboarding' }
+  ]
+});
+
 const router = useRouter();
 const route = useRoute();
 const toast = useAppToast();

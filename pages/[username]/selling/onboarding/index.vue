@@ -141,6 +141,13 @@ definePageMeta({
   // Note: We don't require seller role for onboarding since this is where users become sellers
 });
 
+useHead({
+  title: 'Seller Onboarding | Kafinta',
+  meta: [
+    { name: 'description', content: 'Complete your seller onboarding to start selling on Kafinta' }
+  ]
+});
+
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useOnboarding } from "@/composables/useOnboarding.ts";

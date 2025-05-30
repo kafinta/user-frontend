@@ -158,6 +158,13 @@ definePageMeta({
   requiresVerification: true
 });
 
+useHead({
+  title: 'Social Media Setup | Kafinta',
+  meta: [
+    { name: 'description', content: 'Add your social media accounts to showcase your business' }
+  ]
+});
+
 const router = useRouter();
 const route = useRoute();
 const toast = useAppToast();

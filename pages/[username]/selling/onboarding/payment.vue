@@ -111,6 +111,13 @@ definePageMeta({
   requiresVerification: true
 });
 
+useHead({
+  title: 'Payment Setup | Kafinta',
+  meta: [
+    { name: 'description', content: 'Set up your payment information to receive earnings' }
+  ]
+});
+
 const router = useRouter();
 const route = useRoute();
 const toast = useAppToast();

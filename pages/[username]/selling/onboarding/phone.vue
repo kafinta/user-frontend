@@ -82,6 +82,13 @@ definePageMeta({
   requiresVerification: true
 });
 
+useHead({
+  title: 'Verify Phone | Kafinta',
+  meta: [
+    { name: 'description', content: 'Verify your phone number to continue with seller onboarding' }
+  ]
+});
+
 const router = useRouter();
 const route = useRoute();
 const toast = useAppToast();
