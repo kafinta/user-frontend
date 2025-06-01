@@ -148,10 +148,10 @@ const form = ref({
 
 // ID Type options
 const idTypeOptions = [
-  'National I.D Card',
-  'National Identity Number (N.I.N)',
-  'International Passport',
-  "Driver's License"
+  { label: 'National I.D Card', value: 'National I.D Card' },
+  { label: 'National Identity Number (N.I.N)', value: 'National Identity Number (N.I.N)' },
+  { label: 'International Passport', value: 'International Passport' },
+  { label: "Driver's License", value: "Driver's License" }
 ];
 
 
