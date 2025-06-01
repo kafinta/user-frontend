@@ -67,10 +67,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '~/stores/auth';
-import { useAuthApi } from '~/composables/useAuthApi';
 
 // Props with validation
 const props = defineProps({
@@ -90,7 +89,6 @@ const props = defineProps({
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
-const authApi = useAuthApi();
 
 // Reactive state
 const menuRevealed = ref(false);
@@ -117,15 +115,6 @@ function handleLogoClick() {
   }
 }
 
-// Ensure roles are loaded when dashboard mounts
-onMounted(async () => {
-  // If user is authenticated but has no roles, fetch them
-  if (authStore.isAuthenticated && authStore.roles.length === 0) {
-    try {
-      await authApi.fetchRoles();
-    } catch (error) {
-      console.error('Failed to fetch user roles:', error);
-    }
-  }
-});
+// Roles are now handled by middleware when needed
+// No automatic role fetching on dashboard mount to prevent race conditions
 </script>
