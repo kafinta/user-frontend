@@ -49,7 +49,6 @@
       :class="labelClasses"
       class="select-none"
       :style="disabled ? '' : 'transition: color 200ms ease-out;'"
-      @click="!disabled && toggle()"
     >
       <slot>{{ label }}</slot>
     </label>
