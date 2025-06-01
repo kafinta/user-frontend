@@ -15,7 +15,8 @@
     @blur="handleBlur"
     @keydown="handleKeydown"
     :class="inputClasses"
-    class="w-full outline-none ring-0 focus:outline-none transition-all duration-300 ease-out bg-transparent"
+    class="w-full outline-none ring-0 focus:outline-none bg-transparent"
+    :style="effectiveDisabled ? '' : 'transition: all 300ms ease-out;'"
   />
 </template>
 
@@ -143,7 +144,7 @@ export default {
         'bg-white',
         
         // Disabled state
-        this.effectiveDisabled ? 'bg-gray-50 text-gray-400 cursor-not-allowed' : '',
+        this.effectiveDisabled ? 'bg-accent-50 text-accent-400 cursor-not-allowed' : '',
         
         // Hover state
         !this.effectiveDisabled && !this.effectiveError ? 'hover:border-primary hover:border-opacity-60' : ''
@@ -153,36 +154,43 @@ export default {
 
   methods: {
     handleInput(event) {
+      if (this.effectiveDisabled) return
       this.$emit('update:modelValue', event.target.value)
       this.$emit('input', event)
     },
 
     handleFocus(event) {
+      if (this.effectiveDisabled) return
       this.isFocused = true
       this.$emit('focus', event)
     },
 
     handleBlur(event) {
+      if (this.effectiveDisabled) return
       this.isFocused = false
       this.$emit('blur', event)
     },
 
     handleKeydown(event) {
+      if (this.effectiveDisabled) return
       this.$emit('keydown', event)
     },
 
     // Public method to focus the input
     focus() {
+      if (this.effectiveDisabled) return
       this.$refs.input?.focus()
     },
 
     // Public method to blur the input
     blur() {
+      if (this.effectiveDisabled) return
       this.$refs.input?.blur()
     },
 
     // Public method to select all text
     select() {
+      if (this.effectiveDisabled) return
       this.$refs.input?.select()
     }
   }

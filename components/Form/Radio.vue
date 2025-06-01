@@ -29,8 +29,9 @@
           <!-- Custom radio button -->
           <div
             :class="radioClasses(option)"
-            class="w-5 h-5 rounded-full border-2 flex items-center justify-center cursor-pointer transition-all duration-200"
-            @click="selectOption(option)"
+            class="w-5 h-5 rounded-full border-2 flex items-center justify-center"
+            :style="disabled ? '' : 'transition: all 200ms ease-out;'"
+            @click="!disabled && selectOption(option)"
           >
             <!-- Inner dot when selected -->
             <div
@@ -43,7 +44,9 @@
           <label
             :for="`${fieldId}_${index}`"
             :class="labelClasses(option)"
-            class="ml-3 text-sm cursor-pointer transition-colors duration-200"
+            class="ml-3 text-sm"
+            :style="disabled ? '' : 'transition: color 200ms ease-out;'"
+            @click="!disabled && selectOption(option)"
           >
             {{ getDisplayText(option) }}
           </label>
@@ -160,32 +163,42 @@ export default {
       const isSelected = this.isSelected(option)
       const hasError = !!this.error
 
+      if (this.disabled) {
+        return {
+          // Disabled state - no transitions, no hover effects
+          'cursor-not-allowed': true,
+          'border-accent-200 bg-accent-50': !isSelected,
+          'border-accent-300 bg-accent-300': isSelected
+        }
+      }
+
       return {
         // Base styles
-        'border-accent-300': !isSelected && !hasError && !this.disabled,
-        'bg-white': !isSelected,
+        'cursor-pointer': true,
+        'border-accent-300 bg-white': !isSelected && !hasError,
 
         // Selected state
-        'border-primary bg-primary': isSelected && !this.disabled,
-        'border-primary/50 bg-primary/50': isSelected && this.disabled,
+        'border-primary bg-primary': isSelected,
 
         // Error state
-        'border-red-500': hasError && !isSelected,
-
-        // Disabled state
-        'border-accent-200 bg-accent-100 cursor-not-allowed': this.disabled && !isSelected,
+        'border-red-500 bg-white': hasError && !isSelected,
 
         // Hover states
-        'hover:border-accent-400': !isSelected && !this.disabled && !hasError,
-        'hover:border-primary-600 hover:bg-primary-600': isSelected && !this.disabled
+        'hover:border-accent-400': !isSelected && !hasError,
+        'hover:border-primary-600 hover:bg-primary-600': isSelected
       }
     },
 
     // Label classes
     labelClasses(option) {
+      if (this.disabled) {
+        return {
+          'text-accent-400 cursor-not-allowed': true
+        }
+      }
+
       return {
-        'text-secondary': !this.disabled,
-        'text-accent-400': this.disabled
+        'text-secondary cursor-pointer': true
       }
     }
   }

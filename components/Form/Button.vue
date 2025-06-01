@@ -1,8 +1,11 @@
 <template>
   <button
     type="submit"
-    class="py-2 px-5 flex w-full text-white font-medium text-base 2xl:text-lg justify-center duration-500 ease-in-out rounded-md focus:bg-primary " 
-    :disabled="loading || disabled" :class="loading ? 'bg-primary': 'bg-secondary hover:bg-primary'">
+    :disabled="loading || disabled"
+    :class="buttonClasses"
+    class="py-2 px-5 flex w-full text-white font-medium text-base 2xl:text-lg justify-center rounded-md focus:bg-primary"
+    :style="(loading || disabled) ? '' : 'transition: background-color 500ms ease-in-out;'"
+  >
 
     <div class="flex items-center justify-center capitalize">
       <div v-if="loading"  >
@@ -28,6 +31,22 @@ export default {
           type: String
       },
   },
+
+  computed: {
+    buttonClasses() {
+      if (this.loading || this.disabled) {
+        return [
+          // Disabled/loading state - no transitions, no hover effects
+          this.loading ? 'bg-primary cursor-wait' : 'bg-accent-300 text-accent-500 cursor-not-allowed'
+        ].join(' ')
+      }
+
+      return [
+        // Normal state with hover effects
+        'bg-secondary hover:bg-primary'
+      ].join(' ')
+    }
+  }
 }
 </script>
 

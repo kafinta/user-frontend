@@ -1,5 +1,10 @@
 <template>
-  <div :class="addonClasses" class="flex items-center justify-center px-3 transition-all duration-300 ease-out">
+  <div
+    :class="addonClasses"
+    class="flex items-center justify-center px-3"
+    :style="inputGroup.disabled ? '' : 'transition: all 300ms ease-out;'"
+    @click="handleClick"
+  >
     <slot />
   </div>
 </template>
@@ -37,6 +42,25 @@ export default {
         large: 'py-4 text-lg'
       }
 
+      if (this.inputGroup.disabled) {
+        return [
+          // Base styling
+          'border-r border-l border-accent-200',
+
+          // Size
+          sizeClasses[this.inputGroup.size],
+
+          // Disabled state - no transitions, no hover effects
+          'bg-accent-100 text-accent-400 cursor-not-allowed',
+
+          // Error state for disabled
+          this.inputGroup.error ? 'text-red-300' : '',
+
+          // First/last child styling (remove unnecessary borders)
+          'first:border-l-0 last:border-r-0'
+        ].filter(Boolean).join(' ')
+      }
+
       return [
         // Base styling
         'border-r border-l border-accent-200',
@@ -51,10 +75,7 @@ export default {
         this.inputGroup.error ? 'text-red-600' : 'text-secondary',
 
         // Clickable states
-        this.clickable && !this.inputGroup.disabled ? 'cursor-pointer hover:bg-accent-100 hover:text-primary' : '',
-
-        // Disabled state
-        this.inputGroup.disabled ? 'opacity-50 cursor-not-allowed' : '',
+        this.clickable ? 'cursor-pointer hover:bg-accent-100 hover:text-primary' : '',
 
         // First/last child styling (remove unnecessary borders)
         'first:border-l-0 last:border-r-0'

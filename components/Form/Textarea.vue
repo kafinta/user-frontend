@@ -8,11 +8,12 @@
       :disabled="disabled"
       :rows="rows"
       :autocomplete="autocomplete || 'off'"
-      @input="handleInput"
-      @focus="handleFocus"
-      @blur="handleBlur"
+      @input="!disabled && handleInput($event)"
+      @focus="!disabled && handleFocus()"
+      @blur="!disabled && handleBlur()"
       :class="textareaClasses"
-      class="w-full py-3 px-4 border text-sm outline-none ring-0 focus:outline-none rounded-md duration-300 ease-out bg-white peer placeholder-transparent resize-y"
+      class="w-full py-3 px-4 border text-sm outline-none ring-0 focus:outline-none rounded-md bg-white peer placeholder-transparent resize-y"
+      :style="disabled ? '' : 'transition: border-color 300ms ease-out, color 300ms ease-out;'"
       :placeholder="label"
     ></textarea>
 
@@ -20,7 +21,8 @@
     <label
       :for="textareaId"
       :class="labelClasses"
-      class="absolute left-4 transition-all duration-300 ease-out pointer-events-none select-none"
+      :style="disabled ? '' : 'transition: all 300ms ease-out;'"
+      class="absolute left-4 pointer-events-none select-none"
     >
       {{ label }}
     </label>
@@ -67,6 +69,15 @@ export default {
     },
 
     textareaClasses() {
+      if (this.disabled) {
+        return [
+          // Disabled state - no transitions, no hover effects
+          'border-accent-200 bg-accent-50 text-accent-400 cursor-not-allowed',
+          this.centerText ? 'text-center' : '',
+          this.extraClass || ''
+        ].filter(Boolean).join(' ')
+      }
+
       return [
         // Base styling
         'border-accent-200',
@@ -83,9 +94,6 @@ export default {
 
         // Default text color
         'text-secondary',
-
-        // Disabled state
-        this.disabled ? 'bg-accent-50 text-accent-400 cursor-not-allowed' : '',
 
         // Extra classes
         this.extraClass || ''
@@ -114,18 +122,22 @@ export default {
 
   methods: {
     handleInput(event) {
+      if (this.disabled) return
       this.$emit('update:inputValue', event.target.value)
     },
 
     handleFocus() {
+      if (this.disabled) return
       this.isFocused = true
     },
 
     handleBlur() {
+      if (this.disabled) return
       this.isFocused = false
     },
 
     focus() {
+      if (this.disabled) return
       this.$refs.textarea.focus()
     }
   }

@@ -1,5 +1,5 @@
 <template>
-  <div :class="containerClasses" class="flex w-full">
+  <div :class="containerClasses" class="flex w-full" :style="disabled ? '' : 'transition: all 300ms ease-out;'">
     <slot />
   </div>
 </template>
@@ -35,25 +35,41 @@ export default {
         large: 'text-lg'
       }
 
+      if (this.disabled) {
+        return [
+          // Base styling
+          'relative overflow-hidden rounded-md border',
+
+          // Size
+          sizeClasses[this.size],
+
+          // Width
+          this.fluid ? 'w-full' : 'w-auto',
+
+          // Disabled state - no transitions, no hover effects
+          'border-accent-200 bg-accent-50 cursor-not-allowed',
+
+          // Error state for disabled
+          this.error ? 'border-red-300' : ''
+        ].filter(Boolean).join(' ')
+      }
+
       return [
         // Base styling
-        'relative overflow-hidden rounded-md border transition-all duration-300 ease-out',
-        
+        'relative overflow-hidden rounded-md border',
+
         // Size
         sizeClasses[this.size],
-        
+
         // Width
         this.fluid ? 'w-full' : 'w-auto',
-        
+
         // Border states
         this.error ? 'border-red-600' : 'border-secondary border-opacity-20',
-        
+
         // Focus-within states
         !this.error ? 'focus-within:border-primary focus-within:border-opacity-100' : '',
-        
-        // Disabled state
-        this.disabled ? 'opacity-50 cursor-not-allowed' : '',
-        
+
         // Background
         'bg-white'
       ].filter(Boolean).join(' ')
