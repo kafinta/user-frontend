@@ -1,7 +1,8 @@
 // middleware/auth.ts
 import { defineNuxtRouteMiddleware, navigateTo } from '#app';
 import { useAuthStore } from '~/stores/auth';
-import { useAppToast } from '~/utils/toastify';
+import { useAppToast } from '~/utils/toastify'
+import { useAuthApi } from '~/composables/useAuthApi';
 
 // Import SimpleResponse type from auth store
 import type { SimpleResponse } from '~/stores/auth';
@@ -111,7 +112,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
       // If session validation restored auth state, continue with middleware checks
       if (authStore.isAuthenticated) {
-        // Re-run the verification and role checks below
+        // Session restored successfully, continue with other checks below
       } else {
         // No valid session, redirect to login
         if (!to.fullPath.includes('/auth/')) {
@@ -161,10 +162,32 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
   }
 
-  // Case 4: Basic role checking (complex role logic should be handled at page level)
-  if (authStore.isAuthenticated && !hasBasicRoleAccess()) {
-    showAccessDenied('You do not have the required permissions to access this page');
-    return navigateToDashboard();
+  // Case 4: Role-based access control
+  if (authStore.isAuthenticated && routeRequirements.requiresSeller) {
+    // If route requires seller role but user doesn't have it, check if roles are loaded
+    if (!authStore.isSeller) {
+      // If no roles are loaded at all, try to fetch them first
+      if (authStore.roles.length === 0) {
+        try {
+          const authApi = useAuthApi();
+          await authApi.fetchRoles();
+
+          // After fetching roles, check again
+          if (!authStore.isSeller) {
+            showAccessDenied('You do not have the required permissions to access this page');
+            return navigateToDashboard();
+          }
+        } catch (error) {
+          console.error('Failed to fetch roles for access control:', error);
+          showAccessDenied('Unable to verify permissions');
+          return navigateToDashboard();
+        }
+      } else {
+        // Roles are loaded but user is not a seller
+        showAccessDenied('You do not have the required permissions to access this page');
+        return navigateToDashboard();
+      }
+    }
   }
 
   // If we reach here, the user is allowed to access the route
