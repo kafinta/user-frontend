@@ -15,15 +15,16 @@
     
     <!-- Custom checkbox -->
     <div
-      @click="toggle"
-      @keydown.space.prevent="toggle"
-      @keydown.enter.prevent="toggle"
+      @click="!disabled && toggle()"
+      @keydown.space.prevent="!disabled && toggle()"
+      @keydown.enter.prevent="!disabled && toggle()"
       :tabindex="disabled ? -1 : 0"
       role="checkbox"
       :aria-checked="isChecked"
       :aria-disabled="disabled"
       :class="checkboxClasses"
-      class="relative flex items-center justify-center w-4 h-4 border-2 rounded cursor-pointer transition-all duration-200 ease-out focus:outline-none"
+      class="relative flex items-center justify-center w-4 h-4 border-2 rounded focus:outline-none"
+      :style="disabled ? '' : 'transition: all 200ms ease-out;'"
     >
       <!-- Checkmark -->
       <svg
@@ -46,8 +47,9 @@
       v-if="label || $slots.default"
       :for="inputId"
       :class="labelClasses"
-      class="cursor-pointer select-none transition-colors duration-200"
-      @click="toggle"
+      class="select-none"
+      :style="disabled ? '' : 'transition: color 200ms ease-out;'"
+      @click="!disabled && toggle()"
     >
       <slot>{{ label }}</slot>
     </label>
@@ -120,41 +122,52 @@ export default {
         large: 'w-5 h-5'
       }
 
+      if (this.disabled) {
+        return [
+          // Size
+          sizeClasses[this.size],
+          // Disabled state - no transitions, no hover effects
+          this.isChecked ? 'bg-accent-300 border-accent-300' : 'bg-accent-50 border-accent-200',
+          'cursor-not-allowed',
+          this.error ? 'border-red-300' : ''
+        ].filter(Boolean).join(' ')
+      }
+
       return [
         // Size
         sizeClasses[this.size],
-        
+
         // Base styling
         this.isChecked ? 'bg-primary border-primary' : 'bg-white border-secondary border-opacity-30',
-        
+
         // Hover states
-        !this.disabled && !this.isChecked ? 'hover:border-primary hover:border-opacity-60' : '',
-        !this.disabled && this.isChecked ? 'hover:bg-primary hover:bg-opacity-90' : '',
-        
+        !this.isChecked ? 'hover:border-primary hover:border-opacity-60' : 'hover:bg-primary hover:bg-opacity-90',
+
         // Error states
         this.error ? 'border-red-600' : '',
-        
-        // Disabled states
-        this.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
-        
-        // Focus states
-        !this.disabled ? '' : ''
+
+        // Interactive state
+        'cursor-pointer'
       ].filter(Boolean).join(' ')
     },
 
     labelClasses() {
+      if (this.disabled) {
+        return [
+          'text-sm text-accent-400 cursor-not-allowed',
+          this.error ? 'text-red-300' : ''
+        ].filter(Boolean).join(' ')
+      }
+
       return [
         // Base styling
-        'text-sm',
-        
+        'text-sm cursor-pointer',
+
         // Color states
         this.error ? 'text-red-600' : 'text-secondary',
-        
-        // Disabled state
-        this.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
-        
+
         // Hover state
-        !this.disabled ? 'hover:text-primary' : ''
+        'hover:text-primary'
       ].filter(Boolean).join(' ')
     }
   },
@@ -202,7 +215,7 @@ export default {
 </script>
 
 <style scoped>
-/* Smooth transitions for the checkmark */
+/* Conditional transitions for the checkmark - only when not disabled */
 svg {
   transition: opacity 0.2s ease-out;
 }

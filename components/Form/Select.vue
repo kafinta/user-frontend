@@ -5,16 +5,18 @@
       ref="trigger"
       :id="selectId"
       :tabindex="disabled ? -1 : 0"
-      @click="toggleDropdown"
-      @keydown="handleKeydown"
-      @focus="handleFocus"
-      @blur="handleBlur"
+      @click="!disabled && toggleDropdown()"
+      @keydown="!disabled && handleKeydown($event)"
+      @focus="!disabled && handleFocus()"
+      @blur="!disabled && handleBlur($event)"
       :class="triggerClasses"
-      class="w-full py-3 px-4 pr-10 border text-sm outline-none ring-0 focus:outline-none rounded-md duration-300 ease-out bg-white cursor-pointer"
+      class="w-full py-3 px-4 pr-10 border text-sm outline-none ring-0 focus:outline-none rounded-md bg-white"
+      :style="disabled ? '' : 'transition: border-color 300ms ease-out, color 300ms ease-out;'"
       role="combobox"
       :aria-expanded="isOpen"
       :aria-haspopup="true"
       :aria-labelledby="`${selectId}-label`"
+      :aria-disabled="disabled"
     >
       <span v-if="selectedOption" class="block truncate">{{ getDisplayText(selectedOption) }}</span>
       <span v-else class="block truncate opacity-0">{{ label }}</span>
@@ -25,7 +27,8 @@
       :id="`${selectId}-label`"
       :for="selectId"
       :class="labelClasses"
-      class="absolute left-4 transition-all duration-300 ease-out pointer-events-none select-none"
+      :style="disabled ? '' : 'transition: all 300ms ease-out;'"
+      class="absolute left-4 pointer-events-none select-none"
     >
       {{ label }}
     </label>
@@ -33,8 +36,12 @@
     <!-- Custom dropdown arrow -->
     <div class="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
       <svg
-        :class="{ 'rotate-180': isOpen }"
-        class="w-4 h-4 text-secondary transition-transform duration-200"
+        :class="[
+          { 'rotate-180': isOpen && !disabled },
+          disabled ? 'text-accent-400' : 'text-secondary'
+        ]"
+        :style="disabled ? '' : 'transition: transform 200ms ease-out;'"
+        class="w-4 h-4"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -120,9 +127,18 @@ export default {
     },
 
     triggerClasses() {
+      if (this.disabled) {
+        return [
+          // Disabled state - no transitions, no hover effects
+          'border-accent-200 bg-accent-50 text-accent-400 cursor-not-allowed',
+          this.centerText ? 'text-center' : '',
+          this.extraClass || ''
+        ].filter(Boolean).join(' ')
+      }
+
       return [
         // Base styling
-        'border-accent-200',
+        'border-accent-200 cursor-pointer',
 
         // Focus states
         'focus:border-primary focus:border-opacity-100 focus:text-secondary',
@@ -138,9 +154,6 @@ export default {
 
         // Default text color
         'text-secondary',
-
-        // Disabled state
-        this.disabled ? 'bg-accent-50 text-accent-400 cursor-not-allowed' : '',
 
         // Extra classes
         this.extraClass || ''
@@ -182,6 +195,7 @@ export default {
     },
 
     selectOption(option) {
+      if (this.disabled) return
       const value = typeof option === 'object' ? option.value : option
       this.$emit('update:selectedOption', value)
       this.closeDropdown()
@@ -189,10 +203,12 @@ export default {
     },
 
     handleFocus() {
+      if (this.disabled) return
       this.isFocused = true
     },
 
     handleBlur(event) {
+      if (this.disabled) return
       // Only blur if not clicking on dropdown
       if (!this.$refs.dropdown?.contains(event.relatedTarget)) {
         this.isFocused = false

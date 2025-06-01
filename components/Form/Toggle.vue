@@ -1,8 +1,26 @@
 <template>
   <div>
     <!-- Reveal -->
-    <button @click="revealPassword" :class="is_hidden ? 'block' : 'hidden' ">
-      <svg class="text-accent1-600 w-4 hover:text-accent2-700 duration-500 ease-in-out" fill="currentColor" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 256 256" style="enable-background:new 0 0 256 256;" xml:space="preserve">
+    <button
+      @click="!disabled && revealPassword()"
+      :disabled="disabled"
+      :class="[is_hidden ? 'block' : 'hidden', disabled ? 'cursor-not-allowed' : '']"
+    >
+      <svg
+        :class="disabled ? 'text-accent-400' : 'text-accent1-600 hover:text-accent2-700'"
+        :style="disabled ? '' : 'transition: color 500ms ease-in-out;'"
+        class="w-4"
+        fill="currentColor"
+        version="1.1"
+        id="Layer_1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        x="0px"
+        y="0px"
+        viewBox="0 0 256 256"
+        style="enable-background:new 0 0 256 256;"
+        xml:space="preserve"
+      >
         <g>
           <path d="M27,7.5l221,221l-19.6,19.6l-45.4-45.4c-16.8,9-35.2,13.5-55.2,13.5c-26.2,0-50.3-8-72.4-23.9
           c-22.5-16-40.9-37.4-55.2-64.5c6.1-11,13.9-22.1,23.3-33.1c9-11.5,17.6-20.1,25.8-25.8L7.4,27.1L27,7.5z M186.6,127.8
@@ -14,8 +32,26 @@
       </svg>
     </button>
 
-    <button @click="hidePassword" :class="is_hidden ? 'hidden' : 'block' " >
-      <svg class="text-accent1-600 w-4 hover:text-accent2-700 duration-500 ease-in-out" fill="currentColor" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 256 256" style="enable-background:new 0 0 256 256;" xml:space="preserve">
+    <button
+      @click="!disabled && hidePassword()"
+      :disabled="disabled"
+      :class="[is_hidden ? 'hidden' : 'block', disabled ? 'cursor-not-allowed' : '']"
+    >
+      <svg
+        :class="disabled ? 'text-accent-400' : 'text-accent1-600 hover:text-accent2-700'"
+        :style="disabled ? '' : 'transition: color 500ms ease-in-out;'"
+        class="w-4"
+        fill="currentColor"
+        version="1.1"
+        id="Layer_1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        x="0px"
+        y="0px"
+        viewBox="0 0 256 256"
+        style="enable-background:new 0 0 256 256;"
+        xml:space="preserve"
+      >
         <path d="M49.2,74.2c-18.1,13.3-33.1,31-44.7,50.2c-1.4,2.4-2.9,4.9-3,7.7c-0.2,3.4,1.6,6.6,3.3,9.5c14,23.3,32.4,44.3,55.2,59 s50.3,22.9,77.4,20.5c32.3-2.9,61.8-20.7,85-43.3c10.2-9.9,19.4-20.9,27.4-32.6c2.1-3.1,4.3-6.5,4.3-10.3c0-3.2-1.5-6.3-3.1-9.1 c-17.1-30.8-43.5-57.1-76-70.7s-71.3-13.5-102.2,3.5 M127.9,192.2c-3.5,0-6.9-0.3-10.3-0.9c-10.2-1.6-19.2-5.8-27.2-12.5 c-6-4.9-11-11-14.7-17.8c0-0.1-0.1-0.1-0.1-0.2c-4.5-8.3-7-17.9-7-28c0-32.8,26.6-59.4,59.4-59.4c32.8,0,59.4,26.6,59.4,59.4 S160.7,192.2,127.9,192.2z"/>
         <circle cx="127.8" cy="133.1" r="30.3"/>
       </svg>
@@ -26,6 +62,13 @@
 
 <script>
 export default {
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false
+    }
+  },
+
   data(){
     return{
       is_hidden: true
@@ -34,11 +77,13 @@ export default {
 
   methods: {
     revealPassword(){
+      if (this.disabled) return
       this.is_hidden = false
       this.$emit("revealPassword")
     },
 
     hidePassword(){
+      if (this.disabled) return
       this.is_hidden = true
       this.$emit("hidePassword")
     }

@@ -11,11 +11,12 @@
         pattern="[0-9]*"
         maxlength="1"
         :class="inputClasses"
-        class="w-12 h-12 md:w-14 md:h-14 text-center text-lg font-medium border rounded-md outline-none ring-0 focus:outline-none duration-300 ease-out bg-white"
-        @input="handleInput(index, $event)"
-        @keydown="handleKeydown(index, $event)"
-        @focus="handleFocus(index)"
-        @paste="handlePaste($event)"
+        class="w-12 h-12 md:w-14 md:h-14 text-center text-lg font-medium border rounded-md outline-none ring-0 focus:outline-none bg-white"
+        :style="disabled ? '' : 'transition: border-color 300ms ease-out, color 300ms ease-out;'"
+        @input="!disabled && handleInput(index, $event)"
+        @keydown="!disabled && handleKeydown(index, $event)"
+        @focus="!disabled && handleFocus(index)"
+        @paste="!disabled && handlePaste($event)"
         :disabled="disabled"
         autocomplete="off"
       />
@@ -69,6 +70,14 @@ export default {
 
   computed: {
     inputClasses() {
+      if (this.disabled) {
+        return [
+          // Disabled state - no transitions, no hover effects
+          'border-accent-200 bg-accent-50 text-accent-400 cursor-not-allowed',
+          this.error ? 'border-red-300' : ''
+        ].filter(Boolean).join(' ')
+      }
+
       return [
         // Base styling
         'border-accent-200',
@@ -83,11 +92,8 @@ export default {
         // Default text color
         'text-secondary',
 
-        // Disabled state
-        this.disabled ? 'bg-accent-50 text-accent-400 cursor-not-allowed' : '',
-
         // Hover state
-        !this.disabled ? 'hover:border-primary hover:border-opacity-60' : ''
+        'hover:border-primary hover:border-opacity-60'
       ].filter(Boolean).join(' ')
     },
 
@@ -125,6 +131,8 @@ export default {
     },
 
     handleInput(index, event) {
+      if (this.disabled) return
+
       const value = event.target.value
 
       // Only allow numbers if integerOnly is true
@@ -143,6 +151,8 @@ export default {
     },
 
     handleKeydown(index, event) {
+      if (this.disabled) return
+
       // Handle backspace
       if (event.key === 'Backspace') {
         if (!this.digits[index] && index > 0) {
@@ -180,6 +190,8 @@ export default {
     },
 
     handleFocus(index) {
+      if (this.disabled) return
+
       // Select all text when focusing
       this.$nextTick(() => {
         if (this.inputRefs[index]) {
@@ -189,6 +201,8 @@ export default {
     },
 
     handlePaste(event) {
+      if (this.disabled) return
+
       event.preventDefault()
       const pastedData = event.clipboardData.getData('text')
 
@@ -212,6 +226,8 @@ export default {
     },
 
     focusInput(index) {
+      if (this.disabled) return
+
       this.$nextTick(() => {
         if (this.inputRefs[index]) {
           this.inputRefs[index].focus()
@@ -221,11 +237,13 @@ export default {
 
     // Public method to focus the first input
     focus() {
+      if (this.disabled) return
       this.focusInput(0)
     },
 
     // Public method to clear all inputs
     clear() {
+      if (this.disabled) return
       this.digits = Array(this.length).fill('')
       this.focusInput(0)
     }
