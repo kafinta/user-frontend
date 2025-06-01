@@ -1,30 +1,42 @@
 <template>
   <LayoutsDashboard mode="seller" pageTitle="Onboarding">
-    <main class="w-full lg:w-2/3 2xl:w-1/2 mx-auto">
-      <UiTypographyH3 class="text-center">Business Social Media</UiTypographyH3>
-
-      <div v-if="isLoading" class="flex justify-center items-center py-10">
-        <UiLoading />
-      </div>
-
-      <div v-else-if="socialMediaCompleted" class="mt-8 text-center">
-        <!-- Success Icon (with ring like other onboarding pages) -->
-        <div class="w-20 h-20 mx-auto bg-green-200 rounded-full flex items-center justify-center mb-6">
-          <UiIconsSuccess class="w-16 h-16 text-green-600" />
+    <div class="flex justify-center items-center min-h-[calc(100vh-200px)] p-4">
+      <main :class="[
+        'w-full mx-auto rounded-xl p-8 border border-accent-200 bg-white space-y-6',
+        socialMediaCompleted || isLoading ? 'max-w-md' : 'max-w-2xl'
+      ]">
+        <!-- Success Icon (when social media completed) -->
+        <div v-if="socialMediaCompleted" class="text-center">
+          <div class="w-20 h-20 mx-auto bg-green-200 rounded-full flex items-center justify-center mb-6">
+            <UiIconsSuccess class="w-16 h-16 text-green-600" />
+          </div>
         </div>
 
-        <div class="bg-green-50 p-6 rounded-lg border border-green-200 mb-6">
-          <UiTypographyH4 class="text-green-700">Social Media Information Updated</UiTypographyH4>
-          <UiTypographyP class="text-green-600 mt-2">Your social media information has been successfully saved.</UiTypographyP>
+        <!-- Header -->
+        <div class="text-center">
+          <UiTypographyH2 class="font-medium text-3xl text-secondary">Business Social Media</UiTypographyH2>
+          <UiTypographyP class="text-sm text-secondary mt-2">
+            <span v-if="isLoading">Loading your social media information...</span>
+            <span v-else-if="socialMediaCompleted">Your social media information has been successfully saved.</span>
+            <span v-else>Add your social media accounts to help customers connect with your brand.</span>
+          </UiTypographyP>
         </div>
 
-        <FormButton @click="continueOnboarding" class="max-w-64 mx-auto">Continue Onboarding</FormButton>
-      </div>
-
-      <div v-else>
-        <div class="bg-accent-50 p-4 rounded-lg border border-accent-200 mb-6">
-          <UiTypographyP class="text-accent-700">Add your social media accounts to showcase your business and build customer trust. All fields are optional.</UiTypographyP>
+        <!-- Loading State -->
+        <div v-if="isLoading" class="flex justify-center items-center py-10">
+          <UiLoading />
         </div>
+
+        <!-- Success/Already Completed State -->
+        <div v-else-if="socialMediaCompleted" class="space-y-6 text-center">
+          <FormButton @click="continueOnboarding" class="w-full">Continue Onboarding</FormButton>
+        </div>
+
+        <!-- Social Media Form -->
+        <div v-else class="space-y-6">
+          <div class="bg-accent-50 p-4 rounded-lg border border-accent-200">
+            <UiTypographyP class="text-accent-700">Add your social media accounts to showcase your business and build customer trust. All fields are optional.</UiTypographyP>
+          </div>
 
         <form @submit.prevent="submitSocialMedia" class="mt-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -141,8 +153,9 @@
             </FormButton>
           </div>
         </form>
-      </div>
-    </main>
+        </div>
+      </main>
+    </div>
   </LayoutsDashboard>
 </template>
 

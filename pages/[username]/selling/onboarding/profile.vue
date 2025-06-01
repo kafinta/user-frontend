@@ -1,7 +1,10 @@
 <template>
   <LayoutsDashboard mode="seller" pageTitle="Business Profile">
     <div class="flex justify-center items-center min-h-[calc(100vh-200px)] p-4">
-      <main class="w-full max-w-2xl mx-auto rounded-xl p-8 border border-accent-200 bg-white space-y-6">
+      <main :class="[
+        'w-full mx-auto rounded-xl p-8 border border-accent-200 bg-white space-y-6',
+        profileCreated || isLoading ? 'max-w-md' : 'max-w-2xl'
+      ]">
         <!-- Success Icon (when profile created) -->
         <div v-if="profileCreated" class="text-center">
           <div class="w-20 h-20 mx-auto bg-green-200 rounded-full flex items-center justify-center mb-6">

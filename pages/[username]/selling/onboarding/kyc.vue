@@ -1,7 +1,10 @@
 <template>
   <LayoutsDashboard mode="seller" pageTitle="KYC Verification">
     <div class="flex justify-center items-center min-h-[calc(100vh-200px)] p-4">
-      <main class="w-full max-w-2xl mx-auto rounded-xl p-8 border border-accent-200 bg-white space-y-6">
+      <main :class="[
+        'w-full mx-auto rounded-xl p-8 border border-accent-200 bg-white space-y-6',
+        kycVerified || isLoading ? 'max-w-md' : 'max-w-2xl'
+      ]">
         <!-- Success Icon (when KYC verified) -->
         <div v-if="kycVerified" class="text-center">
           <div class="w-20 h-20 mx-auto bg-green-200 rounded-full flex items-center justify-center mb-6">
@@ -26,12 +29,7 @@
 
         <!-- Success/Already Verified State -->
         <div v-else-if="kycVerified" class="space-y-6 text-center">
-          <UiButtonsPrimary
-            :url="{ name: 'username-selling-onboarding', params: { username: $route.params.username } }"
-            class="w-full"
-          >
-            Continue Onboarding
-          </UiButtonsPrimary>
+          <FormButton @click="continueOnboarding" class="w-full">Continue Onboarding</FormButton>
         </div>
 
         <!-- KYC Form -->

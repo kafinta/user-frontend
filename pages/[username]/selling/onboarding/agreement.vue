@@ -1,6 +1,7 @@
 <template>
   <LayoutsDashboard mode="seller" pageTitle="Onboarding">
-    <main class="w-full lg:w-3/4 2xl:w-2/3 mx-auto">
+    <div class="flex justify-center items-center min-h-[calc(100vh-200px)] p-4">
+      <main class="w-full max-w-md mx-auto rounded-xl p-8 border border-accent-200 bg-white space-y-6">
       <!-- Success Icon (when agreement accepted) -->
       <div v-if="agreementAccepted" class="text-center mb-6">
         <div class="w-20 h-20 mx-auto bg-green-200 rounded-full flex items-center justify-center mb-6">
@@ -8,28 +9,25 @@
         </div>
       </div>
 
-      <!-- Header -->
-      <UiTypographyH3 class="text-center">Seller Agreement</UiTypographyH3>
+        <!-- Header -->
+        <div class="text-center">
+          <UiTypographyH2 class="font-medium text-3xl text-secondary">Seller Agreement</UiTypographyH2>
+          <UiTypographyP class="text-sm text-secondary mt-2">
+            <span v-if="isLoading">Loading agreement status...</span>
+            <span v-else-if="agreementAccepted">You have successfully accepted the seller agreement.</span>
+            <span v-else>Please read and accept the seller agreement to continue.</span>
+          </UiTypographyP>
+        </div>
 
       <!-- Loading State -->
       <div v-if="isLoading" class="flex justify-center items-center py-10">
         <UiLoading />
       </div>
 
-      <!-- Success/Already Accepted State -->
-      <div v-else-if="agreementAccepted" class="mt-8 text-center">
-        <div class="bg-green-50 p-6 rounded-lg border border-green-200 mb-6">
-          <UiTypographyH4 class="text-green-700">Agreement Accepted</UiTypographyH4>
-          <UiTypographyP class="text-green-600 mt-2">You have already accepted the seller agreement.</UiTypographyP>
+        <!-- Success/Already Accepted State -->
+        <div v-else-if="agreementAccepted" class="space-y-6 text-center">
+          <FormButton @click="continueOnboarding" class="w-full">Continue Onboarding</FormButton>
         </div>
-
-        <UiButtonsPrimary
-          :url="{ name: 'username-selling-onboarding', params: { username: $route.params.username } }"
-          class="max-w-64 mx-auto"
-        >
-          Continue Onboarding
-        </UiButtonsPrimary>
-      </div>
 
       <!-- Agreement Form -->
       <div v-else>
@@ -124,12 +122,13 @@
           @click="acceptAgreement"
           :disabled="!agreementChecked || isSubmitting"
           :loading="isSubmitting"
-          class="max-w-64 mx-auto"
+          class="w-full"
         >
           Accept Agreement
         </FormButton>
-      </div>
-    </main>
+        </div>
+      </main>
+    </div>
   </LayoutsDashboard>
 </template>
 
