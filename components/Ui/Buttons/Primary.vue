@@ -1,13 +1,19 @@
 <template>
   <NuxtLink :to="url" v-if="url"
-    class="py-2 px-5 text-white font-medium text-base 2xl:text-lg justify-center duration-500 ease-in-out rounded-md active:bg-primary outline-none" 
-    :disabled="loading || disabled" :class="[flexdisplay ? 'flex w-full items-center gap-3' : 'block w-fit', standout ? 'bg-primary hover:bg-opacity-80 focus:bg-opacity-80': 'bg-secondary hover:bg-primary focus:bg-primary', disabled ? 'bg-accent-300 text-accent-100 hover:bg-accent-300 hover:text-accent-100': '']">
-      <slot />
+    :class="linkClasses"
+    class="py-2 px-5 text-white font-medium text-base 2xl:text-lg justify-center rounded-md active:bg-primary outline-none"
+    :style="(loading || disabled) ? '' : 'transition: background-color 500ms ease-in-out, opacity 500ms ease-in-out;'"
+    :disabled="loading || disabled"
+  >
+    <slot />
   </NuxtLink>
   <button v-else
-    @click="$emit('clicked')"
-    class="py-2 px-5 text-white font-medium text-base 2xl:text-lg justify-center duration-500 ease-in-out rounded-md active:bg-primary outline-none" 
-    :disabled="loading || disabled" :class="[flexdisplay ? 'flex w-full items-center gap-3' : 'block w-fit', standout ? 'bg-primary hover:bg-opacity-80 focus:bg-opacity-80': 'bg-secondary hover:bg-primary focus:bg-primary', disabled ? 'bg-accent-300 text-accent-100 hover:bg-accent-300 hover:text-accent-100': '']">
+    @click="!(loading || disabled) && $emit('clicked')"
+    :class="buttonClasses"
+    class="py-2 px-5 text-white font-medium text-base 2xl:text-lg justify-center rounded-md active:bg-primary outline-none"
+    :style="(loading || disabled) ? '' : 'transition: background-color 500ms ease-in-out, opacity 500ms ease-in-out;'"
+    :disabled="loading || disabled"
+  >
     <div class="flex items-center justify-center">
       <div v-if="loading"  class="flex items-center">
         <div class=" mr-2">
@@ -45,6 +51,47 @@ export default {
       default: null
     }
   },
+
+  computed: {
+    baseClasses() {
+      return [
+        // Layout
+        this.flexdisplay ? 'flex w-full items-center gap-3' : 'block w-fit'
+      ].filter(Boolean).join(' ')
+    },
+
+    buttonClasses() {
+      if (this.loading || this.disabled) {
+        return [
+          this.baseClasses,
+          // Disabled/loading state - no transitions, no hover effects
+          this.loading ? 'bg-primary cursor-wait' : 'bg-accent-300 text-accent-500 cursor-not-allowed'
+        ].filter(Boolean).join(' ')
+      }
+
+      return [
+        this.baseClasses,
+        // Normal state with hover effects
+        this.standout ? 'bg-primary hover:bg-opacity-80 focus:bg-opacity-80' : 'bg-secondary hover:bg-primary focus:bg-primary'
+      ].filter(Boolean).join(' ')
+    },
+
+    linkClasses() {
+      if (this.loading || this.disabled) {
+        return [
+          this.baseClasses,
+          // Disabled/loading state - no transitions, no hover effects
+          this.loading ? 'bg-primary cursor-wait' : 'bg-accent-300 text-accent-500 cursor-not-allowed pointer-events-none'
+        ].filter(Boolean).join(' ')
+      }
+
+      return [
+        this.baseClasses,
+        // Normal state with hover effects
+        this.standout ? 'bg-primary hover:bg-opacity-80 focus:bg-opacity-80' : 'bg-secondary hover:bg-primary focus:bg-primary'
+      ].filter(Boolean).join(' ')
+    }
+  }
 }
 </script>
 
