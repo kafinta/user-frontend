@@ -18,6 +18,7 @@ export interface Location {
 export interface AttributeValue {
   id: number
   name: string
+  representation?: string
 }
 
 export interface Attribute {
