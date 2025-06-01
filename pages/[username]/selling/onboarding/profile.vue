@@ -128,16 +128,16 @@ const errors = ref({});
 
 // Business category options
 const businessCategories = [
-  'Electronics',
-  'Fashion',
-  'Home & Garden',
-  'Beauty & Personal Care',
-  'Sports & Outdoors',
-  'Toys & Games',
-  'Books & Media',
-  'Food & Beverages',
-  'Health & Wellness',
-  'Other'
+  { label: 'Electronics', value: 'Electronics' },
+  { label: 'Fashion', value: 'Fashion' },
+  { label: 'Home & Garden', value: 'Home & Garden' },
+  { label: 'Beauty & Personal Care', value: 'Beauty & Personal Care' },
+  { label: 'Sports & Outdoors', value: 'Sports & Outdoors' },
+  { label: 'Toys & Games', value: 'Toys & Games' },
+  { label: 'Books & Media', value: 'Books & Media' },
+  { label: 'Food & Beverages', value: 'Food & Beverages' },
+  { label: 'Health & Wellness', value: 'Health & Wellness' },
+  { label: 'Other', value: 'Other' }
 ];
 
 // Form data
