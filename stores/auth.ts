@@ -126,9 +126,24 @@ export const useAuthStore = defineStore('auth', () => {
         setUser(response.data.user);
         setVerified(!!response.data.user.email_verified_at);
 
-        // Optionally set roles if included in response
+        // Set roles if included in response
         if (response.data.roles) {
           setRoles(response.data.roles);
+        } else {
+          // If roles not included, fetch them separately to ensure they're available
+          try {
+            const rolesResponse = await useCustomFetch<ApiResponse>('/api/user/profile/roles', {
+              method: 'GET'
+            });
+
+            if (rolesResponse.status === 'success' && rolesResponse.data?.roles) {
+              setRoles(rolesResponse.data.roles);
+            }
+          } catch (rolesError) {
+            // If roles fetch fails, continue without roles
+            // This prevents session validation from failing due to roles endpoint issues
+            console.warn('Failed to fetch roles during session validation:', rolesError);
+          }
         }
       }
     } catch (error) {
