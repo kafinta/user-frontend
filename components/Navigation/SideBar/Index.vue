@@ -307,10 +307,14 @@ const isRouteActive = (routeSegment) => {
 // Check if user needs to be redirected to onboarding
 const checkOnboardingRedirect = () => {
   // Only redirect if user is not a seller and trying to access seller features
+  // But don't redirect if roles haven't been loaded yet (to prevent premature redirects)
+  const authStore = useAuthStore();
+
   if (!props.isSeller &&
       route.name &&
       route.name.includes('selling') &&
-      !route.name.includes('onboarding')) {
+      !route.name.includes('onboarding') &&
+      authStore.roles.length > 0) { // Only redirect if roles are actually loaded
     router.push({
       name: 'username-selling-onboarding',
       params: { username: props.username }
