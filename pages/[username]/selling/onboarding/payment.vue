@@ -1,30 +1,42 @@
 <template>
   <LayoutsDashboard mode="seller" pageTitle="Onboarding">
-    <main class="w-full lg:w-2/3 2xl:w-1/2 mx-auto">
-      <UiTypographyH3 class="text-center">Payment Information</UiTypographyH3>
-
-      <div v-if="isLoading" class="flex justify-center items-center py-10">
-        <UiLoading />
-      </div>
-
-      <div v-else-if="paymentInfoUpdated" class="mt-8 text-center">
-        <!-- Success Icon (with ring like other onboarding pages) -->
-        <div class="w-20 h-20 mx-auto bg-green-200 rounded-full flex items-center justify-center mb-6">
-          <UiIconsSuccess class="w-16 h-16 text-green-600" />
+    <div class="flex justify-center items-center min-h-[calc(100vh-200px)] p-4">
+      <main :class="[
+        'w-full mx-auto rounded-xl p-8 border border-accent-200 bg-white space-y-6',
+        paymentInfoUpdated || isLoading ? 'max-w-md' : 'max-w-2xl'
+      ]">
+        <!-- Success Icon (when payment info updated) -->
+        <div v-if="paymentInfoUpdated" class="text-center">
+          <div class="w-20 h-20 mx-auto bg-green-200 rounded-full flex items-center justify-center mb-6">
+            <UiIconsSuccess class="w-16 h-16 text-green-600" />
+          </div>
         </div>
 
-        <div class="bg-green-50 p-6 rounded-lg border border-green-200 mb-6">
-          <UiTypographyH3 class="text-green-700">Payment Information Updated</UiTypographyH3>
-          <UiTypographyP class="text-green-600 mt-2">Your payment information has been successfully saved.</UiTypographyP>
+        <!-- Header -->
+        <div class="text-center">
+          <UiTypographyH2 class="font-medium text-3xl text-secondary">Payment Information</UiTypographyH2>
+          <UiTypographyP class="text-sm text-secondary mt-2">
+            <span v-if="isLoading">Loading your payment information...</span>
+            <span v-else-if="paymentInfoUpdated">Your payment information has been successfully saved.</span>
+            <span v-else>Provide your payment information to receive payments from your sales.</span>
+          </UiTypographyP>
         </div>
 
-        <FormButton @click="continueOnboarding" class="max-w-64 mx-auto">Continue Onboarding</FormButton>
-      </div>
-
-      <div v-else>
-        <div class="bg-accent-50 p-4 rounded-lg border border-accent-200 mb-6">
-          <UiTypographyP class="text-accent-700">Please provide your payment information to receive payments from your sales.</UiTypographyP>
+        <!-- Loading State -->
+        <div v-if="isLoading" class="flex justify-center items-center py-10">
+          <UiLoading />
         </div>
+
+        <!-- Success/Already Updated State -->
+        <div v-else-if="paymentInfoUpdated" class="space-y-6 text-center">
+          <FormButton @click="continueOnboarding" class="w-full">Continue Onboarding</FormButton>
+        </div>
+
+        <!-- Payment Form -->
+        <div v-else class="space-y-6">
+          <div class="bg-accent-50 p-4 rounded-lg border border-accent-200">
+            <UiTypographyP class="text-accent-700">Please provide your payment information to receive payments from your sales.</UiTypographyP>
+          </div>
 
         <form @submit.prevent="submitPaymentInfo" class="mt-6">
           <div class="mb-6 flex justify-center">
@@ -88,14 +100,15 @@
             <FormButton
               type="submit"
               :loading="isSubmitting"
-              class="max-w-64"
+              class="w-full"
             >
               Save Payment Information
             </FormButton>
           </div>
         </form>
-      </div>
-    </main>
+        </div>
+      </main>
+    </div>
   </LayoutsDashboard>
 </template>
 
