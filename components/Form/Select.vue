@@ -18,7 +18,7 @@
       :aria-labelledby="`${selectId}-label`"
       :aria-disabled="disabled"
     >
-      <span v-if="selectedOption" class="block truncate">{{ getDisplayText(selectedOption) }}</span>
+      <span v-if="selectedOption !== null && selectedOption !== undefined && selectedOption !== ''" class="block truncate">{{ getSelectedDisplayText() }}</span>
       <span v-else class="block truncate opacity-0">{{ label }}</span>
     </div>
 
@@ -60,7 +60,7 @@
     >
       <div
         v-for="(option, index) in options"
-        :key="option.value || option"
+        :key="getOptionValue(option)"
         @mousedown.prevent="selectOption(option)"
         @mouseenter="highlightedIndex = index"
         :class="optionClasses(option, index)"
@@ -87,8 +87,22 @@
 </template>
 
 <script>
+/**
+ * FormSelect Component
+ *
+ * Supports two option formats:
+ * 1. Simple strings/numbers: ['Option 1', 'Option 2', 'Option 3']
+ * 2. Objects with separate display text and values:
+ *    [
+ *      { label: 'Display Text', value: 'actual_value' },
+ *      { text: 'Another Display', value: 123 },
+ *      { name: 'Category Name', value: 'category_id' }
+ *    ]
+ *
+ * Object properties priority: label > text > name > value
+ */
 export default {
-  name: "FloatLabelSelect",
+  name: "FormSelect",
   props: {
     extraClass: String,
     error: Boolean,
@@ -196,7 +210,7 @@ export default {
 
     selectOption(option) {
       if (this.disabled) return
-      const value = typeof option === 'object' ? option.value : option
+      const value = this.getOptionValue(option)
       this.$emit('update:selectedOption', value)
       this.closeDropdown()
       this.$refs.trigger.focus()
@@ -251,19 +265,42 @@ export default {
 
     getDisplayText(option) {
       if (typeof option === 'object') {
-        return option.label || option.text || option.value
+        // Priority order: label > text > name > value
+        return option.label || option.text || option.name || option.value || ''
+      }
+      return option || ''
+    },
+
+    getOptionValue(option) {
+      if (typeof option === 'object') {
+        return option.value !== undefined ? option.value : option
       }
       return option
     },
 
+    getSelectedDisplayText() {
+      // Find the option that matches the selected value
+      const selectedOptionObj = this.options.find(option => {
+        const value = this.getOptionValue(option)
+        return value === this.selectedOption
+      })
+
+      if (selectedOptionObj) {
+        return this.getDisplayText(selectedOptionObj)
+      }
+
+      // Fallback to the selected value itself if no matching option found
+      return this.selectedOption
+    },
+
     isSelected(option) {
-      const value = typeof option === 'object' ? option.value : option
+      const value = this.getOptionValue(option)
       return value === this.selectedOption
     },
 
     findSelectedIndex() {
       return this.options.findIndex(option => {
-        const value = typeof option === 'object' ? option.value : option
+        const value = this.getOptionValue(option)
         return value === this.selectedOption
       })
     },
