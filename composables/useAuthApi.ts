@@ -125,11 +125,22 @@ export function useAuthApi() {
       const username = authStore.user.username;
       console.log('Navigating to dashboard for user:', username);
 
+      // Ensure roles are loaded before making navigation decision
+      if (authStore.roles.length === 0) {
+        console.log('No roles found, fetching roles...');
+        try {
+          await fetchRoles();
+        } catch (error) {
+          console.warn('Failed to fetch roles for dashboard navigation, defaulting to buyer dashboard:', error);
+        }
+      }
+
       // Route based on role - all users are customers by default
-      // Only fetch roles if we need to check for seller status
       if (authStore.isSeller) {
+        console.log('User is a seller, navigating to selling dashboard');
         return navigateTo(`/${username}/selling/dashboard`);
       } else {
+        console.log('User is not a seller, navigating to buying dashboard');
         // All authenticated users are customers by default
         return navigateTo(`/${username}/buying/dashboard`);
       }
