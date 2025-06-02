@@ -1,5 +1,5 @@
 <template>
-  <LayoutsSellerDashboard page_title="My Profile">
+  <LayoutsDashboard mode="seller" page_title="My Profile">
     <div class="block lg:flex gap-8">
       <div class="w-full lg:w-2/5 grid gap-5">
         <div class="border border-accent-200 p-6">
@@ -45,7 +45,7 @@
         </div>
       </div>
     </div>
-  </LayoutsSellerDashboard>
+  </LayoutsDashboard>
 </template>
 
 <script setup>
@@ -59,6 +59,13 @@ definePageMeta({
   requiresAuth: true,
   requiresVerification: true
 })
+
+useHead({
+  title: 'My Profile | Kafinta',
+  meta: [
+    { name: 'description', content: 'View and manage your Kafinta profile' }
+  ]
+});
 
 // Get route and auth store
 const route = useRoute()
@@ -77,10 +84,8 @@ function toggleDescription() {
   description_edit.value = !description_edit.value
 }
 
-// Fetch user roles if authenticated
-if (authStore.isAuthenticated && authStore.roles.length === 0) {
-  authStore.fetchRoles()
-}
+// Roles should be available from login/signup response
+// If roles are missing, user should re-login or they will be fetched when specifically needed
 </script>
 
 <style>
