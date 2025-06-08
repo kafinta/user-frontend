@@ -43,6 +43,13 @@ definePageMeta({
   requiresAuth: true,
   requiresVerification: true
 });
+
+useHead({
+  title: 'Buyer Dashboard | Kafinta',
+  meta: [
+    { name: 'description', content: 'Your buyer dashboard on Kafinta - track orders, manage cart, and discover products' }
+  ]
+});
 </script>
 
 <style>
