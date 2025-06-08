@@ -66,6 +66,13 @@ definePageMeta({
   requiresSeller: true
 });
 
+useHead({
+  title: 'Seller Dashboard | Kafinta',
+  meta: [
+    { name: 'description', content: 'Your seller dashboard on Kafinta - manage products, track orders, and view earnings' }
+  ]
+});
+
 // Original script content converted to setup script
 import { ref, onMounted } from 'vue';
 
