@@ -46,6 +46,13 @@ definePageMeta({
   requiresSeller: true
 });
 
+useHead({
+  title: 'Manage Orders | Kafinta',
+  meta: [
+    { name: 'description', content: 'Manage your customer orders on Kafinta' }
+  ]
+});
+
 import { ref } from 'vue';
 
 const image = ref('');
