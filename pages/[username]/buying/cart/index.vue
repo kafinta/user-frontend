@@ -6,13 +6,23 @@
   </LayoutsDashboard>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      username: 'Quadri',
-      button_width: true,
-      categories: [
+<script setup>
+definePageMeta({
+  middleware: ['auth'],
+  requiresAuth: true,
+  requiresVerification: true
+});
+
+useHead({
+  title: 'Shopping Cart | Kafinta',
+  meta: [
+    { name: 'description', content: 'View and manage items in your shopping cart' }
+  ]
+});
+
+const username = 'Quadri';
+const button_width = true;
+const categories = [
         {
           id: 1,
           title: 'Bedroom',
@@ -40,10 +50,7 @@ export default {
           imagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1675426589/kafinta/categories/dining_yazb5r.svg',
           products: 'Chairs, tables, utensils...'
         },
-      ]
-    }
-  },
-}
+      ];
 </script>
 
 <style>
