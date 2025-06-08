@@ -35,6 +35,13 @@ definePageMeta({
   requiresSeller: true
 });
 
+useHead({
+  title: 'Earnings | Kafinta',
+  meta: [
+    { name: 'description', content: 'Track your earnings and manage withdrawals on Kafinta' }
+  ]
+});
+
 import { ref } from 'vue';
 import completed from '/images/insights/completed.svg'
 import paid from '/images/insights/paid.svg'
