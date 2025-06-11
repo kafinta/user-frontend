@@ -50,6 +50,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { ref, computed } from "vue";
 import { useAuthStore } from '~/stores/auth';
 import { useAppToast } from "~/utils/toastify";
+import { useAuth } from '~/composables/useAuth';
 
 const toast = useAppToast();
 const authStore = useAuthStore();
@@ -67,7 +68,7 @@ const email = ref('');
 const password = ref('');
 const remember_me = ref(true); // Default to true for now
 
-// Auth store will auto-initialize when first accessed
+const auth = useAuth();
 
 async function handleSignin() {
   try {
@@ -78,54 +79,32 @@ async function handleSignin() {
       return;
     }
 
-    // Direct API call in the page component
-    const response = await useCustomFetch('/api/user/login', {
-      method: 'POST',
-      body: {
-        email: email.value,
-        password: password.value,
-        remember_me: remember_me.value
-      }
+    const response = await auth.login({
+      email: email.value,
+      password: password.value,
+      remember_me: remember_me.value
     });
 
     if (response.status === 'success') {
-      // Handle auth success (no longer async)
-      const authApi = useAuthApi();
-      authApi.handleAuthSuccess(response);
+      toast.success(response.message);
 
-      toast.success(response.message || 'Login successful');
-
-      // Check verification status from response or auth store
+      // Check verification status
       const needsVerification = response.data?.email_verification_required || !authStore.isVerified;
 
       if (needsVerification) {
         router.push('/auth/verify');
       } else {
-        await navigateToDashboard();
+        // Pass the redirect path if it exists
+        await auth.navigateToDashboard(redirectPath.value || undefined);
       }
     } else {
-      toast.error(response?.message || 'Login failed');
+      toast.error(response.message || 'Login failed');
     }
   } catch (err) {
     console.error('Login error:', err);
-
-    // Extract backend error message from the error response
-    const errorMessage = err?.data?.message || err?.message || 'An unexpected error occurred';
-    toast.error(errorMessage);
+    toast.error('An unexpected error occurred');
   } finally {
     buttonLoading.value = false;
   }
-}
-
-async function navigateToDashboard() {
-  // Check if there's a redirect URL in the query parameters first
-  if (redirectPath.value) {
-    router.push(redirectPath.value);
-    return;
-  }
-
-  // Use the shared navigation helper
-  const authApi = useAuthApi();
-  await authApi.navigateToDashboard();
 }
 </script>
