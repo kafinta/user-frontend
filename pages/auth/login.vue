@@ -51,6 +51,7 @@ import { ref, computed } from "vue";
 import { useAuthStore } from '~/stores/auth';
 import { useAppToast } from "~/utils/toastify";
 import { useAuth } from '~/composables/useAuth';
+import { useAuthApi } from '~/composables/useAuthApi';
 
 const toast = useAppToast();
 const authStore = useAuthStore();
@@ -69,6 +70,7 @@ const password = ref('');
 const remember_me = ref(true); // Default to true for now
 
 const auth = useAuth();
+const authApi = useAuthApi();
 
 async function handleSignin() {
   try {
@@ -79,13 +81,17 @@ async function handleSignin() {
       return;
     }
 
-    const response = await auth.login({
-      email: email.value,
-      password: password.value,
-      remember_me: remember_me.value
+    const response = await useCustomFetch('/api/user/login', {
+      method: 'POST',
+      body: {
+        email: email.value,
+        password: password.value,
+        remember_me: remember_me.value
+      }
     });
 
     if (response.status === 'success') {
+      authApi.handleAuthSuccess(response);
       toast.success(response.message);
 
       // Check verification status
