@@ -1,23 +1,27 @@
 <template>
-  <input
-    ref="input"
-    :id="inputId"
-    :type="type || 'text'"
-    :value="modelValue"
-    :disabled="disabled"
-    :placeholder="placeholder"
-    :autocomplete="autocomplete || 'off'"
-    :readonly="readonly"
-    :maxlength="maxlength"
-    :minlength="minlength"
-    @input="handleInput"
-    @focus="handleFocus"
-    @blur="handleBlur"
-    @keydown="handleKeydown"
-    :class="inputClasses"
-    class="w-full outline-none ring-0 focus:outline-none bg-transparent"
-    :style="effectiveDisabled ? '' : 'transition: all 300ms ease-out;'"
-  />
+  <div>
+    <label>{{ label }}</label>
+    <input
+      ref="input"
+      :id="inputId"
+      :type="type || 'text'"
+      :value="modelValue"
+      :disabled="disabled"
+      :placeholder="placeholder"
+      :autocomplete="autocomplete || 'off'"
+      :readonly="readonly"
+      :maxlength="maxlength"
+      :minlength="minlength"
+      @input="handleInput"
+      @focus="handleFocus"
+      @blur="handleBlur"
+      @keydown="handleKeydown"
+      :class="inputClasses"
+      class="w-full outline-none ring-0 focus:outline-none bg-transparent"
+      :style="effectiveDisabled ? '' : 'transition: all 300ms ease-out;'"
+    />
+    <p v-if="error" class="text-xs text-red-500 mt-1">{{ error }}</p>
+  </div>
 </template>
 
 <script>
@@ -68,6 +72,10 @@ export default {
     error: {
       type: Boolean,
       default: false
+    },
+    label: {
+      type: String,
+      default: ''
     }
   },
 

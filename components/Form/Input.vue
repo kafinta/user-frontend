@@ -26,6 +26,8 @@
     >
       {{ label }}
     </label>
+
+    <p v-if="error" class="text-xs text-red-500 mt-1">{{ error }}</p>
   </div>
 </template>
 
@@ -34,7 +36,7 @@ export default {
   name: "FloatLabelInput",
   props: {
     extraClass: String,
-    error: Boolean,
+    error: String,
     label: {
       type: String,
       required: true
