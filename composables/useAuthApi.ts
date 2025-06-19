@@ -74,6 +74,8 @@ export function useAuthApi() {
           } catch (error) {
             // Ignore localStorage errors
           }
+          // Redirect to login page after logout
+          navigateTo('/auth/login');
         }
       }
 
