@@ -23,8 +23,8 @@
     </div>
 
     <!-- Error message -->
-    <div v-if="error && errorMessage" class="mt-2 text-sm text-red-600">
-      {{ errorMessage }}
+    <div v-if="error" class="mt-2 text-sm text-red-600">
+      {{ error }}
     </div>
   </div>
 </template>
@@ -50,12 +50,8 @@ export default {
       default: false
     },
     error: {
-      type: Boolean,
-      default: false
-    },
-    errorMessage: {
       type: String,
-      default: 'Please enter a valid code'
+      default: ''
     }
   },
 
