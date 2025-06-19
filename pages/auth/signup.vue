@@ -14,18 +14,21 @@
           type="email"
           v-model:inputValue="email"
           class="w-full"
+          :error="Array.isArray(errors.email) ? errors.email.join(' ') : (typeof errors.email === 'string' ? errors.email : '')"
         />
         <FormInput
           label="Username"
           type="text"
           v-model:inputValue="username"
           class="w-full"
+          :error="Array.isArray(errors.username) ? errors.username.join(' ') : (typeof errors.username === 'string' ? errors.username : '')"
         />
         <FormInput
           label="Password"
           type="password"
           v-model:inputValue="password"
           class="w-full"
+          :error="Array.isArray(errors.password) ? errors.password.join(' ') : (typeof errors.password === 'string' ? errors.password : '')"
         />
 
         <FormButton :loading="buttonLoading">Sign Up</FormButton>
@@ -58,6 +61,7 @@ import { useAppToast } from "~/utils/toastify";
 const buttonLoading = ref(false);
 const router = useRouter();
 const toast = useAppToast();
+const errors = ref({});
 
 const email = ref('');
 const username = ref('');
@@ -66,6 +70,7 @@ const password = ref('');
 async function handleSignup() {
   try {
     buttonLoading.value = true;
+    errors.value = {};
 
     if (!email.value || !username.value || !password.value) {
       toast.error('Please fill in all fields');
@@ -89,12 +94,14 @@ async function handleSignup() {
       toast.success(response.message || 'Account created successfully');
       router.push('/auth/verify');
     } else {
+      errors.value = response.errors || {};
       toast.error(response?.message || 'Signup failed');
     }
   } catch (err) {
     console.error('Signup error:', err);
 
     // Extract backend error message from the error response
+    errors.value = err?.data?.errors || {};
     const errorMessage = err?.data?.message || err?.message || 'An unexpected error occurred';
     toast.error(errorMessage);
   } finally {
