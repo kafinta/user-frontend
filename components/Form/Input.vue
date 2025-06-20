@@ -4,7 +4,7 @@
     <input
       ref="input"
       :id="inputId"
-      :type="type || 'text'"
+      :type="computedType"
       :value="inputValue"
       :disabled="disabled"
       :autocomplete="autocomplete || 'off'"
@@ -16,6 +16,18 @@
       :style="disabled ? '' : 'transition: border-color 300ms ease-out, color 300ms ease-out;'"
       :placeholder="label"
     />
+
+    <!-- Reveal/hide password toggle -->
+    <button
+      v-if="type === 'password'"
+      type="button"
+      class="absolute right-4 top-1/2 transform -translate-y-1/2 text-accent-400 hover:text-primary focus:outline-none"
+      @click="toggleReveal"
+      tabindex="-1"
+    >
+      <UiIconsEye v-if="isHidden" class="h-5 w-5" />
+      <UiIconsEyeOff v-else class="h-5 w-5" />
+    </button>
 
     <!-- Floating label -->
     <label
@@ -58,11 +70,18 @@ export default {
   data() {
     return {
       isFocused: false,
-      inputId: `input-${Math.random().toString(36).substring(2, 11)}`
+      inputId: `input-${Math.random().toString(36).substring(2, 11)}`,
+      isHidden: true
     }
   },
 
   computed: {
+    computedType() {
+      if (this.type === 'password') {
+        return this.isHidden ? 'password' : 'text';
+      }
+      return this.type || 'text';
+    },
     hasValue() {
       return this.inputValue && this.inputValue.length > 0
     },
@@ -120,6 +139,9 @@ export default {
   },
 
   methods: {
+    toggleReveal() {
+      this.isHidden = !this.isHidden;
+    },
     handleInput(event) {
       if (this.disabled) return
       this.$emit('update:inputValue', event.target.value)
