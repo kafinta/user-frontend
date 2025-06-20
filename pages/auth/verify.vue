@@ -46,7 +46,7 @@
         </div>
 
         <form @submit.prevent="verifyWithCode()" class="grid gap-6 mt-6 w-full">
-          <FormOtpInput v-model="code" :length="6" integerOnly class="justify-between" />
+          <FormOtpInput v-model="code" :length="6" integerOnly class="justify-between" :error="codeError" />
           <FormButton :loading="isLoading">Verify Email</FormButton>
           <div class="flex flex-col items-center gap-4 mt-4">
             <button
@@ -94,6 +94,7 @@ const isLoading = ref(false);
 const resendCooldown = ref(0);
 const cooldownInterval = ref(null);
 const errorMessage = ref('');
+const codeError = ref('');
 
 // Smart routing: Check URL for token parameter
 onMounted(async () => {
@@ -181,6 +182,7 @@ async function verifyWithCode() {
   }
 
   isLoading.value = true;
+  codeError.value = '';
 
   try {
     // Direct API call for code verification
@@ -198,15 +200,15 @@ async function verifyWithCode() {
       code.value = '';
       await navigateToDashboard();
     } else {
+      codeError.value = Array.isArray(response.errors?.code) ? response.errors.code.join(' ') : (typeof response.errors?.code === 'string' ? response.errors.code : (response?.message || 'Verification failed'));
       toast.error(response?.message || 'Verification failed');
       code.value = '';
     }
   } catch (err) {
     console.error('Verification error:', err);
-
     // Extract backend error message
-    const errorMessage = err?.data?.message || err?.message || 'An unexpected error occurred. Please try again.';
-    toast.error(errorMessage);
+    codeError.value = err?.data?.errors?.code ? (Array.isArray(err.data.errors.code) ? err.data.errors.code.join(' ') : err.data.errors.code) : (err?.data?.message || err?.message || 'An unexpected error occurred. Please try again.');
+    toast.error(err?.data?.message || err?.message || 'An unexpected error occurred. Please try again.');
   } finally {
     isLoading.value = false;
   }
