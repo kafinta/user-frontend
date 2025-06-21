@@ -42,21 +42,56 @@
       <div v-else>
         <div>
           <UiTypographyH2 class="font-medium text-3xl text-secondary text-center">Verify your email</UiTypographyH2>
-          <UiTypographyP class="text-sm text-secondary text-center">We've sent a verification code to your email. Enter it below to verify your account.</UiTypographyP>
+          <UiTypographyP class="text-sm text-secondary text-center">
+            We've sent a verification code to <strong>{{ userEmail }}</strong>. 
+            Enter it below to verify your account and continue to your dashboard.
+          </UiTypographyP>
         </div>
 
         <form @submit.prevent="verifyWithCode()" class="grid gap-6 mt-6 w-full">
-          <FormOtpInput v-model="code" :length="6" integerOnly class="justify-between" :error="codeError" />
+          <div class="space-y-2">
+            <FormOtpInput 
+              ref="otpInput"
+              v-model="code" 
+              :length="6" 
+              integerOnly 
+              class="justify-between" 
+              :error="codeError"
+              @complete="autoSubmit"
+            />
+            <p class="text-xs text-accent-600 text-center">
+              The code will expire in 10 minutes. You can request a new one anytime.
+            </p>
+          </div>
           <FormButton :loading="isLoading">Verify Email</FormButton>
-          <div class="flex flex-col items-center gap-4 mt-4">
+          <div class="flex flex-col items-center gap-3 mt-4">
             <button
               type="button"
               @click="resendCode"
-              class="text-sm text-primary hover:underline"
+              class="text-sm text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
               :disabled="resendCooldown > 0 || isLoading"
             >
               {{ resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : 'Resend verification code' }}
             </button>
+            <button
+              type="button"
+              @click="changeEmail"
+              class="text-sm text-accent-600 hover:text-primary"
+              :disabled="isLoading"
+            >
+              Use a different email address
+            </button>
+          </div>
+          
+          <!-- Troubleshooting Section -->
+          <div class="mt-6 p-4 bg-accent-50 rounded-lg border border-accent-200">
+            <UiTypographyH3 class="text-sm font-medium text-secondary mb-2">Didn't receive the email?</UiTypographyH3>
+            <ul class="text-xs text-accent-600 space-y-1">
+              <li>• Check your spam or junk folder</li>
+              <li>• Make sure you entered the correct email address</li>
+              <li>• Wait a few minutes - emails can take time to arrive</li>
+              <li>• Try requesting a new code above</li>
+            </ul>
           </div>
         </form>
       </div>
@@ -77,24 +112,33 @@ useHead({
   ]
 });
 
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted } from "vue";
 import { useAuthStore } from '~/stores/auth';
-import { useAppToast } from "~/utils/toastify";
+import { useEmailVerification } from "~/composables/useEmailVerification";
 
 const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
-const toast = useAppToast();
 
-// State variables
+// Use the email verification composable
+const {
+  code,
+  isLoading,
+  resendCooldown,
+  codeError,
+  userEmail,
+  initializeEmail,
+  verifyWithCode,
+  verifyWithToken,
+  resendCode: resendCodeComposable,
+  autoSubmit
+} = useEmailVerification();
+
+// Additional state for token verification
 const verificationMode = ref('code'); // 'token' or 'code'
 const tokenVerificationStatus = ref('loading'); // 'loading', 'success', 'error'
-const code = ref('');
-const isLoading = ref(false);
-const resendCooldown = ref(0);
-const cooldownInterval = ref(null);
 const errorMessage = ref('');
-const codeError = ref('');
+const otpInput = ref(null);
 
 // Smart routing: Check URL for token parameter
 onMounted(async () => {
@@ -104,66 +148,43 @@ onMounted(async () => {
     return;
   }
 
+  // Initialize user email
+  initializeEmail(route.query.email);
+
   // Check if there's a token in the URL
   const token = route.query.token;
 
   if (token) {
     // Token verification mode
     verificationMode.value = 'token';
-    await verifyWithToken(token);
+    await handleTokenVerification(token);
   } else {
     // Code verification mode (default)
     verificationMode.value = 'code';
+    // Auto-focus the OTP input after a short delay
+    setTimeout(() => {
+      if (otpInput.value) {
+        otpInput.value.focus();
+      }
+    }, 500);
   }
 });
 
-// Clean up intervals on component unmount
-onBeforeUnmount(() => {
-  if (cooldownInterval.value) {
-    clearInterval(cooldownInterval.value);
-  }
-});
-
-// Verify email with token (from URL parameter)
-async function verifyWithToken(token) {
+// Handle token verification
+async function handleTokenVerification(token) {
   tokenVerificationStatus.value = 'loading';
 
-  try {
-    // Direct API call for token verification
-    const response = await useCustomFetch('/api/verify-email/token', {
-      method: 'POST',
-      body: { token }
-    });
+  const result = await verifyWithToken(token);
 
-    if (response.status === 'success' || response?.data?.email_verified) {
-      // Handle auth success - backend now includes user data in response
-      const authApi = useAuthApi();
-      authApi.handleAuthSuccess(response);
-
-      tokenVerificationStatus.value = 'success';
-      toast.success(response.message || 'Email verified successfully');
-
-      console.log('Token verification successful, auth state:', {
-        isAuthenticated: authStore.isAuthenticated,
-        user: authStore.user,
-        isVerified: authStore.isVerified
-      });
-
-      // Auto-redirect after 2 seconds
-      setTimeout(async () => {
-        await navigateToDashboard();
-      }, 2000);
-    } else {
-      tokenVerificationStatus.value = 'error';
-      errorMessage.value = response?.message || 'Token verification failed';
-    }
-  } catch (err) {
-    console.error('Token verification error:', err);
+  if (result.success) {
+    tokenVerificationStatus.value = 'success';
+    // Auto-redirect after 2 seconds
+    setTimeout(async () => {
+      await navigateToDashboard();
+    }, 2000);
+  } else {
     tokenVerificationStatus.value = 'error';
-
-    // Extract backend error message
-    const backendErrorMessage = err?.data?.message || err?.message || 'Token verification failed. The link may be expired or invalid.';
-    errorMessage.value = backendErrorMessage;
+    errorMessage.value = result.message;
   }
 }
 
@@ -172,95 +193,31 @@ function switchToCodeMode() {
   verificationMode.value = 'code';
   // Clear the token from URL
   router.replace('/auth/verify');
-}
-
-// Verify email with code
-async function verifyWithCode() {
-  if (!code.value || code.value.length !== 6) {
-    toast.error('Please enter a valid 6-digit verification code');
-    return;
-  }
-
-  isLoading.value = true;
-  codeError.value = '';
-
-  try {
-    // Direct API call for code verification
-    const response = await useCustomFetch('/api/verify-email/code', {
-      method: 'POST',
-      body: { code: code.value }
-    });
-
-    if (response.status === 'success' || response?.data?.email_verified) {
-      // Handle auth success
-      const authApi = useAuthApi();
-      authApi.handleAuthSuccess(response);
-
-      toast.success(response.message || 'Email verified successfully');
-      code.value = '';
-      await navigateToDashboard();
-    } else {
-      codeError.value = Array.isArray(response.errors?.code) ? response.errors.code.join(' ') : (typeof response.errors?.code === 'string' ? response.errors.code : (response?.message || 'Verification failed'));
-      toast.error(response?.message || 'Verification failed');
-      code.value = '';
+  // Auto-focus the OTP input
+  setTimeout(() => {
+    if (otpInput.value) {
+      otpInput.value.focus();
     }
-  } catch (err) {
-    console.error('Verification error:', err);
-    // Extract backend error message
-    codeError.value = err?.data?.errors?.code ? (Array.isArray(err.data.errors.code) ? err.data.errors.code.join(' ') : err.data.errors.code) : (err?.data?.message || err?.message || 'An unexpected error occurred. Please try again.');
-    toast.error(err?.data?.message || err?.message || 'An unexpected error occurred. Please try again.');
-  } finally {
-    isLoading.value = false;
-  }
+  }, 100);
 }
 
-// Resend verification code
+// Resend code with focus callback
 async function resendCode() {
-  if (resendCooldown.value > 0) return;
-
-  isLoading.value = true;
-
-  try {
-    // Direct API call to resend verification email
-    const response = await useCustomFetch('/api/user/resend-verification-email', {
-      method: 'POST'
-    });
-
-    if (response.status === 'success') {
-      toast.success(response.message || 'Verification email sent successfully');
-      startCooldown();
-    } else {
-      toast.error(response?.message || 'Failed to send verification email');
+  await resendCodeComposable(() => {
+    // Focus the OTP input after resending
+    if (otpInput.value) {
+      otpInput.value.focus();
     }
-  } catch (err) {
-    console.error('Request code error:', err);
-
-    // Extract backend error message
-    const errorMessage = err?.data?.message || err?.message || 'An unexpected error occurred';
-    toast.error(errorMessage);
-  } finally {
-    isLoading.value = false;
-  }
+  });
 }
 
-// Start cooldown timer for resend button
-function startCooldown() {
-  resendCooldown.value = 60; // 60 seconds cooldown
-
-  if (cooldownInterval.value) {
-    clearInterval(cooldownInterval.value);
-  }
-
-  cooldownInterval.value = setInterval(() => {
-    if (resendCooldown.value > 0) {
-      resendCooldown.value--;
-    } else {
-      clearInterval(cooldownInterval.value);
-    }
-  }, 1000);
+// Change email function
+function changeEmail() {
+  // Redirect to signup or login page to change email
+  router.push('/auth/signup');
 }
 
-// Navigate to dashboard after verification
+// Navigate to dashboard
 async function navigateToDashboard() {
   const authApi = useAuthApi();
   await authApi.navigateToDashboard();
