@@ -22,7 +22,7 @@
         <div v-if="!onboardingState.emailVerified.value" class="space-y-6">
           <form @submit.prevent="verifyEmail" class="space-y-6">
             <div class="space-y-4">
-              <FormOtpInput v-model="code" :length="6" integerOnly class="justify-center"/>
+              <FormOtpInput v-model="code" :length="6" integerOnly class="justify-center" :error="codeError"/>
             </div>
             <FormButton :loading="isLoading" class="w-full">Verify Email</FormButton>
           </form>
@@ -80,6 +80,7 @@ const code = ref('');
 const isLoading = ref(false);
 const resendCooldown = ref(0);
 const cooldownInterval = ref(null);
+const codeError = ref('');
 
 // Check verification status on mount
 onMounted(async () => {
@@ -108,6 +109,7 @@ const verifyEmail = async () => {
   }
 
   isLoading.value = true;
+  codeError.value = '';
 
   try {
     await authStore.verifyEmail(code.value);
@@ -127,9 +129,11 @@ const verifyEmail = async () => {
         continueOnboarding();
       }, 1500);
     } else {
+      codeError.value = Array.isArray(errors.value?.code) ? errors.value.code.join(' ') : (typeof errors.value?.code === 'string' ? errors.value.code : (message.value || 'Verification failed. Please try again.'));
       toast.error('Error', message.value || 'Verification failed. Please try again.');
     }
   } catch (error) {
+    codeError.value = error?.data?.errors?.code ? (Array.isArray(error.data.errors.code) ? error.data.errors.code.join(' ') : error.data.errors.code) : (error?.data?.message || error?.message || 'An unexpected error occurred. Please try again.');
     toast.error('Error', 'An unexpected error occurred. Please try again.');
   } finally {
     isLoading.value = false;
