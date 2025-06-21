@@ -43,7 +43,7 @@
         <div v-else-if="step === 'code_verification'" class="space-y-6">
           <form @submit.prevent="verifyCode" class="space-y-6">
             <div class="space-y-4">
-              <FormOtpInput v-model="verificationCode" :length="6" integerOnly class="justify-center"/>
+              <FormOtpInput v-model="verificationCode" :length="6" integerOnly class="justify-center" :error="codeError"/>
             </div>
             <FormButton :loading="isLoading" class="w-full">Verify Phone</FormButton>
           </form>
@@ -102,6 +102,7 @@ const isLoading = ref(false);
 const resendCooldown = ref(0);
 const cooldownInterval = ref(null);
 const phoneError = ref('');
+const codeError = ref('');
 
 // Check if phone is already verified
 onMounted(async () => {
@@ -154,11 +155,13 @@ const sendVerificationCode = async () => {
 // Verify the code
 const verifyCode = async () => {
   if (!verificationCode.value || verificationCode.value.length !== 6) {
+    codeError.value = 'Please enter a valid 6-digit verification code';
     toast.error('Error', 'Please enter a valid 6-digit verification code');
     return;
   }
 
   isLoading.value = true;
+  codeError.value = '';
 
   try {
     // Call the API to verify the phone number
@@ -182,9 +185,11 @@ const verifyCode = async () => {
         continueOnboarding();
       }, 1500);
     } else {
+      codeError.value = Array.isArray(response.errors?.verification_code) ? response.errors.verification_code.join(' ') : (typeof response.errors?.verification_code === 'string' ? response.errors.verification_code : (response.message || 'Verification failed. Please try again.'));
       toast.error('Error', response.message || 'Verification failed. Please try again.');
     }
   } catch (error) {
+    codeError.value = error?.data?.errors?.verification_code ? (Array.isArray(error.data.errors.verification_code) ? error.data.errors.verification_code.join(' ') : error.data.errors.verification_code) : (error?.data?.message || error?.message || 'An unexpected error occurred. Please try again.');
     toast.error('Error', 'An unexpected error occurred. Please try again.');
   } finally {
     isLoading.value = false;
