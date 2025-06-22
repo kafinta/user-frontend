@@ -73,6 +73,14 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   // Special case for auth pages (login/signup)
   if (routeRequirements.authOnly) {
+    // If store is not hydrated, validate session
+    if (!authStore.isAuthenticated) {
+      try {
+        await authStore.validateSession();
+      } catch (e) {
+        // Ignore errors, user is not authenticated
+      }
+    }
     // If user is already authenticated and verified, redirect to dashboard
     if (authStore.isAuthenticated && authStore.isVerified) {
       return navigateToDashboard();
