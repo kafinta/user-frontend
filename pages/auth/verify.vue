@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center items-center h-screen">
+  <div class="flex justify-center items-center py-16">
     <main class="w-full max-w-md mx-auto rounded-xl p-5 border-accent-200 border space-y-8">
       <NavigationLogo @click="router.push('/');" class="w-48 mx-auto" />
 
@@ -64,7 +64,7 @@
             </p>
           </div>
           <FormButton :loading="isLoading">Verify Email</FormButton>
-          <div class="flex flex-col items-center gap-3 mt-4">
+          <div class="flex flex-col items-center gap-2">
             <button
               type="button"
               @click="resendCode"
