@@ -1,33 +1,35 @@
 <template>
   <div class="w-full relative">
-    <!-- Input field -->
-    <input
-      ref="input"
-      :id="inputId"
-      :type="computedType"
-      :value="inputValue"
-      :disabled="disabled"
-      :autocomplete="autocomplete || 'off'"
-      @input="!disabled && handleInput($event)"
-      @focus="!disabled && handleFocus()"
-      @blur="!disabled && handleBlur()"
-      :class="inputClasses"
-      class="w-full py-3 px-4 border text-sm outline-none ring-0 focus:outline-none rounded-md bg-white peer placeholder-transparent"
-      :style="disabled ? '' : 'transition: border-color 300ms ease-out, color 300ms ease-out;'"
-      :placeholder="label"
-    />
+    <div class="flex items-center">
+      <!-- Input field -->
+      <input
+        ref="input"
+        :id="inputId"
+        :type="computedType"
+        :value="inputValue"
+        :disabled="disabled"
+        :autocomplete="autocomplete || 'off'"
+        @input="!disabled && handleInput($event)"
+        @focus="!disabled && handleFocus()"
+        @blur="!disabled && handleBlur()"
+        :class="inputClasses"
+        class="w-full py-3 px-4 border text-sm outline-none ring-0 focus:outline-none rounded-md bg-white peer placeholder-transparent relative"
+        :style="disabled ? '' : 'transition: border-color 300ms ease-out, color 300ms ease-out;'"
+        :placeholder="label"
+      />
 
-    <!-- Reveal/hide password toggle -->
-    <button
-      v-if="type === 'password'"
-      type="button"
-      class="absolute right-4 top-1/2 transform -translate-y-1/2 text-accent-400 hover:text-primary focus:outline-none"
-      @click="toggleReveal"
-      tabindex="-1"
-    >
-      <UiIconsEye v-if="isHidden" class="h-5 w-5" />
-      <UiIconsEyeOff v-else class="h-5 w-5" />
-    </button>
+      <!-- Reveal/hide password toggle -->
+      <button
+        v-if="type === 'password'"
+        type="button"
+        class="absolute right-4 flex items-center text-accent-400 hover:text-primary focus:outline-none"
+        @click="toggleReveal"
+        tabindex="-1"
+      >
+        <UiIconsEye v-if="isHidden" class="h-5 w-5" />
+        <UiIconsEyeOff v-else class="h-5 w-5" />
+      </button>
+    </div>
 
     <!-- Floating label -->
     <label
