@@ -72,8 +72,30 @@ async function handleSignup() {
     buttonLoading.value = true;
     errors.value = {};
 
-    if (!email.value || !username.value || !password.value) {
-      toast.error('Please fill in all fields');
+    // Required field validation
+    let hasError = false;
+    if (!email.value) {
+      errors.value.email = 'Email is required.';
+      hasError = true;
+    }
+    if (!username.value) {
+      errors.value.username = 'Username is required.';
+      hasError = true;
+    }
+    if (!password.value) {
+      errors.value.password = 'Password is required.';
+      hasError = true;
+    }
+
+    // Password validation: at least one uppercase and one special character
+    const uppercaseRegex = /[A-Z]/;
+    const specialCharRegex = /[^A-Za-z0-9]/;
+    if (password.value && (!uppercaseRegex.test(password.value) || !specialCharRegex.test(password.value))) {
+      errors.value.password = 'Password must include at least one uppercase letter and one special character.';
+      hasError = true;
+    }
+
+    if (hasError) {
       return;
     }
 
