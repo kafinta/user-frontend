@@ -1,7 +1,7 @@
 <template>
   <LayoutsDashboard mode="seller" pageTitle="Onboarding">
     <div class="flex justify-center items-center min-h-[calc(100vh-200px)] p-4">
-      <main class="w-full max-w-md mx-auto rounded-xl p-8 border border-accent-200 bg-white space-y-6">
+      <main class="w-full max-w-2xl mx-auto rounded-xl p-8 border border-accent-200 bg-white space-y-6">
       <!-- Success Icon (when agreement accepted) -->
       <div v-if="agreementAccepted" class="text-center mb-6">
         <div class="w-20 h-20 mx-auto bg-green-200 rounded-full flex items-center justify-center mb-6">
