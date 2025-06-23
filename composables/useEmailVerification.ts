@@ -13,6 +13,7 @@ export function useEmailVerification() {
   const cooldownInterval = ref<any>(null);
   const codeError = ref('');
   const userEmail = ref('');
+  const updateEmailError = ref('');
 
   // Clean up intervals on unmount
   onBeforeUnmount(() => {
@@ -196,6 +197,39 @@ export function useEmailVerification() {
     resendCooldown.value = 0;
   }
 
+  // Update email for verification
+  async function updateEmail(newEmail: string, password: string) {
+    isLoading.value = true;
+    updateEmailError.value = '';
+    try {
+      const response = await useCustomFetch<any>('/api/user/update-email', {
+        method: 'PATCH',
+        body: { email: newEmail, password }
+      });
+      if (response?.success === true && response?.status === 'success' && response?.status_code === 200 && response?.data?.email) {
+        userEmail.value = response.data.email;
+        toast.success(response?.message || 'Email updated successfully. Please check your new email for a verification link.');
+        return { success: true, message: response?.message };
+      } else if (response?.status_code === 422 && response?.errors) {
+        // Validation errors
+        updateEmailError.value = Object.values(response.errors).flat().join(' ');
+        toast.error(updateEmailError.value);
+        return { success: false, message: updateEmailError.value };
+      } else {
+        updateEmailError.value = response?.message || 'Unable to update email.';
+        toast.error(updateEmailError.value);
+        return { success: false, message: updateEmailError.value };
+      }
+    } catch (err: any) {
+      const errorMessage = err?.data?.message || err?.message || 'An unexpected error occurred';
+      updateEmailError.value = errorMessage;
+      toast.error(errorMessage);
+      return { success: false, message: errorMessage };
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   return {
     // State
     code,
@@ -203,6 +237,7 @@ export function useEmailVerification() {
     resendCooldown,
     codeError,
     userEmail,
+    updateEmailError,
     
     // Methods
     initializeEmail,
@@ -211,6 +246,7 @@ export function useEmailVerification() {
     resendCode,
     autoSubmit,
     clearError,
-    reset
+    reset,
+    updateEmail
   };
 } 
