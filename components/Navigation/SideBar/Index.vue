@@ -200,6 +200,9 @@ const currentMode = ref(props.defaultMode);
 // Track bottom section visibility with localStorage persistence
 const isBottomSectionVisible = ref(false);
 
+// Add this computed property for template usage
+const isSeller = computed(() => authStore.isSeller);
+
 // Toggle bottom section visibility
 const toggleBottomSection = () => {
   isBottomSectionVisible.value = !isBottomSectionVisible.value;
@@ -218,6 +221,15 @@ const updateCurrentMode = () => {
   }
 };
 
+// Get onboarding state
+const onboarding = useOnboarding();
+
+// Check if onboarding is active
+const onboardingActive = computed(() => {
+  // Consider onboarding active if onboarding state is active
+  return onboarding.isOnboardingActive.value;
+});
+
 // Seller navigation items configuration
 const sellerNavigationItems = computed(() => [
   {
@@ -227,7 +239,7 @@ const sellerNavigationItems = computed(() => [
     icon: 'UiIconsProfile',
     requiresSeller: false,
     // Only show onboarding when it's active (for sellers) or when user is not a seller
-    showWhen: () => !authStore.isSeller || authStore.onboardingState.isOnboardingActive.value
+    showWhen: () => !authStore.isSeller || onboarding.isOnboardingActive.value
   },
   {
     text: 'Dashboard',
@@ -281,15 +293,6 @@ const buyerNavigationItems = computed(() => [
   //   icon: 'UiIconsTransactions'
   // }
 ]);
-
-// Get onboarding state
-const onboardingState = useOnboarding();
-
-// Check if onboarding is active
-const onboardingActive = computed(() => {
-  // Consider onboarding active if onboarding state is active
-  return authStore.onboardingState.isOnboardingActive.value;
-});
 
 // Check if a route is active based on the current route
 const isRouteActive = (routeSegment) => {

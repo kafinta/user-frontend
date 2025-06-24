@@ -2,7 +2,6 @@
   <div class="flex w-full select-none">
     <!-- Sidebar navigation - visible on all screens (md+) or when toggled (mobile) -->
     <NavigationSideBar
-      :isSeller="isSeller"
       :username="username"
       :defaultMode="mode"
       :class="[
