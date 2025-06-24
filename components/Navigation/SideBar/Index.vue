@@ -181,10 +181,6 @@ const props = defineProps({
     type: String,
     required: true
   },
-  isSeller: {
-    type: Boolean,
-    default: false
-  },
   // Default mode can be 'seller' or 'buyer'
   defaultMode: {
     type: String,
@@ -231,7 +227,7 @@ const sellerNavigationItems = computed(() => [
     icon: 'UiIconsProfile',
     requiresSeller: false,
     // Only show onboarding when it's active (for sellers) or when user is not a seller
-    showWhen: () => !props.isSeller || onboardingState.isOnboardingActive.value
+    showWhen: () => !authStore.isSeller || authStore.onboardingState.isOnboardingActive.value
   },
   {
     text: 'Dashboard',
@@ -292,7 +288,7 @@ const onboardingState = useOnboarding();
 // Check if onboarding is active
 const onboardingActive = computed(() => {
   // Consider onboarding active if onboarding state is active
-  return onboardingState.isOnboardingActive.value;
+  return authStore.onboardingState.isOnboardingActive.value;
 });
 
 // Check if a route is active based on the current route
@@ -308,9 +304,8 @@ const isRouteActive = (routeSegment) => {
 const checkOnboardingRedirect = () => {
   // Only redirect if user is not a seller and trying to access seller features
   // But don't redirect if roles haven't been loaded yet (to prevent premature redirects)
-  const authStore = useAuthStore();
 
-  if (!props.isSeller &&
+  if (!authStore.isSeller &&
       route.name &&
       route.name.includes('selling') &&
       !route.name.includes('onboarding') &&
