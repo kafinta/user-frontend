@@ -14,29 +14,30 @@ export function useAuthApi() {
   const toast = useAppToast();
 
   // Helper function to handle successful auth responses
-  const handleAuthSuccess = (response: any) => {
+  const handleAuthSuccess = async (response: any) => {
     if (response.data?.user) {
       authStore.setUser(response.data.user);
       authStore.setVerified(!!response.data.user.email_verified_at);
     }
-
-    // Roles are NOT included in auth responses for security and performance reasons
-    // They should be fetched separately only when needed for authorization decisions
-
+    // Fetch roles if not already loaded
+    if (!authStore.rolesLoaded) {
+      await fetchRoles();
+    }
     return response;
   };
 
   // Fetch roles only when specifically needed (mainly for middleware role checking)
   const fetchRoles = async () => {
+    if (authStore.rolesLoaded) {
+      return { status: 'success', message: 'Roles already loaded' };
+    }
     try {
       const response = await useCustomFetch<ApiResponse>('/api/user/profile/roles', {
         method: 'GET'
       });
-
       if (response.status === 'success' && response.data?.roles) {
         authStore.setRoles(response.data.roles);
       }
-
       return response;
     } catch (error) {
       // If roles endpoint fails, try to get roles from user profile
@@ -94,8 +95,6 @@ export function useAuthApi() {
       return response;
     },
 
-
-
     // Navigation helper for post-auth redirects
     navigateToDashboard: async () => {
       const authStore = useAuthStore();
@@ -147,8 +146,6 @@ export function useAuthApi() {
         return navigateTo(`/${username}/buying/dashboard`);
       }
     },
-
-
 
     // OAuth authentication
     getSupportedProviders: async () => {
