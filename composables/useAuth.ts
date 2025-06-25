@@ -1,6 +1,7 @@
 import { useAuthStore } from '~/stores/auth';
 import { useAppToast } from '~/utils/toastify';
 import { useRouter } from 'vue-router';
+import { useAuthApi } from '~/composables/useAuthApi';
 
 interface LoginCredentials {
   email: string;
@@ -30,14 +31,19 @@ export function useAuth() {
   const authStore = useAuthStore();
   const toast = useAppToast();
   const router = useRouter();
+  const { fetchRoles } = useAuthApi();
 
   /**
    * Handle successful authentication response
    */
-  const handleAuthSuccess = (response: ApiResponse) => {
+  const handleAuthSuccess = async (response: ApiResponse) => {
     if (response.data?.user) {
       authStore.setUser(response.data.user);
       authStore.setVerified(!!response.data.user.email_verified_at);
+    }
+    // Fetch roles if not already loaded
+    if (!authStore.rolesLoaded) {
+      await fetchRoles();
     }
     return response;
   };
@@ -51,11 +57,9 @@ export function useAuth() {
         method: 'POST',
         body: credentials
       });
-
       if (response.status === 'success') {
-        handleAuthSuccess(response);
+        await handleAuthSuccess(response);
       }
-
       return response;
     } catch (error: any) {
       console.error('Login error:', error);
