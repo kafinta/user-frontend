@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useCustomFetch } from '~/composables/useCustomFetch'
+import { useAuthApi } from '~/composables/useAuthApi'
 
 // Types
 export interface Role {
@@ -58,6 +59,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const error = ref<string | null>(null)
   const initialized = ref(false)
+  const rolesLoaded = ref(false)
 
   // Remove auto-initialization to prevent premature session validation
   // Session validation will be handled by middleware when routes require authentication
@@ -94,10 +96,14 @@ export const useAuthStore = defineStore('auth', () => {
     isVerified.value = verified;
   }
 
-
-
   function setRoles(newRoles: Role[]) {
     roles.value = newRoles;
+    rolesLoaded.value = true;
+  }
+
+  function clearRoles() {
+    roles.value = [];
+    rolesLoaded.value = false;
   }
 
   // Actions
@@ -105,10 +111,12 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * Initialize the auth store - now simplified since auth state comes from login/signup
    */
-  function initialize() {
-    // No automatic API calls needed
-    // Auth state will be set from login/signup responses
-    // Session validation happens in middleware when routes require authentication
+  async function initialize() {
+    // Fetch roles if authenticated and not already loaded
+    if (isAuthenticated.value && !rolesLoaded.value) {
+      const { fetchRoles } = useAuthApi();
+      await fetchRoles();
+    }
     initialized.value = true;
   }
 
@@ -161,8 +169,6 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Removed logout - API calls should be handled by pages
 
-
-
   /**
    * Clear all authentication data
    */
@@ -170,7 +176,7 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null;
     roles.value = [];
     isVerified.value = false;
-
+    rolesLoaded.value = false;
 
     return {
       success: true,
@@ -299,8 +305,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-
-
   // Removed checkEmailVerificationStatus - this is now handled directly on pages as it's page-specific
 
   /**
@@ -399,7 +403,6 @@ export const useAuthStore = defineStore('auth', () => {
     error,
     isVerified,
 
-
     // Essential getters for navigation and permissions
     isAuthenticated,
     needsVerification,
@@ -423,8 +426,11 @@ export const useAuthStore = defineStore('auth', () => {
     setVerified,
 
     setRoles,
+    clearRoles,
 
     // Debugging (only in development)
-    ...(process.env.NODE_ENV !== 'production' ? { debugAuthState } : {})
+    ...(process.env.NODE_ENV !== 'production' ? { debugAuthState } : {}),
+
+    rolesLoaded
   }
 })
