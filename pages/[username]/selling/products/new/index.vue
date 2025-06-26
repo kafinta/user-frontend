@@ -124,7 +124,7 @@
 </template>
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useFiltersStore } from '~/stores/filters'
 import { useProductApi } from '~/composables/useProductApi'
 import { useAppToast } from '~/utils/toastify'
@@ -144,6 +144,7 @@ useHead({
 });
 
 const router = useRouter()
+const route = useRoute()
 const filtersStore = useFiltersStore()
 const productApi = useProductApi()
 const toast = useAppToast()
@@ -207,8 +208,6 @@ const handleLocationChange = (locationId) => {
   }
 }
 
-
-
 // Form submission
 const createProduct = async () => {
   try {
@@ -268,8 +267,9 @@ const createProduct = async () => {
     console.log('API Response:', response) // Debug log
 
     if (response.status === 'success') {
-      // Extract product ID from response - updated for new API format
+      // Extract product ID and slug from response
       const productId = response.data?.product?.id || response.data?.id
+      const productSlug = response.data?.product?.slug || productId
 
       if (productId) {
         // Show success feedback
@@ -278,8 +278,8 @@ const createProduct = async () => {
         // Small delay for better UX
         setTimeout(() => {
           router.push({
-            name: 'username-selling-products-new-specifications',
-            query: { productId: productId }
+            path: `/${route.params.username}/selling/products/${productSlug}/specifications`,
+            query: { subcategory_id: formData.subcategory_id }
           })
         }, 500)
       } else {
