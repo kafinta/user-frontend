@@ -13,7 +13,7 @@
 
       <!-- Loading State -->
       <div v-if="isLoadingProduct" class="flex justify-center py-8">
-        <UiLoadingSpinner />
+        <UiIconsLoading class="w-10 h-10" />
       </div>
 
       <!-- Product Edit Form -->
@@ -206,41 +206,39 @@ const handleLocationChange = (locationId) => {
 // Load existing product data
 const loadProduct = async () => {
   try {
-    // First try to find product by slug in the seller's products
-    const myProductsResponse = await productApi.getMyProducts()
-    
-    if (myProductsResponse.status === 'success' && myProductsResponse.data?.data) {
-      const foundProduct = myProductsResponse.data.data.find(p => 
-        p.slug === productSlug.value
-      )
+    // Fetch product by slug directly
+    const response = await productApi.getProductBySlug(productSlug.value)
+    if (response.status === 'success' && response.data) {
+      product.value = response.data
 
-      if (!foundProduct) {
-        toast.error('Product not found')
-        router.push({ name: 'username-selling-products' })
-        return
+      // Populate form with existing data
+      formData.name = product.value.name || ''
+      formData.description = product.value.description || ''
+      formData.price = product.value.price || ''
+      formData.manage_stock = product.value.manage_stock || false
+      formData.stock_quantity = product.value.stock_quantity || ''
+
+      // Use the new structure for IDs
+      formData.category_id = product.value.category?.id || null
+      formData.location_id = product.value.location?.id || null
+      formData.subcategory_id = product.value.subcategory?.id || null
+
+      // After setting formData.category_id, formData.location_id, formData.subcategory_id
+      const subcatInOptions = filtersStore.subcategories.some(
+        subcat => subcat.id === formData.subcategory_id
+      );
+
+      if (
+        formData.category_id &&
+        formData.location_id &&
+        !subcatInOptions
+      ) {
+        await filtersStore.fetchSubcategories(formData.category_id, formData.location_id);
       }
-
-      // Get full product details
-      const response = await productApi.getProduct(foundProduct.id)
-
-      if (response.status === 'success' && response.data?.product) {
-        product.value = response.data.product
-
-        // Populate form with existing data
-        formData.name = product.value.name || ''
-        formData.description = product.value.description || ''
-        formData.price = product.value.price || ''
-        formData.subcategory_id = product.value.subcategory_id || null
-        formData.location_id = product.value.location_id || null
-        formData.manage_stock = product.value.manage_stock || false
-        formData.stock_quantity = product.value.stock_quantity || ''
-
-        // Load subcategories if both category and location are set
-        if (product.value.subcategory?.category_id && product.value.location_id) {
-          formData.category_id = product.value.subcategory.category_id
-          await filtersStore.fetchSubcategories(product.value.subcategory.category_id, product.value.location_id)
-        }
-      }
+    } else {
+      toast.error('Product not found')
+      router.push({ name: 'username-selling-products' })
+      return
     }
   } catch (error) {
     console.error('Error loading product:', error)
