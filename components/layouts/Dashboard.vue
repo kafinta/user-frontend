@@ -114,6 +114,6 @@ function handleLogoClick() {
   }
 }
 
-// Roles are now handled by middleware when needed
-// No automatic role fetching on dashboard mount to prevent race conditions
+// Auth store handles role persistence via localStorage
+// No need for additional role fetching - roles are loaded on app initialization
 </script>
