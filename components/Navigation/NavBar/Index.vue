@@ -284,11 +284,8 @@ function handleClickOutside(event) {
 
 // Check authentication status
 async function checkAuthStatus() {
-  // Validate session to ensure auth state is current
-  // This now uses cached validation to reduce API calls
-  if (!authStore.isAuthenticated) {
-    await authStore.validateSession()
-  }
+  // No session validation needed - rely on backend to handle expired sessions
+  // Auth store is initialized on app startup and loads data from localStorage
 }
 
 // Lifecycle hooks
