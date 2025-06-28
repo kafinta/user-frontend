@@ -2,7 +2,6 @@
 import { defineNuxtRouteMiddleware, navigateTo } from '#app';
 import { useAuthStore } from '~/stores/auth';
 import { useAppToast } from '~/utils/toastify'
-import { useAuthApi } from '~/composables/useAuthApi';
 
 // Import SimpleResponse type from auth store
 import type { SimpleResponse } from '~/stores/auth';
@@ -14,8 +13,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // Get auth store inside the middleware function to ensure it's reactive
   const authStore = useAuthStore();
 
-  // Skip middleware debugging in production
-  // This section previously contained debug logging code
+  // Initialize auth store if not already done
+  if (!authStore.initialized) {
+    await authStore.initialize();
+  }
 
   // Extract route requirements from meta
   const routeRequirements = {
@@ -73,14 +74,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   // Special case for auth pages (login/signup)
   if (routeRequirements.authOnly) {
-    // If store is not hydrated, validate session
-    if (!authStore.isAuthenticated) {
-      try {
-        await authStore.validateSession();
-      } catch (e) {
-        // Ignore errors, user is not authenticated
-      }
-    }
     // If user is already authenticated and verified, redirect to dashboard
     if (authStore.isAuthenticated && authStore.isVerified) {
       return navigateToDashboard();
@@ -115,6 +108,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // Case 1: Route requires authentication but user is not authenticated
   if (routeRequirements.requiresAuth && !authStore.isAuthenticated) {
     // Try to validate session first in case user has valid cookies but empty auth state
+    // This now uses cached validation to reduce API calls
     try {
       await authStore.validateSession();
 
@@ -172,29 +166,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   // Case 4: Role-based access control
   if (authStore.isAuthenticated && routeRequirements.requiresSeller) {
-    // If route requires seller role but user doesn't have it, check if roles are loaded
+    // Roles are now loaded from localStorage on app initialization
+    // No need to fetch roles - just check if user has seller role
     if (!authStore.isSeller) {
-      // If no roles are loaded at all, try to fetch them first
-      if (authStore.roles.length === 0) {
-        try {
-          const authApi = useAuthApi();
-          await authApi.fetchRoles();
-
-          // After fetching roles, check again
-          if (!authStore.isSeller) {
-            showAccessDenied('You do not have the required permissions to access this page');
-            return navigateToDashboard();
-          }
-        } catch (error) {
-          console.error('Failed to fetch roles for access control:', error);
-          showAccessDenied('Unable to verify permissions');
-          return navigateToDashboard();
-        }
-      } else {
-        // Roles are loaded but user is not a seller
-        showAccessDenied('You do not have the required permissions to access this page');
-        return navigateToDashboard();
-      }
+      showAccessDenied('You do not have the required permissions to access this page');
+      return navigateToDashboard();
     }
   }
 
