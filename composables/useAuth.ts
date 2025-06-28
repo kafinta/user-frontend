@@ -16,14 +16,13 @@ interface SignupData {
 }
 
 interface ApiResponse {
-  status: 'success' | 'fail' | 'error';
-  status_code: number;
+  status: string;
   message: string;
+  status_code?: number;
   data?: {
     user?: any;
+    roles?: string[];
     email_verification_required?: boolean;
-    verification_email_sent?: boolean;
-    email_verified?: boolean;
   };
 }
 
@@ -31,7 +30,6 @@ export function useAuth() {
   const authStore = useAuthStore();
   const toast = useAppToast();
   const router = useRouter();
-  const { fetchRoles } = useAuthApi();
 
   /**
    * Handle successful authentication response
@@ -41,10 +39,15 @@ export function useAuth() {
       authStore.setUser(response.data.user);
       authStore.setVerified(!!response.data.user.email_verified_at);
     }
-    // Fetch roles if not already loaded
-    if (!authStore.rolesLoaded) {
-      await fetchRoles();
+    
+    // Set roles if included in response (preferred approach)
+    if (response.data?.roles) {
+      authStore.setRoles(response.data.roles);
+    } else if (response.data?.user?.roles) {
+      // If roles are nested in user object
+      authStore.setRoles(response.data.user.roles);
     }
+    
     return response;
   };
 
@@ -95,7 +98,7 @@ export function useAuth() {
 
   return {
     login,
-    navigateToDashboard,
-    handleAuthSuccess
+    handleAuthSuccess,
+    navigateToDashboard
   };
 } 
