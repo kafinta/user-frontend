@@ -107,38 +107,17 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   // Case 1: Route requires authentication but user is not authenticated
   if (routeRequirements.requiresAuth && !authStore.isAuthenticated) {
-    // Try to validate session first in case user has valid cookies but empty auth state
-    // This now uses cached validation to reduce API calls
-    try {
-      await authStore.validateSession();
-
-      // If session validation restored auth state, continue with middleware checks
-      if (authStore.isAuthenticated) {
-        // Session restored successfully, continue with other checks below
-      } else {
-        // No valid session, redirect to login
-        if (!to.fullPath.includes('/auth/')) {
-          const toast = useAppToast();
-          toast.info('Authentication Required', 'Please log in to access this page');
-        }
-
-        return navigateTo({
-          path: '/auth/login',
-          query: { redirect: to.fullPath }
-        });
-      }
-    } catch (error) {
-      // Session validation failed, redirect to login
-      if (!to.fullPath.includes('/auth/')) {
-        const toast = useAppToast();
-        toast.info('Authentication Required', 'Please log in to access this page');
-      }
-
-      return navigateTo({
-        path: '/auth/login',
-        query: { redirect: to.fullPath }
-      });
+    // No session validation - rely on backend to handle expired sessions
+    // Just redirect to login if user data is not in localStorage
+    if (!to.fullPath.includes('/auth/')) {
+      const toast = useAppToast();
+      toast.info('Authentication Required', 'Please log in to access this page');
     }
+
+    return navigateTo({
+      path: '/auth/login',
+      query: { redirect: to.fullPath }
+    });
   }
 
   // Case 2: Route requires verification and user needs verification
@@ -166,7 +145,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   // Case 4: Role-based access control
   if (authStore.isAuthenticated && routeRequirements.requiresSeller) {
-    // Roles are now loaded from localStorage on app initialization
+    // Roles are loaded from localStorage on app initialization
     // No need to fetch roles - just check if user has seller role
     if (!authStore.isSeller) {
       showAccessDenied('You do not have the required permissions to access this page');

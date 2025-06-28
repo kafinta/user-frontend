@@ -45,8 +45,7 @@ function log(message: string, ...args: any[]): void {
 const STORAGE_KEYS = {
   USER: 'kafinta_user',
   ROLES: 'kafinta_roles',
-  VERIFIED: 'kafinta_verified',
-  LAST_VALIDATION: 'kafinta_last_validation'
+  VERIFIED: 'kafinta_verified'
 } as const;
 
 // Helper functions for localStorage
@@ -67,6 +66,7 @@ function loadFromStorage<T>(key: string): T | null {
       return item ? JSON.parse(item) : null;
     } catch (error) {
       console.warn(`Failed to load from localStorage (${key}):`, error);
+      return null;
     }
   }
   return null;
@@ -83,9 +83,6 @@ function clearStorage(): void {
     }
   }
 }
-
-// Session validation cache duration (5 minutes)
-const SESSION_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 export const useAuthStore = defineStore('auth', () => {
   // State
@@ -154,12 +151,12 @@ export const useAuthStore = defineStore('auth', () => {
   // Actions
 
   /**
-   * Initialize the auth store - load from localStorage first, then validate session if needed
+   * Initialize the auth store - load from localStorage only
    */
   async function initialize() {
     if (initialized.value) return;
 
-    // Load from localStorage first
+    // Load from localStorage
     const storedUser = loadFromStorage<User>(STORAGE_KEYS.USER);
     const storedRoles = loadFromStorage<string[]>(STORAGE_KEYS.ROLES);
     const storedVerified = loadFromStorage<boolean>(STORAGE_KEYS.VERIFIED);
@@ -175,90 +172,7 @@ export const useAuthStore = defineStore('auth', () => {
       setRoles(storedRoles);
     }
 
-    // If we have user data from localStorage, validate the session to ensure it's still valid
-    if (storedUser) {
-      try {
-        await validateSession();
-      } catch (error) {
-        // If session validation fails, clear the stored data
-        log('Session validation failed, clearing stored data:', error);
-        clearAuthData();
-      }
-    }
-
     initialized.value = true;
-  }
-
-  /**
-   * Validate current session and restore auth state if user is authenticated
-   * Now optimized with caching to reduce unnecessary API calls
-   */
-  async function validateSession() {
-    // Check if we have a recent validation timestamp
-    const lastValidation = loadFromStorage<number>(STORAGE_KEYS.LAST_VALIDATION);
-    const now = Date.now();
-    
-    // If we validated recently (within cache duration), skip the API call
-    if (lastValidation && (now - lastValidation) < SESSION_CACHE_DURATION) {
-      log('Using cached session validation');
-      return;
-    }
-
-    try {
-      const response = await useCustomFetch<ApiResponse>('/api/user/profile', {
-        method: 'GET'
-      });
-
-      if (response.status === 'success' && response.data?.user) {
-        // User is authenticated, restore auth state
-        setUser(response.data.user);
-        setVerified(!!response.data.user.email_verified_at);
-
-        // Set roles if included in response (preferred approach)
-        if (response.data.roles) {
-          setRoles(response.data.roles);
-        } else if (response.data.user.roles) {
-          // If roles are nested in user object
-          setRoles(response.data.user.roles);
-        } else {
-          // If roles not included, fetch them separately to ensure they're available
-          try {
-            const rolesResponse = await useCustomFetch<ApiResponse>('/api/user/profile/roles', {
-              method: 'GET'
-            });
-
-            if (rolesResponse.status === 'success' && rolesResponse.data?.roles) {
-              setRoles(rolesResponse.data.roles);
-            }
-          } catch (rolesError) {
-            // If roles fetch fails, continue without roles
-            // This prevents session validation from failing due to roles endpoint issues
-            console.warn('Failed to fetch roles during session validation:', rolesError);
-          }
-        }
-
-        // Save validation timestamp
-        saveToStorage(STORAGE_KEYS.LAST_VALIDATION, now);
-      } else {
-        // No valid session, clear stored data
-        clearAuthData();
-      }
-    } catch (error) {
-      // Session is invalid or user is not authenticated
-      // This is normal for unauthenticated users, so we don't show errors
-      clearAuthData();
-    }
-  }
-
-  /**
-   * Force validate session (bypass cache) - useful for critical operations
-   */
-  async function forceValidateSession() {
-    // Clear the last validation timestamp to force a fresh API call
-    if (import.meta.client) {
-      localStorage.removeItem(STORAGE_KEYS.LAST_VALIDATION);
-    }
-    return await validateSession();
   }
 
   /**
@@ -339,22 +253,14 @@ export const useAuthStore = defineStore('auth', () => {
         // Update user data if included in response
         if (response.data?.user) {
           setUser(response.data.user);
-        } else {
-          // Fetch profile if not included
-          try {
-            const profileResponse = await useCustomFetch<ApiResponse>('/api/user/profile', {
-              method: 'GET'
-            });
-
-            if (profileResponse.status === 'success' && profileResponse.data?.user) {
-              setUser(profileResponse.data.user);
-            }
-          } catch (profileError) {
-            console.error('Failed to fetch profile after token verification', profileError);
-          }
         }
 
-        // Roles should be fetched by pages/composables after verification
+        // Set roles if included in response
+        if (response.data?.roles) {
+          setRoles(response.data.roles);
+        } else if (response.data?.user?.roles) {
+          setRoles(response.data.user.roles);
+        }
 
         // Create response object
         const responseObj = {
@@ -425,22 +331,14 @@ export const useAuthStore = defineStore('auth', () => {
         // Update user data if included
         if (response.data?.user) {
           setUser(response.data.user);
-        } else {
-          // Fetch profile if not included
-          try {
-            const profileResponse = await useCustomFetch<ApiResponse>('/api/user/profile', {
-              method: 'GET'
-            });
-
-            if (profileResponse.status === 'success' && profileResponse.data?.user) {
-              setUser(profileResponse.data.user);
-            }
-          } catch (profileError) {
-            console.error('Failed to fetch profile after direct link verification', profileError);
-          }
         }
 
-        // Roles should be fetched by pages/composables
+        // Set roles if included in response
+        if (response.data?.roles) {
+          setRoles(response.data.roles);
+        } else if (response.data?.user?.roles) {
+          setRoles(response.data.user.roles);
+        }
 
         // Create response object
         const responseObj = {
@@ -499,10 +397,8 @@ export const useAuthStore = defineStore('auth', () => {
     isSeller,
     isCustomer,
 
-    // Core authentication actions (API calls removed - handled by pages)
+    // Core authentication actions
     initialize,
-    validateSession,
-    forceValidateSession,
 
     // Email verification actions (token-based methods are reusable)
     verifyEmailWithToken,
