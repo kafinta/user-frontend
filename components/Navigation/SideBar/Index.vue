@@ -200,7 +200,7 @@ const currentMode = ref(props.defaultMode);
 // Track bottom section visibility with localStorage persistence
 const isBottomSectionVisible = ref(false);
 
-// Add this computed property for template usage
+// Add this computed property for template usage - uses new role system
 const isSeller = computed(() => authStore.isSeller);
 
 // Toggle bottom section visibility
@@ -306,13 +306,11 @@ const isRouteActive = (routeSegment) => {
 // Check if user needs to be redirected to onboarding
 const checkOnboardingRedirect = () => {
   // Only redirect if user is not a seller and trying to access seller features
-  // But don't redirect if roles haven't been loaded yet (to prevent premature redirects)
-
+  // Roles are now loaded from localStorage on app initialization, so we can check immediately
   if (!authStore.isSeller &&
       route.name &&
       route.name.includes('selling') &&
-      !route.name.includes('onboarding') &&
-      authStore.roles.length > 0) { // Only redirect if roles are actually loaded
+      !route.name.includes('onboarding')) {
     router.push({
       name: 'username-selling-onboarding',
       params: { username: props.username }
