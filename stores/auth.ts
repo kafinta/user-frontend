@@ -4,18 +4,13 @@ import { useCustomFetch } from '~/composables/useCustomFetch'
 import { useAuthApi } from '~/composables/useAuthApi'
 
 // Types
-export interface Role {
-  id: number
-  name: string
-  slug: string
-}
-
 export interface User {
   id?: number | string
   email?: string
   name?: string
   username?: string
   email_verified_at?: string | null
+  roles?: string[] // Roles are now simple strings (slugs)
 }
 
 interface ApiResponse {
@@ -27,11 +22,9 @@ interface ApiResponse {
     email_verification_required?: boolean
     verification_email_sent?: boolean
     email_verified?: boolean
-    roles?: Role[]
+    roles?: string[] // Roles are now simple strings (slugs)
   }
 }
-
-// Removed RolesApiResponse - API calls handled by pages/composables
 
 // Simple response type for actions
 export interface SimpleResponse {
@@ -48,10 +41,56 @@ function log(message: string, ...args: any[]): void {
   }
 }
 
+// localStorage keys
+const STORAGE_KEYS = {
+  USER: 'kafinta_user',
+  ROLES: 'kafinta_roles',
+  VERIFIED: 'kafinta_verified',
+  LAST_VALIDATION: 'kafinta_last_validation'
+} as const;
+
+// Helper functions for localStorage
+function saveToStorage(key: string, data: any): void {
+  if (import.meta.client) {
+    try {
+      localStorage.setItem(key, JSON.stringify(data));
+    } catch (error) {
+      console.warn(`Failed to save to localStorage (${key}):`, error);
+    }
+  }
+}
+
+function loadFromStorage<T>(key: string): T | null {
+  if (import.meta.client) {
+    try {
+      const item = localStorage.getItem(key);
+      return item ? JSON.parse(item) : null;
+    } catch (error) {
+      console.warn(`Failed to load from localStorage (${key}):`, error);
+    }
+  }
+  return null;
+}
+
+function clearStorage(): void {
+  if (import.meta.client) {
+    try {
+      Object.values(STORAGE_KEYS).forEach(key => {
+        localStorage.removeItem(key);
+      });
+    } catch (error) {
+      console.warn('Failed to clear localStorage:', error);
+    }
+  }
+}
+
+// Session validation cache duration (5 minutes)
+const SESSION_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
+
 export const useAuthStore = defineStore('auth', () => {
   // State
   const user = ref<User | null>(null)
-  const roles = ref<Role[]>([])
+  const roles = ref<string[]>([]) // Roles are now simple strings (slugs)
   const isLoading = ref(false)
   const message = ref<string | null>(null)
   const status = ref<string | null>(null)
@@ -61,19 +100,13 @@ export const useAuthStore = defineStore('auth', () => {
   const initialized = ref(false)
   const rolesLoaded = ref(false)
 
-  // Remove auto-initialization to prevent premature session validation
-  // Session validation will be handled by middleware when routes require authentication
-
   // Getters
   const isAuthenticated = computed(() => !!user.value)
   const needsVerification = computed(() => isAuthenticated.value && !isVerified.value)
-  const hasRole = computed(() => (roleSlug: string) => roles.value.some(role => role.slug === roleSlug))
+  const hasRole = computed(() => (roleSlug: string) => roles.value.includes(roleSlug))
   const isSeller = computed(() => hasRole.value('seller'))
   // All users have customer role by default - sellers get it after completing onboarding
   const isCustomer = computed(() => isAuthenticated.value) // All authenticated users are customers by default
-
-  // Session validation removed - auth state comes from login/signup responses
-  // Middleware handles authentication checks when needed
 
   // Helper methods
 
@@ -87,43 +120,90 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null;
   }
 
-  // Basic state management
+  // Basic state management with localStorage persistence
   function setUser(newUser: User | null) {
     user.value = newUser;
+    if (newUser) {
+      saveToStorage(STORAGE_KEYS.USER, newUser);
+    } else {
+      if (import.meta.client) {
+        localStorage.removeItem(STORAGE_KEYS.USER);
+      }
+    }
   }
 
   function setVerified(verified: boolean) {
     isVerified.value = verified;
+    saveToStorage(STORAGE_KEYS.VERIFIED, verified);
   }
 
-  function setRoles(newRoles: Role[]) {
+  function setRoles(newRoles: string[]) {
     roles.value = newRoles;
     rolesLoaded.value = true;
+    saveToStorage(STORAGE_KEYS.ROLES, newRoles);
   }
 
   function clearRoles() {
     roles.value = [];
     rolesLoaded.value = false;
+    if (import.meta.client) {
+      localStorage.removeItem(STORAGE_KEYS.ROLES);
+    }
   }
 
   // Actions
 
   /**
-   * Initialize the auth store - now simplified since auth state comes from login/signup
+   * Initialize the auth store - load from localStorage first, then validate session if needed
    */
   async function initialize() {
-    // Fetch roles if authenticated and not already loaded
-    if (isAuthenticated.value && !rolesLoaded.value) {
-      const { fetchRoles } = useAuthApi();
-      await fetchRoles();
+    if (initialized.value) return;
+
+    // Load from localStorage first
+    const storedUser = loadFromStorage<User>(STORAGE_KEYS.USER);
+    const storedRoles = loadFromStorage<string[]>(STORAGE_KEYS.ROLES);
+    const storedVerified = loadFromStorage<boolean>(STORAGE_KEYS.VERIFIED);
+
+    if (storedUser) {
+      setUser(storedUser);
+      if (storedVerified !== null) {
+        setVerified(storedVerified);
+      }
     }
+
+    if (storedRoles && storedRoles.length > 0) {
+      setRoles(storedRoles);
+    }
+
+    // If we have user data from localStorage, validate the session to ensure it's still valid
+    if (storedUser) {
+      try {
+        await validateSession();
+      } catch (error) {
+        // If session validation fails, clear the stored data
+        log('Session validation failed, clearing stored data:', error);
+        clearAuthData();
+      }
+    }
+
     initialized.value = true;
   }
 
   /**
    * Validate current session and restore auth state if user is authenticated
+   * Now optimized with caching to reduce unnecessary API calls
    */
   async function validateSession() {
+    // Check if we have a recent validation timestamp
+    const lastValidation = loadFromStorage<number>(STORAGE_KEYS.LAST_VALIDATION);
+    const now = Date.now();
+    
+    // If we validated recently (within cache duration), skip the API call
+    if (lastValidation && (now - lastValidation) < SESSION_CACHE_DURATION) {
+      log('Using cached session validation');
+      return;
+    }
+
     try {
       const response = await useCustomFetch<ApiResponse>('/api/user/profile', {
         method: 'GET'
@@ -134,9 +214,12 @@ export const useAuthStore = defineStore('auth', () => {
         setUser(response.data.user);
         setVerified(!!response.data.user.email_verified_at);
 
-        // Set roles if included in response
+        // Set roles if included in response (preferred approach)
         if (response.data.roles) {
           setRoles(response.data.roles);
+        } else if (response.data.user.roles) {
+          // If roles are nested in user object
+          setRoles(response.data.user.roles);
         } else {
           // If roles not included, fetch them separately to ensure they're available
           try {
@@ -153,6 +236,12 @@ export const useAuthStore = defineStore('auth', () => {
             console.warn('Failed to fetch roles during session validation:', rolesError);
           }
         }
+
+        // Save validation timestamp
+        saveToStorage(STORAGE_KEYS.LAST_VALIDATION, now);
+      } else {
+        // No valid session, clear stored data
+        clearAuthData();
       }
     } catch (error) {
       // Session is invalid or user is not authenticated
@@ -161,13 +250,16 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // Removed fetchRoles - API calls should be handled by pages/composables
-
-  // Removed login - API calls should be handled by pages
-
-  // Removed signup - API calls should be handled by pages
-
-  // Removed logout - API calls should be handled by pages
+  /**
+   * Force validate session (bypass cache) - useful for critical operations
+   */
+  async function forceValidateSession() {
+    // Clear the last validation timestamp to force a fresh API call
+    if (import.meta.client) {
+      localStorage.removeItem(STORAGE_KEYS.LAST_VALIDATION);
+    }
+    return await validateSession();
+  }
 
   /**
    * Clear all authentication data
@@ -177,6 +269,7 @@ export const useAuthStore = defineStore('auth', () => {
     roles.value = [];
     isVerified.value = false;
     rolesLoaded.value = false;
+    clearStorage();
 
     return {
       success: true,
@@ -202,8 +295,6 @@ export const useAuthStore = defineStore('auth', () => {
     log('Auth Store State:', state);
     return state;
   }
-
-  // Removed verifyEmail - this is now handled directly on pages as it's page-specific
 
   /**
    * Verify email with a token
@@ -304,8 +395,6 @@ export const useAuthStore = defineStore('auth', () => {
       isLoading.value = false;
     }
   }
-
-  // Removed checkEmailVerificationStatus - this is now handled directly on pages as it's page-specific
 
   /**
    * Verify email with a direct link
@@ -413,6 +502,7 @@ export const useAuthStore = defineStore('auth', () => {
     // Core authentication actions (API calls removed - handled by pages)
     initialize,
     validateSession,
+    forceValidateSession,
 
     // Email verification actions (token-based methods are reusable)
     verifyEmailWithToken,
@@ -431,6 +521,7 @@ export const useAuthStore = defineStore('auth', () => {
     // Debugging (only in development)
     ...(process.env.NODE_ENV !== 'production' ? { debugAuthState } : {}),
 
-    rolesLoaded
+    rolesLoaded,
+    initialized
   }
 })
