@@ -4,7 +4,7 @@ interface ApiResponse {
   message: string;
   data?: {
     user?: any;
-    roles?: any[];
+    roles?: string[]; // Roles are now simple strings (slugs)
     email_verified?: boolean;
   };
 }
@@ -19,45 +19,21 @@ export function useAuthApi() {
       authStore.setUser(response.data.user);
       authStore.setVerified(!!response.data.user.email_verified_at);
     }
-    // Fetch roles if not already loaded
-    if (!authStore.rolesLoaded) {
-      await fetchRoles();
+    
+    // Set roles if included in response (preferred approach)
+    if (response.data?.roles) {
+      authStore.setRoles(response.data.roles);
+    } else if (response.data?.user?.roles) {
+      // If roles are nested in user object
+      authStore.setRoles(response.data.user.roles);
     }
+    
     return response;
-  };
-
-  // Fetch roles only when specifically needed (mainly for middleware role checking)
-  const fetchRoles = async () => {
-    if (authStore.rolesLoaded) {
-      return { status: 'success', message: 'Roles already loaded' };
-    }
-    try {
-      const response = await useCustomFetch<ApiResponse>('/api/user/profile/roles', {
-        method: 'GET'
-      });
-      if (response.status === 'success' && response.data?.roles) {
-        authStore.setRoles(response.data.roles);
-      }
-      return response;
-    } catch (error) {
-      // If roles endpoint fails, try to get roles from user profile
-      console.warn('Roles endpoint failed, fetching from user profile');
-      try {
-        await authStore.validateSession();
-        return { status: 'success', message: 'Roles updated from user profile' };
-      } catch (profileError) {
-        console.error('Failed to fetch roles:', error);
-        return { status: 'error', message: 'Failed to fetch user roles' };
-      }
-    }
   };
 
   return {
     // Helper for handling auth success
     handleAuthSuccess,
-
-    // Fetch roles only when specifically needed
-    fetchRoles,
 
     logout: async () => {
       const response = await useCustomFetch<ApiResponse>('/api/logout', {
@@ -66,18 +42,8 @@ export function useAuthApi() {
 
       if (response.status === 'success') {
         authStore.clearAuthData();
-
-        // Clear any remaining auth-related localStorage items (if any exist)
-        if (import.meta.client) {
-          try {
-            localStorage.removeItem('user');
-            localStorage.removeItem('roles');
-          } catch (error) {
-            // Ignore localStorage errors
-          }
-          // Redirect to login page after logout
-          navigateTo('/auth/login');
-        }
+        // Redirect to login page after logout
+        navigateTo('/auth/login');
       }
 
       return response;
@@ -126,15 +92,8 @@ export function useAuthApi() {
       const username = authStore.user.username;
       console.log('Navigating to dashboard for user:', username);
 
-      // Ensure roles are loaded before making navigation decision
-      if (authStore.roles.length === 0) {
-        console.log('No roles found, fetching roles...');
-        try {
-          await fetchRoles();
-        } catch (error) {
-          console.warn('Failed to fetch roles for dashboard navigation, defaulting to buyer dashboard:', error);
-        }
-      }
+      // Roles are now loaded from localStorage on app initialization
+      // No need to fetch roles - just use the stored roles
 
       // Route based on role - all users are customers by default
       if (authStore.isSeller) {
