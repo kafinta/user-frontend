@@ -7,6 +7,9 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
+import { useAuthStore } from '~/stores/auth'
+
 // Set default title and meta
 useHead({
   title: 'Kafinta | Home & Furniture Marketplace',
@@ -15,7 +18,14 @@ useHead({
     { name: 'viewport', content: 'width=device-width, initial-scale=1' }
   ]
 })
+
+// Initialize auth store on app startup
+onMounted(async () => {
+  const authStore = useAuthStore()
+  await authStore.initialize()
+})
 </script>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
