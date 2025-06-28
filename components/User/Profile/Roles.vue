@@ -9,11 +9,11 @@
     <div v-else class="flex flex-wrap gap-2">
       <div
         v-for="role in roles"
-        :key="role.id"
+        :key="role"
         class="px-3 py-1 rounded-full text-sm font-medium"
-        :class="getRoleClass(role.slug)"
+        :class="getRoleClass(role)"
       >
-        {{ role.name }}
+        {{ getRoleDisplayName(role) }}
       </div>
     </div>
   </div>
@@ -38,6 +38,18 @@ function getRoleClass(roleSlug) {
       return 'bg-accent-400 text-white'
     default:
       return 'bg-accent-200 text-secondary'
+  }
+}
+
+// Function to get display name for role slug
+function getRoleDisplayName(roleSlug) {
+  switch (roleSlug) {
+    case 'seller':
+      return 'Seller'
+    case 'customer':
+      return 'Customer'
+    default:
+      return roleSlug.charAt(0).toUpperCase() + roleSlug.slice(1)
   }
 }
 
