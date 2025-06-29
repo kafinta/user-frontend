@@ -62,33 +62,25 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <UiTypographyP class="text-sm font-medium text-secondary mb-2">Front of ID</UiTypographyP>
-                <div class="w-full relative h-52">
-                  <input @change="handleFrontImage" type="file" id="frontPictureInput" class="hidden" accept="image/*">
-
-                  <!-- Upload area (always present to maintain layout) -->
-                  <label for="frontPictureInput" class="absolute inset-0 w-full h-full rounded-md bg-accent-100 hover:bg-accent-200 duration-300 ease-in-out grid place-items-center cursor-pointer">
-                    <img :src="cameraIconPath" class="w-20 block" alt="Camera Icon"/>
-                  </label>
-
-                  <!-- Preview image (shows on top when available) -->
-                  <img v-if="frontPreviewSrc" :src="frontPreviewSrc" class="absolute inset-0 w-full h-full rounded-md object-cover" alt="Front Image Preview">
-                </div>
+                <ImageUpload
+                  :previewUrl="frontPreviewSrc"
+                  :disabled="isSubmitting"
+                  :inputId="'frontPictureInput'"
+                  @file-selected="handleFrontImageFile"
+                  @remove="removeFrontImage"
+                />
                 <div v-if="errors.id_document_front" class="text-red-500 text-sm mt-1">{{ errors.id_document_front }}</div>
               </div>
 
               <div>
                 <UiTypographyP class="text-sm font-medium text-secondary mb-2">Back of ID</UiTypographyP>
-                <div class="w-full relative h-52">
-                  <input @change="handleBackImage" type="file" id="backPictureInput" class="hidden" accept="image/*">
-
-                  <!-- Upload area (always present to maintain layout) -->
-                  <label for="backPictureInput" class="absolute inset-0 w-full h-full rounded-md bg-accent-100 hover:bg-accent-200 duration-300 ease-in-out grid place-items-center cursor-pointer">
-                    <img :src="cameraIconPath" class="w-20 block" alt="Camera Icon"/>
-                  </label>
-
-                  <!-- Preview image (shows on top when available) -->
-                  <img v-if="backPreviewSrc" :src="backPreviewSrc" class="absolute inset-0 w-full h-full rounded-md object-cover" alt="Back Image Preview">
-                </div>
+                <ImageUpload
+                  :previewUrl="backPreviewSrc"
+                  :disabled="isSubmitting"
+                  :inputId="'backPictureInput'"
+                  @file-selected="handleBackImageFile"
+                  @remove="removeBackImage"
+                />
                 <div v-if="errors.id_document_back" class="text-red-500 text-sm mt-1">{{ errors.id_document_back }}</div>
               </div>
             </div>
@@ -112,6 +104,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useCustomFetch } from '~/composables/useCustomFetch';
 import { useAppToast } from '~/utils/toastify';
+import ImageUpload from '~/components/Form/ImageUpload.vue';
 
 definePageMeta({
   middleware: ['auth'],
@@ -154,12 +147,8 @@ const idTypeOptions = [
   { label: "Driver's License", value: "Driver's License" }
 ];
 
-
-
 // Camera icon path
 const cameraIconPath = '/images/icons/camera.svg';
-
-
 
 // Check if KYC is already verified
 onMounted(async () => {
@@ -179,36 +168,44 @@ onMounted(async () => {
 });
 
 // Handle front image upload
-const handleFrontImage = (event) => {
-  const file = event.target.files[0];
+function handleFrontImageFile(file) {
   frontImageFile.value = file;
-
   if (file) {
     const reader = new FileReader();
-
     reader.onload = (e) => {
       frontPreviewSrc.value = e.target.result;
     };
-
     reader.readAsDataURL(file);
+  } else {
+    frontPreviewSrc.value = '';
   }
-};
+}
 
 // Handle back image upload
-const handleBackImage = (event) => {
-  const file = event.target.files[0];
+function handleBackImageFile(file) {
   backImageFile.value = file;
-
   if (file) {
     const reader = new FileReader();
-
     reader.onload = (e) => {
       backPreviewSrc.value = e.target.result;
     };
-
     reader.readAsDataURL(file);
+  } else {
+    backPreviewSrc.value = '';
   }
-};
+}
+
+// Remove front image
+function removeFrontImage() {
+  frontImageFile.value = null;
+  frontPreviewSrc.value = '';
+}
+
+// Remove back image
+function removeBackImage() {
+  backImageFile.value = null;
+  backPreviewSrc.value = '';
+}
 
 // Validate form
 const validateForm = () => {
