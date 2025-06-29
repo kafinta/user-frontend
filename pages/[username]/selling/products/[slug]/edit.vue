@@ -300,10 +300,27 @@ const updateProduct = async () => {
       stock_quantity: formData.manage_stock ? parseInt(formData.stock_quantity || '0') : 0
     }
 
+    // Check if data has changed
+    const original = product.value
+    const unchanged =
+      productData.name === (original.name || '') &&
+      productData.description === (original.description || '') &&
+      productData.price === Number(original.price || 0) &&
+      productData.subcategory_id === (original.subcategory?.id || null) &&
+      productData.location_id === (original.location?.id || null) &&
+      productData.manage_stock === (original.manage_stock || false) &&
+      productData.stock_quantity === (original.stock_quantity || 0)
+
+    if (unchanged) {
+      // No changes, just navigate to next page
+      router.push({
+        path: `/${route.params.username}/selling/products/${productSlug.value}/specifications`
+      })
+      return
+    }
+
     // Update product
     const response = await productApi.updateBasicInfo(product.value.id, productData)
-
-    console.log('API Response:', response) // Debug log
 
     if (response.status === 'success') {
       // Show success feedback
