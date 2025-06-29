@@ -7,21 +7,21 @@
         </div>
 
         <!-- Loading State -->
-        <ul v-if="isLoading" class="grid lg:grid-cols-2 gap-6 place-items-center mt-6">
+        <ul v-if="isLoading || isInitialLoad" class="grid lg:grid-cols-2 gap-6 place-items-center mt-6">
           <li v-for="n in 6" :key="n" class="w-full">
             <UiSkeleton height="15rem" class="rounded-lg w-full" />
           </li>
         </ul>
 
         <!-- Products List -->
-        <div>
+        <div v-if="!isLoading && !isInitialLoad">
           <ul v-if="products.length > 0" class="grid lg:grid-cols-2 gap-6 place-items-center mt-6">
             <li v-for="product in products" :key="product.id" class="flex gap-4 border items-center border-accent-200 rounded-lg w-full p-2 h-full">
               <!-- Product Image -->
               <div class="bg-accent-200 rounded-md product w-1/3 h-full overflow-hidden">
                 <img
                   v-if="product.images && product.images.length > 0"
-                  :src="getImageUrl(product.images[0].url)"
+                  :src="getImageUrl(product.images[0].path)"
                   :alt="product.name"
                   class="w-full h-full object-cover"
                 >
@@ -143,16 +143,19 @@ const {
 const isDeleting = ref(false)
 const deleteModalOpen = ref(false)
 const productToDelete = ref(null)
+const isInitialLoad = ref(true)
 
 // Fetch products for the current page
-const loadProducts = (page = 1) => {
-  fetchMyProducts({ page })
+const loadProducts = async (page = 1) => {
+  isInitialLoad.value = true
+  await fetchMyProducts({ page })
+  isInitialLoad.value = false
 }
 
 // On mount, fetch products for the current page in the query
-onMounted(() => {
+onMounted(async () => {
   const page = parseInt(route.query.page) || 1
-  loadProducts(page)
+  await loadProducts(page)
   watch(products, (val) => {
     console.log('Products:', val)
   }, { immediate: true })
@@ -161,8 +164,8 @@ onMounted(() => {
 // Watch for page changes in the URL
 watch(
   () => route.query.page,
-  (newPage) => {
-    loadProducts(parseInt(newPage) || 1)
+  async (newPage) => {
+    await loadProducts(parseInt(newPage) || 1)
   }
 )
 
@@ -175,6 +178,7 @@ const handlePageChange = (newPage) => {
 
 // Helper functions
 const getImageUrl = (url) => {
+  if (!url) return '' // or a placeholder image path
   if (url.startsWith('/')) {
     if (process.client) {
       return `${window.location.origin}${url}`
