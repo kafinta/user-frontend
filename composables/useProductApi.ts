@@ -5,7 +5,7 @@ export function useProductApi() {
 
   return {
     // Step 1: Create/Update Basic Information
-    createBasicInfo: async (productData) => {
+    createBasicInfo: async (productData: any) => {
       try {
         const response = await useCustomFetch('/api/products/basic-info', {
           method: 'POST',
@@ -21,7 +21,7 @@ export function useProductApi() {
       }
     },
 
-    updateBasicInfo: async (productId, productData) => {
+    updateBasicInfo: async (productId: any, productData: any) => {
       try {
         const response = await useCustomFetch(`/api/products/${productId}/basic-info`, {
           method: 'PUT',
@@ -37,11 +37,11 @@ export function useProductApi() {
     },
 
     // Step 2: Set/Update Product Attributes
-    setAttributes: async (productId, attributeValues) => {
+    setAttributes: async (productId: any, attributeValues: any) => {
       try {
         const response = await useCustomFetch(`/api/products/${productId}/attributes`, {
-          method: 'PUT',
-          body: { attribute_values: attributeValues }
+          method: 'POST',
+          body: { attributes: attributeValues }
         });
 
         // Don't show toast here - let the calling component handle user feedback
@@ -53,10 +53,10 @@ export function useProductApi() {
     },
 
     // Step 3: Upload Product Images
-    uploadImages: async (productId, images) => {
+    uploadImages: async (productId: any, images: any) => {
       try {
         const formData = new FormData();
-        images.forEach(image => {
+        images.forEach((image: any) => {
           formData.append('images[]', image);
         });
 
@@ -74,18 +74,18 @@ export function useProductApi() {
     },
 
     // Step 4: Publish Product
-    publishProduct: async (productId) => {
+    publishProduct: async (productId: any) => {
       try {
         const response = await useCustomFetch(`/api/products/${productId}/publish`, {
           method: 'POST'
         });
 
-        if (response.status === 'success') {
-          toast.success(response.message || 'Product published successfully');
+        if ((response as any).status === 'success') {
+          toast.success((response as any).message || 'Product published successfully');
         }
 
         return response;
-      } catch (error) {
+      } catch (error: any) {
         const errorMessage = error.data?.message || 'Failed to publish product';
         toast.error(errorMessage);
         throw error;
@@ -93,11 +93,11 @@ export function useProductApi() {
     },
 
     // Product Status Management
-    updateProductStatus: async (productId, status, reason) => {
+    updateProductStatus: async (productId: any, status: any, reason?: any) => {
       try {
-        const body = { status };
+        const body: any = { status };
         if (reason) {
-          body.reason = reason;
+          (body as any).reason = reason;
         }
 
         const response = await useCustomFetch(`/api/products/${productId}/status`, {
@@ -105,12 +105,12 @@ export function useProductApi() {
           body
         });
 
-        if (response.status === 'success') {
-          toast.success(response.message || 'Product status updated successfully');
+        if ((response as any).status === 'success') {
+          toast.success((response as any).message || 'Product status updated successfully');
         }
 
         return response;
-      } catch (error) {
+      } catch (error: any) {
         const errorMessage = error.data?.message || 'Failed to update product status';
         toast.error(errorMessage);
         throw error;
@@ -118,48 +118,33 @@ export function useProductApi() {
     },
 
     // Delete Product Image
-    deleteImage: async (imageId) => {
+    deleteImage: async (imageId: any) => {
       try {
         const response = await useCustomFetch(`/api/images/${imageId}`, {
           method: 'DELETE'
         });
 
-        if (response.status === 'success') {
-          toast.success(response.message || 'Image deleted successfully');
+        if ((response as any).status === 'success') {
+          toast.success((response as any).message || 'Image deleted successfully');
         }
 
         return response;
-      } catch (error) {
+      } catch (error: any) {
         const errorMessage = error.data?.message || 'Failed to delete image';
         toast.error(errorMessage);
         throw error;
       }
     },
 
-    // Get Seller's Products
-    getMyProducts: async () => {
-      try {
-        const response = await useCustomFetch('/api/products', {
-          method: 'GET'
-        });
-
-        return response;
-      } catch (error) {
-        const errorMessage = error.data?.message || 'Failed to fetch products';
-        toast.error(errorMessage);
-        throw error;
-      }
-    },
-
     // Get Single Product
-    getProduct: async (productId) => {
+    getProduct: async (productId: any) => {
       try {
         const response = await useCustomFetch(`/api/products/${productId}`, {
           method: 'GET'
         });
 
         return response;
-      } catch (error) {
+      } catch (error: any) {
         const errorMessage = error.data?.message || 'Failed to fetch product';
         toast.error(errorMessage);
         throw error;
@@ -167,22 +152,34 @@ export function useProductApi() {
     },
 
     // Delete Product
-    deleteProduct: async (productId) => {
+    deleteProduct: async (productId: any) => {
       try {
         const response = await useCustomFetch(`/api/products/${productId}`, {
           method: 'DELETE'
         });
 
-        if (response.status === 'success') {
-          toast.success(response.message || 'Product deleted successfully');
+        if ((response as any).status === 'success') {
+          toast.success((response as any).message || 'Product deleted successfully');
         }
 
         return response;
-      } catch (error) {
+      } catch (error: any) {
         const errorMessage = error.data?.message || 'Failed to delete product';
         toast.error(errorMessage);
         throw error;
       }
-    }
+    },
+
+    // Get Single Product by Slug
+    getProductBySlug: async (slug: any) => {
+      try {
+        const response = await useCustomFetch(`/api/products/slug/${slug}`, {
+          method: 'GET'
+        });
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    },
   };
 }
