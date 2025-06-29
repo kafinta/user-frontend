@@ -300,26 +300,19 @@ async function completeOnboarding() {
 
     if (response.status === 'success') {
       toast.success('Success', response.message || 'Onboarding completed successfully');
-
       // Update auth store with new user data (including seller role)
       if (response.data?.user) {
         auth.setUser(response.data.user);
       }
-      if (response.data?.roles) {
-        auth.setRoles(response.data.roles);
-      } else {
-        // If roles not in response, fetch them separately
-        try {
-          const authApi = useAuthApi();
-          await authApi.fetchRoles();
-        } catch (error) {
-          console.error('Failed to fetch roles after onboarding:', error);
-        }
+      // Always fetch roles after onboarding
+      try {
+        const authApi = useAuthApi();
+        await authApi.fetchRoles();
+      } catch (error) {
+        console.error('Failed to fetch roles after onboarding:', error);
       }
-
       // Wait a moment for auth store to update
       await new Promise(resolve => setTimeout(resolve, 100));
-
       // Redirect to seller dashboard automatically
       await router.push({
         name: 'username-selling-dashboard',
