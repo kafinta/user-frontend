@@ -1,6 +1,9 @@
 import type { NitroFetchRequest, NitroFetchOptions } from 'nitropack';
 import { defu } from 'defu';
 import { unref } from 'vue';
+import { useAuthStore } from '~/stores/auth';
+import { useAppToast } from '~/utils/toastify';
+import { navigateTo } from '#app';
 
 // Singleton for CSRF token management
 const csrfManager = {
@@ -154,6 +157,16 @@ export async function useCustomFetch<T>(
     if (error.response?.status === 401 && import.meta.client) {
       csrfManager.tokenObtained = false;
       csrfManager.tokenPromise = null;
+      // Global sign out and redirect logic
+      const authStore = useAuthStore();
+      const toast = useAppToast();
+      authStore.clearAuthData();
+      if (toast?.sessionExpired) {
+        toast.sessionExpired();
+      } else if (toast?.error) {
+        toast.error('Session expired. Please log in again.');
+      }
+      navigateTo({ path: '/auth/login', query: { redirect: window.location.pathname } });
     }
 
     throw error;
