@@ -121,7 +121,8 @@ export default {
     },
 
     labelClasses() {
-      const isFloating = this.isFocused || this.hasValue
+      // Label should float if inputValue is not null/undefined (even if empty string)
+      const isFloating = this.isFocused || (this.inputValue !== null && this.inputValue !== undefined)
 
       return [
         // Base positioning and styling
