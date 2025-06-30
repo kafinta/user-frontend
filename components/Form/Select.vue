@@ -18,7 +18,7 @@
       :aria-labelledby="`${selectId}-label`"
       :aria-disabled="disabled"
     >
-      <span v-if="selectedOption !== null && selectedOption !== undefined && selectedOption !== ''" class="block truncate">{{ getSelectedDisplayText() }}</span>
+      <span v-if="selectedOption !== null && selectedOption !== undefined && getSelectedDisplayText() !== ''" class="block truncate">{{ getSelectedDisplayText() }}</span>
       <span v-else class="block truncate opacity-0">{{ label }}</span>
     </div>
 
@@ -137,7 +137,8 @@ export default {
 
   computed: {
     hasValue() {
-      return this.selectedOption !== null && this.selectedOption !== undefined && this.selectedOption !== ''
+      // Label should float if any option is selected, including '' (e.g., 'All')
+      return this.selectedOption !== null && this.selectedOption !== undefined;
     },
 
     triggerClasses() {
