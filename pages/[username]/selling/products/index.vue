@@ -86,21 +86,35 @@
       </div>
     </div>
 
-    <ModalsOverlay @closeOverlay="deleteModalOpen = false" :openOverlay="deleteModalOpen">
+    <ModalsOverlay @closeOverlay="deleteModalOpen = false" :open="deleteModalOpen">
       <template #title>Delete Product</template>
-      <UiIconsDelete class="w-24 h-24" />
-      <UiTypographyP v-if="productToDelete">
-        Are you sure you want to delete "{{ productToDelete.name }}"? This action is irreversible!
-      </UiTypographyP>
-      <div class="flex gap-6">
-        <UiButtonsPrimary @clicked="deleteModalOpen = false">Cancel</UiButtonsPrimary>
-        <FormButton
-          @click="deleteProduct"
-          class="bg-red-600 hover:bg-red-700 text-white"
-          :loading="isDeleting"
+      <div class="flex flex-col items-center gap-4 py-2">
+        <div class="rounded-full p-4 flex items-center justify-center mb-2 bg-red-600 ring-[.5rem] ring-red-200 w-24 h-24">
+          <UiIconsDelete class="w-10 h-10 text-white" />
+        </div>
+        <UiTypographyP
+          v-if="productToDelete"
+          class="text-center"
+          aria-live="assertive"
         >
-          Delete Anyway
-        </FormButton>
+          Are you sure you want to delete <span class="font-bold text-red-700">"{{ productToDelete.name }}"</span>? This action is irreversible!
+        </UiTypographyP>
+        <hr class="w-full border-accent-200" />
+        <div class="grid grid-cols-2 gap-4 w-full justify-center">
+          <UiButtonsTertiary
+            @clicked="deleteModalOpen = false" class="w-full text-center"
+          >
+            Cancel
+          </UiButtonsTertiary>
+          <FormButton
+            @click="deleteProduct"
+            class="bg-red-600 hover:bg-red-700 text-white" :flexdisplay="true"
+            :loading="isDeleting"
+          >
+            <UiIconsDelete class="w-5 h-5" />
+            Delete
+          </FormButton>
+        </div>
       </div>
     </ModalsOverlay>
   </LayoutsDashboard>
