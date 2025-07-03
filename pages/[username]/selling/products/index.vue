@@ -2,7 +2,7 @@
   <LayoutsDashboard mode="seller" pageTitle="My Products">
     <div class="w-full">
       <!-- Filter Button Row -->
-      <div class="flex justify-end items-center gap-3 mb-4 mt-4">
+      <div class="flex justify-end items-center gap-3 mb-4">
         <UiButtonsTertiary @click="showFilterSidebar = true" class="flex gap-2 items-center">
           <UiIconsFilter class="w-5 h-5" />
           Filters
@@ -31,114 +31,98 @@
         @close="showFilterSidebar = false"
       />
       <!-- Products List and rest of the page -->
-      <div class="md:flex block w-full gap-5">
-        <!-- Sidebar Filters -->
-        <FilterSellerSidebar
-          class="hidden md:block"
-          :categoryOptions="categoryOptions"
-          :locationOptions="locationOptions"
-          :subcategoryOptions="subcategoryOptions"
-          :statusOptions="statusOptions"
-          :stockStatusOptions="stockStatusOptions"
-          :sortDirectionOptions="sortDirectionOptions"
-          :initialFilters="{
-            keyword: keyword,
-            category: selectedCategory,
-            location: selectedLocation,
-            subcategory: selectedSubcategory,
-            status: selectedStatus,
-            stockStatus: selectedStockStatus,
-            sortDirection: selectedSortDirection
-          }"
-          @filter-changed="onSidebarFilterChange"
-        />
-        <div class="w-full mt-4">
-          <!-- Loading State -->
-          <ul v-if="isLoading || isInitialLoad" class="grid lg:grid-cols-2 gap-6 place-items-center mt-6">
-            <li v-for="n in 10" :key="n" class="w-full">
-              <UiSkeleton height="10rem" class="rounded-lg w-full" />
+      <div class="w-full mt-4">
+        <!-- Loading State -->
+        <ul v-if="isLoading || isInitialLoad" class="grid lg:grid-cols-2 gap-6 place-items-center mt-6">
+          <li v-for="n in 10" :key="n" class="w-full">
+            <UiSkeleton height="10rem" class="rounded-lg w-full" />
+          </li>
+        </ul>
+
+        <!-- Products List -->
+        <div v-if="!isLoading && !isInitialLoad">
+          <ul v-if="products.length > 0" class="grid lg:grid-cols-2 gap-6 mt-6">
+            <li
+              v-for="product in products"
+              :key="product.id"
+              class="flex flex-row lg:flex-row gap-4 border items-center border-accent-200 rounded-lg w-full p-2 h-full bg-white"
+              style="max-width:100%;"
+            >
+              <!-- Product Image -->
+              <div class="w-1/4 lg:w-1/3 h-full bg-accent-200 rounded-md overflow-hidden flex-shrink-0 flex items-center justify-center">
+                <img
+                  v-if="product.images && product.images.length > 0"
+                  :src="getImageUrl(product.images[0].path)"
+                  :alt="product.name"
+                  class="w-full h-full object-cover"
+                  style="display:block;"
+                >
+                <div v-else class="w-full h-full flex items-center justify-center text-accent-400">
+                  <UiIconsCamera class="w-8 h-8" />
+                </div>
+              </div>
+
+              <!-- Product Details -->
+              <div class="w-full flex flex-col justify-between h-full gap-4">
+                <div>
+                  <UiTypographyH3 class="text-lg">{{ product.name }}</UiTypographyH3>
+                  <p class="text-sm text-accent-500 mt-1">₦{{ formatPrice(product.price) }}</p>
+                  <div class="flex items-center gap-2 mt-2 flex-wrap">
+                    <span
+                      :class="getStatusClass(product.status)"
+                      class="px-2 py-1 rounded-full text-xs font-medium"
+                    >
+                      {{ getStatusText(product.status) }}
+                    </span>
+                    <span v-if="product.manage_stock" class="text-xs text-accent-500">
+                      Stock: {{ product.stock_quantity }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex flex-wrap gap-4">
+                  <NuxtLink
+                    :to="`/marketplace/products/${product.slug}`"
+                    target="_blank"
+                    class="flex items-center gap-2 text-sm text-primary hover:underline hover:text-secondary transition-colors duration-200 border-r border-accent-200 pr-4"
+                  >
+                    <UiIconsEye class="w-4 h-4" />
+                    Preview
+                  </NuxtLink>
+                  <button
+                    @click="editProduct(product)"
+                    class="flex items-center gap-2 text-sm text-secondary hover:text-primary transition-colors duration-200 border-r border-accent-200 pr-4"
+                  >
+                    <UiIconsEdit class="w-4 h-4" />
+                    Edit
+                  </button>
+                  <button
+                    @click="confirmDelete(product)"
+                    class="flex items-center gap-2 text-red-600 text-sm hover:text-red-700 transition-colors duration-200"
+                  >
+                    <UiIconsDelete class="w-4 h-4" />
+                    Delete
+                  </button>
+                </div>
+              </div>
             </li>
           </ul>
-
-          <!-- Products List -->
-          <div v-if="!isLoading && !isInitialLoad">
-            <ul v-if="products.length > 0" class="grid lg:grid-cols-2 gap-6 place-items-center mt-6">
-              <li v-for="product in products" :key="product.id" class="flex gap-4 border items-center border-accent-200 rounded-lg w-full p-2 h-full">
-                <!-- Product Image -->
-                <div class="bg-accent-200 rounded-md product w-1/3 h-full overflow-hidden">
-                  <img
-                    v-if="product.images && product.images.length > 0"
-                    :src="getImageUrl(product.images[0].path)"
-                    :alt="product.name"
-                    class="w-full h-full object-cover"
-                  >
-                  <div v-else class="w-full h-full flex items-center justify-center text-accent-400">
-                    <UiIconsCamera class="w-8 h-8" />
-                  </div>
-                </div>
-
-                <!-- Product Details -->
-                <div class="w-2/3 justify-between flex flex-col h-full gap-4">
-                  <div>
-                    <UiTypographyH3 class="text-lg">{{ product.name }}</UiTypographyH3>
-                    <p class="text-sm text-accent-500 mt-1">₦{{ formatPrice(product.price) }}</p>
-                    <div class="flex items-center gap-2 mt-2">
-                      <span
-                        :class="getStatusClass(product.status)"
-                        class="px-2 py-1 rounded-full text-xs font-medium"
-                      >
-                        {{ getStatusText(product.status) }}
-                      </span>
-                      <span v-if="product.manage_stock" class="text-xs text-accent-500">
-                        Stock: {{ product.stock_quantity }}
-                      </span>
-                    </div>
-                  </div>
-
-                  <!-- Actions -->
-                  <div class="flex gap-4">
-                    <NuxtLink
-                      :to="`/marketplace/products/${product.slug}`"
-                      target="_blank"
-                      class="flex items-center gap-2 text-sm text-primary hover:underline hover:text-secondary transition-colors duration-200 border-r border-accent-200 pr-4"
-                    >
-                      <UiIconsEye class="w-4 h-4" />
-                      Preview
-                    </NuxtLink>
-                    <button
-                      @click="editProduct(product)"
-                      class="flex items-center gap-2 text-sm text-secondary hover:text-primary transition-colors duration-200 border-r border-accent-200 pr-4"
-                    >
-                      <UiIconsEdit class="w-4 h-4" />
-                      Edit
-                    </button>
-                    <button
-                      @click="confirmDelete(product)"
-                      class="flex items-center gap-2 text-red-600 text-sm hover:text-red-700 transition-colors duration-200"
-                    >
-                      <UiIconsDelete class="w-4 h-4" />
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </li>
-            </ul>
-            <div v-else class="grid place-items-center h-full mt-6">
-              <div class="text-center">
-                <UiTypographyH3>No products yet.</UiTypographyH3>
-                <UiTypographyP class="text-accent-500 mt-2 mb-4">Start by creating your first product listing.</UiTypographyP>
-                <UiButtonsPrimary class="mx-auto" :url="{path: 'products/new'}">List a New Product</UiButtonsPrimary>
-              </div>
+          <div v-else class="grid place-items-center h-full mt-6">
+            <div class="text-center">
+              <UiTypographyH3>No products yet.</UiTypographyH3>
+              <UiTypographyP class="text-accent-500 mt-2 mb-4">Start by creating your first product listing.</UiTypographyP>
+              <UiButtonsPrimary class="mx-auto" :url="{path: 'products/new'}">List a New Product</UiButtonsPrimary>
             </div>
-            <UiPagination
-              v-if="products.length > 0 && pagination && pagination.last_page > 1"
-              :current-page="pagination.current_page"
-              :total-pages="pagination.last_page"
-              @page-changed="handlePageChange"
-            />
           </div>
-
+          <UiPagination
+            v-if="products.length > 0 && pagination && pagination.last_page > 1"
+            :current-page="pagination.current_page"
+            :total-pages="pagination.last_page"
+            @page-changed="handlePageChange"
+          />
         </div>
+
       </div>
 
     </div>
@@ -466,5 +450,18 @@ const onSidebarFilterChange = async (newFilters) => {
     min-width: 5rem;
     background-color: #D3D3D3;
     aspect-ratio: 3/2;
+  }
+  @media (max-width: 768px) {
+    .product-card-mobile {
+      flex-direction: column !important;
+      align-items: stretch !important;
+    }
+    .product-card-mobile .w-1\/3,
+    .product-card-mobile .w-2\/3 {
+      width: 100% !important;
+    }
+    .product-card-mobile .aspect-\[5\/3\] {
+      aspect-ratio: 5/3 !important;
+    }
   }
 </style>
