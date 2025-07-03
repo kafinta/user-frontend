@@ -12,12 +12,18 @@
       <UiTypographyH3>Edit Product Details</UiTypographyH3>
 
       <!-- Loading State -->
-      <div v-if="isLoadingProduct" class="flex justify-center py-8">
-        <UiIconsLoading class="w-10 h-10" />
+      <div v-if="isLoadingProduct" class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+        <UiSkeleton height="3rem" class="rounded-md col-span-2" />
+        <UiSkeleton height="3rem" class="rounded-md" />
+        <UiSkeleton height="3rem" class="rounded-md" />
+        <UiSkeleton height="3rem" class="rounded-md" />
+        <UiSkeleton height="3rem" class="rounded-md" />
+        <UiSkeleton height="3rem" class="rounded-md col-span-2" />
+        <UiSkeleton height="15rem" class="rounded-md col-span-2" />
       </div>
 
       <!-- Product Edit Form -->
-      <form v-else @submit.prevent="updateProduct()" class="flex flex-col lg:grid lg:grid-cols-2 gap-6 w-full">
+      <form v-else @submit.prevent="updateProduct()" class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
         <!-- Product Name -->
         <FormInput
           label="Product Name"
@@ -70,11 +76,10 @@
         />
 
         <!-- Stock Management -->
-        <div class="col-span-2 flex items-center gap-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 col-span-2">
           <FormCheckbox
             label="Manage Stock"
-            :checked="formData.manage_stock"
-            @update:checked="formData.manage_stock = $event"
+            v-model="formData.manage_stock"
           />
           
           <FormInput
@@ -86,7 +91,6 @@
             :inputValue="formData.stock_quantity"
             @update:inputValue="formData.stock_quantity = $event"
             :error="!!errors.stock_quantity"
-            class="flex-1"
           />
         </div>
 
@@ -98,6 +102,7 @@
           :inputValue="formData.description"
           @update:inputValue="formData.description = $event"
           :error="!!errors.description"
+          rows="10"
         />
 
         <!-- Submit Button -->
