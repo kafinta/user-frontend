@@ -2,12 +2,12 @@
   <LayoutsDashboard mode="seller" pageTitle="Product Specifications">
     <div class="grid grid-cols-1 place-items-center gap-6 max-w-3xl mx-auto w-full">
       <UiTypographyH3>Product Specifications</UiTypographyH3>
-      <div v-if="isLoading" class="w-full flex justify-center py-8">
-        <UiSkeleton height="3rem" class="rounded w-full" />
+      <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-2 gap-6 py-8 w-full">
+        <UiSkeleton height="3rem" v-for="i in 10" :key="i" class="rounded-md" />
       </div>
-      <div v-else class="w-full">
-        <form @submit.prevent="handleSubmit" class="flex flex-col gap-6 w-full">
-          <div v-if="error" class="text-red-500 mb-2">{{ error }}</div>
+      <div v-else>
+        <div v-if="error" class="text-red-500 mb-2">{{ error }}</div>
+        <form v-else @submit.prevent="handleSubmit" class="flex flex-col gap-6 w-full">
           <!-- Render attribute fields in 2 columns -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div v-for="attr in attributes" :key="attr.id" class="mb-4">
@@ -153,7 +153,14 @@ const handleSubmit = async () => {
   }
 }
 
-onMounted(() => {
-  fetchAttributes()
+onMounted(async () => {
+  const minSkeletonTime = 400; // ms
+  const start = Date.now();
+  await fetchAttributes();
+  const elapsed = Date.now() - start;
+  if (elapsed < minSkeletonTime) {
+    await new Promise(r => setTimeout(r, minSkeletonTime - elapsed));
+  }
+  isLoading.value = false;
 })
 </script> 
