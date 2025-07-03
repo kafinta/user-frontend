@@ -102,7 +102,7 @@
           :inputValue="formData.description"
           @update:inputValue="formData.description = $event"
           :error="!!errors.description"
-          rows="10"
+          :rows="10"
         />
 
         <!-- Submit Button -->
