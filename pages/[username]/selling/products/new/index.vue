@@ -12,7 +12,7 @@
       <UiTypographyH3>Product Details</UiTypographyH3>
 
       <!-- Product Creation Form -->
-      <form @submit.prevent="createProduct()" class="flex flex-col lg:grid lg:grid-cols-2 gap-6 w-full">
+      <form @submit.prevent="createProduct()" class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
         <!-- Product Name -->
         <FormInput
           label="Product Name"
