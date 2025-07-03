@@ -96,10 +96,18 @@
                   </div>
 
                   <!-- Actions -->
-                  <div class="flex gap-3">
+                  <div class="flex gap-4">
+                    <NuxtLink
+                      :to="`/marketplace/products/${product.slug}`"
+                      target="_blank"
+                      class="flex items-center gap-2 text-sm text-primary hover:underline hover:text-secondary transition-colors duration-200 border-r border-accent-200 pr-4"
+                    >
+                      <UiIconsEye class="w-4 h-4" />
+                      Preview
+                    </NuxtLink>
                     <button
                       @click="editProduct(product)"
-                      class="flex items-center gap-2 text-sm text-secondary hover:text-primary transition-colors duration-200"
+                      class="flex items-center gap-2 text-sm text-secondary hover:text-primary transition-colors duration-200 border-r border-accent-200 pr-4"
                     >
                       <UiIconsEdit class="w-4 h-4" />
                       Edit
