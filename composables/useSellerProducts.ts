@@ -24,7 +24,7 @@ export function useSellerProducts() {
     isLoading.value = true
     error.value = null
     const data: any = await useCustomFetch<any>('/api/products/my-products', { params })
-    products.value = data?.data?.data || []
+    products.value = data?.data?.products || []
     pagination.value = data?.data || null
     isLoading.value = false
   }
