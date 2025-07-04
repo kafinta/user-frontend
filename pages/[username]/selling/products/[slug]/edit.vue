@@ -12,17 +12,24 @@
       <UiTypographyH3>Edit Product Details</UiTypographyH3>
 
       <!-- Loading State -->
-      <div v-if="isLoadingProduct" class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+      <div v-if="isInitialLoad" class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
         <UiSkeleton height="3rem" class="rounded-md col-span-2" />
-        <UiSkeleton height="3rem" class="rounded-md" />
-        <UiSkeleton height="3rem" class="rounded-md" />
-        <UiSkeleton height="3rem" class="rounded-md" />
-        <UiSkeleton height="3rem" class="rounded-md" />
+        <UiSkeleton height="3rem" class="rounded-md col-span-2 lg:col-span-1" />
+        <UiSkeleton height="3rem" class="rounded-md col-span-2 lg:col-span-1" />
+        <UiSkeleton height="3rem" class="rounded-md col-span-2 lg:col-span-1" />
+        <UiSkeleton height="3rem" class="rounded-md col-span-2 lg:col-span-1" />
         <UiSkeleton height="3rem" class="rounded-md col-span-2" />
         <UiSkeleton height="15rem" class="rounded-md col-span-2" />
       </div>
-
-      <!-- Product Edit Form -->
+      <div v-else-if="!product" class="text-center py-12 flex flex-col items-center justify-center">
+        <div class="rounded-full p-4 flex items-center justify-center mb-4 bg-red-200 w-20 h-20">
+          <UiIconsError class="w-16 h-16 text-red-600" />
+        </div>
+        <UiTypographyP class="text-red-600 mb-2">Product not found.</UiTypographyP>
+        <UiButtonsPrimary :url="{ name: 'username-selling-products', params: { username: route.params.username } }" class="mt-2">
+          Go to My Products
+        </UiButtonsPrimary>
+      </div>
       <form v-else @submit.prevent="updateProduct()" class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
         <!-- Product Name -->
         <FormInput
@@ -42,6 +49,7 @@
           @update:selectedOption="handleCategoryChange"
           :options="categoryOptions"
           :error="!!errors.category_id"
+          class="col-span-2 lg:col-span-1"
         />
 
         <FormSelect
@@ -51,6 +59,7 @@
           @update:selectedOption="handleLocationChange"
           :options="locationOptions"
           :error="!!errors.location_id"
+          class="col-span-2 lg:col-span-1"
         />
 
         <!-- Subcategory & Price Row -->
@@ -62,6 +71,7 @@
           :options="subcategoryOptions"
           :disabled="!formData.category_id || !formData.location_id"
           :error="!!errors.subcategory_id"
+          class="col-span-2 lg:col-span-1"
         />
 
         <FormInput
@@ -73,13 +83,16 @@
           :inputValue="formData.price"
           @update:inputValue="formData.price = $event"
           :error="!!errors.price"
+          class="col-span-2 lg:col-span-1"
         />
 
         <!-- Stock Management -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 col-span-2">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 col-span-2">
           <FormCheckbox
             label="Manage Stock"
             v-model="formData.manage_stock"
+            class="col-span-2 lg:col-span-1"
+            size="large"
           />
           
           <FormInput
@@ -91,6 +104,7 @@
             :inputValue="formData.stock_quantity"
             @update:inputValue="formData.stock_quantity = $event"
             :error="!!errors.stock_quantity"
+            class="col-span-2 lg:col-span-1"
           />
         </div>
 
@@ -107,7 +121,7 @@
 
         <!-- Submit Button -->
         <FormButton
-          class="lg:col-span-2 w-64 mx-auto"
+          class="col-span-2"
           :loading="isLoading"
           :disabled="isLoading"
         >
@@ -150,6 +164,7 @@ const productSlug = computed(() => route.params.slug)
 // State
 const product = ref(null)
 const isLoadingProduct = ref(true)
+const isInitialLoad = ref(true)
 const isLoading = ref(false)
 const errors = ref({})
 
@@ -211,6 +226,7 @@ const handleLocationChange = (locationId) => {
 // Load existing product data
 const loadProduct = async () => {
   try {
+    isInitialLoad.value = true
     // Fetch product by slug directly
     const response = await productApi.getProductBySlug(productSlug.value)
     if (response.status === 'success' && response.data) {
@@ -241,15 +257,19 @@ const loadProduct = async () => {
         await filtersStore.fetchSubcategories(formData.category_id, formData.location_id);
       }
     } else {
-      toast.error('Product not found')
-      router.push({ name: 'username-selling-products' })
+      product.value = null
+      isLoadingProduct.value = false
+      isInitialLoad.value = false
       return
     }
   } catch (error) {
     console.error('Error loading product:', error)
-    toast.error('Failed to load product data')
-    router.push({ name: 'username-selling-products' })
+    product.value = null
+    isLoadingProduct.value = false
+    isInitialLoad.value = false
   }
+  isLoadingProduct.value = false
+  isInitialLoad.value = false
 }
 
 // Form submission
@@ -390,5 +410,6 @@ onMounted(async () => {
   // Load existing product data
   await loadProduct()
   isLoadingProduct.value = false
+  isInitialLoad.value = false
 })
 </script>
