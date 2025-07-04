@@ -31,6 +31,7 @@
           @update:selectedOption="handleCategoryChange"
           :options="categoryOptions"
           :error="!!errors.category_id"
+          class="col-span-2 lg:col-span-1"
         />
 
         <FormSelect
@@ -40,6 +41,7 @@
           @update:selectedOption="handleLocationChange"
           :options="locationOptions"
           :error="!!errors.location_id"
+          class="col-span-2 lg:col-span-1"
         />
 
         <!-- Helpful tip when subcategory is disabled (full width) -->
@@ -62,6 +64,7 @@
           :options="subcategoryOptions"
           :disabled="!formData.category_id || !formData.location_id"
           :error="!!errors.subcategory_id"
+          class="col-span-2 lg:col-span-1"
         />
 
         <FormInput
@@ -73,6 +76,8 @@
           :inputValue="formData.price"
           @update:inputValue="formData.price = $event"
           :error="!!errors.price"
+          class="col-span-2 lg:col-span-1"
+
         />
 
         <!-- Stock Management (full width) -->
@@ -82,7 +87,7 @@
               v-model="formData.manage_stock"
               label="Track inventory for this product"
               size="large"
-              class="text-base pb-3"
+              class="col-span-2 lg:col-span-1"
             />
 
             <FormInput
@@ -95,6 +100,7 @@
               :inputValue="formData.stock_quantity || ''"
               @update:inputValue="formData.stock_quantity = $event"
               :error="!!errors.stock_quantity"
+              class="col-span-2 lg:col-span-1"
             />
             <div v-else></div>
           </div>
@@ -113,7 +119,7 @@
 
         <!-- Submit Button -->
         <FormButton
-          class="lg:col-span-2 w-64 mx-auto"
+          class="col-span-2"
           :loading="isLoading"
           :disabled="isLoading"
         >
@@ -269,22 +275,25 @@ const createProduct = async () => {
 
     if (response.status === 'success') {
       // Extract product ID and slug from response
-      const productId = response.data?.product?.id || response.data?.id
-      const productSlug = response.data?.product?.slug || productId
-
-      if (productId) {
+      let productId = response.data?.product?.id || response.data?.id
+      let productSlug = response.data?.product?.slug || response.data?.slug
+      // If slug is missing, fetch product by ID
+      if (!productSlug && productId) {
+        const fetchResp = await productApi.getProductById(productId)
+        productSlug = fetchResp?.data?.slug || productId
+      }
+      if (productSlug) {
         // Show success feedback
         toast.success('Product information saved! Moving to specifications...')
 
         // Small delay for better UX
         setTimeout(() => {
           router.push({
-            path: `/${route.params.username}/selling/products/${productSlug}/specifications`,
-            query: { subcategory_id: formData.subcategory_id }
+            path: `/${route.params.username}/selling/products/${productSlug}/specifications`
           })
         }, 500)
       } else {
-        console.error('No product ID in response:', response)
+        console.error('No product slug in response:', response)
         toast.error('Product saved but unable to proceed to next step. Please try again.')
       }
     } else {
