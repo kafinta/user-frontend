@@ -2,37 +2,43 @@
   <LayoutsDashboard mode="seller" pageTitle="Product Specifications">
     <div class="grid grid-cols-1 place-items-center gap-6 max-w-3xl mx-auto w-full">
       <UiTypographyH3>Product Specifications</UiTypographyH3>
-      <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-2 gap-6 py-8 w-full">
+      <div v-if="isInitialLoad" class="grid grid-cols-1 md:grid-cols-2 gap-6 py-8 w-full">
         <UiSkeleton height="3rem" v-for="i in 10" :key="i" class="rounded-md" />
       </div>
-      <div v-else>
-        <div v-if="error" class="text-red-500 mb-2">{{ error }}</div>
-        <form v-else @submit.prevent="handleSubmit" class="flex flex-col gap-6 w-full">
-          <!-- Render attribute fields in 2 columns -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div v-for="attr in attributes" :key="attr.id" class="mb-4">
-              <FormSelect
-                v-if="Array.isArray(attr.values) && attr.values.length"
-                :label="attr.name"
-                :options="attr.values.map(v => ({ value: Number(v.id), label: v.name }))"
-                :selectedOption="attributeValues[attr.id]"
-                @update:selectedOption="val => attributeValues[attr.id] = val"
-                :id="'attr-' + attr.id"
-                :error="null"
-              />
-              <FormInput
-                v-else
-                :label="attr.name"
-                :placeholder="'Enter ' + attr.name"
-                v-model:inputValue="attributeValues[attr.id]"
-                :id="'attr-' + attr.id"
-                :error="null"
-              />
-            </div>
-          </div>
-          <FormButton :loading="isLoading" class="w-64 mx-auto">Save & Continue</FormButton>
-        </form>
+      <div v-else-if="!product" class="text-center py-12 flex flex-col items-center justify-center">
+        <div class="rounded-full p-4 flex items-center justify-center mb-4 bg-red-200 w-20 h-20">
+          <UiIconsError class="w-16 h-16 text-red-600" />
+        </div>
+        <UiTypographyP class="text-red-600 mb-2">Product not found.</UiTypographyP>
+        <UiButtonsPrimary :url="{ name: 'username-selling-products', params: { username: route.params.username } }" class="mt-2">
+          Go to My Products
+        </UiButtonsPrimary>
       </div>
+      <form v-else @submit.prevent="handleSubmit" class="flex flex-col gap-6 w-full">
+        <!-- Render attribute fields in 2 columns -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+          <div v-for="attr in attributes" :key="attr.id" class="mb-4">
+            <FormSelect
+              v-if="Array.isArray(attr.values) && attr.values.length"
+              :label="attr.name"
+              :options="attr.values.map(v => ({ value: Number(v.id), label: v.name }))"
+              :selectedOption="attributeValues[attr.id]"
+              @update:selectedOption="val => attributeValues[attr.id] = val"
+              :id="'attr-' + attr.id"
+              :error="null"
+            />
+            <FormInput
+              v-else
+              :label="attr.name"
+              :placeholder="'Enter ' + attr.name"
+              v-model:inputValue="attributeValues[attr.id]"
+              :id="'attr-' + attr.id"
+              :error="null"
+            />
+          </div>
+        </div>
+        <FormButton :loading="isLoading" class="w-64 mx-auto">Save & Continue</FormButton>
+      </form>
     </div>
   </LayoutsDashboard>
 </template>
@@ -49,11 +55,13 @@ const productApi = useProductApi()
 const toast = useAppToast()
 
 const productSlug = route.params.slug
+const product = ref(null)
 const attributes = ref([])
 const attributeValues = ref({})
 const originalAttributeValues = ref({})
 const error = ref('')
 const isLoading = ref(false)
+const isInitialLoad = ref(true)
 
 // Fetch product attributes to preload selected values
 const fetchProductAttributes = async (productId) => {
@@ -69,21 +77,23 @@ const fetchProductAttributes = async (productId) => {
 
 const fetchAttributes = async () => {
   try {
+    isInitialLoad.value = true
     isLoading.value = true
     // Fetch the product by slug (new structure: product in response.data)
     const response = await productApi.getProductBySlug(productSlug)
-    const product = response?.data
-    if (!product) {
+    product.value = response?.data || null
+    if (!product.value) {
       error.value = 'Product not found.'
       attributes.value = []
       isLoading.value = false
+      isInitialLoad.value = false
       return
     }
     
     // Always fetch subcategory attributes using the dedicated endpoint
     let subcatAttributes = []
-    if (product.subcategory?.id) {
-      const subcatResponse = await useCustomFetch(`/api/subcategories/${product.subcategory.id}`)
+    if (product.value && product.value.subcategory?.id) {
+      const subcatResponse = await useCustomFetch(`/api/subcategories/${product.value.subcategory.id}`)
       const subcat = subcatResponse?.data // <-- use .data directly
       subcatAttributes = subcat?.attributes || []
     }
@@ -92,8 +102,8 @@ const fetchAttributes = async () => {
     // Pre-fill values from product attributes if they exist
     attributeValues.value = {}
     originalAttributeValues.value = {}
-    if (product.id) {
-      const productAttributes = await fetchProductAttributes(product.id)
+    if (product.value && product.value.id) {
+      const productAttributes = await fetchProductAttributes(product.value.id)
       if (Array.isArray(productAttributes) && productAttributes.length > 0) {
         for (const attr of productAttributes) {
           attributeValues.value[attr.id] = attr.value?.id !== undefined ? Number(attr.value.id) : ''
@@ -103,9 +113,11 @@ const fetchAttributes = async () => {
     }
     
     isLoading.value = false
+    isInitialLoad.value = false
   } catch (e) {
     error.value = 'Failed to load product attributes.'
     isLoading.value = false
+    isInitialLoad.value = false
   }
 }
 
@@ -115,9 +127,10 @@ const handleSubmit = async () => {
     isLoading.value = true
     // Fetch product again to get its id (new structure)
     const response = await productApi.getProductBySlug(productSlug)
-    const product = response?.data
-    if (!product) {
+    product.value = response?.data || null
+    if (!product.value) {
       error.value = 'Product not found.'
+      attributes.value = []
       isLoading.value = false
       return
     }
@@ -132,19 +145,23 @@ const handleSubmit = async () => {
         ([key, value]) => originalAttributeValues.value[key] === value
       )
     if (unchanged) {
-      // No changes, just navigate to next page
-      router.push({
-        path: `/${route.params.username}/selling/products/${productSlug}/images`
-      })
+      // No changes, just navigate to next page if product exists
+      if (product.value) {
+        router.push({
+          path: `/${route.params.username}/selling/products/${productSlug}/images`
+        })
+      }
       isLoading.value = false
       return
     }
-    await productApi.setAttributes(product.id, attributesPayload)
+    await productApi.setAttributes(product.value.id, attributesPayload)
     toast.success('Specifications saved!')
-    // Redirect to images step
-    router.push({
-      path: `/${route.params.username}/selling/products/${productSlug}/images`
-    })
+    // Redirect to images step only if product exists
+    if (product.value) {
+      router.push({
+        path: `/${route.params.username}/selling/products/${productSlug}/images`
+      })
+    }
     isLoading.value = false
   } catch (e) {
     error.value = 'Failed to save specifications.'
@@ -154,13 +171,8 @@ const handleSubmit = async () => {
 }
 
 onMounted(async () => {
-  const minSkeletonTime = 400; // ms
-  const start = Date.now();
   await fetchAttributes();
-  const elapsed = Date.now() - start;
-  if (elapsed < minSkeletonTime) {
-    await new Promise(r => setTimeout(r, minSkeletonTime - elapsed));
-  }
   isLoading.value = false;
+  isInitialLoad.value = false;
 })
 </script> 
