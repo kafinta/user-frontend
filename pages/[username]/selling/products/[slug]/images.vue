@@ -12,34 +12,18 @@
       <UiTypographyH3>Product Images</UiTypographyH3>
 
       <!-- Loading State -->
-      <div v-if="isLoadingProduct" class="flex justify-center items-center py-12">
-        <UiIconsLoading class="w-8 h-8" />
-        <span class="ml-2 text-secondary">Loading product details...</span>
+      <div v-if="isInitialLoad" class="grid grid-cols-1 md:grid-cols-2 gap-6 py-8 w-full">
+        <UiSkeleton height="15rem" v-for="i in 4" :key="i" class="rounded-md" />
       </div>
-
-      <!-- Error State -->
-      <div v-else-if="!product" class="text-center py-12">
-        <UiTypographyP class="text-red-600">Product not found. Please start from step 1.</UiTypographyP>
-        <UiButtonsPrimary :url="{ name: 'username-selling-products-new' }" class="mt-4">
-          Go to Step 1
+      <div v-else-if="!product" class="text-center py-12 flex flex-col items-center justify-center">
+        <div class="rounded-full p-4 flex items-center justify-center mb-4 bg-red-200 w-20 h-20">
+          <UiIconsError class="w-16 h-16 text-red-600" />
+        </div>
+        <UiTypographyP class="text-red-600 mb-2">Product not found.</UiTypographyP>
+        <UiButtonsPrimary :url="{ name: 'username-selling-products', params: { username: route.params.username } }" class="mt-2">
+          Go to My Products
         </UiButtonsPrimary>
       </div>
-
-      <!-- Success State -->
-      <div v-else-if="showSuccess" class="text-center py-12">
-        <div class="w-20 h-20 mx-auto bg-green-200 rounded-full flex items-center justify-center mb-6">
-          <UiIconsSuccess class="w-16 h-16 text-green-600" />
-        </div>
-
-        <div class="bg-green-50 p-6 rounded-lg border border-green-200 mb-6">
-          <UiTypographyH3 class="text-green-700">Product Published Successfully!</UiTypographyH3>
-          <UiTypographyP class="text-green-600 mt-2">Your product is now live and available for customers to purchase.</UiTypographyP>
-        </div>
-
-        <UiTypographyP class="text-accent-500">Redirecting to your products...</UiTypographyP>
-      </div>
-
-      <!-- Main Content -->
       <div v-else class="w-full space-y-6">
         <!-- Image Slots Grid -->
         <div class="grid grid-cols-2 gap-6 w-full">
@@ -65,7 +49,7 @@
         <!-- Action Button -->
         <div class="flex justify-center pt-6">
           <FormButton
-            @click="publishProduct"
+            @click="saveImagesAndContinue"
             :loading="isLoading"
             :disabled="isLoading || isUploading || imageSlots.every(slot => !slot.file && !slot.previewUrl)"
             class="px-8"
@@ -106,11 +90,11 @@ const toast = useAppToast()
 const productSlug = computed(() => route.params.slug)
 const product = ref(null)
 const isLoadingProduct = ref(true)
+const isInitialLoad = ref(true)
 const isLoading = ref(false)
 const isUploading = ref(false)
 const isDeletingImage = ref(false)
 const hasUploadedImages = ref(false)
-const showSuccess = ref(false)
 const originalImages = ref([])
 
 const maxImages = 10
@@ -131,13 +115,12 @@ function createSlot(file = null, previewUrl = '', key = null) {
 
 // Load product data on mount
 onMounted(async () => {
+  isInitialLoad.value = true
   try {
     const response = await productApi.getProductBySlug(productSlug.value)
     if (response.status === 'success' && response.data) {
       product.value = response.data
-      // Store original images for change detection
       originalImages.value = Array.isArray(product.value.images) ? [...product.value.images] : []
-      // Initialize slots with existing images, up to initialSlots
       const slots = []
       const existingImages = product.value.images || []
       if (existingImages.length > 0) {
@@ -163,6 +146,7 @@ onMounted(async () => {
     router.push({ name: 'username-selling-products-new' })
   } finally {
     isLoadingProduct.value = false
+    isInitialLoad.value = false
   }
 })
 
@@ -257,8 +241,8 @@ function getSlotPreviewUrl(slot) {
   return ''
 }
 
-// Publish product (upload new images, delete removed ones, then publish)
-const publishProduct = async () => {
+// Save images and redirect to publish step (do not publish here)
+const saveImagesAndContinue = async () => {
   try {
     isLoading.value = true
     // Gather new files to upload
@@ -276,20 +260,12 @@ const publishProduct = async () => {
         product.value = response.data.product || response.data
       }
     }
-    // Delete removed images
-    for (const id of toDeleteIds) {
-      await productApi.deleteImage(id)
-    }
-    // Publish product
-    const response = await productApi.publishProduct(product.value.id)
-    if (response.status === 'success') {
-      // Redirect to publish page for this product
-      router.push({
-        path: `/${route.params.username}/selling/products/${productSlug.value}/publish`
-      })
-    }
+    // Redirect to publish step (do not publish here)
+    router.push({
+      path: `/${route.params.username}/selling/products/${productSlug.value}/publish`
+    })
   } catch (error) {
-    console.error('Error publishing product:', error)
+    console.error('Error saving images:', error)
   } finally {
     isLoading.value = false
   }
