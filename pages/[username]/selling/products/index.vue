@@ -7,7 +7,7 @@
           <UiIconsFilter class="w-5 h-5" />
           Filters
         </UiButtonsTertiary>
-        <UiButtonsPrimary :url="{path: 'products/new'}">List a New Product</UiButtonsPrimary>
+        <UiButtonsPrimary :url="{path: 'new'}">List a New Product</UiButtonsPrimary>
       </div>
       <!-- Filter Sidebar Drawer -->
       <FilterSellerSidebar
@@ -115,11 +115,14 @@
               <UiButtonsPrimary class="mx-auto" :url="{path: 'products/new'}">List a New Product</UiButtonsPrimary>
             </div>
           </div>
+          
+          <!-- Pagination - only show if more than one page -->
           <UiPagination
-            v-if="products.length > 0 && pagination && pagination.last_page > 1"
-            :current-page="pagination.current_page"
+            v-if="pagination && pagination.last_page > 1"
+            :current-page="pagination.current_page "
             :total-pages="pagination.last_page"
             @page-changed="handlePageChange"
+            class="mt-6"
           />
         </div>
 
