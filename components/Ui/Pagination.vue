@@ -1,22 +1,13 @@
 <template>
   <nav class="flex justify-center items-center gap-1 select-none" aria-label="Pagination">
-    <!-- First Page -->
-    <button
-      class="pagination-btn"
-      :disabled="isFirstPage || disabled"
-      @click="goToPage(1)"
-      aria-label="First page"
-    >
-      «
-    </button>
     <!-- Prev Page -->
     <button
-      class="pagination-btn"
+      class="w-10 h-10 min-w-10 min-h-10 max-w-10 max-h-10 p-0 m-0 text-base rounded-md text-secondary bg-white border border-accent-200 transition-colors duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary hover:text-white focus-visible:bg-primary focus-visible:text-white focus:outline-none"
       :disabled="isFirstPage || disabled"
       @click="goToPage(currentPage - 1)"
       aria-label="Previous page"
     >
-      ‹
+      <UiIconsChevron class="w-4 h-4 -rotate-90" />
     </button>
 
     <!-- Page Numbers with Ellipsis -->
@@ -24,8 +15,8 @@
       <span v-if="page.ellipsis" class="px-2 text-accent-400">…</span>
       <button
         v-else-if="typeof page.num === 'number'"
-        class="pagination-btn"
-        :class="{ 'bg-primary text-white': page.num === currentPage }"
+        class="w-10 h-10 min-w-10 min-h-10 max-w-10 max-h-10 p-0 m-0 text-base rounded-md border border-accent-200 transition-colors duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary hover:text-white focus-visible:bg-primary focus-visible:text-white focus:outline-none"
+        :class="{ 'bg-primary text-white': page.num === currentPage, 'text-secondary bg-white': page.num !== currentPage }"
         :disabled="page.num === currentPage || disabled"
         @click="goToPage(page.num)"
         :aria-current="page.num === currentPage ? 'page' : undefined"
@@ -37,22 +28,13 @@
 
     <!-- Next Page -->
     <button
-      class="pagination-btn"
+      class="w-10 h-10 min-w-10 min-h-10 max-w-10 max-h-10 p-0 m-0 text-base rounded-md text-secondary bg-white border border-accent-200 transition-colors duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary hover:text-white focus-visible:bg-primary focus-visible:text-white focus:outline-none"
       :disabled="isLastPage || disabled"
       @click="goToPage(currentPage + 1)"
       aria-label="Next page"
     >
-      ›
-    </button>
-    <!-- Last Page -->
-    <button
-      class="pagination-btn"
-      :disabled="isLastPage || disabled"
-      @click="goToPage(totalPages)"
-      aria-label="Last page"
-    >
-      »
-    </button>
+    <UiIconsChevron class="w-4 h-4 rotate-90" />
+  </button>
   </nav>
 </template>
 
@@ -128,10 +110,4 @@ const pagesToShow = computed(() => {
 
   return pages
 })
-</script>
-
-<style scoped>
-.pagination-btn {
-  @apply rounded-md px-3 py-2 mx-0.5 text-secondary bg-white border border-accent-200 hover:bg-primary hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed;
-}
-</style> 
+</script> 
