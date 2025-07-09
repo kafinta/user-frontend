@@ -20,7 +20,7 @@
           class="col-span-2"
           :inputValue="formData.name"
           @update:inputValue="formData.name = $event"
-          :error="!!errors.name"
+          :error="typeof errors.name === 'string' ? errors.name : !!errors.name"
         />
 
         <!-- Category & Location Row (needed for subcategory) -->
@@ -30,7 +30,7 @@
           :selectedOption="formData.category_id"
           @update:selectedOption="handleCategoryChange"
           :options="categoryOptions"
-          :error="!!errors.category_id"
+          :error="typeof errors.category_id === 'string' ? errors.category_id : !!errors.category_id"
           class="col-span-2 lg:col-span-1"
         />
 
@@ -40,7 +40,7 @@
           :selectedOption="formData.location_id"
           @update:selectedOption="handleLocationChange"
           :options="locationOptions"
-          :error="!!errors.location_id"
+          :error="typeof errors.location_id === 'string' ? errors.location_id : !!errors.location_id"
           class="col-span-2 lg:col-span-1"
         />
 
@@ -63,7 +63,7 @@
           @update:selectedOption="formData.subcategory_id = $event"
           :options="subcategoryOptions"
           :disabled="!formData.category_id || !formData.location_id"
-          :error="!!errors.subcategory_id"
+          :error="typeof errors.subcategory_id === 'string' ? errors.subcategory_id : !!errors.subcategory_id"
           class="col-span-2 lg:col-span-1"
         />
 
@@ -75,9 +75,8 @@
           min="0"
           :inputValue="formData.price"
           @update:inputValue="formData.price = $event"
-          :error="!!errors.price"
+          :error="typeof errors.price === 'string' ? errors.price : !!errors.price"
           class="col-span-2 lg:col-span-1"
-
         />
 
         <!-- Stock Management (full width) -->
@@ -88,6 +87,7 @@
               label="Track inventory for this product"
               size="large"
               class="col-span-2 lg:col-span-1"
+              :error="typeof errors.manage_stock === 'string' ? errors.manage_stock : !!errors.manage_stock"
             />
 
             <FormInput
@@ -99,7 +99,7 @@
               pattern="[0-9]*"
               :inputValue="formData.stock_quantity || ''"
               @update:inputValue="formData.stock_quantity = $event"
-              :error="!!errors.stock_quantity"
+              :error="typeof errors.stock_quantity === 'string' ? errors.stock_quantity : !!errors.stock_quantity"
               class="col-span-2 lg:col-span-1"
             />
             <div v-else></div>
@@ -113,7 +113,7 @@
           class="col-span-2"
           :inputValue="formData.description"
           @update:inputValue="formData.description = $event"
-          :error="!!errors.description"
+          :error="typeof errors.description === 'string' ? errors.description : !!errors.description"
           :rows="10"
         />
 
@@ -220,43 +220,19 @@ const createProduct = async () => {
   try {
     isLoading.value = true
     errors.value = {}
-
     // Basic client-side validation
     const validationErrors = {}
-
-    if (!formData.name?.trim()) {
-      validationErrors.name = ['Product name is required']
-    }
-
-    if (!formData.description?.trim()) {
-      validationErrors.description = ['Product description is required']
-    }
-
-    if (!formData.price || parseFloat(formData.price) <= 0) {
-      validationErrors.price = ['Valid price is required']
-    }
-
-    if (!formData.subcategory_id) {
-      validationErrors.subcategory_id = ['Subcategory is required']
-    }
-
-    if (!formData.location_id) {
-      validationErrors.location_id = ['Location is required']
-    }
-
-    // Validate stock quantity if stock management is enabled
-    if (formData.manage_stock && (!formData.stock_quantity || parseInt(formData.stock_quantity) < 0)) {
-      validationErrors.stock_quantity = ['Valid stock quantity is required when managing stock']
-    }
-
-    // If there are validation errors, show them and return
+    if (!formData.name?.trim()) validationErrors.name = 'Product name is required.'
+    if (!formData.description?.trim()) validationErrors.description = 'Description is required.'
+    if (!formData.price || parseFloat(formData.price) <= 0) validationErrors.price = 'Price must be greater than 0.'
+    if (!formData.subcategory_id) validationErrors.subcategory_id = 'Please select a subcategory.'
+    if (!formData.location_id) validationErrors.location_id = 'Please select a location.'
+    if (formData.manage_stock && (!formData.stock_quantity || parseInt(formData.stock_quantity) < 0)) validationErrors.stock_quantity = 'Stock quantity must be greater than 0.'
     if (Object.keys(validationErrors).length > 0) {
       errors.value = validationErrors
-      const firstError = Object.values(validationErrors)[0][0]
-      toast.error(firstError)
+      toast.error('Please fill all required fields correctly.')
       return
     }
-
     // Prepare data for API
     const productData = {
       name: formData.name.trim(),
@@ -267,13 +243,10 @@ const createProduct = async () => {
       manage_stock: formData.manage_stock,
       stock_quantity: formData.manage_stock ? parseInt(formData.stock_quantity || '0') : 0
     }
-
     // Create new product
     const response = await productApi.createBasicInfo(productData)
-
-    console.log('API Response:', response) // Debug log
-
     if (response.status === 'success') {
+      errors.value = {}
       // Extract product ID and slug from response
       let productId = response.data?.product?.id || response.data?.id
       let productSlug = response.data?.product?.slug || response.data?.slug
@@ -297,39 +270,10 @@ const createProduct = async () => {
         toast.error('Product saved but unable to proceed to next step. Please try again.')
       }
     } else {
-      console.error('Unexpected response status:', response)
       toast.error('Unexpected response from server. Please try again.')
     }
   } catch (error) {
-    console.error('Error creating product:', error)
-
-    // Handle validation errors (field-specific) - updated for new API format
-    if (error.data?.message && typeof error.data.message === 'object') {
-      // Set field errors for display under form fields
-      errors.value = error.data.message
-
-      // Show first validation error in toast
-      const firstError = Object.values(error.data.message)[0]
-      if (Array.isArray(firstError) && firstError.length > 0) {
-        toast.error(firstError[0])
-      } else {
-        toast.error('Please check the form for errors.')
-      }
-    } else {
-      // Handle general error messages (non-validation)
-      let errorMessage = 'Failed to create product. Please try again.'
-
-      if (error.data?.message && typeof error.data.message === 'string') {
-        // Backend provided a specific error message
-        errorMessage = error.data.message
-      } else if (error.message) {
-        // Network or other error
-        errorMessage = error.message
-      }
-
-      // Show error toast
-      toast.error(errorMessage)
-    }
+    toast.error('Failed to create product. Please try again.')
   } finally {
     isLoading.value = false
   }
