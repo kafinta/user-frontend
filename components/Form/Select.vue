@@ -105,7 +105,7 @@ export default {
   name: "FormSelect",
   props: {
     extraClass: String,
-    error: Boolean,
+    error: [Boolean, String],
     label: {
       type: String,
       required: true
@@ -141,6 +141,10 @@ export default {
       return this.selectedOption !== null && this.selectedOption !== undefined;
     },
 
+    hasError() {
+      return !!this.error
+    },
+
     triggerClasses() {
       if (this.disabled) {
         return [
@@ -162,7 +166,7 @@ export default {
         this.isOpen ? 'border-primary border-opacity-100' : '',
 
         // Error states
-        this.error ? 'border-red-600 focus:border-red-600' : '',
+        this.hasError ? 'border-red-600 focus:border-red-600' : '',
 
         // Text alignment
         this.centerText ? 'text-center' : '',
@@ -186,7 +190,7 @@ export default {
         isFloating ? '-top-2 text-xs bg-white px-1' : 'top-3',
 
         // Color states
-        this.error ? 'text-red-600' :
+        this.hasError ? 'text-red-600' :
         (this.isFocused || this.isOpen) ? 'text-primary' : 'text-secondary',
 
         // Opacity

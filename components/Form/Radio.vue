@@ -128,6 +128,10 @@ export default {
       return {
         'text-center': this.layout === 'horizontal'
       }
+    },
+
+    hasError() {
+      return !!this.error
     }
   },
 
@@ -161,7 +165,6 @@ export default {
     // Radio button classes
     radioClasses(option) {
       const isSelected = this.isSelected(option)
-      const hasError = !!this.error
 
       if (this.disabled) {
         return {
@@ -175,16 +178,16 @@ export default {
       return {
         // Base styles
         'cursor-pointer': true,
-        'border-accent-300 bg-white': !isSelected && !hasError,
+        'border-accent-300 bg-white': !isSelected && !this.hasError,
 
         // Selected state
         'border-primary bg-primary': isSelected,
 
         // Error state
-        'border-red-500 bg-white': hasError && !isSelected,
+        'border-red-500 bg-white': this.hasError && !isSelected,
 
         // Hover states
-        'hover:border-accent-400': !isSelected && !hasError,
+        'hover:border-accent-400': !isSelected && !this.hasError,
         'hover:border-primary-600 hover:bg-primary-600': isSelected
       }
     },
