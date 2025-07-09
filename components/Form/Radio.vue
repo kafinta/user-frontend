@@ -1,7 +1,7 @@
 <template>
   <div class="form-radio-group">
     <!-- Label -->
-    <label v-if="label" :class="labelGroupClasses" class="block text-sm font-medium text-secondary mb-3">
+    <label v-if="label" :class="labelGroupClasses" class="block text-sm font-medium text-secondary mb-3" for="fieldId">
       {{ label }}
       <span v-if="required" class="text-red-500 ml-1">*</span>
     </label>
