@@ -41,7 +41,7 @@
       {{ label }}
     </label>
 
-    <p v-if="error" class="text-xs text-red-500 mt-1">{{ error }}</p>
+    <p v-if="typeof error === 'string' && error" class="text-xs text-red-500 mt-1">{{ error }}</p>
   </div>
 </template>
 
@@ -50,7 +50,7 @@ export default {
   name: "FloatLabelInput",
   props: {
     extraClass: String,
-    error: String,
+    error: [Boolean, String],
     label: {
       type: String,
       required: true
@@ -87,6 +87,9 @@ export default {
     hasValue() {
       return this.inputValue && this.inputValue.length > 0
     },
+    hasError() {
+      return !!this.error
+    },
 
     inputClasses() {
       if (this.disabled) {
@@ -107,7 +110,7 @@ export default {
         'active:border-primary active:border-opacity-100 active:text-secondary',
 
         // Error states
-        this.error ? 'border-red-600 focus:border-red-600 active:border-red-600' : '',
+        this.hasError ? 'border-red-600 focus:border-red-600 active:border-red-600' : '',
 
         // Text alignment
         this.centerText ? 'text-center' : '',
@@ -132,7 +135,7 @@ export default {
         isFloating ? '-top-2 text-xs bg-white px-1' : 'top-3',
 
         // Color states
-        this.error ? 'text-red-600' :
+        this.hasError ? 'text-red-600' :
         this.isFocused ? 'text-primary' : 'text-secondary',
 
         // Opacity

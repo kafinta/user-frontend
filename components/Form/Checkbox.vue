@@ -53,6 +53,8 @@
       <slot>{{ label }}</slot>
     </label>
   </div>
+
+  <p v-if="typeof error === 'string' && error" class="text-xs text-red-500 mt-1">{{ error }}</p>
 </template>
 
 <script>
@@ -93,7 +95,7 @@ export default {
       default: false
     },
     error: {
-      type: Boolean,
+      type: [Boolean, String],
       default: false
     }
   },
@@ -114,6 +116,10 @@ export default {
       return this.binary ? this.modelValue : (this.modelValue || this.checked)
     },
 
+    hasError() {
+      return !!this.error
+    },
+
     checkboxClasses() {
       const sizeClasses = {
         small: 'w-3 h-3',
@@ -128,7 +134,7 @@ export default {
           // Disabled state - no transitions, no hover effects
           this.isChecked ? 'bg-accent-300 border-accent-300' : 'bg-accent-50 border-accent-200',
           'cursor-not-allowed',
-          this.error ? 'border-red-300' : ''
+          this.hasError ? 'border-red-300' : ''
         ].filter(Boolean).join(' ')
       }
 
@@ -143,7 +149,7 @@ export default {
         !this.isChecked ? 'hover:border-primary hover:border-opacity-60' : 'hover:bg-primary hover:bg-opacity-90',
 
         // Error states
-        this.error ? 'border-red-600' : '',
+        this.hasError ? 'border-red-600' : '',
 
         // Interactive state
         'cursor-pointer'
@@ -154,7 +160,7 @@ export default {
       if (this.disabled) {
         return [
           'text-sm text-accent-400 cursor-not-allowed',
-          this.error ? 'text-red-300' : ''
+          this.hasError ? 'text-red-300' : ''
         ].filter(Boolean).join(' ')
       }
 
@@ -163,7 +169,7 @@ export default {
         'text-sm cursor-pointer',
 
         // Color states
-        this.error ? 'text-red-600' : 'text-secondary',
+        this.hasError ? 'text-red-600' : 'text-secondary',
 
         // Hover state
         'hover:text-primary'
