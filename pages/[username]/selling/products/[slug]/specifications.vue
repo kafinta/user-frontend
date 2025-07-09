@@ -25,7 +25,7 @@
               :selectedOption="attributeValues[attr.id]"
               @update:selectedOption="val => attributeValues[attr.id] = val"
               :id="'attr-' + attr.id"
-              :error="null"
+              :error="typeof errors[attr.id] === 'string' ? errors[attr.id] : !!errors[attr.id]"
             />
             <FormInput
               v-else
@@ -33,7 +33,7 @@
               :placeholder="'Enter ' + attr.name"
               v-model:inputValue="attributeValues[attr.id]"
               :id="'attr-' + attr.id"
-              :error="null"
+              :error="typeof errors[attr.id] === 'string' ? errors[attr.id] : !!errors[attr.id]"
             />
           </div>
         </div>
@@ -62,6 +62,7 @@ const originalAttributeValues = ref({})
 const error = ref('')
 const isLoading = ref(false)
 const isInitialLoad = ref(true)
+const errors = ref({})
 
 // Fetch product attributes to preload selected values
 const fetchProductAttributes = async (productId) => {
@@ -123,6 +124,7 @@ const fetchAttributes = async () => {
 
 const handleSubmit = async () => {
   error.value = ''
+  errors.value = {}
   try {
     isLoading.value = true
     // Fetch product again to get its id (new structure)
@@ -139,6 +141,19 @@ const handleSubmit = async () => {
       attribute_id: Number(attribute_id),
       value_id: value_id ? Number(value_id) : null
     }))
+    // Validation: required attributes must have a value
+    const validationErrors = {}
+    for (const attr of attributes.value) {
+      if (attr.required && (!attributeValues.value[attr.id] || attributeValues.value[attr.id] === '')) {
+        validationErrors[attr.id] = `Please provide a value for ${attr.name}.`
+      }
+    }
+    if (Object.keys(validationErrors).length > 0) {
+      errors.value = validationErrors
+      toast.error('Please fill all required specifications.')
+      isLoading.value = false
+      return
+    }
     // Check if attributes have changed
     const unchanged = Object.keys(originalAttributeValues.value).length === Object.keys(attributeValues.value).length &&
       Object.entries(attributeValues.value).every(
