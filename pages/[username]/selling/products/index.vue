@@ -7,7 +7,7 @@
           <UiIconsFilter class="w-5 h-5" />
           Filters
         </UiButtonsTertiary>
-        <UiButtonsPrimary :url="{path: 'new'}">List a New Product</UiButtonsPrimary>
+        <UiButtonsPrimary :url="{ path: 'products/new' }">List a New Product</UiButtonsPrimary>
       </div>
       <!-- Filter Sidebar Drawer -->
       <FilterSellerSidebar
