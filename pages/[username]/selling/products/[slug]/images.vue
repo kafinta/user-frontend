@@ -33,6 +33,8 @@
             :previewUrl="getSlotPreviewUrl(slot)"
             :disabled="isUploading"
             :inputId="'image-slot-input-' + slot.key"
+            :error="typeof errors[idx] === 'string' && errors[idx] ? errors[idx] : false"
+            :loading="!!loadings[idx]"
             @file-selected="file => handleSlotFileChangeDirect(file, idx)"
             @remove="() => removeSlotImage(idx)"
           />
@@ -100,6 +102,10 @@ const originalImages = ref([])
 const maxImages = 10
 const initialSlots = 3
 const imageSlots = ref([])
+const errors = ref({})
+const uploadingIndex = ref(null)
+const progresses = ref({})
+const loadings = ref({})
 
 // Helper to create a slot object
 function createSlot(file = null, previewUrl = '', key = null) {
@@ -163,20 +169,24 @@ function handleSlotFileChangeDirect(file, idx) {
   // Validate file size
   const maxSize = 2 * 1024 * 1024 // 2MB
   if (file.size > maxSize) {
-    toast.error('File is too large. Maximum size is 2MB.')
+    errors.value[idx] = 'File is too large. Maximum size is 2MB.'
     return
   }
   // Validate file type
   if (!['image/jpeg', 'image/png', 'image/jpg', 'image/gif'].includes(file.type)) {
-    toast.error('Invalid file type.')
+    errors.value[idx] = 'Invalid file type. Only JPEG, PNG, JPG, and GIF are allowed.'
     return
   }
+  errors.value[idx] = '' // Clear error if valid
+  // Show loading spinner for this slot
+  loadings.value[idx] = true
   // Create preview URL
   const reader = new FileReader()
   reader.onload = e => {
     imageSlots.value[idx].file = file
     imageSlots.value[idx].previewUrl = e.target.result
     imageSlots.value[idx].id = null // Mark as new image
+    loadings.value[idx] = false
   }
   reader.readAsDataURL(file)
 }
@@ -245,6 +255,12 @@ function getSlotPreviewUrl(slot) {
 const saveImagesAndContinue = async () => {
   try {
     isLoading.value = true
+    // Prevent submission if any slot has an error
+    const hasSlotError = Object.values(errors.value).some(msg => typeof msg === 'string' && msg)
+    if (hasSlotError) {
+      toast.error('Please fix the image errors before continuing.')
+      return
+    }
     // Gather new files to upload
     const filesToUpload = imageSlots.value.filter(slot => slot.file).map(slot => slot.file)
     // Gather IDs of images to keep
@@ -255,6 +271,21 @@ const saveImagesAndContinue = async () => {
 
     // Upload new images if any
     if (filesToUpload.length > 0) {
+      uploadingIndex.value = 0
+      for (let i = 0; i < filesToUpload.length; i++) {
+        const file = filesToUpload[i]
+        const idx = i
+        const progress = ref(0)
+        progresses.value[idx] = progress
+        const reader = new FileReader()
+        reader.onload = e => {
+          imageSlots.value[idx].file = file
+          imageSlots.value[idx].previewUrl = e.target.result
+          imageSlots.value[idx].id = null // Mark as new image
+          progress.value = 100
+        }
+        reader.readAsDataURL(file)
+      }
       const response = await productApi.uploadImages(product.value.id, filesToUpload)
       if (response.status === 'success' && response.data) {
         product.value = response.data.product || response.data
@@ -268,6 +299,8 @@ const saveImagesAndContinue = async () => {
     console.error('Error saving images:', error)
   } finally {
     isLoading.value = false
+    uploadingIndex.value = null
+    progresses.value = {}
   }
 }
 </script>
