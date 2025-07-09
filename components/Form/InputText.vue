@@ -1,6 +1,6 @@
 <template>
   <div>
-    <label>{{ label }}</label>
+    <label for="inputId">{{ label }}</label>
     <input
       ref="input"
       :id="inputId"
