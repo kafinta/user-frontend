@@ -54,26 +54,13 @@
 
           <!-- User profile dropdown (common for authenticated users) -->
           <li class="relative">
-            <button @click="toggleOptions()" class="profile-trigger" title="Click to open user menu">
-              <UserProfilePicture :large_dimensions="true" :username="username" class="cursor-pointer" />
-            </button>
-
-            <div ref="userOptions" v-show="user_options" class="p-2 px-3 rounded-md border border-accent-200 text-secondary absolute bg-white right-0 w-56 mt-2 z-50 shadow-md">
-              <div class="flex gap-3 items-center py-2">
-                <UserProfilePicture :custom_dimensions="true" :username="username" class="w-10" />
-                <div>
-                  <UiTypographyP><span class="font-medium">{{ username }}</span></UiTypographyP>
-                  <UiTypographyP v-if="isSeller" class="text-xs">Seller</UiTypographyP>
-                  <UiTypographyP v-else class="text-xs">Customer</UiTypographyP>
-                </div>
-              </div>
-              <hr class="my-1">
-              <NuxtLink :to="dashboardRoute" class="block w-full hover:bg-accent-100 py-2 px-3 rounded cursor-pointer mt-1 text-sm">Dashboard</NuxtLink>
-              <NuxtLink :to="{name: 'username-profile', params: {username: username}}" class="block w-full hover:bg-accent-100 py-2 px-3 rounded cursor-pointer text-sm">Profile</NuxtLink>
-              <NuxtLink :to="{name: 'username-buying-dashboard', params: {username: username}}" class="block w-full hover:bg-accent-100 py-2 px-3 rounded cursor-pointer mb-1 text-sm">Orders</NuxtLink>
-              <hr class="my-1">
-              <button @click="logout" class="w-full hover:bg-accent-100 py-2 px-3 rounded cursor-pointer text-left mt-1 text-sm">Log out</button>
-            </div>
+            <UiDropdownMenu :items="userMenuItems">
+              <template #trigger="{ open, toggleMenu }">
+                <button @click="toggleMenu" class="profile-trigger" title="Click to open user menu">
+                  <UserProfilePicture :large_dimensions="true" :username="username" class="cursor-pointer" />
+                </button>
+              </template>
+            </UiDropdownMenu>
           </li>
         </ul>
 
@@ -124,6 +111,7 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '~/stores/auth';
 import { useAuthApi } from '~/composables/useAuthApi';
 import { useAppToast } from '~/utils/toastify';
+import UiDropdownMenu from '~/components/Ui/DropdownMenu.vue'
 
 // Props with validation - only UI-related props remain
 const props = defineProps({
@@ -287,6 +275,27 @@ async function checkAuthStatus() {
   // No session validation needed - rely on backend to handle expired sessions
   // Auth store is initialized on app startup and loads data from localStorage
 }
+
+const userMenuItems = [
+  {
+    label: 'Dashboard',
+    action: () => router.push(dashboardRoute),
+  },
+  {
+    label: 'Profile',
+    action: () => router.push({ name: 'username-profile', params: { username } }),
+  },
+  {
+    label: 'Orders',
+    action: () => router.push({ name: 'username-buying-dashboard', params: { username } }),
+  },
+  { separator: true },
+  {
+    label: 'Log out',
+    action: logout,
+    danger: true,
+  },
+]
 
 // Lifecycle hooks
 onMounted(async () => {
