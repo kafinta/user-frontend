@@ -82,28 +82,23 @@
 
                 <!-- Actions -->
                 <div class="flex flex-wrap gap-4">
-                  <NuxtLink
-                    :to="`/marketplace/products/${product.slug}`"
-                    target="_blank"
-                    class="flex items-center gap-2 text-sm text-primary hover:underline hover:text-secondary transition-colors duration-200 border-r border-accent-200 pr-4"
-                  >
-                    <UiIconsEye class="w-4 h-4" />
-                    Preview
-                  </NuxtLink>
-                  <button
-                    @click="editProduct(product)"
-                    class="flex items-center gap-2 text-sm text-secondary hover:text-primary transition-colors duration-200 border-r border-accent-200 pr-4"
-                  >
-                    <UiIconsEdit class="w-4 h-4" />
-                    Edit
-                  </button>
-                  <button
-                    @click="confirmDelete(product)"
-                    class="flex items-center gap-2 text-red-600 text-sm hover:text-red-700 transition-colors duration-200"
-                  >
-                    <UiIconsDelete class="w-4 h-4" />
-                    Delete
-                  </button>
+                  <UiDropdownMenu :items="getProductActions(product)">
+                    <template #trigger="{ open, toggleMenu }">
+                      <button
+                        @click="toggleMenu"
+                        :class="[
+                          'flex items-center gap-2 px-3 py-2 rounded-md border border-accent-200 bg-white shadow-sm focus:outline-none',
+                          open ? 'bg-accent-100' : 'hover:bg-accent-50'
+                        ]"
+                        aria-haspopup="true"
+                        :aria-expanded="open"
+                        type="button"
+                      >
+                        Actions
+                        <UiIconsChevron class="text-secondary rotate-180 w-4 h-4 ml-1" />
+                      </button>
+                    </template>
+                  </UiDropdownMenu>
                 </div>
               </div>
             </li>
@@ -161,6 +156,25 @@
         </div>
       </div>
     </ModalsOverlay>
+    <!-- Add Pause Confirmation Modal -->
+    <ModalsOverlay @closeOverlay="pauseModalOpen = false" :open="pauseModalOpen">
+      <template #title>Pause Product</template>
+      <div class="flex flex-col items-center gap-4 py-2">
+        <div class="rounded-full p-4 flex items-center justify-center mb-2 bg-yellow-400 ring-[.5rem] ring-yellow-100 w-24 h-24">
+          <UiIconsPause class="w-10 h-10 text-white" />
+        </div>
+        <UiTypographyP class="text-center" aria-live="assertive">
+          Are you sure you want to pause <span class="font-bold text-yellow-700">"{{ productToPause?.name }}"</span>? It will no longer be visible to buyers until resumed.
+        </UiTypographyP>
+        <hr class="w-full border-accent-200" />
+        <div class="grid grid-cols-2 gap-4 w-full justify-center">
+          <UiButtonsTertiary @clicked="pauseModalOpen = false" class="w-full text-center">Cancel</UiButtonsTertiary>
+          <FormButton @click="confirmPause" class="bg-yellow-500 hover:bg-yellow-600 text-white" :loading="pausingProductId === productToPause?.id">
+            <UiIconsPause class="w-5 h-5" /> Pause
+          </FormButton>
+        </div>
+      </div>
+    </ModalsOverlay>
   </LayoutsDashboard>
 </template>
 <script setup>
@@ -188,6 +202,14 @@ import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import FilterSellerSidebar from '~/components/Filter/SellerSidebar.vue'
 import UiIconsFilter from '~/components/Ui/Icons/Filter.vue'
+import UiButtonsSecondary from '~/components/Ui/Buttons/Secondary.vue'
+import ModalsOverlay from '~/components/Modals/Overlay.vue'
+import UiIconsPause from '~/components/Ui/Icons/Pause.vue'
+import UiDropdownMenu from '~/components/Ui/DropdownMenu.vue'
+import UiIconsEye from '~/components/Ui/Icons/Eye.vue'
+import UiIconsEdit from '~/components/Ui/Icons/Edit.vue'
+import UiIconsDelete from '~/components/Ui/Icons/Delete.vue'
+import UiIconsChevronDown from '~/components/Ui/Icons/Chevron.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -212,6 +234,9 @@ const deleteModalOpen = ref(false)
 const productToDelete = ref(null)
 const isInitialLoad = ref(true)
 const showFilterSidebar = ref(false)
+const pausingProductId = ref(null)
+const pauseModalOpen = ref(false)
+const productToPause = ref(null)
 
 // Status filter options
 const statusOptions = [
@@ -445,6 +470,69 @@ const onSidebarFilterChange = async (newFilters) => {
   } else {
     await onFilterChange()
   }
+}
+
+function handlePauseResume(product) {
+  if (product.status === 'active') {
+    productToPause.value = product
+    pauseModalOpen.value = true
+  } else {
+    // Resume directly
+    updateProductStatus(product, 'active')
+  }
+}
+
+async function confirmPause() {
+  if (productToPause.value) {
+    await updateProductStatus(productToPause.value, 'paused')
+    pauseModalOpen.value = false
+    productToPause.value = null
+  }
+}
+
+async function updateProductStatus(product, newStatus) {
+  if (!product) return
+  pausingProductId.value = product.id
+  try {
+    const response = await useProductApi().updateProductStatus(product.id, newStatus)
+    if (response && response.status === 'success') {
+      product.status = newStatus
+      // Optionally show a toast
+      // toast.success(`Product ${newStatus === 'paused' ? 'paused' : 'resumed'} successfully!`)
+    }
+  } catch (e) {
+    // Optionally show a toast
+    // toast.error('Failed to update product status.')
+  } finally {
+    pausingProductId.value = null
+  }
+}
+
+function getProductActions(product) {
+  return [
+    {
+      label: 'Preview',
+      icon: UiIconsEye,
+      action: () => window.open(`/marketplace/products/${product.slug}`, '_blank'),
+    },
+    {
+      label: 'Edit',
+      icon: UiIconsEdit,
+      action: () => editProduct(product),
+    },
+    {
+      label: product.status === 'active' ? 'Pause' : 'Resume',
+      icon: UiIconsPause,
+      action: () => handlePauseResume(product),
+      disabled: pausingProductId.value === product.id,
+    },
+    {
+      label: 'Delete',
+      icon: UiIconsDelete,
+      action: () => confirmDelete(product),
+      danger: true,
+    },
+  ]
 }
 </script>
 <style>
