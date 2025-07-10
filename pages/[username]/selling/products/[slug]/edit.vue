@@ -1,16 +1,12 @@
 <template>
   <LayoutsDashboard mode="seller" pageTitle="Edit Product">
+    <UiStepper
+      :steps="stepperSteps"
+      :currentStep="0"
+      :isEnabled="isStepEnabled"
+      @step-click="handleStepClick"
+    />
     <div class="grid grid-cols-1 place-items-center gap-6 max-w-3xl mx-auto w-full">
-      <!-- Progress Steps -->
-      <div class="flex items-center">
-        <div class="bg-primary text-white h-10 w-10 rounded-full grid place-items-center">1</div>
-        <div class="h-0.5 bg-accent-200 w-24"></div>
-        <div class=" h-10 w-10 rounded-full grid place-items-center text-secondary border border-accent-200">2</div>
-        <div class="h-0.5 bg-accent-200 w-24"></div>
-        <div class=" h-10 w-10 rounded-full grid place-items-center text-secondary border border-accent-200">3</div>
-      </div>
-      <UiTypographyH3>Edit Product Details</UiTypographyH3>
-
       <!-- Loading State -->
       <div v-if="isInitialLoad" class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
         <UiSkeleton height="3rem" class="rounded-md col-span-2" />
@@ -137,6 +133,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useFiltersStore } from '~/stores/filters'
 import { useProductApi } from '~/composables/useProductApi'
 import { useAppToast } from '~/utils/toastify'
+import UiStepper from '~/components/Ui/Stepper.vue'
 
 definePageMeta({
   middleware: ['auth'],
@@ -412,4 +409,48 @@ onMounted(async () => {
   isLoadingProduct.value = false
   isInitialLoad.value = false
 })
+
+const stepperSteps = [
+  { label: 'Details', route: () => `/${route.params.username}/selling/products/${productSlug.value}/edit` },
+  { label: 'Specifications', route: () => `/${route.params.username}/selling/products/${productSlug.value}/specifications` },
+  { label: 'Images', route: () => `/${route.params.username}/selling/products/${productSlug.value}/images` },
+  { label: 'Publish', route: () => `/${route.params.username}/selling/products/${productSlug.value}/publish` }
+]
+
+function isStepComplete(idx) {
+  if (!product.value) return false;
+  switch (idx) {
+    case 0:
+      // Details: name, description, price, category, location, subcategory
+      return !!(product.value.name && product.value.description && product.value.price && product.value.category?.id && product.value.location?.id && product.value.subcategory?.id);
+    case 1:
+      // Specifications: attributes (assume attributes or specifications field or similar)
+      return Array.isArray(product.value.attributes) ? product.value.attributes.length > 0 : false;
+    case 2:
+      // Images: images array
+      return Array.isArray(product.value.images) ? product.value.images.length > 0 : false;
+    case 3:
+      // Publish: allow if all previous steps are complete
+      return isStepComplete(0) && isStepComplete(1) && isStepComplete(2);
+    default:
+      return false;
+  }
+}
+
+function isStepEnabled(idx) {
+  // If product is active, allow all steps
+  if (product.value?.status === 'active') return true;
+  // Allow navigation to a step only if all previous steps are complete
+  for (let i = 0; i < idx; i++) {
+    if (!isStepComplete(i)) return false;
+  }
+  return true;
+}
+
+function handleStepClick(idx) {
+  if (isStepEnabled(idx)) {
+    const routeFn = stepperSteps[idx].route
+    if (routeFn) router.push(routeFn())
+  }
+}
 </script>

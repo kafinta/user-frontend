@@ -1,14 +1,12 @@
 <template>
   <LayoutsDashboard mode="seller" pageTitle="New Product">
+    <UiStepper
+      :steps="stepperSteps"
+      :currentStep="0"
+      :isEnabled="isStepEnabled"
+      @step-click="handleStepClick"
+    />
     <div class="grid grid-cols-1 place-items-center gap-6 max-w-3xl mx-auto w-full">
-      <!-- Progress Steps -->
-      <div class="flex items-center">
-        <div class="bg-primary text-white h-10 w-10 rounded-full grid place-items-center">1</div>
-        <div class="h-0.5 bg-accent-200 w-24"></div>
-        <div class=" h-10 w-10 rounded-full grid place-items-center text-secondary border border-accent-200">2</div>
-        <div class="h-0.5 bg-accent-200 w-24"></div>
-        <div class=" h-10 w-10 rounded-full grid place-items-center text-secondary border border-accent-200">3</div>
-      </div>
       <UiTypographyH3>Product Details</UiTypographyH3>
 
       <!-- Product Creation Form -->
@@ -135,6 +133,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useFiltersStore } from '~/stores/filters'
 import { useProductApi } from '~/composables/useProductApi'
 import { useAppToast } from '~/utils/toastify'
+import UiStepper from '~/components/Ui/Stepper.vue'
 
 definePageMeta({
   middleware: ['auth'],
@@ -290,4 +289,20 @@ onMounted(async () => {
     await filtersStore.fetchLocations()
   }
 })
+
+const stepperSteps = [
+  { label: 'Details', route: null },
+  { label: 'Specifications', route: null },
+  { label: 'Images', route: null },
+  { label: 'Publish', route: null }
+]
+
+function isStepEnabled(idx) {
+  // Only allow step 0 (Details) on this page
+  return idx === 0
+}
+
+function handleStepClick(idx) {
+  // No navigation from stepper on the new page
+}
 </script>
