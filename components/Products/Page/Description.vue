@@ -1,6 +1,21 @@
 <template>
   <div class="py-5">
-    <UiTypographyH2>Product Details</UiTypographyH2>
-    <UiTypographyP>Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti, nisi placeat corrupti veritatis facilis molestias mollitia! Id in doloremque doloribus eaque quasi quisquam velit eligendi unde, molestias, maiores sint odit. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Rerum adipisci libero veniam, ad eum quae aliquam. Maiores ipsam nisi dolor autem officia sint atque ipsa cumque necessitatibus nihil? Vero, culpa. <br> Lorem ipsum dolor sit amet consectetur, adipisicing elit. Odio repudiandae magnam, rerum natus voluptas reiciendis, quasi expedita nostrum optio obcaecati similique quisquam. Delectus odit autem commodi ducimus eos quasi fugiat. <br>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Enim laboriosam veniam tenetur quidem natus, magni dolorem rerum debitis reprehenderit repellat iste et! Doloremque dignissimos repellendus modi blanditiis eius, repellat consequatur.</UiTypographyP>
+    <template v-if="isLoading">
+      <UiSkeleton height="2rem" class="mb-3 w-1/2" />
+      <UiSkeleton height="1rem" class="mb-1" v-for="i in 8" :key="i" />
+    </template>
+    <template v-else>
+      <UiTypographyH2>Product Description</UiTypographyH2>
+      <UiTypographyP>{{ product?.description || 'N/A' }}</UiTypographyP>
+    </template>
   </div>
 </template>
+<script setup>
+import UiSkeleton from '~/components/Ui/Skeleton/Index.vue';
+import UiTypographyH2 from '~/components/Ui/Typography/H2.vue';
+import UiTypographyP from '~/components/Ui/Typography/P.vue';
+const props = defineProps({
+  product: Object,
+  isLoading: Boolean
+});
+</script>
