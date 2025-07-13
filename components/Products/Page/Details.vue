@@ -9,46 +9,36 @@
       <UiSkeleton height="2.5rem" class="w-full" />
     </template>
     <template v-else>
-      <UiTypographyH2>{{ product?.name || 'N/A' }}</UiTypographyH2>
-      <UiTypographyP>Listed by 
-        <span><UiButtonsSecondary>{{ product?.user?.name || 'Seller' }}</UiButtonsSecondary></span>
-        <span><UiButtonsSecondary>{{ product?.category?.name || 'Category' }}</UiButtonsSecondary></span>
+      <UiBreadcrumbs :model="breadcrumbItems" />
+      <UiTypographyH2 class="mt-2">{{ product?.name || 'N/A' }}</UiTypographyH2>
+      <UiTypographyP class="mt-2">Listed by 
+        <UiButtonsSecondary>{{ product?.user?.name || 'Seller' }}</UiButtonsSecondary>
       </UiTypographyP>
       <div class="flex gap-2 items-center my-3">
-        <UiTypographyP>{{ product?.rating || 0 }}</UiTypographyP>
         <div class="flex gap-0.5 items-center">
           <UiIconsStar v-for="star in 5" :key="star" class="w-5 h-5 text-primary" />
         </div>
-        <UiButtonsSecondary>{{ product?.review_count || 0 }} reviews</UiButtonsSecondary>
+        <UiTypographyP>{{ product?.review_count || 0 }} reviews</UiTypographyP>
       </div>
-      <hr />
-      <div class="grid my-5">
-        <div v-if="product?.discount">
-          <div class="bg-red-500 text-sm px-4 py-2 text-white rounded-md w-fit">Limited time deal</div>
-          <div class="flex items-center gap-2 mt-2">
-            <UiTypographyP>-{{ product?.discount || 0 }}%</UiTypographyP>
-            <UiTypographyH2>${{ product?.price || 0 }}</UiTypographyH2>
-          </div>
-          <UiTypographyP>Previous price: ${{ product?.previous_price || (product?.price + 100) }}</UiTypographyP>
+      
+      <div class="mt-5 bg-red-600 text-sm font-medium py-1 px-2 text-white rounded-[4px] w-fit uppercase">Sale</div>
+      <UiTypographyH2 class="mt-2">
+        ${{ product?.price || 0 }} 
+        <span class="text-lg line-through text-accent-300">${{ product?.previous_price || (product?.price) }}
+        </span>
+        <span class="text-lg text-red-600 ml-2">
+          {{ product?.discount || 0 }}% off
+        </span>
+      </UiTypographyH2>
+      <hr class="mt-5" />
+      <form class="grid gap-5 mt-5">
+        <div class="flex gap-5 items-end">
+          <FormQuantityInput v-model="quantity" class="col-span-2" />
+          <FormButton class="col-span-3 gap-5 h-[46px] items-center">
+            <UiIconsCart class="w-5 h-5 block" />Add to cart
+          </FormButton>
         </div>
-
-        <form class="grid gap-5 p-5 border border-accent-200 rounded-xl mt-5">
-          <!-- <div class="">
-            <label for="color choice">Color:</label>
-            <input type="radio" name="Image" id="">
-          </div> -->
-          <!-- <FormSelect label="Size" placeholder="Choose a size option">
-            <FormOptions v-for="$ in 5" :option="`Size option ${$}`" />
-          </FormSelect> -->
-          <div class="grid grid-cols-5 gap-5 items-end">
-            <FormSelect class="col-span-2" label="Quantity" placeholder="Qty: 1">
-            </FormSelect>
-            <FormButton class="col-span-3 gap-5 h-[46px] items-center">
-              <UiIconsCart class="w-5 h-5 block" />Add to cart
-            </FormButton>
-          </div>
-        </form>
-      </div>
+      </form>
     </template>
   </div>
 </template>
@@ -57,4 +47,16 @@ const props = defineProps({
   product: Object,
   isLoading: Boolean
 });
+
+
+const quantity = ref(1)
+
+const breadcrumbItems = computed(() => {
+  return [
+    { label: `${props.product?.location?.name}`, route: '/marketplace/locations' },
+    { label: `${props.product?.category?.name}`, route: '/marketplace/categories' },
+    { label: `${props.product?.subcategory?.name}`, route: '/marketplace/categories' },
+    { label: 'Products', route: '/products' },
+  ]
+})
 </script>
