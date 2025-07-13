@@ -7,9 +7,9 @@
           <ProductsPageCarousel :product="product" :isLoading="isLoading" class="relative lg:sticky lg:top-24" />
         </div>
         <!-- Right: Product Details and Tabs (sticky on desktop) -->
-        <div ref="stickyRef" class="lg:sticky lg:top-24">
+        <div >
           <div class="mb-6">
-            <ProductsPageSidebar :product="product" :isLoading="isLoading" />
+            <ProductsPageDetails :product="product" :isLoading="isLoading" />
           </div>
           <div class="border-b border-accent-200 flex gap-2 mb-4 bg-white z-10">
             <button v-for="tab in tabs" :key="tab.key"
@@ -49,21 +49,12 @@
 import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import { useProductApi } from '~/composables/useProductApi';
-import UiIconsError from '~/components/Ui/Icons/Error.vue';
-import UiTypographyP from '~/components/Ui/Typography/P.vue';
-import UiButtonsPrimary from '~/components/Ui/Buttons/Primary.vue';
-import ProductsPageCarousel from '~/components/Products/Page/Carousel.vue';
-import ProductsPageSidebar from '~/components/Products/Page/Sidebar.vue';
-import ProductsPageDescription from '~/components/Products/Page/Description.vue';
-import ProductsPageSpecifications from '~/components/Products/Page/Specifications.vue';
-import ProductsPageReview from '~/components/Products/Page/Review/Index.vue';
 
 const tabs = [
   { key: 'description', label: 'Description' },
   { key: 'specs', label: 'Specifications' },
 ];
 const activeTab = ref('description');
-const stickyRef = ref(null);
 const reviewsRef = ref(null);
 
 const product = ref(null);
