@@ -4,7 +4,7 @@
       <div v-if="isLoading || product" class="grid grid-cols-1 lg:grid-cols-2 gap-10 relative">
         <!-- Left: Product Image Carousel -->
         <div>
-          <ProductsPageCarousel :product="product" :isLoading="isLoading" />
+          <ProductsPageCarousel :product="product" :isLoading="isLoading" class="relative lg:sticky lg:top-24" />
         </div>
         <!-- Right: Product Details and Tabs (sticky on desktop) -->
         <div ref="stickyRef" class="lg:sticky lg:top-24">
