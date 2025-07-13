@@ -42,7 +42,6 @@
           </FormSelect> -->
           <div class="grid grid-cols-5 gap-5 items-end">
             <FormSelect class="col-span-2" label="Quantity" placeholder="Qty: 1">
-              <FormOptions v-for="$ in 5" :option="`${$}`" />
             </FormSelect>
             <FormButton class="col-span-3 gap-5 h-[46px] items-center">
               <UiIconsCart class="w-5 h-5 block" />Add to cart
