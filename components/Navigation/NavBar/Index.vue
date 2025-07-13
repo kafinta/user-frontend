@@ -155,20 +155,6 @@ const isAuthenticated = computed(() => authStore.isAuthenticated)
 const username = computed(() => authStore.user?.username || 'user')
 // isSeller is used in the template for conditional rendering
 const isSeller = computed(() => authStore.isSeller)
-// isCustomer - all authenticated users are customers by default, sellers get additional role after onboarding
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const isCustomer = computed(() => authStore.isCustomer)
-
-// Dashboard route based on user role - all users are customers by default
-const dashboardRoute = computed(() => {
-  if (isSeller.value) {
-    return { name: 'username-selling-dashboard', params: { username: username.value } }
-  } else {
-    // All authenticated users are customers by default
-    return { name: 'username-buying-dashboard', params: { username: username.value } }
-  }
-})
-
 // Methods
 function toggleMenu() {
   menuRevealed.value = !menuRevealed.value
@@ -279,15 +265,15 @@ async function checkAuthStatus() {
 const userMenuItems = [
   {
     label: 'Dashboard',
-    action: () => router.push(dashboardRoute),
+    action: () => router.push({ name: 'username-buying-dashboard', params: { username: username.value } }),
   },
   {
     label: 'Profile',
-    action: () => router.push({ name: 'username-profile', params: { username } }),
+    action: () => router.push({ name: 'username-profile', params: { username: username.value } }),
   },
   {
     label: 'Orders',
-    action: () => router.push({ name: 'username-buying-dashboard', params: { username } }),
+    action: () => router.push({ name: 'username-buying-dashboard', params: { username: username.value } }),
   },
   { separator: true },
   {
