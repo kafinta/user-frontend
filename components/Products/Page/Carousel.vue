@@ -15,7 +15,7 @@
         @moved="onMainMoved"
       >
         <SplideSlide v-for="(img, idx) in images" :key="img.id || idx">
-          <img :src="img.path || img.url || img" :alt="`Product image ${idx + 1}`" class="rounded-xl border border-accent-200 w-full object-cover aspect-[5/3]" />
+          <img :src="img.path || img.url || img" :alt="`Product image ${idx + 1}`" class="rounded-xl border border-accent-200 w-full object-cover aspect-[4/3]" />
         </SplideSlide>
         <template #arrows="{ splide }">
           <div class="splide__arrows">
