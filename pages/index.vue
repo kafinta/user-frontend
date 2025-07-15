@@ -99,14 +99,12 @@
       <!-- Content loaded successfully -->
       <ul v-else-if="categories && categories.length" class="col-span-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <li v-for="item in categories" :key="item.id">
-          <UiButtonsTertiary :flexdisplay="true"
-          @clicked="selectCategory(item.id)" >
-            {{  truncateText(item.name, {
-              maxWidth: 15,
-              breakpoints: {
-                desktop: true,
-              }
-            }) }}
+          <UiButtonsTertiary
+            :flexdisplay="true"
+            @clicked="selectCategory(item.id)"
+            class="truncate"
+          >
+            {{ item.name }}
           </UiButtonsTertiary>
         </li>
       </ul>
@@ -127,11 +125,6 @@ import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 const router = useRouter()
-const { truncateText } = useTruncate()
-import { useProductFilters } from '@/composables/useProductFilters'
-const productFilters = useProductFilters()
-
-
 
 const filtersStore = useFiltersStore()
 const { categories, isLoading, error } = storeToRefs(filtersStore)
@@ -162,9 +155,6 @@ async function selectCategory(id) {
   // Update the state after navigation
   productFilters.selectCategory(id)
 }
-
-// No onMounted needed - data will be fetched when needed by pages
-
 </script>
 <style>
 .hero-bg {
