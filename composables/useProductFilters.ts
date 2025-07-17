@@ -24,15 +24,19 @@ export function useProductFilters() {
   )
 
   // Selected objects (for display purposes)
-  const selectedCategory = computed(() => {
-    if (!selectedCategoryId.value) return null
-    return filtersStore.categories.find(cat => cat.id === selectedCategoryId.value) || null
-  })
+  const selectedCategory = ref(null); // { id, name, slug }
+  const selectedSubcategory = ref(null); // { id, name, slug }
+  const selectedLocation = ref(null); // { id, name, slug }
 
-  const selectedLocation = computed(() => {
-    if (!selectedLocationId.value) return null
-    return filtersStore.locations.find(loc => loc.id === selectedLocationId.value) || null
-  })
+  // Helper computed properties for API calls
+  const categoryId = computed(() => selectedCategory.value?.id);
+  const subcategoryId = computed(() => selectedSubcategory.value?.id);
+  const locationId = computed(() => selectedLocation.value?.id);
+
+  // Helper computed properties for slugs (for URLs)
+  const categorySlug = computed(() => selectedCategory.value?.slug);
+  const subcategorySlug = computed(() => selectedSubcategory.value?.slug);
+  const locationSlug = computed(() => selectedLocation.value?.slug);
 
   // Check if both selections are made
   const canFetchSubcategories = computed(() =>
@@ -121,14 +125,14 @@ export function useProductFilters() {
     }
   }
 
-  // Select a category
-  function selectCategory(id: number) {
-    selectedCategoryId.value = id
+  function selectCategory(category) {
+    selectedCategory.value = category;
   }
-
-  // Select a location
-  function selectLocation(id: number) {
-    selectedLocationId.value = id
+  function selectSubcategory(subcategory) {
+    selectedSubcategory.value = subcategory;
+  }
+  function selectLocation(location) {
+    selectedLocation.value = location;
   }
 
   // Clear selections
@@ -163,6 +167,9 @@ export function useProductFilters() {
 
   return {
     // States
+    selectedCategory,
+    selectedSubcategory,
+    selectedLocation,
     selectedCategoryId,
     selectedLocationId,
     selectedSubcategoryId,
@@ -172,12 +179,12 @@ export function useProductFilters() {
     // subcategories,
     // isLoading,
 
-    get selectedCategory() { return selectedCategory.value },
-    get selectedLocation() { return selectedLocation.value },
-    get selectedSubcategoryDetails() { return selectedSubcategoryDetails.value },
-    get canFetchSubcategories() { return canFetchSubcategories.value },
-    get subcategories() { return subcategories.value },
-    get isLoading() { return isLoading.value },
+    categoryId,
+    subcategoryId,
+    locationId,
+    categorySlug,
+    subcategorySlug,
+    locationSlug,
 
     // Actions
     selectCategory,
