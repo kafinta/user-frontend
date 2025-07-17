@@ -101,7 +101,7 @@
         <li v-for="item in categories" :key="item.id">
           <UiButtonsTertiary
             :flexdisplay="true"
-            @clicked="selectCategory(item.id)"
+            @clicked="selectCategory(item)"
             class="truncate"
           >
             {{ item.name }}
@@ -124,10 +124,12 @@ import { ref } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
+import { useProductFilters } from '@/composables/useProductFilters';
 const router = useRouter()
 
 const filtersStore = useFiltersStore()
 const { categories, isLoading, error } = storeToRefs(filtersStore)
+const productFilters = useProductFilters();
 
 const searchBox = ref(false);
 const search_button_hovered = ref(false);
@@ -136,24 +138,24 @@ const toggleSearch = () => {
   search_button_hovered.value = !search_button_hovered.value;
 }
 
-async function selectCategory(id) {
-  // Get the current location ID directly from the store
-  const locationId = productFilters.selectedLocationId?.value
+async function selectCategory(item) {
+  // Get the current location object from the composable
+  const location = productFilters.selectedLocation?.value;
 
   // Create the query parameters
-  const query = { category: id }
-  if (locationId) {
-    query.location = locationId
+  const query = { category: item.id };
+  if (location) {
+    query.location = location.id;
   }
 
   // Navigate first
   await router.push({
-    path: locationId ? '/marketplace/subcategories' : '/marketplace/locations',
+    path: location ? '/marketplace/subcategories' : '/marketplace/locations',
     query
-  })
+  });
 
   // Update the state after navigation
-  productFilters.selectCategory(id)
+  productFilters.selectCategory(item);
 }
 </script>
 <style>
