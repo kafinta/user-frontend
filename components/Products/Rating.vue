@@ -1,13 +1,15 @@
 <template>
-  <div class="text-secondary flex gap-3 items-center">
-    <UiIconsStar class="w-5 h-5" />
-    <UiTypographyP>{{ rating }}</UiTypographyP>
+  <div class="text-secondary flex gap-2 items-baseline">
+    <div class="flex">
+      <UiIconsStar v-if="loading" v-for="i in 5" :key="i" class="w-4 h-4 text-accent-100" />
+      <UiIconsStar v-else v-for="n in 5" :key="n" class="w-4 h-4 text-yellow-500" />
+    </div>
+    <UiTypographyP v-if="!loading || rating">({{ rating }})</UiTypographyP>
   </div>
 </template>
-<script>
-export default {
-  props: {
-    rating: Number
-  }
-}
+<script setup>
+const props = defineProps({
+  loading: Boolean,
+  rating: Number
+})
 </script>
