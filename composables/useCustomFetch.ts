@@ -78,11 +78,12 @@ const csrfManager = {
 export async function useCustomFetch<T>(
   url: NitroFetchRequest,
   options: Omit<NitroFetchOptions<NitroFetchRequest>, 'method'> & {
-    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS'
-    skipCsrf?: boolean
+    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS',
+    skipCsrf?: boolean,
+    suppressAuthError?: boolean // NEW: suppress session expired toast/redirect
   } = {}
 ) {
-  const { method = 'GET', skipCsrf = false, ...restOptions } = options;
+  const { method = 'GET', skipCsrf = false, suppressAuthError = false, ...restOptions } = options;
 
   // Ensure URL is relative to leverage the proxy
   let resolvedUrl = unref(url);
@@ -161,12 +162,14 @@ export async function useCustomFetch<T>(
       const authStore = useAuthStore();
       const toast = useAppToast();
       authStore.clearAuthData();
-      if (toast?.sessionExpired) {
-        toast.sessionExpired();
-      } else if (toast?.error) {
-        toast.error('Session expired. Please log in again.');
+      if (!suppressAuthError) {
+        if (toast?.sessionExpired) {
+          toast.sessionExpired();
+        } else if (toast?.error) {
+          toast.error('Session expired. Please log in again.');
+        }
+        navigateTo({ path: '/auth/login', query: { redirect: window.location.pathname } });
       }
-      navigateTo({ path: '/auth/login', query: { redirect: window.location.pathname } });
     }
 
     throw error;
