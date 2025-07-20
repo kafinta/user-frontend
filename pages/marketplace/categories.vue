@@ -50,14 +50,16 @@ const router = useRouter()
 
 // Simplified selection message
 const selectionMessage = computed(() => {
-  const selectedLocation = productFilters.selectedLocation
-
-  if (selectedLocation) {
-    return `Browse ${selectedLocation.name} categories`
+  const selectedLocation = productFilters.selectedLocation;
+  if (
+    selectedLocation &&
+    typeof selectedLocation.name === 'string' &&
+    selectedLocation.name.trim() !== ''
+  ) {
+    return `Browse ${selectedLocation.name} categories`;
   }
-
-  return 'Browse categories'
-})
+  return 'Browse categories';
+});
 
 async function selectCategory(id) {
   // Get the current location ID directly from the store
@@ -81,21 +83,22 @@ async function selectCategory(id) {
 
 const breadcrumbItems = computed(() => {
   const items = [];
-
-  // Add location to breadcrumb if selected
-  if (productFilters.selectedLocation) {
+  // Add location to breadcrumb if selected and has a valid name
+  if (
+    productFilters.selectedLocation &&
+    typeof productFilters.selectedLocation.name === 'string' &&
+    productFilters.selectedLocation.name.trim() !== ''
+  ) {
     items.push({
       label: productFilters.selectedLocation.name,
       route: '/marketplace/locations'
     });
   }
-
-  // Add current page (Categories)
+  // Always add Categories as the last (active) item
   items.push({
     label: 'Categories',
     active: true
   });
-
   return items;
 });
 

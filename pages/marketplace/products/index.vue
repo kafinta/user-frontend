@@ -3,7 +3,7 @@
     <div class="flex justify-between items-center flex-wrap gap-6">
       <div>
         <UiTypographyH2 v-if="search">Search results for <b>{{ $route.query.query }}</b></UiTypographyH2>
-        <UiTypographyH2 v-else>Browse {{ productFilters.selectedSubcategoryDetails?.name || 'Products' }}</UiTypographyH2>
+        <UiTypographyH2 v-else>Browse {{ headingName }}</UiTypographyH2>
         <UiBreadcrumbs :model="breadcrumbItems" />
       </div>
 
@@ -174,33 +174,66 @@ watch(
 );
 
 // Only redirect if there is truly no subcategory and no search (and not after user has selected one)
-watchEffect(() => {
-  if (!productFilters.selectedSubcategory && !route.query.query) {
-    router.replace('/marketplace/categories');
+// watchEffect(() => {
+//   if (!productFilters.selectedSubcategory && !route.query.query) {
+//     router.replace('/marketplace/categories');
+//   }
+// });
+
+const headingName = computed(() => {
+  if (search.value) {
+    return `Search results for ${route.query.query}`;
+  }
+  if (
+    productFilters.selectedSubcategoryDetails &&
+    typeof productFilters.selectedSubcategoryDetails.name === 'string' &&
+    productFilters.selectedSubcategoryDetails.name.trim() !== ''
+  ) {
+    return `Browse ${productFilters.selectedSubcategoryDetails.name}`;
   }
 });
 
 const breadcrumbItems = computed(() => {
   const items = [];
-  // Add category to breadcrumb if selected
-  if (productFilters.selectedCategory) {
-    items.push({
-      label: productFilters.selectedCategory.name,
-      route: '/marketplace/categories'
-    });
-  }
-  // Add location to breadcrumb if selected
-  if (productFilters.selectedLocation) {
+  // Add location to breadcrumb if selected and has a valid name
+  if (
+    productFilters.selectedLocation &&
+    typeof productFilters.selectedLocation.name === 'string' &&
+    productFilters.selectedLocation.name.trim() !== ''
+  ) {
     items.push({
       label: productFilters.selectedLocation.name,
       route: '/marketplace/locations'
     });
   }
-  // Add current page (Subcategories)
-  items.push({
-    label: productFilters.selectedSubcategoryDetails?.name,
-    active: true
-  });
+  // Add category to breadcrumb if selected and has a valid name
+  if (
+    productFilters.selectedCategory &&
+    typeof productFilters.selectedCategory.name === 'string' &&
+    productFilters.selectedCategory.name.trim() !== ''
+  ) {
+    items.push({
+      label: productFilters.selectedCategory.name,
+      route: '/marketplace/categories'
+    });
+  }
+  // Add subcategory if it exists and has a valid name
+  if (
+    productFilters.selectedSubcategoryDetails &&
+    typeof productFilters.selectedSubcategoryDetails.name === 'string' &&
+    productFilters.selectedSubcategoryDetails.name.trim() !== ''
+  ) {
+    items.push({
+      label: productFilters.selectedSubcategoryDetails.name,
+      active: true
+    });
+  } else {
+    // Always add Products as the last (active) item
+    items.push({
+      label: 'Products',
+      active: true
+    });
+  }
   return items;
 });
 // Pagination functions
