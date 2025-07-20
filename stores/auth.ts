@@ -160,6 +160,7 @@ export const useAuthStore = defineStore('auth', () => {
       // Always fetch the current user profile from the backend
       const response = await useCustomFetch<ApiResponse>('/api/user/profile', {
         method: 'GET',
+        suppressAuthError: true // Prevent session expired toast/redirect on app launch
       });
 
       if (response.status === 'success' && response.data?.user) {
