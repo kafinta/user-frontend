@@ -60,23 +60,31 @@ const router = useRouter()
 const breadcrumbItems = computed(() => {
   const items = [];
 
-  // Add category to breadcrumb if selected
-  if (productFilters.selectedCategory) {
-    items.push({
-      label: productFilters.selectedCategory.name,
-      route: '/marketplace/categories'
-    });
-  }
-
-  // Add location to breadcrumb if selected
-  if (productFilters.selectedLocation) {
+  // Add location to breadcrumb if selected and has a valid name
+  if (
+    productFilters.selectedLocation &&
+    typeof productFilters.selectedLocation.name === 'string' &&
+    productFilters.selectedLocation.name.trim() !== ''
+  ) {
     items.push({
       label: productFilters.selectedLocation.name,
       route: '/marketplace/locations'
     });
   }
 
-  // Add current page (Subcategories)
+  // Add category to breadcrumb if selected and has a valid name
+  if (
+    productFilters.selectedCategory &&
+    typeof productFilters.selectedCategory.name === 'string' &&
+    productFilters.selectedCategory.name.trim() !== ''
+  ) {
+    items.push({
+      label: productFilters.selectedCategory.name,
+      route: '/marketplace/categories'
+    });
+  }
+
+  // Always add Subcategories as the last (active) item
   items.push({
     label: 'Subcategories',
     active: true
@@ -87,18 +95,32 @@ const breadcrumbItems = computed(() => {
 
 // Add contextual message based on selected category and location
 const selectionMessage = computed(() => {
-  const selectedCategory = productFilters.selectedCategory
-  const selectedLocation = productFilters.selectedLocation
-
-  if (selectedCategory && selectedLocation) {
-    return `Browse ${selectedLocation.name} ${selectedCategory.name} `
-  } else if (selectedCategory) {
-    return `Browse ${selectedCategory.name} subcategories`
-  } else if (selectedLocation) {
-    return `Browse ${selectedLocation.name} subcategories`
+  const selectedCategory = productFilters.selectedCategory;
+  const selectedLocation = productFilters.selectedLocation;
+  if (
+    selectedCategory &&
+    typeof selectedCategory.name === 'string' &&
+    selectedCategory.name.trim() !== '' &&
+    selectedLocation &&
+    typeof selectedLocation.name === 'string' &&
+    selectedLocation.name.trim() !== ''
+  ) {
+    return `Browse ${selectedLocation.name} ${selectedCategory.name}`;
+  } else if (
+    selectedCategory &&
+    typeof selectedCategory.name === 'string' &&
+    selectedCategory.name.trim() !== ''
+  ) {
+    return `Browse ${selectedCategory.name} subcategories`;
+  } else if (
+    selectedLocation &&
+    typeof selectedLocation.name === 'string' &&
+    selectedLocation.name.trim() !== ''
+  ) {
+    return `Browse ${selectedLocation.name} subcategories`;
   }
-  return 'Browse subcategories'
-})
+  return 'Browse subcategories';
+});
 
 async function selectSubcategory(id) {
   // Get the current category and location IDs directly from the store

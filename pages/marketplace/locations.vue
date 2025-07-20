@@ -44,32 +44,36 @@ const router = useRouter()
 const breadcrumbItems = computed(() => {
   const items = [];
 
-  // Add category to breadcrumb if selected
-  if (productFilters.selectedCategory) {
+  // Add category to breadcrumb if selected and has a valid name
+  if (
+    productFilters.selectedCategory &&
+    typeof productFilters.selectedCategory.name === 'string' &&
+    productFilters.selectedCategory.name.trim() !== ''
+  ) {
     items.push({
       label: productFilters.selectedCategory.name,
       route: '/marketplace/categories'
     });
   }
-
-  // Add current page (Locations)
+  // Always add Locations as the last (active) item
   items.push({
     label: 'Locations',
     active: true
   });
-
   return items;
 });
 // Simplified selection message
 const selectionMessage = computed(() => {
-  const selectedCategory = productFilters.selectedCategory
-
-  if (selectedCategory) {
-    return `Browse rooms for ${selectedCategory.name}`
+  const selectedCategory = productFilters.selectedCategory;
+  if (
+    selectedCategory &&
+    typeof selectedCategory.name === 'string' &&
+    selectedCategory.name.trim() !== ''
+  ) {
+    return `Browse locations for ${selectedCategory.name}`;
   }
-
-  return 'Browse rooms'
-})
+  return 'Browse locations';
+});
 
 async function selectLocation(id) {
   // Get the current category ID directly from the store
