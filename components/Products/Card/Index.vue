@@ -38,18 +38,6 @@ const router = useRouter();
 const route = useRoute();
 const productFilters = useProductFilters();
 
-function shouldRedirect() {
-  // No subcategory selected and no search query
-  return !productFilters.selectedSubcategoryDetails && !route.query.query;
-}
-
-// Redirect on mount and whenever dependencies change
-watchEffect(() => {
-  if (shouldRedirect()) {
-    router.replace('/marketplace/categories');
-  }
-});
-
 const props = defineProps({
     slug: {
         type: String,
