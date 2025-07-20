@@ -13,6 +13,7 @@ export interface Location {
   id: number
   name: string
   image_path?: string
+  slug?: string // Add slug for URL/query
 }
 
 export interface AttributeValue {
@@ -34,6 +35,7 @@ export interface Subcategory {
   location_id?: number
   image_path?: string | null
   attributes?: Attribute[]
+  slug?: string // Add slug for URL/query
 }
 
 export const useFiltersStore = defineStore('filters', () => {
