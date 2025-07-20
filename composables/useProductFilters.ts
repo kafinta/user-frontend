@@ -10,23 +10,13 @@ export function useProductFilters() {
   const filtersStore = useFiltersStore()
   const { selectedSubcategory } = storeToRefs(filtersStore)
 
-  // Initialize from URL query parameters
-  const selectedCategoryId = ref<number | null>(
-    route.query.category ? Number(route.query.category) : null
-  )
-
-  const selectedLocationId = ref<number | null>(
-    route.query.location ? Number(route.query.location) : null
-  )
-
-  const selectedSubcategoryId = ref<number | null>(
-    route.query.subcategory ? Number(route.query.subcategory) : null
-  )
-
   // Selected objects (for display purposes)
-  const selectedCategory = ref(null); // { id, name, slug }
-  const selectedSubcategory = ref(null); // { id, name, slug }
-  const selectedLocation = ref(null); // { id, name, slug }
+  const selectedCategory = ref<any>(null); // { id, name, slug }
+  // selectedSubcategory comes from storeToRefs(filtersStore)
+  const selectedLocation = ref<any>(null); // { id, name, slug }
+  const selectedSubcategoryId = ref<number | null>(null);
+  const selectedCategoryId = ref<number | null>(null);
+  const selectedLocationId = ref<number | null>(null);
 
   // Helper computed properties for API calls
   const categoryId = computed(() => selectedCategory.value?.id);
@@ -40,7 +30,7 @@ export function useProductFilters() {
 
   // Check if both selections are made
   const canFetchSubcategories = computed(() =>
-    selectedCategoryId.value !== null && selectedLocationId.value !== null
+    !!categorySlug.value && !!locationSlug.value
   )
 
   // Get the subcategories directly as a computed property
@@ -52,105 +42,112 @@ export function useProductFilters() {
   // Get loading state directly as a computed property
   const isLoading = computed(() => filtersStore.isLoading)
 
-  // Update URL when selections change
-  watch([selectedCategoryId, selectedLocationId], ([catId, locId]) => {
-    updateQueryParams(catId, locId, selectedSubcategoryId.value)
+  // Update URL when selections change (use slugs)
+  function updateQueryParams(catSlug: string | null, locSlug: string | null, subSlug: string | null = null) {
+    const query: Record<string, string> = {}
+    if (catSlug) query.category = catSlug
+    if (locSlug) query.location = locSlug
+    if (subSlug) query.subcategory = subSlug
+    // Only update if there is at least one filter
+    if (Object.keys(query).length > 0 && JSON.stringify(query) !== JSON.stringify(route.query)) {
+      router.replace({ query })
+    }
+  }
 
-    if (catId && locId) {
+  // Watch for changes in selected objects and update the URL
+  watch([
+    () => selectedCategory.value?.slug,
+    () => selectedLocation.value?.slug,
+    () => selectedSubcategory.value?.slug
+  ], ([catSlug, locSlug, subSlug]) => {
+    updateQueryParams(catSlug, locSlug, subSlug)
+    if (catSlug && locSlug) {
       fetchSubcategories()
     }
   })
 
-  // Watch for URL changes from outside
+  // Watch for URL changes from outside (use slugs)
   watch(() => route.query, (newQuery) => {
-    const catId = newQuery.category ? Number(newQuery.category) : null
-    const locId = newQuery.location ? Number(newQuery.location) : null
-    const subId = newQuery.subcategory ? Number(newQuery.subcategory) : null
+    const catSlug = typeof newQuery.category === 'string' ? newQuery.category : undefined
+    const locSlug = typeof newQuery.location === 'string' ? newQuery.location : undefined
+    const subSlug = typeof newQuery.subcategory === 'string' ? newQuery.subcategory : undefined
 
-    // Only update if different to avoid loops
-    if (catId !== selectedCategoryId.value) {
-      selectedCategoryId.value = catId
+    // Look up objects by slug from the store
+    if (catSlug !== selectedCategory.value?.slug) {
+      const catObj = filtersStore.categories.find(c => c.slug === catSlug)
+      selectedCategory.value = catObj || null
+      selectedCategoryId.value = catObj?.id || null
     }
-
-    if (locId !== selectedLocationId.value) {
-      selectedLocationId.value = locId
+    if (locSlug !== selectedLocation.value?.slug) {
+      const locObj = filtersStore.locations.find(l => l.slug === locSlug)
+      selectedLocation.value = locObj || null
+      selectedLocationId.value = locObj?.id || null
     }
-
-    if (subId !== selectedSubcategoryId.value) {
-      selectedSubcategoryId.value = subId
-
-      // If we have a subcategory ID, fetch its details
-      if (subId) {
-        fetchSubcategoryDetails(subId)
+    if (subSlug !== selectedSubcategory.value?.slug) {
+      const subObj = filtersStore.subcategories.find(s => s.slug === subSlug)
+      selectedSubcategory.value = subObj || null
+      selectedSubcategoryId.value = subObj?.id || null
+      // If we have a subcategory slug, fetch its details
+      if (subObj) {
+        fetchSubcategoryDetails(subObj.id)
       } else {
-        // Clear selected subcategory if no ID in URL
         selectedSubcategory.value = null;
+        selectedSubcategoryId.value = null;
       }
     }
   }, { deep: true })
 
-  // Initialize on mount
+  // Initialize on mount (use slugs from query)
   onMounted(async () => {
     // Ensure categories and locations are loaded
     if (filtersStore.categories.length === 0) {
       await filtersStore.fetchCategories()
     }
-
     if (filtersStore.locations.length === 0) {
       await filtersStore.fetchLocations()
     }
-
     // Fetch subcategories if both params are present
-    if (selectedCategoryId.value && selectedLocationId.value) {
+    if (categorySlug.value && locationSlug.value) {
       await fetchSubcategories()
     }
-
-    // If we have a subcategory ID in the URL, fetch its details
-    if (selectedSubcategoryId.value) {
-      await fetchSubcategoryDetails(selectedSubcategoryId.value)
+    // If we have a subcategory slug in the URL, fetch its details
+    if (subcategorySlug.value) {
+      const subObj = filtersStore.subcategories.find(s => s.slug === subcategorySlug.value)
+      if (subObj) await fetchSubcategoryDetails(subObj.id)
     }
   })
 
-  // Update URL with current selections
-  function updateQueryParams(catId: number | null, locId: number | null, subId: number | null = null) {
-    const query: Record<string, string> = {}
-
-    if (catId) query.category = catId.toString()
-    if (locId) query.location = locId.toString()
-    if (subId) query.subcategory = subId.toString()
-
-    // Only update if different from current query
-    if (JSON.stringify(query) !== JSON.stringify(route.query)) {
-      router.replace({ query })
-    }
-  }
-
-  function selectCategory(category) {
+  function selectCategory(category: any) {
     selectedCategory.value = category;
+    selectedCategoryId.value = category?.id || null;
   }
-  function selectSubcategory(subcategory) {
+  function selectSubcategory(subcategory: any) {
     selectedSubcategory.value = subcategory;
+    selectedSubcategoryId.value = subcategory?.id || null;
   }
-  function selectLocation(location) {
+  function selectLocation(location: any) {
     selectedLocation.value = location;
+    selectedLocationId.value = location?.id || null;
   }
 
   // Clear selections
   function clearSelections() {
+    selectedCategory.value = null
+    selectedLocation.value = null
+    selectedSubcategory.value = null
     selectedCategoryId.value = null
     selectedLocationId.value = null
     selectedSubcategoryId.value = null
-    selectedSubcategory.value = null
     updateQueryParams(null, null, null)
   }
 
   // Fetch subcategories
   async function fetchSubcategories() {
     if (!canFetchSubcategories.value) return
-
+    // Use IDs for API calls
     await filtersStore.fetchSubcategories(
-      selectedCategoryId.value as number,
-      selectedLocationId.value as number
+      selectedCategory.value?.id,
+      selectedLocation.value?.id
     )
   }
 
@@ -159,8 +156,8 @@ export function useProductFilters() {
     await filtersStore.fetchSubcategoryDetails(subcategoryId)
   }
 
-  // Select a subcategory
-  async function selectSubcategory(id: number) {
+  // Select a subcategory by id (async)
+  async function selectSubcategoryById(id: number) {
     selectedSubcategoryId.value = id
     return await fetchSubcategoryDetails(id)
   }
@@ -168,7 +165,7 @@ export function useProductFilters() {
   return {
     // States
     selectedCategory,
-    selectedSubcategory,
+    selectedSubcategory, // This is now only from the store
     selectedLocation,
     selectedCategoryId,
     selectedLocationId,
@@ -190,6 +187,7 @@ export function useProductFilters() {
     selectCategory,
     selectLocation,
     selectSubcategory,
+    selectSubcategoryById,
     fetchSubcategories,
     fetchSubcategoryDetails,
     clearSelections
