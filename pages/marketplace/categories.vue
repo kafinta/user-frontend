@@ -39,13 +39,13 @@ import { computed } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useProductFilters } from '@/composables/useProductFilters'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const filtersStore = useFiltersStore()
 const { categories, isLoading, error } = storeToRefs(filtersStore)
 const productFilters = useProductFilters()
 const router = useRouter()
-
+const route = useRoute()
 
 
 // Simplified selection message
@@ -65,8 +65,8 @@ async function selectCategory(category) {
   // Get the current location slug directly from the store
   const locationSlug = productFilters.selectedLocation?.slug;
 
-  // Create the query parameters using slugs
-  const query = { category: category.slug };
+  // Merge with existing query params
+  const query = { ...route.query, category: category.slug };
   if (locationSlug) {
     query.location = locationSlug;
   }
