@@ -21,7 +21,7 @@
           </div>
         </li>
         <li v-else v-for="category in categories" :key="category.id">
-          <UiCards @clicked="selectCategory(category.id)" :title="category.name" :src="category.image_path" class="w-full"/>
+          <UiCards @clicked="selectCategory(category)" :title="category.name" :src="category.image_path" class="w-full"/>
         </li>
       </ul>
     </Container>
@@ -61,24 +61,24 @@ const selectionMessage = computed(() => {
   return 'Browse categories';
 });
 
-async function selectCategory(id) {
-  // Get the current location ID directly from the store
-  const locationId = productFilters.selectedLocationId?.value
+async function selectCategory(category) {
+  // Get the current location slug directly from the store
+  const locationSlug = productFilters.selectedLocation?.slug;
 
-  // Create the query parameters
-  const query = { category: id }
-  if (locationId) {
-    query.location = locationId
+  // Create the query parameters using slugs
+  const query = { category: category.slug };
+  if (locationSlug) {
+    query.location = locationSlug;
   }
 
   // Navigate first
   await router.push({
-    path: locationId ? '/marketplace/subcategories' : '/marketplace/locations',
+    path: locationSlug ? '/marketplace/subcategories' : '/marketplace/locations',
     query
-  })
+  });
 
   // Update the state after navigation
-  productFilters.selectCategory(id)
+  productFilters.selectCategory(category);
 }
 
 const breadcrumbItems = computed(() => {

@@ -16,7 +16,7 @@
           <UiTypographyP>Error loading locations... Try again later.</UiTypographyP>
         </li>
         <li v-else v-for="location in locations" :key="location.id">
-          <UiCards @clicked="selectLocation(location.id)" :title="location.name" :src="location.image_path" class="w-full"/>
+          <UiCards @clicked="selectLocation(location)" :title="location.name" :src="location.image_path" class="w-full"/>
         </li>
       </ul>
     </Container>
@@ -75,24 +75,24 @@ const selectionMessage = computed(() => {
   return 'Browse locations';
 });
 
-async function selectLocation(id) {
-  // Get the current category ID directly from the store
-  const categoryId = productFilters.selectedCategoryId?.value
+async function selectLocation(location) {
+  // Get the current category slug directly from the store
+  const categorySlug = productFilters.selectedCategory?.slug;
 
-  // Create the query parameters
-  const query = { location: id }
-  if (categoryId) {
-    query.category = categoryId
+  // Create the query parameters using slugs
+  const query = { location: location.slug };
+  if (categorySlug) {
+    query.category = categorySlug;
   }
 
   // Navigate first
   await router.push({
-    path: categoryId ? '/marketplace/subcategories' : '/marketplace/categories',
+    path: categorySlug ? '/marketplace/subcategories' : '/marketplace/categories',
     query
-  })
+  });
 
   // Update the state after navigation
-  productFilters.selectLocation(id)
+  productFilters.selectLocation(location);
 }
 
 // No onMounted needed - useProductFilters composable handles initialization
