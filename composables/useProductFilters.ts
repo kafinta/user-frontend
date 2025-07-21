@@ -44,13 +44,20 @@ export function useProductFilters() {
 
   // Update URL when selections change (use slugs)
   function updateQueryParams(catSlug: string | null, locSlug: string | null, subSlug: string | null = null) {
-    const query: Record<string, string> = {}
-    if (catSlug) query.category = catSlug
-    if (locSlug) query.location = locSlug
-    if (subSlug) query.subcategory = subSlug
-    // Only update if there is at least one filter
-    if (Object.keys(query).length > 0 && JSON.stringify(query) !== JSON.stringify(route.query)) {
-      router.replace({ query })
+    // Start with the current query
+    const newQuery = { ...route.query };
+    // Update or remove category
+    if (catSlug) newQuery.category = catSlug;
+    else delete newQuery.category;
+    // Update or remove location
+    if (locSlug) newQuery.location = locSlug;
+    else delete newQuery.location;
+    // Update or remove subcategory
+    if (subSlug) newQuery.subcategory = subSlug;
+    else delete newQuery.subcategory;
+    // Only update if different from current query
+    if (JSON.stringify(newQuery) !== JSON.stringify(route.query)) {
+      router.replace({ query: newQuery });
     }
   }
 
@@ -117,17 +124,62 @@ export function useProductFilters() {
     }
   })
 
-  function selectCategory(category: any) {
-    selectedCategory.value = category;
-    selectedCategoryId.value = category?.id || null;
+  function selectCategory(categoryOrSlugOrId: any) {
+    let category = null;
+    if (typeof categoryOrSlugOrId === 'object') {
+      category = categoryOrSlugOrId;
+    } else if (typeof categoryOrSlugOrId === 'string') {
+      category = filtersStore.categories.find(c => c.slug === categoryOrSlugOrId) ||
+                 filtersStore.categories.find(c => c.id === Number(categoryOrSlugOrId));
+    } else if (typeof categoryOrSlugOrId === 'number') {
+      category = filtersStore.categories.find(c => c.id === categoryOrSlugOrId);
+    }
+    if (category) {
+      if (selectedCategory.value?.id !== category.id) {
+        selectedCategory.value = category;
+        selectedCategoryId.value = category.id;
+        // Only reset subcategory if category actually changed
+        selectedSubcategory.value = null;
+        selectedSubcategoryId.value = null;
+      }
+    }
   }
-  function selectSubcategory(subcategory: any) {
-    selectedSubcategory.value = subcategory;
-    selectedSubcategoryId.value = subcategory?.id || null;
+
+  function selectLocation(locationOrSlugOrId: any) {
+    let location = null;
+    if (typeof locationOrSlugOrId === 'object') {
+      location = locationOrSlugOrId;
+    } else if (typeof locationOrSlugOrId === 'string') {
+      location = filtersStore.locations.find(l => l.slug === locationOrSlugOrId) ||
+                 filtersStore.locations.find(l => l.id === Number(locationOrSlugOrId));
+    } else if (typeof locationOrSlugOrId === 'number') {
+      location = filtersStore.locations.find(l => l.id === locationOrSlugOrId);
+    }
+    if (location) {
+      if (selectedLocation.value?.id !== location.id) {
+        selectedLocation.value = location;
+        selectedLocationId.value = location.id;
+        // Only reset subcategory if location actually changed
+        selectedSubcategory.value = null;
+        selectedSubcategoryId.value = null;
+      }
+    }
   }
-  function selectLocation(location: any) {
-    selectedLocation.value = location;
-    selectedLocationId.value = location?.id || null;
+
+  function selectSubcategory(subcategoryOrSlugOrId: any) {
+    let subcategory = null;
+    if (typeof subcategoryOrSlugOrId === 'object') {
+      subcategory = subcategoryOrSlugOrId;
+    } else if (typeof subcategoryOrSlugOrId === 'string') {
+      subcategory = filtersStore.subcategories.find(s => s.slug === subcategoryOrSlugOrId) ||
+                    filtersStore.subcategories.find(s => s.id === Number(subcategoryOrSlugOrId));
+    } else if (typeof subcategoryOrSlugOrId === 'number') {
+      subcategory = filtersStore.subcategories.find(s => s.id === subcategoryOrSlugOrId);
+    }
+    if (subcategory) {
+      selectedSubcategory.value = subcategory;
+      selectedSubcategoryId.value = subcategory.id;
+    }
   }
 
   // Clear selections
