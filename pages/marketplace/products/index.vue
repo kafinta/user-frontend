@@ -114,14 +114,14 @@ const fetchProducts = async () => {
   try {
     const params = new URLSearchParams();
     params.append('per_page', 30);
-    if (productFilters.selectedSubcategory?.id) {
-      params.append('subcategory_id', productFilters.selectedSubcategory.id);
+    if (productFilters.selectedSubcategory?.slug) {
+      params.append('subcategory', productFilters.selectedSubcategory.slug);
     }
-    if (productFilters.selectedCategory?.id) {
-      params.append('category_id', productFilters.selectedCategory.id);
+    if (productFilters.selectedCategory?.slug) {
+      params.append('category', productFilters.selectedCategory.slug);
     }
-    if (productFilters.selectedLocation?.id) {
-      params.append('location_id', productFilters.selectedLocation.id);
+    if (productFilters.selectedLocation?.slug) {
+      params.append('location', productFilters.selectedLocation.slug);
     }
     if (route.query.query) {
       params.append('search', route.query.query);
@@ -147,38 +147,14 @@ const fetchProducts = async () => {
 
 // Refetch products when subcategory, search input, or attribute filters change
 watch([
-  () => productFilters.selectedSubcategory?.id,
-  () => productFilters.selectedCategory?.id,
-  () => productFilters.selectedLocation?.id,
+  () => productFilters.selectedSubcategory?.slug,
+  () => productFilters.selectedCategory?.slug,
+  () => productFilters.selectedLocation?.slug,
   () => route.query.query,
   selectedAttributes
 ], fetchProducts, { immediate: true });
 
-onMounted(() => {
-  const subcategoryId = route.query.subcategory_id;
-  if (subcategoryId && (!productFilters.selectedSubcategory || productFilters.selectedSubcategory.id != subcategoryId)) {
-    // Find the full subcategory object from the filters store
-    const subcat = filtersStore.subcategories.find(s => s.id === Number(subcategoryId));
-    if (subcat) productFilters.selectSubcategory(subcat);
-  }
-});
-
-watch(
-  () => route.query.subcategory_id,
-  (newId) => {
-    if (newId && (!productFilters.selectedSubcategory || productFilters.selectedSubcategory.id != newId)) {
-      const subcat = filtersStore.subcategories.find(s => s.id === Number(newId));
-      if (subcat) productFilters.selectSubcategory(subcat);
-    }
-  }
-);
-
-// Only redirect if there is truly no subcategory and no search (and not after user has selected one)
-// watchEffect(() => {
-//   if (!productFilters.selectedSubcategory && !route.query.query) {
-//     router.replace('/marketplace/categories');
-//   }
-// });
+// No need to handle subcategory_id, category_id, or location_id in query params anymore
 
 const headingName = computed(() => {
   if (search.value) {

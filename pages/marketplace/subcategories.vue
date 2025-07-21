@@ -31,7 +31,7 @@
           </div>
         </li>
         <li v-else v-for="subcategory in subcategories" :key="subcategory.id">
-          <UiCards @clicked="selectSubcategory(subcategory.id)" :title="subcategory.name" :src="subcategory.image_path" class="w-full"/>
+          <UiCards @clicked="selectSubcategory(subcategory)" :title="subcategory.name" :src="subcategory.image_path" class="w-full"/>
         </li>
       </ul>
     </Container>
@@ -122,27 +122,26 @@ const selectionMessage = computed(() => {
   return 'Browse subcategories';
 });
 
-async function selectSubcategory(id) {
-  // Get the current category and location IDs directly from the store
-  const categoryId = productFilters.selectedCategoryId.value
-  const locationId = productFilters.selectedLocationId.value
+async function selectSubcategory(subcategory) {
+  // Get the current category and location slugs directly from the store
+  const categorySlug = productFilters.selectedCategory?.slug;
+  const locationSlug = productFilters.selectedLocation?.slug;
 
-  // Create the query parameters
+  // Create the query parameters using slugs
   const query = {
-    subcategory: id
-  }
-
-  if (categoryId) query.category = categoryId
-  if (locationId) query.location = locationId
+    subcategory: subcategory.slug
+  };
+  if (categorySlug) query.category = categorySlug;
+  if (locationSlug) query.location = locationSlug;
 
   // Navigate first
   await router.push({
     path: '/marketplace/products',
     query
-  })
+  });
 
   // Update the state after navigation
-  productFilters.selectSubcategory(id)
+  productFilters.selectSubcategory(subcategory);
 }
 
 // No onMounted needed - useProductFilters composable handles initialization
