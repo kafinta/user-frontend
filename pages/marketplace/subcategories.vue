@@ -7,8 +7,8 @@
           <UiBreadcrumbs :model="breadcrumbItems" />
         </div>
         <div class="flex gap-2 lg:flex-col justify-stretch items-end">
-          <UiButtonsPrimary :url="{name: 'marketplace-categories'}">Change Category</UiButtonsPrimary>
-          <UiButtonsPrimary :url="{name: 'marketplace-locations'}">Change Room</UiButtonsPrimary>
+          <UiButtonsPrimary :url="{ path: '/marketplace/categories', query: { ...route.query } }">Change Category</UiButtonsPrimary>
+          <UiButtonsPrimary :url="{ path: '/marketplace/locations', query: { ...route.query } }">Change Room</UiButtonsPrimary>
         </div>
       </div>
       <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-16">
@@ -25,8 +25,8 @@
               We couldn't find any items that match your selection.
             </UiTypographyP>
             <div class="mt-4 flex gap-4 items-center justify-center">
-              <UiButtonsPrimary :url="{name: 'marketplace-categories'}">Change Category</UiButtonsPrimary>
-              <UiButtonsPrimary :url="{name: 'marketplace-locations'}">Change Room</UiButtonsPrimary>
+              <UiButtonsPrimary :url="{ name: 'marketplace-categories' }">Change Category</UiButtonsPrimary>
+              <UiButtonsPrimary :url="{ name: 'marketplace-locations' }">Change Room</UiButtonsPrimary>
             </div>
           </div>
         </li>

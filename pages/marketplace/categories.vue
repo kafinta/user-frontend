@@ -6,7 +6,7 @@
           <UiTypographyH2>{{ selectionMessage }}</UiTypographyH2>
           <UiBreadcrumbs :model="breadcrumbItems" />
         </div>
-        <UiButtonsPrimary v-if="productFilters.selectedLocation" :url="{name: 'marketplace-locations'}">Change Room</UiButtonsPrimary>
+        <UiButtonsPrimary :url="{ path: '/marketplace/locations', query: { ...route.query } }">Change Room</UiButtonsPrimary>
       </div>
       <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-12">
         <li v-if="isLoading" v-for="n in 12" :key="n">
