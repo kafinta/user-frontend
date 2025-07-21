@@ -35,7 +35,7 @@ useHead({
   ]
 });
 
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useProductFilters } from '@/composables/useProductFilters'
@@ -62,23 +62,24 @@ const selectionMessage = computed(() => {
 });
 
 async function selectCategory(category) {
-  // Get the current location slug directly from the store
-  const locationSlug = productFilters.selectedLocation?.slug;
-
-  // Merge with existing query params
-  const query = { ...route.query, category: category.slug };
-  if (locationSlug) {
-    query.location = locationSlug;
-  }
-
-  // Navigate first
-  await router.push({
-    path: locationSlug ? '/marketplace/subcategories' : '/marketplace/locations',
-    query
-  });
-
-  // Update the state after navigation
   productFilters.selectCategory(category);
+
+  const locationSlug = productFilters.selectedLocation?.slug || route.query.location;
+  const categorySlug = category.slug;
+
+  if (locationSlug && categorySlug) {
+    // Both are set, go to subcategories
+    await router.push({
+      path: '/marketplace/subcategories',
+      query: { ...route.query, category: categorySlug, location: locationSlug }
+    });
+  } else {
+    // Only category is set, stay here and update query
+    await router.push({
+      path: '/marketplace/categories',
+      query: { ...route.query, category: categorySlug }
+    });
+  }
 }
 
 const breadcrumbItems = computed(() => {

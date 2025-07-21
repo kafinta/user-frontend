@@ -30,7 +30,7 @@ useHead({
   ]
 });
 
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useProductFilters } from '@/composables/useProductFilters'
@@ -77,23 +77,24 @@ const selectionMessage = computed(() => {
 });
 
 async function selectLocation(location) {
-  // Get the current category slug directly from the store
-  const categorySlug = productFilters.selectedCategory?.slug;
-
-  // Merge with existing query params
-  const query = { ...route.query, location: location.slug };
-  if (categorySlug) {
-    query.category = categorySlug;
-  }
-
-  // Navigate first
-  await router.push({
-    path: categorySlug ? '/marketplace/subcategories' : '/marketplace/categories',
-    query
-  });
-
-  // Update the state after navigation
   productFilters.selectLocation(location);
+
+  const categorySlug = productFilters.selectedCategory?.slug || route.query.category;
+  const locationSlug = location.slug;
+
+  if (categorySlug && locationSlug) {
+    // Both are set, go to subcategories
+    await router.push({
+      path: '/marketplace/subcategories',
+      query: { ...route.query, category: categorySlug, location: locationSlug }
+    });
+  } else {
+    // Only location is set, stay here and update query
+    await router.push({
+      path: '/marketplace/locations',
+      query: { ...route.query, location: locationSlug }
+    });
+  }
 }
 
 // No onMounted needed - useProductFilters composable handles initialization
