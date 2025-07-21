@@ -34,12 +34,13 @@ import { computed } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useProductFilters } from '@/composables/useProductFilters'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const filtersStore = useFiltersStore()
 const { locations, isLoading, error } = storeToRefs(filtersStore)
 const productFilters = useProductFilters()
 const router = useRouter()
+const route = useRoute()
 
 const breadcrumbItems = computed(() => {
   const items = [];
@@ -79,8 +80,8 @@ async function selectLocation(location) {
   // Get the current category slug directly from the store
   const categorySlug = productFilters.selectedCategory?.slug;
 
-  // Create the query parameters using slugs
-  const query = { location: location.slug };
+  // Merge with existing query params
+  const query = { ...route.query, location: location.slug };
   if (categorySlug) {
     query.category = categorySlug;
   }

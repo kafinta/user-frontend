@@ -49,12 +49,13 @@ import { computed } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useProductFilters } from '@/composables/useProductFilters'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const filtersStore = useFiltersStore()
 const { subcategories, isLoading, error } = storeToRefs(filtersStore)
 const productFilters = useProductFilters()
 const router = useRouter()
+const route = useRoute()
 
 // Define breadcrumb items
 const breadcrumbItems = computed(() => {
@@ -127,10 +128,8 @@ async function selectSubcategory(subcategory) {
   const categorySlug = productFilters.selectedCategory?.slug;
   const locationSlug = productFilters.selectedLocation?.slug;
 
-  // Create the query parameters using slugs
-  const query = {
-    subcategory: subcategory.slug
-  };
+  // Merge with existing query params
+  const query = { ...route.query, subcategory: subcategory.slug };
   if (categorySlug) query.category = categorySlug;
   if (locationSlug) query.location = locationSlug;
 
