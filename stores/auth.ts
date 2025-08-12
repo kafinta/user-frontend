@@ -392,6 +392,35 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  /**
+   * Validate the current session by fetching the user profile.
+   * Updates the store and returns the user if authenticated, otherwise throws.
+   */
+  async function validateSession() {
+    try {
+      const response = await useCustomFetch<ApiResponse>('/api/user/profile', {
+        method: 'GET',
+        suppressAuthError: true
+      });
+      if (response.status === 'success' && response.data?.user) {
+        setUser(response.data.user);
+        setVerified(!!response.data.user.email_verified_at);
+        if (response.data.roles) {
+          setRoles(response.data.roles);
+        } else if (response.data.user.roles) {
+          setRoles(response.data.user.roles);
+        }
+        return response.data.user;
+      } else {
+        clearAuthData();
+        throw new Error('Not authenticated');
+      }
+    } catch (error) {
+      clearAuthData();
+      throw error;
+    }
+  }
+
   return {
     // Essential state for UI
     user,
@@ -411,6 +440,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     // Core authentication actions
     initialize,
+    validateSession,
 
     // Email verification actions (token-based methods are reusable)
     verifyEmailWithToken,
