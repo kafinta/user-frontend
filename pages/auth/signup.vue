@@ -14,21 +14,21 @@
           type="email"
           v-model:inputValue="email"
           class="w-full"
-          :error="Array.isArray(errors.email) ? errors.email.join(' ') : (typeof errors.email === 'string' ? errors.email : '')"
+          :error="errors.email ? (Array.isArray(errors.email) ? errors.email.join(' ') : (typeof errors.email === 'string' ? errors.email : '')) : undefined"
         />
         <FormInput
           label="Username"
           type="text"
           v-model:inputValue="username"
           class="w-full"
-          :error="Array.isArray(errors.username) ? errors.username.join(' ') : (typeof errors.username === 'string' ? errors.username : '')"
+          :error="errors.username ? (Array.isArray(errors.username) ? errors.username.join(' ') : (typeof errors.username === 'string' ? errors.username : '')) : undefined"
         />
         <FormInput
           label="Password"
           type="password"
           v-model:inputValue="password"
           class="w-full"
-          :error="Array.isArray(errors.password) ? errors.password.join(' ') : (typeof errors.password === 'string' ? errors.password : '')"
+          :error="errors.password ? (Array.isArray(errors.password) ? errors.password.join(' ') : (typeof errors.password === 'string' ? errors.password : '')) : undefined"
         />
 
         <FormButton :loading="buttonLoading">Sign Up</FormButton>

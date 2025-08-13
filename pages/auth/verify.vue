@@ -99,14 +99,14 @@
               label="New Email"
               type="email"
               v-model:inputValue="newEmail"
-              :error="changeEmailErrors.email"
+              :error="changeEmailErrors.email || undefined"
               class="w-full"
             />
             <FormInput
               label="Password"
               type="password"
               v-model:inputValue="password"
-              :error="changeEmailErrors.password"
+              :error="changeEmailErrors.password || undefined"
               class="w-full"
             />
             <FormButton :loading="isLoading">Update Email</FormButton>

@@ -7,8 +7,20 @@
         <UiTypographyP class="text-sm text-secondary text-center">Enter your details to resume your session.</UiTypographyP>
       </div>
       <form @submit.prevent="handleSignin()" class="grid gap-4">
-        <FormInput label="Email" type="email" v-model:inputValue="email" class="w-full" />
-        <FormInput label="Password" type="password" v-model:inputValue="password" class="w-full" />
+        <FormInput
+          label="Email"
+          type="email"
+          v-model:inputValue="email"
+          class="w-full"
+          :error="errors.email ? (Array.isArray(errors.email) ? errors.email.join(' ') : (typeof errors.email === 'string' ? errors.email : '')) : undefined"
+        />
+        <FormInput
+          label="Password"
+          type="password"
+          v-model:inputValue="password"
+          class="w-full"
+          :error="errors.password ? (Array.isArray(errors.password) ? errors.password.join(' ') : (typeof errors.password === 'string' ? errors.password : '')) : undefined"
+        />
         <div class="flex justify-between items-center mb-5">
           <nuxt-link to="/auth/forgot" class="text-sm text-secondary hover:text-primary duration-300 ease-in-out">Forgot password?</nuxt-link>
           <FormCheckbox
@@ -65,6 +77,7 @@ const redirectPath = computed(() => {
   return route.query.redirect ? String(route.query.redirect) : null;
 });
 
+const errors = ref({});
 const email = ref('');
 const password = ref('');
 const remember_me = ref(true); // Default to true for now
@@ -75,8 +88,19 @@ const authApi = useAuthApi();
 async function handleSignin() {
   try {
     buttonLoading.value = true;
+    errors.value = {};
 
-    if (!email.value || !password.value) {
+    let hasError = false;
+    if (!email.value) {
+      errors.value.email = 'Email is required.';
+      hasError = true;
+    }
+    if (!password.value) {
+      errors.value.password = 'Password is required.';
+      hasError = true;
+    }
+
+    if (hasError) {
       toast.error('Please enter your email and password');
       return;
     }
@@ -104,10 +128,12 @@ async function handleSignin() {
         await auth.navigateToDashboard(redirectPath.value || undefined);
       }
     } else {
+      errors.value = response.errors || {};
       toast.error(response.message || 'Login failed');
     }
   } catch (err) {
     console.error('Login error:', err);
+    errors.value = err?.data?.errors || {};
     toast.error('An unexpected error occurred');
   } finally {
     buttonLoading.value = false;

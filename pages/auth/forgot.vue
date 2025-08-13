@@ -8,7 +8,13 @@
         <UiTypographyP class="text-sm text-secondary text-center">Enter your email to receive a verification code</UiTypographyP>
 
         <form v-if="!codeSent" @submit.prevent="requestCode()" class="grid gap-4 mt-8">
-          <FormInput label="Email" type="email" v-model:inputValue="email" class="w-full" />
+          <FormInput
+            label="Email"
+            type="email"
+            v-model:inputValue="email"
+            class="w-full"
+            :error="emailError || undefined"
+          />
           <FormButton :loading="loadingState">Send Reset Code</FormButton>
           <button type="button" class="text-sm text-primary hover:underline mt-2" @click="codeSent = true">Have a code already?</button>
         </form>
@@ -33,9 +39,27 @@
         <p class="text-sm text-secondary mb-8 text-center">Choose a new password to use with your account.</p>
 
         <form @submit.prevent="updatePassword()" class="grid gap-4 mt-8">
-          <FormInput label="New password" type="password" v-model:inputValue="new_password" placeholder="Enter your new password" />
-          <FormInput label="New password" type="password" v-model:inputValue="new_password" placeholder="Enter your new password" />
-          <FormInput label="Confirm password" type="password" v-model:inputValue="confirm_password" placeholder="Re-enter your new password" :error="confirmPasswordError" />
+          <FormInput
+            label="New password"
+            type="password"
+            v-model:inputValue="new_password"
+            placeholder="Enter your new password"
+            :error="newPasswordError || undefined"
+          />
+          <FormInput
+            label="New password"
+            type="password"
+            v-model:inputValue="new_password"
+            placeholder="Enter your new password"
+            :error="newPasswordError || undefined"
+          />
+          <FormInput
+            label="Confirm password"
+            type="password"
+            v-model:inputValue="confirm_password"
+            placeholder="Re-enter your new password"
+            :error="confirmPasswordError || undefined"
+          />
           <FormButton :loading="loadingStatePassword">Update Password</FormButton>
         </form>
       </div>
@@ -72,7 +96,9 @@ const loadingStatePassword = ref(false);
 const new_password = ref('');
 const confirm_password = ref('');
 const confirmPasswordError = ref('');
+const newPasswordError = ref('');
 const email = ref('');
+const emailError = ref('');
 const codeError = ref('');
 const token = ref('');
 
@@ -93,8 +119,10 @@ watch(codeSent, (val) => {
 });
 
 async function requestCode() {
+  emailError.value = '';
   if (!email.value) {
-    toast.error('Please enter your email address');
+    emailError.value = 'Please enter your email address';
+    toast.error(emailError.value);
     return;
   }
 
@@ -163,13 +191,18 @@ async function verify() {
 }
 
 async function updatePassword() {
+  newPasswordError.value = '';
+  confirmPasswordError.value = '';
+
   if (!new_password.value) {
-    toast.error('Please enter a new password');
+    newPasswordError.value = 'Please enter a new password';
+    toast.error(newPasswordError.value);
     return;
   }
 
   if (new_password.value.length < 8) {
-    toast.error('Password must be at least 8 characters long');
+    newPasswordError.value = 'Password must be at least 8 characters long';
+    toast.error(newPasswordError.value);
     return;
   }
 
