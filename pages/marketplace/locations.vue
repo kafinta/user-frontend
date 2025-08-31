@@ -30,7 +30,7 @@ useHead({
   ]
 });
 
-import { computed, watch, onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useProductFilters } from '@/composables/useProductFilters'
@@ -49,22 +49,24 @@ onMounted(async () => {
 const breadcrumbItems = computed(() => {
   const items = [];
 
-  // Add category to breadcrumb if selected and has a valid name
-  if (
-    productFilters.selectedCategory &&
-    typeof productFilters.selectedCategory.name === 'string' &&
-    productFilters.selectedCategory.name.trim() !== ''
-  ) {
-    items.push({
-      label: productFilters.selectedCategory.name,
-      route: { path: '/marketplace/categories', query: { ...route.query } }
-    });
+  // Add category to breadcrumb if present in URL
+  const categorySlug = route.query.category;
+  if (categorySlug) {
+    const category = filtersStore.categories.find(c => c.slug === categorySlug);
+    if (category) {
+      items.push({
+        label: category.name,
+        route: { path: '/marketplace/categories', query: { ...route.query } }
+      });
+    }
   }
+
   // Always add Locations as the last (active) item
   items.push({
     label: 'Locations',
     active: true
   });
+
   return items;
 });
 // Simplified selection message
