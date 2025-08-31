@@ -10,6 +10,46 @@ export function useProductFilters() {
   const filtersStore = useFiltersStore()
   const { selectedSubcategory } = storeToRefs(filtersStore)
 
+  // Centralized navigation logic
+  const navigateBasedOnSelections = async (categorySlug?: string, locationSlug?: string, subcategorySlug?: string) => {
+    // Build query object with existing params
+    const query = { ...route.query }
+
+    // Update query with new selections
+    if (categorySlug) query.category = categorySlug
+    if (locationSlug) query.location = locationSlug
+    if (subcategorySlug) query.subcategory = subcategorySlug
+
+    // Get current selections (from query or parameters)
+    const currentCategory = categorySlug || route.query.category
+    const currentLocation = locationSlug || route.query.location
+    const currentSubcategory = subcategorySlug || route.query.subcategory
+
+    // Determine target path based on selections
+    let targetPath = '/marketplace'
+
+    if (currentSubcategory && currentCategory && currentLocation) {
+      targetPath = '/marketplace/products'
+    } else if (currentCategory && currentLocation) {
+      targetPath = '/marketplace/subcategories'
+    } else if (currentCategory && !currentLocation) {
+      targetPath = '/marketplace/locations'
+    } else if (currentLocation && !currentCategory) {
+      targetPath = '/marketplace/categories'
+    } else if (!currentCategory && !currentLocation) {
+      // No selections, determine based on current page or default to categories
+      targetPath = route.path.includes('/locations') ? '/marketplace/locations' : '/marketplace/categories'
+    }
+
+    // Navigate to target path
+    await router.push({ path: targetPath, query })
+  }
+
+  // Function to check current selections and redirect if needed (for page initialization)
+  const checkAndRedirect = async () => {
+    await navigateBasedOnSelections()
+  }
+
   // Selected objects (for display purposes)
   const selectedCategory = ref<any>(null); // { id, name, slug }
   // selectedSubcategory comes from storeToRefs(filtersStore)
@@ -124,6 +164,79 @@ export function useProductFilters() {
     }
   })
 
+  // Centralized selection functions with navigation
+  const selectCategoryAndNavigate = async (categoryOrSlugOrId: any) => {
+    let category = null;
+    if (typeof categoryOrSlugOrId === 'object') {
+      category = categoryOrSlugOrId;
+    } else if (typeof categoryOrSlugOrId === 'string') {
+      category = filtersStore.categories.find(c => c.slug === categoryOrSlugOrId) ||
+                 filtersStore.categories.find(c => c.id === Number(categoryOrSlugOrId));
+    } else if (typeof categoryOrSlugOrId === 'number') {
+      category = filtersStore.categories.find(c => c.id === categoryOrSlugOrId);
+    }
+
+    if (category) {
+      // Navigate first to avoid URL conflicts
+      await navigateBasedOnSelections(category.slug)
+
+      // Update state after navigation
+      if (selectedCategory.value?.id !== category.id) {
+        selectedCategory.value = category;
+        selectedCategoryId.value = category.id;
+        selectedSubcategory.value = null;
+        selectedSubcategoryId.value = null;
+      }
+    }
+  }
+
+  const selectLocationAndNavigate = async (locationOrSlugOrId: any) => {
+    let location = null;
+    if (typeof locationOrSlugOrId === 'object') {
+      location = locationOrSlugOrId;
+    } else if (typeof locationOrSlugOrId === 'string') {
+      location = filtersStore.locations.find(l => l.slug === locationOrSlugOrId) ||
+                 filtersStore.locations.find(l => l.id === Number(locationOrSlugOrId));
+    } else if (typeof locationOrSlugOrId === 'number') {
+      location = filtersStore.locations.find(l => l.id === locationOrSlugOrId);
+    }
+
+    if (location) {
+      // Navigate first to avoid URL conflicts
+      await navigateBasedOnSelections(undefined, location.slug)
+
+      // Update state after navigation
+      if (selectedLocation.value?.id !== location.id) {
+        selectedLocation.value = location;
+        selectedLocationId.value = location.id;
+        selectedSubcategory.value = null;
+        selectedSubcategoryId.value = null;
+      }
+    }
+  }
+
+  const selectSubcategoryAndNavigate = async (subcategoryOrSlugOrId: any) => {
+    let subcategory = null;
+    if (typeof subcategoryOrSlugOrId === 'object') {
+      subcategory = subcategoryOrSlugOrId;
+    } else if (typeof subcategoryOrSlugOrId === 'string') {
+      subcategory = filtersStore.subcategories.find(s => s.slug === subcategoryOrSlugOrId) ||
+                    filtersStore.subcategories.find(s => s.id === Number(subcategoryOrSlugOrId));
+    } else if (typeof subcategoryOrSlugOrId === 'number') {
+      subcategory = filtersStore.subcategories.find(s => s.id === subcategoryOrSlugOrId);
+    }
+
+    if (subcategory) {
+      // Navigate first to avoid URL conflicts
+      await navigateBasedOnSelections(undefined, undefined, subcategory.slug)
+
+      // Update state after navigation
+      selectedSubcategory.value = subcategory;
+      selectedSubcategoryId.value = subcategory.id;
+    }
+  }
+
+  // Legacy functions for backward compatibility (without navigation)
   function selectCategory(categoryOrSlugOrId: any) {
     let category = null;
     if (typeof categoryOrSlugOrId === 'object') {
@@ -138,7 +251,6 @@ export function useProductFilters() {
       if (selectedCategory.value?.id !== category.id) {
         selectedCategory.value = category;
         selectedCategoryId.value = category.id;
-        // Only reset subcategory if category actually changed
         selectedSubcategory.value = null;
         selectedSubcategoryId.value = null;
       }
@@ -159,7 +271,6 @@ export function useProductFilters() {
       if (selectedLocation.value?.id !== location.id) {
         selectedLocation.value = location;
         selectedLocationId.value = location.id;
-        // Only reset subcategory if location actually changed
         selectedSubcategory.value = null;
         selectedSubcategoryId.value = null;
       }
@@ -222,11 +333,6 @@ export function useProductFilters() {
     selectedCategoryId,
     selectedLocationId,
     selectedSubcategoryId,
-    // selectedCategory,
-    // selectedLocation,
-    // canFetchSubcategories,
-    // subcategories,
-    // isLoading,
 
     categoryId,
     subcategoryId,
@@ -235,7 +341,14 @@ export function useProductFilters() {
     subcategorySlug,
     locationSlug,
 
-    // Actions
+    // Centralized navigation functions
+    selectCategoryAndNavigate,
+    selectLocationAndNavigate,
+    selectSubcategoryAndNavigate,
+    navigateBasedOnSelections,
+    checkAndRedirect,
+
+    // Legacy actions (without navigation)
     selectCategory,
     selectLocation,
     selectSubcategory,
