@@ -7,8 +7,8 @@
           <UiBreadcrumbs :model="breadcrumbItems" />
         </div>
         <div class="flex gap-2 lg:flex-col justify-stretch items-end">
-          <UiButtonsPrimary :url="{ path: '/marketplace/categories', query: { ...route.query } }">Change Category</UiButtonsPrimary>
-          <UiButtonsPrimary :url="{ path: '/marketplace/locations', query: { ...route.query } }">Change Room</UiButtonsPrimary>
+          <UiButtonsPrimary @clicked="productFilters.changeCategory">Change Category</UiButtonsPrimary>
+          <UiButtonsPrimary @clicked="productFilters.changeLocation">Change Room</UiButtonsPrimary>
         </div>
       </div>
       <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-16">
@@ -49,12 +49,11 @@ import { computed } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useProductFilters } from '@/composables/useProductFilters'
-import { useRouter, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 
 const filtersStore = useFiltersStore()
 const { subcategories, isLoading, error } = storeToRefs(filtersStore)
 const productFilters = useProductFilters()
-const router = useRouter()
 const route = useRoute()
 
 // Define breadcrumb items
@@ -69,7 +68,7 @@ const breadcrumbItems = computed(() => {
   ) {
     items.push({
       label: productFilters.selectedLocation.name,
-      route: '/marketplace/locations'
+      route: { path: '/marketplace/locations', query: { ...route.query } }
     });
   }
 
@@ -81,7 +80,7 @@ const breadcrumbItems = computed(() => {
   ) {
     items.push({
       label: productFilters.selectedCategory.name,
-      route: '/marketplace/categories'
+      route: { path: '/marketplace/categories', query: { ...route.query } }
     });
   }
 
@@ -124,23 +123,7 @@ const selectionMessage = computed(() => {
 });
 
 async function selectSubcategory(subcategory) {
-  // Get the current category and location slugs directly from the store
-  const categorySlug = productFilters.selectedCategory?.slug;
-  const locationSlug = productFilters.selectedLocation?.slug;
-
-  // Merge with existing query params
-  const query = { ...route.query, subcategory: subcategory.slug };
-  if (categorySlug) query.category = categorySlug;
-  if (locationSlug) query.location = locationSlug;
-
-  // Navigate first
-  await router.push({
-    path: '/marketplace/products',
-    query
-  });
-
-  // Update the state after navigation
-  productFilters.selectSubcategory(subcategory);
+  await productFilters.selectSubcategoryAndNavigate(subcategory);
 }
 
 // No onMounted needed - useProductFilters composable handles initialization
