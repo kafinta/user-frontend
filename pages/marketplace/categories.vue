@@ -48,8 +48,35 @@ const route = useRoute()
 
 // Check selections and redirect appropriately on page load
 onMounted(async () => {
+  await ensureDataLoaded();
   await productFilters.checkAndRedirect();
 });
+
+// Ensure required data is loaded
+const ensureDataLoaded = async () => {
+  try {
+    // Ensure categories are loaded
+    if (filtersStore.categories.length === 0) {
+      await filtersStore.fetchCategories();
+    }
+
+    // Ensure locations are loaded
+    if (filtersStore.locations.length === 0) {
+      await filtersStore.fetchLocations();
+    }
+
+    // Update state based on URL parameters
+    const locationSlug = route.query.location;
+    if (locationSlug) {
+      const location = filtersStore.locations.find(l => l.slug === locationSlug);
+      if (location) {
+        productFilters.selectLocation(location);
+      }
+    }
+  } catch (error) {
+    console.error('Error loading data:', error);
+  }
+};
 
 
 // Simplified selection message

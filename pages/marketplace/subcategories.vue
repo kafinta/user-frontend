@@ -45,7 +45,7 @@ useHead({
   ]
 });
 
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useProductFilters } from '@/composables/useProductFilters'
@@ -55,6 +55,49 @@ const filtersStore = useFiltersStore()
 const { subcategories, isLoading, error } = storeToRefs(filtersStore)
 const productFilters = useProductFilters()
 const route = useRoute()
+
+// Ensure required data is loaded on mount
+onMounted(async () => {
+  await productFilters.checkAndRedirect();
+  await ensureSubcategoriesLoaded();
+});
+
+// Function to ensure subcategories are loaded for current category/location
+const ensureSubcategoriesLoaded = async () => {
+  const categorySlug = route.query.category;
+  const locationSlug = route.query.location;
+
+  if (!categorySlug || !locationSlug) {
+    return;
+  }
+
+  try {
+    // Ensure categories and locations are loaded
+    if (filtersStore.categories.length === 0) {
+      await filtersStore.fetchCategories();
+    }
+    if (filtersStore.locations.length === 0) {
+      await filtersStore.fetchLocations();
+    }
+
+    // Find category and location objects
+    const category = filtersStore.categories.find(c => c.slug === categorySlug);
+    const location = filtersStore.locations.find(l => l.slug === locationSlug);
+
+    if (category && location) {
+      // Fetch subcategories if not already loaded or if empty
+      if (subcategories.value.length === 0) {
+        await filtersStore.fetchSubcategories(category.id, location.id);
+      }
+
+      // Update the composable state to match URL
+      productFilters.selectCategory(category);
+      productFilters.selectLocation(location);
+    }
+  } catch (error) {
+    console.error('Error loading subcategories:', error);
+  }
+};
 
 // Define breadcrumb items
 const breadcrumbItems = computed(() => {

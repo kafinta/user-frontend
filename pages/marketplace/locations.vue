@@ -43,8 +43,35 @@ const route = useRoute()
 
 // Check selections and redirect appropriately on page load
 onMounted(async () => {
+  await ensureDataLoaded();
   await productFilters.checkAndRedirect();
 });
+
+// Ensure required data is loaded
+const ensureDataLoaded = async () => {
+  try {
+    // Ensure categories are loaded
+    if (filtersStore.categories.length === 0) {
+      await filtersStore.fetchCategories();
+    }
+
+    // Ensure locations are loaded
+    if (filtersStore.locations.length === 0) {
+      await filtersStore.fetchLocations();
+    }
+
+    // Update state based on URL parameters
+    const categorySlug = route.query.category;
+    if (categorySlug) {
+      const category = filtersStore.categories.find(c => c.slug === categorySlug);
+      if (category) {
+        productFilters.selectCategory(category);
+      }
+    }
+  } catch (error) {
+    console.error('Error loading data:', error);
+  }
+};
 
 const breadcrumbItems = computed(() => {
   const items = [];
