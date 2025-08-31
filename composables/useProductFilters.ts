@@ -50,6 +50,42 @@ export function useProductFilters() {
     await navigateBasedOnSelections()
   }
 
+  // Functions to handle "change" actions (clear selection and navigate to appropriate page)
+  const changeCategory = async () => {
+    // Clear category from query and navigate to categories page
+    const query = { ...route.query }
+    delete query.category
+    delete query.subcategory // Also clear subcategory since it depends on category
+
+    await router.push({
+      path: '/marketplace/categories',
+      query
+    })
+  }
+
+  const changeLocation = async () => {
+    // Clear location from query and navigate to locations page
+    const query = { ...route.query }
+    delete query.location
+    delete query.subcategory // Also clear subcategory since it depends on location
+
+    await router.push({
+      path: '/marketplace/locations',
+      query
+    })
+  }
+
+  const changeSubcategory = async () => {
+    // Clear subcategory from query and navigate to subcategories page
+    const query = { ...route.query }
+    delete query.subcategory
+
+    await router.push({
+      path: '/marketplace/subcategories',
+      query
+    })
+  }
+
   // Selected objects (for display purposes)
   const selectedCategory = ref<any>(null); // { id, name, slug }
   // selectedSubcategory comes from storeToRefs(filtersStore)
@@ -347,6 +383,11 @@ export function useProductFilters() {
     selectSubcategoryAndNavigate,
     navigateBasedOnSelections,
     checkAndRedirect,
+
+    // Change functions
+    changeCategory,
+    changeLocation,
+    changeSubcategory,
 
     // Legacy actions (without navigation)
     selectCategory,
