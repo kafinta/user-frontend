@@ -17,7 +17,7 @@
     >
       <SplideSlide v-for="location in locations" :key="location.id">
         <UiCards
-          @clicked="selectLocation(location.id)"
+          @clicked="handleLocationClick(location)"
           :title="location.name"
           :src="location.image_path"
           :alt="location.name"
@@ -63,6 +63,14 @@ import { Splide, SplideSlide } from '@splidejs/vue-splide'
 import '@splidejs/vue-splide/css'
 // Import shared carousel styles
 import '~/assets/css/carousel.css'
+
+// Props
+const props = defineProps({
+  onLocationSelect: {
+    type: Function,
+    default: null
+  }
+})
 
 const router = useRouter()
 const productFilters = useProductFilters()
@@ -121,24 +129,18 @@ const numVisibleItems = computed(() => {
   return 1
 })
 
-async function selectLocation(id) {
-  // Get the current category ID directly from the store
-  const categoryId = productFilters.selectedCategoryId?.value
-
-  // Create the query parameters
-  const query = { location: id }
-  if (categoryId) {
-    query.category = categoryId
+async function handleLocationClick(location) {
+  // If a custom handler is provided (from parent), use it
+  if (props.onLocationSelect) {
+    return props.onLocationSelect(location.id);
   }
 
-  // Navigate first
-  await router.push({
-    path: categoryId ? '/marketplace/subcategories' : '/marketplace/categories',
-    query
-  })
+  // Otherwise, use the default behavior (for marketplace pages)
+  return selectLocation(location);
+}
 
-  // Update the state after navigation
-  productFilters.selectLocation(id)
+async function selectLocation(location) {
+  await productFilters.selectLocationAndNavigate(location);
 }
 
 // No onMounted needed - data will be fetched when needed by pages
