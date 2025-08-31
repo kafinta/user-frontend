@@ -8,7 +8,7 @@
       </div>
 
       <div class="flex gap-2 lg:flex-col justify-stretch items-end">
-        <UiButtonsPrimary :url="{ path: '/marketplace/subcategories', query: { ...route.query } }">Change subcategory</UiButtonsPrimary>
+        <UiButtonsPrimary @clicked="productFilters.changeSubcategory">Change subcategory</UiButtonsPrimary>
         <UiButtonsPrimary @clicked="openDialog=true" class="lg:hidden">
           <div class="flex gap-5">
             <p>Filters</p>
@@ -28,12 +28,55 @@
 
       <!-- Main content area -->
       <div class="w-full lg:w-3/4 2xl:w-4/5">
-        <!-- Product grid -->
-        <ul class="grid gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 w-full">
-          <template v-if="isLoading">
-            <ProductsCard v-for="n in 8" :key="`skeleton-${n}`" :skeleton="true" />
-          </template>
-          <template v-else>
+        <!-- Loading state -->
+        <template v-if="isLoading">
+          <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 w-full">
+            <ProductsCard v-for="n in 12" :key="`skeleton-${n}`" :skeleton="true" />
+          </div>
+        </template>
+
+        <!-- Error state -->
+        <template v-else-if="error">
+          <div class="text-center py-16 flex flex-col items-center justify-center">
+            <div class="rounded-full p-6 flex items-center justify-center mb-6 bg-red-50 border border-red-200 w-24 h-24">
+              <UiIconsError class="w-12 h-12 text-red-500" />
+            </div>
+            <UiTypographyH3 class="text-red-600 mb-3">Oops! Something went wrong</UiTypographyH3>
+            <UiTypographyP class="text-red-500 mb-6 max-w-md">{{ error }}</UiTypographyP>
+            <UiButtonsPrimary @clicked="retryFetch" class="flex items-center gap-2">
+              <UiIconsRefresh class="w-4 h-4" />
+              Try Again
+            </UiButtonsPrimary>
+          </div>
+        </template>
+
+        <!-- No products state -->
+        <template v-else-if="!hasProducts">
+          <div class="text-center py-16 flex flex-col items-center justify-center">
+            <div class="rounded-full p-6 flex items-center justify-center mb-6 bg-accent-50 border border-accent-200 w-24 h-24">
+              <UiIconsSearch class="w-12 h-12 text-accent-400" />
+            </div>
+            <UiTypographyH3 class="text-secondary mb-3">No products found</UiTypographyH3>
+            <UiTypographyP class="text-accent-500 mb-6 max-w-md">
+              We couldn't find any products matching your criteria. Try adjusting your filters or search terms.
+            </UiTypographyP>
+            <div class="flex gap-3">
+              <UiButtonsSecondary @clicked="clearFilters">Clear Filters</UiButtonsSecondary>
+              <UiButtonsPrimary :url="{ path: '/marketplace/subcategories', query: { ...route.query } }">
+                Browse Categories
+              </UiButtonsPrimary>
+            </div>
+          </div>
+        </template>
+
+        <!-- Products grid -->
+        <template v-else>
+          <div class="mb-4 flex justify-between items-center">
+            <UiTypographyP class="text-accent-600">
+              Showing {{ products.length }} product{{ products.length !== 1 ? 's' : '' }}
+            </UiTypographyP>
+          </div>
+          <ul class="grid gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 w-full">
             <ProductsCard
               v-for="product in products"
               :key="product.id"
@@ -44,24 +87,31 @@
               :image="product.images && product.images.length ? product.images[0].url : ''"
               :skeleton="false"
             />
-          </template>
-        </ul>
-        <!-- Error state -->
-        <div v-if="!isLoading && !hasProducts" class="text-center py-12 flex flex-col items-center justify-center">
-          <div class="rounded-full p-4 flex items-center justify-center mb-4 bg-red-200 w-20 h-20">
-            <UiIconsError class="w-16 h-16 text-red-600" />
-          </div>
-          <UiTypographyP class="text-red-600 mb-2">{{ error }}</UiTypographyP>
-        </div>
-        <!-- Pagination placeholder -->
-        <div class="divide-x divide-white mt-10 justify-center w-full flex">
-          <button @click="prev" class="text-white bg-secondary h-10 w-10 grid place-items-center rounded-l-md hover:bg-accent-400 duration-300 ease-in-out">
+          </ul>
+        </template>
+        <!-- Pagination (only show when products are loaded) -->
+        <div v-if="hasProducts && !isLoading && !error" class="divide-x divide-white mt-10 justify-center w-full flex">
+          <button
+            @click="prev"
+            :disabled="isLoading"
+            class="text-white bg-secondary h-10 w-10 grid place-items-center rounded-l-md hover:bg-accent-400 duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             <UiIconsArrow class="w-4"/>
           </button>
-          <button v-for="item in 5" :key="item" ref="pagination" class="text-white bg-secondary h-10 w-10 grid place-items-center">
+          <button
+            v-for="item in 5"
+            :key="item"
+            ref="pagination"
+            :disabled="isLoading"
+            class="text-white bg-secondary h-10 w-10 grid place-items-center hover:bg-accent-400 duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             {{ item }}
           </button>
-          <button @click="next" class="text-white bg-secondary h-10 w-10 grid place-items-center rounded-r-md hover:bg-accent-400 duration-300 ease-in-out">
+          <button
+            @click="next"
+            :disabled="isLoading"
+            class="text-white bg-secondary h-10 w-10 grid place-items-center rounded-r-md hover:bg-accent-400 duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             <UiIconsArrow class="w-4 rotate-180"/>
           </button>
         </div>
@@ -108,48 +158,178 @@ function onFilterChanged(attrs) {
   selectedAttributes.value = attrs;
 }
 
+// Retry function for failed requests
+async function retryFetch() {
+  await fetchProducts();
+}
+
+// Clear filters function
+function clearFilters() {
+  selectedAttributes.value = {};
+  // Also clear search query if present
+  if (route.query.query) {
+    const newQuery = { ...route.query };
+    delete newQuery.query;
+    router.push({ query: newQuery });
+  }
+}
+
 const fetchProducts = async () => {
   isLoading.value = true;
   error.value = '';
+
   try {
     const params = new URLSearchParams();
     params.append('per_page', 30);
-    if (productFilters.selectedSubcategory?.slug) {
-      params.append('subcategory', productFilters.selectedSubcategory.slug);
-    }
-    if (productFilters.selectedCategory?.slug) {
-      params.append('category', productFilters.selectedCategory.slug);
-    }
-    if (productFilters.selectedLocation?.slug) {
-      params.append('location', productFilters.selectedLocation.slug);
-    }
+
+    // API requires either search query OR subcategory_id
     if (route.query.query) {
+      // Search mode - use search query
       params.append('search', route.query.query);
+    } else if (route.query.subcategory) {
+      // Subcategory mode - find subcategory ID from slug
+      const subcategorySlug = route.query.subcategory;
+      let subcategory = filtersStore.subcategories.find(s => s.slug === subcategorySlug);
+
+      if (!subcategory) {
+        // If subcategory not found in store, ensure data is loaded first
+        await ensureDataLoaded();
+        subcategory = filtersStore.subcategories.find(s => s.slug === subcategorySlug);
+      }
+
+      if (subcategory) {
+        params.append('subcategory_id', subcategory.id);
+      } else {
+        // Still no subcategory found, this is an error
+        error.value = 'Subcategory not found. Please select a valid subcategory.';
+        products.value = [];
+        isLoading.value = false;
+        return;
+      }
+    } else {
+      // No search query or subcategory - this shouldn't happen on products page
+      error.value = 'No subcategory or search query specified.';
+      products.value = [];
+      isLoading.value = false;
+      return;
     }
+
     // Add attribute filters
     for (const [attrName, attrObj] of Object.entries(selectedAttributes.value)) {
       if (attrObj && attrObj.name) {
         params.append(`attributes[${attrName}]`, attrObj.name);
       }
     }
+
     const res = await useCustomFetch(`/api/products?${params.toString()}`, { method: 'GET' });
-    if (res && res.status === 'success' && res.data && res.data.data) {
-      products.value = res.data.data;
+
+    if (res && res.status === 'success') {
+      if (res.data && res.data.data) {
+        products.value = res.data.data;
+      } else {
+        products.value = [];
+      }
     } else {
-      error.value = res?.message || 'Failed to load products.';
+      // Handle API error responses
+      const errorMessage = res?.message || 'Unable to load products at this time.';
+      error.value = errorMessage;
+      products.value = [];
     }
   } catch (e) {
-    error.value = e?.data?.message || 'Failed to load products.';
+    // Handle network or other errors
+    console.error('Error fetching products:', e);
+
+    if (e?.data?.message) {
+      error.value = e.data.message;
+    } else if (e?.message) {
+      error.value = e.message;
+    } else {
+      error.value = 'Network error. Please check your connection and try again.';
+    }
+
+    products.value = [];
   } finally {
     isLoading.value = false;
   }
 };
 
-// Refetch products when subcategory, search input, or attribute filters change
+// Initialize data and check page accessibility on mount
+onMounted(async () => {
+  const hasSubcategory = route.query.subcategory;
+  const hasSearchQuery = route.query.query;
+
+  if (!hasSubcategory && !hasSearchQuery) {
+    // No valid parameters, redirect to subcategories page
+    const categorySlug = route.query.category;
+    const locationSlug = route.query.location;
+
+    if (categorySlug && locationSlug) {
+      router.push({
+        path: '/marketplace/subcategories',
+        query: { category: categorySlug, location: locationSlug }
+      });
+    } else {
+      router.push({ path: '/marketplace' });
+    }
+    return;
+  }
+
+  // If we have a subcategory, ensure the required data is loaded
+  if (hasSubcategory) {
+    await ensureDataLoaded();
+  }
+});
+
+// Function to ensure all required data is loaded for subcategory mode
+const ensureDataLoaded = async () => {
+  const categorySlug = route.query.category;
+  const locationSlug = route.query.location;
+  const subcategorySlug = route.query.subcategory;
+
+  if (!categorySlug || !locationSlug || !subcategorySlug) {
+    return;
+  }
+
+  try {
+    // Ensure categories and locations are loaded
+    if (filtersStore.categories.length === 0) {
+      await filtersStore.fetchCategories();
+    }
+    if (filtersStore.locations.length === 0) {
+      await filtersStore.fetchLocations();
+    }
+
+    // Find category and location objects
+    const category = filtersStore.categories.find(c => c.slug === categorySlug);
+    const location = filtersStore.locations.find(l => l.slug === locationSlug);
+
+    if (category && location) {
+      // Check if subcategories are loaded for this category/location combination
+      const subcategory = filtersStore.subcategories.find(s => s.slug === subcategorySlug);
+
+      if (!subcategory) {
+        // Subcategories not loaded or subcategory not found, fetch them
+        await filtersStore.fetchSubcategories(category.id, location.id);
+      }
+
+      // Update the composable state to match URL
+      productFilters.selectCategory(category);
+      productFilters.selectLocation(location);
+
+      // Set subcategory if found
+      const foundSubcategory = filtersStore.subcategories.find(s => s.slug === subcategorySlug);
+      if (foundSubcategory) {
+        productFilters.selectSubcategory(foundSubcategory);
+      }
+    }
+  } catch (error) {
+    console.error('Error loading required data:', error);
+  }
+};
+
+// Refetch products when URL parameters or attribute filters change
 watch([
-  () => productFilters.selectedSubcategory?.slug,
-  () => productFilters.selectedCategory?.slug,
-  () => productFilters.selectedLocation?.slug,
+  () => route.query.subcategory,
   () => route.query.query,
   selectedAttributes
 ], fetchProducts, { immediate: true });
@@ -160,56 +340,64 @@ const headingName = computed(() => {
   if (search.value) {
     return `Search results for ${route.query.query}`;
   }
-  if (
-    productFilters.selectedSubcategoryDetails &&
-    typeof productFilters.selectedSubcategoryDetails.name === 'string' &&
-    productFilters.selectedSubcategoryDetails.name.trim() !== ''
-  ) {
-    return `Browse ${productFilters.selectedSubcategoryDetails.name}`;
+
+  // Get subcategory name from URL and store
+  const subcategorySlug = route.query.subcategory;
+  if (subcategorySlug) {
+    const subcategory = filtersStore.subcategories.find(s => s.slug === subcategorySlug);
+    if (subcategory) {
+      return subcategory.name;
+    }
   }
+
+  return 'Products';
 });
 
 const breadcrumbItems = computed(() => {
   const items = [];
-  // Add location to breadcrumb if selected and has a valid name
-  if (
-    productFilters.selectedLocation &&
-    typeof productFilters.selectedLocation.name === 'string' &&
-    productFilters.selectedLocation.name.trim() !== ''
-  ) {
-    items.push({
-      label: productFilters.selectedLocation.name,
-      route: '/marketplace/locations'
-    });
+
+  // Add location to breadcrumb if present in URL
+  const locationSlug = route.query.location;
+  if (locationSlug) {
+    const location = filtersStore.locations.find(l => l.slug === locationSlug);
+    if (location) {
+      items.push({
+        label: location.name,
+        route: { path: '/marketplace/locations', query: { ...route.query } }
+      });
+    }
   }
-  // Add category to breadcrumb if selected and has a valid name
-  if (
-    productFilters.selectedCategory &&
-    typeof productFilters.selectedCategory.name === 'string' &&
-    productFilters.selectedCategory.name.trim() !== ''
-  ) {
-    items.push({
-      label: productFilters.selectedCategory.name,
-      route: '/marketplace/categories'
-    });
+
+  // Add category to breadcrumb if present in URL
+  const categorySlug = route.query.category;
+  if (categorySlug) {
+    const category = filtersStore.categories.find(c => c.slug === categorySlug);
+    if (category) {
+      items.push({
+        label: category.name,
+        route: { path: '/marketplace/categories', query: { ...route.query } }
+      });
+    }
   }
-  // Add subcategory if it exists and has a valid name
-  if (
-    productFilters.selectedSubcategoryDetails &&
-    typeof productFilters.selectedSubcategoryDetails.name === 'string' &&
-    productFilters.selectedSubcategoryDetails.name.trim() !== ''
-  ) {
-    items.push({
-      label: productFilters.selectedSubcategoryDetails.name,
-      active: true
-    });
-  } else {
-    // Always add Products as the last (active) item
-    items.push({
-      label: 'Products',
-      active: true
-    });
+
+  // Add subcategory if present in URL
+  const subcategorySlug = route.query.subcategory;
+  if (subcategorySlug) {
+    const subcategory = filtersStore.subcategories.find(s => s.slug === subcategorySlug);
+    if (subcategory) {
+      items.push({
+        label: subcategory.name,
+        route: { path: '/marketplace/subcategories', query: { ...route.query } }
+      });
+    }
   }
+
+  // Always add Products as the last (active) item
+  items.push({
+    label: 'Products',
+    active: true
+  });
+
   return items;
 });
 // Pagination functions
