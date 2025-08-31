@@ -80,7 +80,7 @@
     <Container>
       <UiTypographyH2 class="text-secondary text-2xl md:text-3xl 2xl:text-4xl font-medium">Browse by Locations</UiTypographyH2>
       <UiTypographyP>Search for products based on the rooms they are found in.</UiTypographyP>
-      <CarouselsLocations />
+      <CarouselsLocations :onLocationSelect="selectLocation" />
     </Container>
 
     <Container  class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -123,9 +123,10 @@
 import { ref } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useProductFilters } from '@/composables/useProductFilters';
 const router = useRouter()
+const route = useRoute()
 
 const filtersStore = useFiltersStore()
 const { categories, isLoading, error } = storeToRefs(filtersStore)
@@ -139,23 +140,11 @@ const toggleSearch = () => {
 }
 
 async function selectCategory(item) {
-  // Get the current location object from the composable
-  const location = productFilters.selectedLocation?.value;
+  await productFilters.selectCategoryAndNavigate(item);
+}
 
-  // Create the query parameters
-  const query = { category: item.id };
-  if (location) {
-    query.location = location.id;
-  }
-
-  // Navigate first
-  await router.push({
-    path: location ? '/marketplace/subcategories' : '/marketplace/locations',
-    query
-  });
-
-  // Update the state after navigation
-  productFilters.selectCategory(item);
+async function selectLocation(locationId) {
+  await productFilters.selectLocationAndNavigate(locationId);
 }
 </script>
 <style>

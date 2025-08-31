@@ -8,7 +8,7 @@
         </div>
         <UiButtonsPrimary :url="{ path: '/marketplace/locations', query: { ...route.query } }">Change Room</UiButtonsPrimary>
       </div>
-      <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-12">
+      <ul class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-12">
         <li v-if="isLoading" v-for="n in 12" :key="n">
           <UiSkeleton height="15rem" />
         </li>
@@ -32,20 +32,24 @@ useHead({
   title: 'Browse Categories | Kafinta',
   meta: [
     { name: 'description', content: 'Browse product categories to find what you need on Kafinta marketplace' }
-  ]
+  ] 
 });
 
-import { computed, watch } from 'vue'
+import { computed, watch, onMounted } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useProductFilters } from '@/composables/useProductFilters'
-import { useRouter, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 
 const filtersStore = useFiltersStore()
 const { categories, isLoading, error } = storeToRefs(filtersStore)
 const productFilters = useProductFilters()
-const router = useRouter()
 const route = useRoute()
+
+// Check selections and redirect appropriately on page load
+onMounted(async () => {
+  await productFilters.checkAndRedirect();
+});
 
 
 // Simplified selection message
@@ -62,24 +66,7 @@ const selectionMessage = computed(() => {
 });
 
 async function selectCategory(category) {
-  productFilters.selectCategory(category);
-
-  const locationSlug = productFilters.selectedLocation?.slug || route.query.location;
-  const categorySlug = category.slug;
-
-  if (locationSlug && categorySlug) {
-    // Both are set, go to subcategories
-    await router.push({
-      path: '/marketplace/subcategories',
-      query: { ...route.query, category: categorySlug, location: locationSlug }
-    });
-  } else {
-    // Only category is set, stay here and update query
-    await router.push({
-      path: '/marketplace/categories',
-      query: { ...route.query, category: categorySlug }
-    });
-  }
+  await productFilters.selectCategoryAndNavigate(category);
 }
 
 const breadcrumbItems = computed(() => {
@@ -92,7 +79,7 @@ const breadcrumbItems = computed(() => {
   ) {
     items.push({
       label: productFilters.selectedLocation.name,
-      route: '/marketplace/locations'
+      route: { path: '/marketplace/locations', query: { ...route.query } }
     });
   }
   // Always add Categories as the last (active) item

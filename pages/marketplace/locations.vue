@@ -30,17 +30,21 @@ useHead({
   ]
 });
 
-import { computed, watch } from 'vue'
+import { computed, watch, onMounted } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useProductFilters } from '@/composables/useProductFilters'
-import { useRouter, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 
 const filtersStore = useFiltersStore()
 const { locations, isLoading, error } = storeToRefs(filtersStore)
 const productFilters = useProductFilters()
-const router = useRouter()
 const route = useRoute()
+
+// Check selections and redirect appropriately on page load
+onMounted(async () => {
+  await productFilters.checkAndRedirect();
+});
 
 const breadcrumbItems = computed(() => {
   const items = [];
@@ -53,7 +57,7 @@ const breadcrumbItems = computed(() => {
   ) {
     items.push({
       label: productFilters.selectedCategory.name,
-      route: '/marketplace/categories'
+      route: { path: '/marketplace/categories', query: { ...route.query } }
     });
   }
   // Always add Locations as the last (active) item
@@ -77,24 +81,7 @@ const selectionMessage = computed(() => {
 });
 
 async function selectLocation(location) {
-  productFilters.selectLocation(location);
-
-  const categorySlug = productFilters.selectedCategory?.slug || route.query.category;
-  const locationSlug = location.slug;
-
-  if (categorySlug && locationSlug) {
-    // Both are set, go to subcategories
-    await router.push({
-      path: '/marketplace/subcategories',
-      query: { ...route.query, category: categorySlug, location: locationSlug }
-    });
-  } else {
-    // Only location is set, stay here and update query
-    await router.push({
-      path: '/marketplace/locations',
-      query: { ...route.query, location: locationSlug }
-    });
-  }
+  await productFilters.selectLocationAndNavigate(location);
 }
 
 // No onMounted needed - useProductFilters composable handles initialization
