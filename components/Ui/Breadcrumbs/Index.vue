@@ -4,19 +4,19 @@
       <!-- Home item -->
       <li>
         <slot name="home">
-          <nuxt-link :to="homeRoute" class="breadcrumb-link" aria-label="Home">
+          <nuxt-link :to="homeRoute" class="breadcrumb-link " aria-label="Home">
             <UiIconsHome class="w-5 h-5 hover:text-primary duration-300" />
           </nuxt-link>
         </slot>
       </li>
 
-      <!-- First separator -->
-      <li v-if="validatedModel.length > 0" aria-hidden="true">
-        <UiIconsChevron class="w-3 h-3 rotate-90" />
-      </li>
-
       <!-- Dynamic breadcrumb items -->
       <template v-for="(item, index) in validatedModel" :key="index">
+        <!-- Separator before each item -->
+        <li aria-hidden="true">
+          <UiIconsChevron class="w-3 h-3 rotate-90" />
+        </li>
+
         <li>
           <nuxt-link
             v-if="item.route && !item.active"
@@ -32,11 +32,6 @@
           >
             {{ item.label }}
           </span>
-        </li>
-
-        <!-- Add separator except after the last item -->
-        <li v-if="index < validatedModel.length - 1" aria-hidden="true">
-          <UiIconsChevron class="w-3 h-3 rotate-90" />
         </li>
       </template>
     </ol>
