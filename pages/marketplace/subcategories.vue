@@ -99,42 +99,9 @@ const ensureSubcategoriesLoaded = async () => {
   }
 };
 
-// Define breadcrumb items
-const breadcrumbItems = computed(() => {
-  const items = [];
-
-  // Add location to breadcrumb if present in URL
-  const locationSlug = route.query.location;
-  if (locationSlug) {
-    const location = filtersStore.locations.find(l => l.slug === locationSlug);
-    if (location) {
-      items.push({
-        label: location.name,
-        route: { path: '/marketplace/locations', query: { ...route.query } }
-      });
-    }
-  }
-
-  // Add category to breadcrumb if present in URL
-  const categorySlug = route.query.category;
-  if (categorySlug) {
-    const category = filtersStore.categories.find(c => c.slug === categorySlug);
-    if (category) {
-      items.push({
-        label: category.name,
-        route: { path: '/marketplace/categories', query: { ...route.query } }
-      });
-    }
-  }
-
-  // Always add Subcategories as the last (active) item
-  items.push({
-    label: 'Subcategories',
-    active: true
-  });
-
-  return items;
-});
+// Use the new marketplace breadcrumbs composable
+const { subcategoriesBreadcrumbs } = useMarketplaceBreadcrumbs()
+const breadcrumbItems = subcategoriesBreadcrumbs
 
 // Add contextual message based on selected category and location
 const selectionMessage = computed(() => {
