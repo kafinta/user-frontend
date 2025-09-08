@@ -52,11 +52,68 @@ const props = defineProps({
 const quantity = ref(1)
 
 const breadcrumbItems = computed(() => {
-  return [
-    { label: `${props.product?.location?.name}`, route: '/marketplace/locations' },
-    { label: `${props.product?.category?.name}`, route: '/marketplace/categories' },
-    { label: `${props.product?.subcategory?.name}`, route: '/marketplace/categories' },
-    { label: 'Products', route: '/products' },
-  ]
+  if (!props.product) return []
+
+  const items = []
+
+  // Add location if available
+  if (props.product.location?.name) {
+    items.push({
+      label: props.product.location.name,
+      route: {
+        path: '/marketplace/locations',
+        query: { location: props.product.location.slug }
+      }
+    })
+  }
+
+  // Add category if available
+  if (props.product.category?.name) {
+    items.push({
+      label: props.product.category.name,
+      route: {
+        path: '/marketplace/categories',
+        query: {
+          ...(props.product.location?.slug && { location: props.product.location.slug }),
+          category: props.product.category.slug
+        }
+      }
+    })
+  }
+
+  // Add subcategory if available
+  if (props.product.subcategory?.name) {
+    items.push({
+      label: props.product.subcategory.name,
+      route: {
+        path: '/marketplace/subcategories',
+        query: {
+          ...(props.product.location?.slug && { location: props.product.location.slug }),
+          ...(props.product.category?.slug && { category: props.product.category.slug })
+        }
+      }
+    })
+  }
+
+  // Add Products page
+  items.push({
+    label: 'Products',
+    route: {
+      path: '/marketplace/products',
+      query: {
+        ...(props.product.location?.slug && { location: props.product.location.slug }),
+        ...(props.product.category?.slug && { category: props.product.category.slug }),
+        ...(props.product.subcategory?.slug && { subcategory: props.product.subcategory.slug })
+      }
+    }
+  })
+
+  // Add current product as active item
+  items.push({
+    label: props.product.name,
+    active: true
+  })
+
+  return items
 })
 </script>
