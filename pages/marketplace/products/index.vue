@@ -353,53 +353,17 @@ const headingName = computed(() => {
   return 'Products';
 });
 
+// Use the new marketplace breadcrumbs composable
+const { productsBreadcrumbs, searchBreadcrumbs } = useMarketplaceBreadcrumbs()
+
 const breadcrumbItems = computed(() => {
-  const items = [];
-
-  // Add location to breadcrumb if present in URL
-  const locationSlug = route.query.location;
-  if (locationSlug) {
-    const location = filtersStore.locations.find(l => l.slug === locationSlug);
-    if (location) {
-      items.push({
-        label: location.name,
-        route: { path: '/marketplace/locations', query: { ...route.query } }
-      });
-    }
+  // Use search breadcrumbs if this is a search page
+  if (route.query.query) {
+    return searchBreadcrumbs.value
   }
-
-  // Add category to breadcrumb if present in URL
-  const categorySlug = route.query.category;
-  if (categorySlug) {
-    const category = filtersStore.categories.find(c => c.slug === categorySlug);
-    if (category) {
-      items.push({
-        label: category.name,
-        route: { path: '/marketplace/categories', query: { ...route.query } }
-      });
-    }
-  }
-
-  // Add subcategory if present in URL
-  const subcategorySlug = route.query.subcategory;
-  if (subcategorySlug) {
-    const subcategory = filtersStore.subcategories.find(s => s.slug === subcategorySlug);
-    if (subcategory) {
-      items.push({
-        label: subcategory.name,
-        route: { path: '/marketplace/subcategories', query: { ...route.query } }
-      });
-    }
-  }
-
-  // Always add Products as the last (active) item
-  items.push({
-    label: 'Products',
-    active: true
-  });
-
-  return items;
-});
+  // Otherwise use products breadcrumbs
+  return productsBreadcrumbs.value
+})
 // Pagination functions
 const prev = () => {
   // Implement previous page logic

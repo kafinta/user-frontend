@@ -96,29 +96,9 @@ async function selectCategory(category) {
   await productFilters.selectCategoryAndNavigate(category);
 }
 
-const breadcrumbItems = computed(() => {
-  const items = [];
-
-  // Add location to breadcrumb if present in URL
-  const locationSlug = route.query.location;
-  if (locationSlug) {
-    const location = filtersStore.locations.find(l => l.slug === locationSlug);
-    if (location) {
-      items.push({
-        label: location.name,
-        route: { path: '/marketplace/locations', query: { ...route.query } }
-      });
-    }
-  }
-
-  // Always add Categories as the last (active) item
-  items.push({
-    label: 'Categories',
-    active: true
-  });
-
-  return items;
-});
+// Use the new marketplace breadcrumbs composable
+const { categoriesBreadcrumbs } = useMarketplaceBreadcrumbs()
+const breadcrumbItems = categoriesBreadcrumbs
 
 // Retry function for failed requests
 async function retryFetchCategories() {

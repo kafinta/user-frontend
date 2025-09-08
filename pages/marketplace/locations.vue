@@ -73,29 +73,9 @@ const ensureDataLoaded = async () => {
   }
 };
 
-const breadcrumbItems = computed(() => {
-  const items = [];
-
-  // Add category to breadcrumb if present in URL
-  const categorySlug = route.query.category;
-  if (categorySlug) {
-    const category = filtersStore.categories.find(c => c.slug === categorySlug);
-    if (category) {
-      items.push({
-        label: category.name,
-        route: { path: '/marketplace/categories', query: { ...route.query } }
-      });
-    }
-  }
-
-  // Always add Locations as the last (active) item
-  items.push({
-    label: 'Locations',
-    active: true
-  });
-
-  return items;
-});
+// Use the new marketplace breadcrumbs composable
+const { locationsBreadcrumbs } = useMarketplaceBreadcrumbs()
+const breadcrumbItems = locationsBreadcrumbs
 // Simplified selection message
 const selectionMessage = computed(() => {
   const selectedCategory = productFilters.selectedCategory;
