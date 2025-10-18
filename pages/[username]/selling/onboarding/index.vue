@@ -152,7 +152,6 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useOnboarding } from "@/composables/useOnboarding.ts";
 import { useAuthStore } from '~/stores/auth';
-import { useAuthApi } from '~/composables/useAuthApi';
 import { useCustomFetch } from '~/composables/useCustomFetch';
 import { useAppToast } from '~/utils/toastify';
 
@@ -304,12 +303,11 @@ async function completeOnboarding() {
       if (response.data?.user) {
         auth.setUser(response.data.user);
       }
-      // Always fetch roles after onboarding
-      try {
-        const authApi = useAuthApi();
-        await authApi.fetchRoles();
-      } catch (error) {
-        console.error('Failed to fetch roles after onboarding:', error);
+      // Set roles if included in response
+      if (response.data?.roles) {
+        auth.setRoles(response.data.roles);
+      } else if (response.data?.user?.roles) {
+        auth.setRoles(response.data.user.roles);
       }
       // Wait a moment for auth store to update
       await new Promise(resolve => setTimeout(resolve, 100));
