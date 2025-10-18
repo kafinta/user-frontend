@@ -1,6 +1,6 @@
 <template>
   <transition name="slide-fade">
-    <nav class="fixed z-100 top-0 left-0 w-4/6 md:w-1/4 lg:w-1/5 xl:w-1/6 flex flex-col bg-secondary h-screen">
+    <nav class="fixed z-100 top-0 left-0 w-4/6 md:w-64 flex flex-col bg-secondary h-screen">
       <!-- Top section with logo and navigation links -->
       <div class="flex flex-col h-full">
         <div class="px-8 mt-6">
@@ -16,6 +16,7 @@
               <nuxt-link
                 v-if="item.showWhen ? item.showWhen() : true"
                 :to="item.to"
+                @click="closeMenuOnMobile"
               >
                 <NavigationSideBarMenu
                   :menu_text="item.text"
@@ -32,7 +33,7 @@
           <!-- Buyer navigation items -->
           <template v-else>
             <template v-for="item in buyerNavigationItems" :key="item.text">
-              <nuxt-link :to="item.to">
+              <nuxt-link :to="item.to" @click="closeMenuOnMobile">
                 <NavigationSideBarMenu
                   :menu_text="item.text"
                   :is_active="isRouteActive(item.route)"
@@ -216,6 +217,16 @@ const toggleBottomSection = () => {
   // Save preference to localStorage
   if (typeof window !== 'undefined') {
     localStorage.setItem('sidebarBottomSectionVisible', isBottomSectionVisible.value.toString());
+  }
+};
+
+// Close mobile menu when navigation item is clicked
+const closeMenuOnMobile = () => {
+  // Emit event to parent (Dashboard layout) to close the menu
+  // This will be handled by the parent component
+  if (typeof window !== 'undefined' && window.innerWidth < 768) {
+    // Dispatch custom event that Dashboard layout can listen to
+    window.dispatchEvent(new CustomEvent('close-mobile-menu'));
   }
 };
 

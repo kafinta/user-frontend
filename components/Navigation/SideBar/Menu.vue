@@ -3,7 +3,9 @@
     :disabled="isDisabled"
     :class="[
       'group flex items-center px-8 w-full py-3 gap-3 transition-all duration-300',
-      isDisabled ? 'cursor-not-allowed opacity-50' : (is_active ? 'bg-white' : 'hover:bg-accent-500 duration-500 ease-in-out')
+      isDisabled
+        ? 'cursor-not-allowed opacity-50 pointer-events-none'
+        : (is_active ? 'bg-white' : 'hover:bg-accent-500 duration-500 ease-in-out')
     ]"
   >
     <div
@@ -55,12 +57,12 @@ const isDisabled = computed(() => props.disabled || (!props.isSeller && props.me
 const iconColorClass = computed(() => {
   if (isDisabled.value) return 'text-accent-400';
   if (props.is_active) return 'text-primary';
-  return 'text-[#909090] group-hover:text-accent-300';
+  return 'text-accent-600 group-hover:text-accent-300';
 });
 
 const textColorClass = computed(() => {
   if (isDisabled.value) return 'text-accent-400';
   if (props.is_active) return 'font-medium text-secondary';
-  return 'font-normal text-[#909090] group-hover:text-accent-300';
+  return 'font-normal text-accent-600 group-hover:text-accent-300';
 });
 </script>
