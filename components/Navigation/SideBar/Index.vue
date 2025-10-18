@@ -49,17 +49,31 @@
         <div class="mt-auto bg-accent-900">
           <!-- User profile section - always visible -->
           <div class="p-4 flex items-center gap-3 justify-between">
-            <div class="flex items-center gap-3">
-              <div class="relative flex w-fit">
-                <UserProfilePicture :username="username" :large_dimensions="true" />
-                <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="isUserOnline" :is_displayed="true" />
+            <!-- Loading skeleton -->
+            <template v-if="isLoadingUserData">
+              <div class="flex items-center gap-3 w-full">
+                <div class="w-10 h-10 bg-accent-700 rounded-full animate-pulse"></div>
+                <div class="flex-1">
+                  <div class="h-4 bg-accent-700 rounded animate-pulse mb-2"></div>
+                  <div class="h-3 bg-accent-700 rounded animate-pulse w-2/3"></div>
+                </div>
               </div>
-              <div>
-                <UiTypographyP class="text-white">{{ username }}</UiTypographyP>
-                <!-- Earnings will be populated from API -->
-                <p class="text-green-500 text-sm">{{ userEarnings }}</p>
+            </template>
+
+            <!-- User data -->
+            <template v-else>
+              <div class="flex items-center gap-3">
+                <div class="relative flex w-fit">
+                  <UserProfilePicture :username="username" :large_dimensions="true" />
+                  <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="isUserOnline" :is_displayed="true" />
+                </div>
+                <div>
+                  <UiTypographyP class="text-white">{{ username }}</UiTypographyP>
+                  <!-- Earnings will be populated from API -->
+                  <p class="text-green-500 text-sm">{{ userEarnings }}</p>
+                </div>
               </div>
-            </div>
+            </template>
 
             <!-- Toggle button for additional options -->
             <button
@@ -208,6 +222,9 @@ const userEarnings = ref('$0.00');
 // User online status - will be populated from API
 const isUserOnline = ref(true);
 
+// Loading state for user data
+const isLoadingUserData = ref(false);
+
 // Add this computed property for template usage - uses new role system
 const isSeller = computed(() => authStore.isSeller);
 
@@ -303,13 +320,12 @@ const buyerNavigationItems = computed(() => [
     to: { name: 'username-buying-cart', params: { username: props.username } },
     icon: 'UiIconsCart'
   },
-  // Uncomment when orders page is ready
-  // {
-  //   text: 'Orders',
-  //   route: 'orders',
-  //   to: { name: 'username-buying-orders', params: { username: props.username } },
-  //   icon: 'UiIconsTransactions'
-  // }
+  {
+    text: 'Orders',
+    route: 'orders',
+    to: { name: 'username-buying-orders', params: { username: props.username } },
+    icon: 'UiIconsTransactions'
+  }
 ]);
 
 // Check if a route is active based on the current route
