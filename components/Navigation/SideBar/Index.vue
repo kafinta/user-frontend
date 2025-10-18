@@ -51,11 +51,12 @@
             <div class="flex items-center gap-3">
               <div class="relative flex w-fit">
                 <UserProfilePicture :username="username" :large_dimensions="true" />
-                <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="true" :is_displayed="true" />
+                <UserProfileOnlineStatus class="absolute right-0 bottom-0" :is_online="isUserOnline" :is_displayed="true" />
               </div>
               <div>
                 <UiTypographyP class="text-white">{{ username }}</UiTypographyP>
-                <p class="text-green-500 text-sm">$0.00</p>
+                <!-- Earnings will be populated from API -->
+                <p class="text-green-500 text-sm">{{ userEarnings }}</p>
               </div>
             </div>
 
@@ -199,6 +200,12 @@ const currentMode = ref(props.defaultMode);
 
 // Track bottom section visibility with localStorage persistence
 const isBottomSectionVisible = ref(false);
+
+// User earnings - will be populated from API
+const userEarnings = ref('$0.00');
+
+// User online status - will be populated from API
+const isUserOnline = ref(true);
 
 // Add this computed property for template usage - uses new role system
 const isSeller = computed(() => authStore.isSeller);
