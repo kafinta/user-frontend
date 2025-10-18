@@ -2,8 +2,8 @@
   <button
     :disabled="isDisabled"
     :class="[
-      'group flex items-center px-8 w-full py-3 gap-3',
-      isDisabled ? '' : (is_active ? 'bg-white' : 'hover:bg-accent-500 duration-500 ease-in-out')
+      'group flex items-center px-8 w-full py-3 gap-3 transition-all duration-300',
+      isDisabled ? 'cursor-not-allowed opacity-50' : (is_active ? 'bg-white' : 'hover:bg-accent-500 duration-500 ease-in-out')
     ]"
   >
     <div
