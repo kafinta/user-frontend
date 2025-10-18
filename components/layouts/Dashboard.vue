@@ -24,24 +24,26 @@
 
       <!-- Mobile menu toggle button -->
       <button
-        class="flex md:hidden"
+        class="flex md:hidden p-2 hover:bg-accent-100 rounded-md transition-colors duration-200"
         @click="toggleMenu"
-        aria-label="Toggle menu"
+        :aria-label="menuRevealed ? 'Close menu' : 'Open menu'"
+        :aria-expanded="menuRevealed"
       >
-        <div class="w-8">
+        <div class="w-6 h-6 flex flex-col justify-center items-center gap-1.5">
+          <!-- Top line -->
           <div
-            class="block cursor-pointer bg-primary"
-            :class="[
-              mobileNavOpen ? 'transition transform rotate-45 items-center w-8' : 'transition w-8',
-            ]"
-            style="height: 3px;"
+            class="w-6 h-0.5 bg-primary transition-all duration-300 ease-in-out origin-center"
+            :class="mobileNavOpen ? 'rotate-45 translate-y-2' : ''"
           ></div>
+          <!-- Middle line -->
           <div
-            class="block cursor-pointer bg-primary"
-            :class="[
-              mobileNavOpen ? 'transition transform -rotate-45 item-center w-8 -mt-0.5' : 'transition w-8 mt-1.5',
-            ]"
-            style="height: 3px;"
+            class="w-6 h-0.5 bg-primary transition-all duration-300 ease-in-out"
+            :class="mobileNavOpen ? 'opacity-0' : 'opacity-100'"
+          ></div>
+          <!-- Bottom line -->
+          <div
+            class="w-6 h-0.5 bg-primary transition-all duration-300 ease-in-out origin-center"
+            :class="mobileNavOpen ? '-rotate-45 -translate-y-2' : ''"
           ></div>
         </div>
       </button>
