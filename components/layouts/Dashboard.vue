@@ -11,7 +11,7 @@
     />
 
     <!-- Spacer div to maintain layout when sidebar is visible -->
-    <div class="w-4/5 md:w-1/4 lg:w-1/5 xl:w-1/6 hidden md:block"></div>
+    <div class="w-4/5 md:w-64 hidden md:block"></div>
 
     <!-- Backdrop overlay when mobile menu is open -->
     <SharedBackdrop :show="menuRevealed" @close="toggleMenu" />
@@ -48,7 +48,7 @@
     </nav>
 
     <!-- Main content area -->
-    <div class="w-full md:w-3/4 lg:w-4/5 xl:w-5/6 mt-12 md:mt-0 left-0">
+    <div class="w-full md:flex-1 mt-12 md:mt-0 left-0">
       <!-- Page title header -->
       <UiTypographyH3
         v-if="pageTitle"
@@ -66,7 +66,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '~/stores/auth';
 
@@ -103,6 +103,12 @@ function toggleMenu() {
   mobileNavOpen.value = !mobileNavOpen.value;
 }
 
+// Close mobile menu when navigation item is clicked
+function closeMobileMenu() {
+  menuRevealed.value = false;
+  mobileNavOpen.value = false;
+}
+
 // Handle logo click based on mode
 function handleLogoClick() {
   if (props.mode === 'seller') {
@@ -113,6 +119,13 @@ function handleLogoClick() {
     router.push({ name: '/' });
   }
 }
+
+// Listen for close-mobile-menu event from sidebar
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('close-mobile-menu', closeMobileMenu);
+  }
+});
 
 // Auth store handles role persistence via localStorage
 // No need for additional role fetching - roles are loaded on app initialization
