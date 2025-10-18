@@ -36,7 +36,7 @@ export function useAuthApi() {
     handleAuthSuccess,
 
     logout: async () => {
-      const response = await useCustomFetch<ApiResponse>('/api/logout', {
+      const response = await useCustomFetch<ApiResponse>('/api/user/logout', {
         method: 'POST'
       });
 
