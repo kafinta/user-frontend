@@ -273,7 +273,7 @@ const userMenuItems = [
   },
   {
     label: 'Orders',
-    action: () => router.push({ name: 'username-buying-dashboard', params: { username: username.value } }),
+    action: () => router.push({ name: 'username-buying-orders', params: { username: username.value } }),
   },
   { separator: true },
   {
