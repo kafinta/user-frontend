@@ -120,7 +120,7 @@
   </div>
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
@@ -146,6 +146,13 @@ async function selectCategory(item) {
 async function selectLocation(locationId) {
   await productFilters.selectLocationAndNavigate(locationId);
 }
+
+// Fetch categories on mount
+onMounted(async () => {
+  if (filtersStore.categories.length === 0) {
+    await filtersStore.fetchCategories();
+  }
+})
 </script>
 <style>
 .hero-bg {
