@@ -17,7 +17,7 @@
           </div>
           <UiTypographyH2 class="font-medium text-3xl text-secondary">Email Verified!</UiTypographyH2>
           <UiTypographyP class="text-sm text-secondary">Your email has been successfully verified.</UiTypographyP>
-          <FormButton @click="navigateToDashboard" class="w-full">Continue to Dashboard</FormButton>
+          <button @click="navigateToDashboard" class="w-full py-2 px-5 text-white font-medium text-base 2xl:text-lg justify-center rounded-md bg-secondary hover:bg-primary transition-colors duration-500">Continue to Dashboard</button>
         </div>
 
         <!-- Error State -->
@@ -205,7 +205,7 @@ async function handleTokenVerification(token) {
 
   if (result.success) {
     tokenVerificationStatus.value = 'success';
-    // Auto-redirect after 2 seconds
+    // Auto-redirect after 2 seconds to allow UI to update
     setTimeout(async () => {
       await navigateToDashboard();
     }, 2000);
