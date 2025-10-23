@@ -102,6 +102,16 @@ export function useEmailVerification() {
         const authApi = useAuthApi();
         authApi.handleAuthSuccess(response);
 
+        // Fetch user profile to ensure we have username for dashboard navigation
+        const authStore = useAuthStore();
+        if (!authStore.user?.username) {
+          try {
+            await authStore.validateSession();
+          } catch (error) {
+            console.error('Failed to fetch user profile after token verification:', error);
+          }
+        }
+
         toast.success(response?.message || 'Email verified successfully');
         return { success: true, message: response?.message || 'Email verified successfully' };
       } else {
