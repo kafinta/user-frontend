@@ -114,7 +114,7 @@ async function handleSignup() {
       authApi.handleAuthSuccess(response);
 
       toast.success(response.message || 'Account created successfully');
-      router.push('/auth/verify');
+      router.push('/auth/verify-email/code');
     } else {
       errors.value = response.errors || {};
       toast.error(response?.message || 'Signup failed');
