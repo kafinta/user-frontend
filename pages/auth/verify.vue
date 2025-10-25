@@ -1,118 +1,10 @@
 <template>
   <div class="flex justify-center items-center py-16">
     <main class="w-full max-w-md mx-auto rounded-xl p-5 border-accent-200 border space-y-8">
-      <!-- Token Verification Mode (Auto-triggered when token in URL) -->
-      <div v-if="verificationMode === 'token'">
-        <!-- Loading State -->
-        <div v-if="tokenVerificationStatus === 'loading'" class="text-center space-y-6">
-          <UiIconsLoading class="w-12 h-12 text-primary mx-auto" />
-          <UiTypographyH3 class="font-medium text-3xl text-secondary">Verifying your email...</UiTypographyH3>
-          <UiTypographyP class="text-sm text-secondary">Please wait while we verify your email address.</UiTypographyP>
-        </div>
-
-        <!-- Success State -->
-        <div v-else-if="tokenVerificationStatus === 'success'" class="text-center space-y-6">
-          <div class="w-20 h-20 mx-auto bg-green-200 rounded-full flex items-center justify-center">
-            <UiIconsSuccess class="w-16 h-16 text-green-600" />
-          </div>
-          <UiTypographyH2 class="font-medium text-3xl text-secondary">Email Verified!</UiTypographyH2>
-          <UiTypographyP class="text-sm text-secondary">Your email has been successfully verified.</UiTypographyP>
-          <button @click="navigateToDashboard" class="w-full py-2 px-5 text-white font-medium text-base 2xl:text-lg justify-center rounded-md bg-secondary hover:bg-primary transition-colors duration-500">Continue to Dashboard</button>
-        </div>
-
-        <!-- Error State -->
-        <div v-else-if="tokenVerificationStatus === 'error'" class="text-center space-y-6">
-          <div class="w-20 h-20 mx-auto bg-red-200 rounded-full flex items-center justify-center">
-            <UiIconsError class="w-16 h-16 text-red-600" />
-          </div>
-          <UiTypographyH2 class="font-medium text-3xl text-secondary">Verification Failed</UiTypographyH2>
-          <UiTypographyP class="text-sm text-secondary">{{ errorMessage }}</UiTypographyP>
-          <div class="space-y-4">
-            <FormButton @click="switchToCodeMode" class="w-full">Enter Code Instead</FormButton>
-            <NuxtLink to="/auth/verify" class="text-sm text-primary hover:underline block text-center">
-              Try again with a new verification email
-            </NuxtLink>
-          </div>
-        </div>
-      </div>
-
-      <!-- Code Verification Mode -->
-      <div v-else>
-        <div v-if="mode === 'verify'">
-          <NavigationLogo @click="router.push('/');" class="w-48 mx-auto mb-6" />
-          <UiTypographyH2 class="font-medium text-3xl text-secondary text-center">Verify your email</UiTypographyH2>
-          <UiTypographyP class="text-sm text-secondary text-center mt-2">
-            We've sent a verification code to <strong>{{ userEmail }}</strong>.
-            Enter it below to verify your account and continue to your dashboard.
-          </UiTypographyP>
-          <form @submit.prevent="handleVerifyWithCode" class="grid gap-6 mt-6 w-full">
-            <div class="space-y-2">
-              <FormOtpInput 
-                ref="otpInput"
-                v-model="code" 
-                :length="6" 
-                integerOnly 
-                class="justify-between" 
-                :error="codeError"
-                @complete="autoSubmitHandler"
-              />
-              <p class="text-xs text-accent-600 text-center">
-                The code will expire in 10 minutes. You can request a new one anytime.
-              </p>
-            </div>
-            <FormButton :loading="isLoading">Verify Email</FormButton>
-            <div class="flex flex-col items-center gap-2">
-              <button
-                type="button"
-                @click="mode = 'changeEmail'"
-                class="text-sm text-accent-600 hover:text-primary"
-                :disabled="isLoading"
-              >
-                Use a different email address
-              </button>
-              <button
-                type="button"
-                @click="resendCode"
-                class="text-sm text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
-                :disabled="resendCooldown > 0 || isLoading"
-              >
-                {{ resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : 'Resend verification code' }}
-              </button>
-            </div>
-          </form>
-          <!-- Troubleshooting Section -->
-          <div class="mt-6 p-4 bg-accent-50 rounded-lg border border-accent-200">
-            <UiTypographyH3 class="text-sm font-medium text-secondary mb-2">Didn't receive the email?</UiTypographyH3>
-            <ul class="text-xs text-accent-600 space-y-1">
-              <li>• Check your spam or junk folder</li>
-              <li>• Make sure you entered the correct email address</li>
-              <li>• Wait a few minutes - emails can take time to arrive</li>
-              <li>• Try requesting a new code above</li>
-            </ul>
-          </div>
-        </div>
-        <div v-else-if="mode === 'changeEmail'">
-          <NavigationLogo @click="router.push('/');" class="w-48 mx-auto mb-6" />
-          <UiTypographyH3 class="text-lg font-medium text-secondary mb-2 text-center">Change your email address</UiTypographyH3>
-          <form @submit.prevent="handleChangeEmail" class="space-y-3 mt-6">
-            <FormInput
-              label="New Email"
-              type="email"
-              v-model:inputValue="newEmail"
-              :error="changeEmailErrors.email || undefined"
-              class="w-full"
-            />
-            <FormInput
-              label="Password"
-              type="password"
-              v-model:inputValue="password"
-              :error="changeEmailErrors.password || undefined"
-              class="w-full"
-            />
-            <FormButton :loading="isLoading">Update Email</FormButton>
-            <button type="button" @click="mode = 'verify'" class="text-sm text-primary hover:underline block mx-auto mt-2">Back to verification</button>
-          </form>
-        </div>
+      <div class="text-center space-y-6">
+        <UiIconsLoading class="w-12 h-12 text-primary mx-auto" />
+        <UiTypographyH3 class="font-medium text-3xl text-secondary">Redirecting...</UiTypographyH3>
+        <UiTypographyP class="text-sm text-secondary">Please wait while we redirect you to the verification page.</UiTypographyP>
       </div>
     </main>
   </div>
@@ -131,150 +23,29 @@ useHead({
   ]
 });
 
-import { ref, onMounted } from "vue";
-import { useAuthStore } from '~/stores/auth';
-import { useEmailVerification } from "~/composables/useEmailVerification";
+import { onMounted } from "vue";
+import { useRoute, useRouter } from 'vue-router';
 
-const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
 
-// Use the email verification composable
-const {
-  code,
-  isLoading,
-  resendCooldown,
-  codeError,
-  userEmail,
-  initializeEmail,
-  verifyWithCode,
-  verifyWithToken,
-  resendCode: resendCodeComposable,
-  autoSubmit,
-  updateEmail,
-  updateEmailError
-} = useEmailVerification();
-
-// Additional state for token verification
-const verificationMode = ref('code'); // 'token' or 'code'
-const tokenVerificationStatus = ref('loading'); // 'loading', 'success', 'error'
-const errorMessage = ref('');
-const otpInput = ref(null);
-
-// Change email form state
-const mode = ref('verify');
-const newEmail = ref('');
-const password = ref('');
-const changeEmailErrors = ref({ email: '', password: '' });
-
-// Smart routing: Check URL for token parameter
+// Redirect to appropriate verification page
 onMounted(async () => {
-  // If user is already verified, redirect them to dashboard
-  if (authStore.isAuthenticated && authStore.isVerified) {
-    await navigateToDashboard();
-    return;
-  }
-
-  // Initialize user email
-  initializeEmail(route.query.email);
-
-  // Check if there's a token in the URL
   const token = route.query.token;
+  const email = route.query.email;
 
   if (token) {
-    // Token verification mode
-    verificationMode.value = 'token';
-    await handleTokenVerification(token);
+    // Redirect to token verification page
+    await router.push({
+      path: '/auth/verify-email/token',
+      query: { token }
+    });
   } else {
-    // Code verification mode (default)
-    verificationMode.value = 'code';
-    // Auto-focus the OTP input after a short delay
-    setTimeout(() => {
-      if (otpInput.value) {
-        otpInput.value.focus();
-      }
-    }, 500);
+    // Redirect to code verification page
+    await router.push({
+      path: '/auth/verify-email/code',
+      query: email ? { email } : {}
+    });
   }
 });
-
-// Handle token verification
-async function handleTokenVerification(token) {
-  tokenVerificationStatus.value = 'loading';
-
-  const result = await verifyWithToken(token);
-
-  if (result.success) {
-    tokenVerificationStatus.value = 'success';
-    // Auto-redirect after 2 seconds to allow UI to update
-    setTimeout(async () => {
-      await navigateToDashboard();
-    }, 2000);
-  } else {
-    tokenVerificationStatus.value = 'error';
-    errorMessage.value = result.message;
-  }
-}
-
-// Switch from token mode to code mode (when token verification fails)
-function switchToCodeMode() {
-  verificationMode.value = 'code';
-  // Clear the token from URL
-  router.replace('/auth/verify');
-  // Auto-focus the OTP input
-  setTimeout(() => {
-    if (otpInput.value) {
-      otpInput.value.focus();
-    }
-  }, 100);
-}
-
-// Resend code with focus callback
-async function resendCode() {
-  await resendCodeComposable(() => {
-    // Focus the OTP input after resending
-    if (otpInput.value) {
-      otpInput.value.focus();
-    }
-  });
-}
-
-// Change email function
-function changeEmail() {
-  // Redirect to signup or login page to change email
-  router.push('/auth/signup');
-}
-
-// Navigate to dashboard
-async function navigateToDashboard() {
-  const authApi = useAuthApi();
-  await authApi.navigateToDashboard();
-}
-
-async function handleChangeEmail() {
-  changeEmailErrors.value = { email: '', password: '' };
-  if (!newEmail.value) {
-    changeEmailErrors.value.email = 'Email is required.';
-  }
-  if (!password.value) {
-    changeEmailErrors.value.password = 'Password is required.';
-  }
-  if (changeEmailErrors.value.email || changeEmailErrors.value.password) return;
-  const result = await updateEmail(newEmail.value, password.value);
-  if (result.success) {
-    mode.value = 'verify';
-    newEmail.value = '';
-    password.value = '';
-  }
-}
-
-async function handleVerifyWithCode() {
-  const result = await verifyWithCode();
-  if (result) {
-    await navigateToDashboard();
-  }
-}
-
-function autoSubmitHandler() {
-  handleVerifyWithCode();
-}
 </script>
