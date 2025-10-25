@@ -149,7 +149,7 @@ async function selectLocation(locationId) {
 
 // Fetch categories on mount
 onMounted(async () => {
-  if (filtersStore.categories.length === 0) {
+  if (filtersStore.categories.length === 0 ) {
     await filtersStore.fetchCategories();
   }
 })
