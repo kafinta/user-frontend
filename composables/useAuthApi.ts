@@ -147,7 +147,7 @@ export function useAuthApi() {
       // Don't redirect or show notifications if we're on auth pages
       const isAuthPage = currentPath.includes('/auth/login') ||
                         currentPath.includes('/auth/signup') ||
-                        currentPath.includes('/auth/verify')
+                        currentPath.includes('/auth/verify-email')
 
       if (!isAuthPage) {
         // Show session expired notification

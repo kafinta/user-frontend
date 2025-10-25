@@ -122,7 +122,7 @@ async function handleSignin() {
       const needsVerification = response.data?.email_verification_required || !authStore.isVerified;
 
       if (needsVerification) {
-        router.push('/auth/verify');
+        router.push('/auth/verify-email/code');
       } else {
         // Pass the redirect path if it exists
         await auth.navigateToDashboard(redirectPath.value || undefined);

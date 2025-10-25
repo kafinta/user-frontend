@@ -123,12 +123,12 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // Case 2: Route requires verification and user needs verification
   if (routeRequirements.requiresVerification && authStore.needsVerification) {
     // Show a notification if we're not already on the verify page
-    if (to.fullPath !== '/auth/verify') {
+    if (!to.fullPath.includes('/auth/verify-email')) {
       const toast = useAppToast();
       toast.info('Verification Required', 'Please verify your email to access this page');
     }
 
-    return navigateTo('/auth/verify');
+    return navigateTo('/auth/verify-email/code');
   }
 
   // Case 3: Username validation for user-specific routes
