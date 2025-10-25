@@ -151,13 +151,26 @@ export const useAuthStore = defineStore('auth', () => {
   // Actions
 
   /**
-   * Initialize the auth store - load from localStorage only
+   * Initialize the auth store - load from localStorage first, then sync with backend
    */
   async function initialize() {
     if (initialized.value) return;
 
     try {
-      // Always fetch the current user profile from the backend
+      // First, load from localStorage to ensure roles are available immediately
+      const storedUser = loadFromStorage<User>(STORAGE_KEYS.USER);
+      const storedRoles = loadFromStorage<string[]>(STORAGE_KEYS.ROLES);
+      const storedVerified = loadFromStorage<boolean>(STORAGE_KEYS.VERIFIED);
+
+      if (storedUser) {
+        setUser(storedUser);
+        setVerified(storedVerified || false);
+        if (storedRoles && storedRoles.length > 0) {
+          setRoles(storedRoles);
+        }
+      }
+
+      // Then, fetch the current user profile from the backend to sync
       const response = await useCustomFetch<ApiResponse>('/api/user/profile', {
         method: 'GET',
         suppressAuthError: true // Prevent session expired toast/redirect on app launch
