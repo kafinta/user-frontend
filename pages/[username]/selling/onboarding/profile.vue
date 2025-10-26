@@ -193,9 +193,17 @@ const validateForm = () => {
     isValid = false;
   }
 
-  if (form.value.business_website && !/^https?:\/\/.*/.test(form.value.business_website)) {
-    errors.value.business_website = 'Please enter a valid URL starting with http:// or https://';
-    isValid = false;
+  // Normalize URL if provided
+  if (form.value.business_website) {
+    // Check if it's a valid URL format (with or without protocol)
+    const urlRegex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+    if (!urlRegex.test(form.value.business_website)) {
+      errors.value.business_website = 'Please enter a valid website URL (e.g., website.com or https://website.com)';
+      isValid = false;
+    } else if (!form.value.business_website.startsWith('http')) {
+      // Add https:// if not present
+      form.value.business_website = 'https://' + form.value.business_website;
+    }
   }
 
   return isValid;

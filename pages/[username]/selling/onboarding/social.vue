@@ -66,7 +66,7 @@
                 </FormInputGroupAddon>
                 <FormInputText
                   v-model="form.facebook_page"
-                  placeholder="https://facebook.com/nike"
+                  placeholder="facebook.com/nike"
                   type="url"
                   aria-describedby="facebook-help"
                 />
@@ -100,7 +100,7 @@
                 </FormInputGroupAddon>
                 <FormInputText
                   v-model="form.linkedin_page"
-                  placeholder="https://linkedin.com/company/nike"
+                  placeholder="linkedin.com/company/nike"
                   type="url"
                   aria-describedby="linkedin-help"
                 />
@@ -134,7 +134,7 @@
                 </FormInputGroupAddon>
                 <FormInputText
                   v-model="form.youtube_channel"
-                  placeholder="https://youtube.com/@nike"
+                  placeholder="youtube.com/@nike"
                   type="url"
                   aria-describedby="youtube-help"
                 />
@@ -221,26 +221,23 @@ const validateForm = () => {
   let isValid = true;
 
   // Validate URLs if provided
-  const urlFields = ['facebook_page', 'linkedin_page', 'youtube_channel'];
-  urlFields.forEach(field => {
+  const urlFields = {
+    facebook_page: 'facebook.com',
+    linkedin_page: 'linkedin.com',
+    youtube_channel: 'youtube.com'
+  };
+
+  Object.entries(urlFields).forEach(([field, domain]) => {
     if (form.value[field]) {
-      // Check if URL starts with http/https
-      if (!/^https?:\/\/.*/.test(form.value[field])) {
-        errors.value[field] = 'Please enter a valid URL starting with http:// or https://';
+      const url = form.value[field];
+
+      // Check if it contains the correct domain
+      if (!url.includes(domain)) {
+        errors.value[field] = `Please enter a valid ${domain} URL`;
         isValid = false;
-      }
-      // Check for platform-specific domains
-      else if (field === 'facebook_page' && !form.value[field].includes('facebook.com')) {
-        errors.value[field] = 'Please enter a valid Facebook URL';
-        isValid = false;
-      }
-      else if (field === 'linkedin_page' && !form.value[field].includes('linkedin.com')) {
-        errors.value[field] = 'Please enter a valid LinkedIn URL';
-        isValid = false;
-      }
-      else if (field === 'youtube_channel' && !form.value[field].includes('youtube.com')) {
-        errors.value[field] = 'Please enter a valid YouTube URL';
-        isValid = false;
+      } else if (!url.startsWith('http')) {
+        // Add https:// if not present
+        form.value[field] = 'https://' + url;
       }
     }
   });
