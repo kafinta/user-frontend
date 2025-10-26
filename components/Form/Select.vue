@@ -137,8 +137,8 @@ export default {
 
   computed: {
     hasValue() {
-      // Label should float if any option is selected, including '' (e.g., 'All')
-      return this.selectedOption !== null && this.selectedOption !== undefined;
+      // Label should float if any option is selected with actual content
+      return this.selectedOption !== null && this.selectedOption !== undefined && this.getSelectedDisplayText() !== '';
     },
 
     hasError() {
