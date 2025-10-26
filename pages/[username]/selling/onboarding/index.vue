@@ -299,6 +299,7 @@ async function completeOnboarding() {
 
     if (response.status === 'success') {
       toast.success('Success', response.message || 'Onboarding completed successfully');
+
       // Update auth store with new user data (including seller role)
       if (response.data?.user) {
         auth.setUser(response.data.user);
@@ -309,8 +310,22 @@ async function completeOnboarding() {
       } else if (response.data?.user?.roles) {
         auth.setRoles(response.data.user.roles);
       }
-      // Wait a moment for auth store to update
-      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Fetch fresh profile from backend to ensure seller role is persisted
+      // This ensures the middleware will recognize the user as a seller
+      const profileResponse = await useCustomFetch('/api/user/profile', {
+        method: 'GET'
+      });
+
+      if (profileResponse.status === 'success' && profileResponse.data?.user) {
+        auth.setUser(profileResponse.data.user);
+        if (profileResponse.data?.roles) {
+          auth.setRoles(profileResponse.data.roles);
+        } else if (profileResponse.data?.user?.roles) {
+          auth.setRoles(profileResponse.data.user.roles);
+        }
+      }
+
       // Redirect to seller dashboard automatically
       await router.push({
         name: 'username-selling-dashboard',
