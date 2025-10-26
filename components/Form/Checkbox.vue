@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center gap-2">
+  <div>
     <!-- Hidden native checkbox for accessibility -->
     <input
       :id="inputId"
@@ -12,8 +12,8 @@
       @change="handleChange"
       class="sr-only"
     />
-    
-    <!-- Custom checkbox -->
+
+    <!-- Clickable wrapper for entire checkbox + label -->
     <div
       @click="!disabled && toggle()"
       @keydown.space.prevent="!disabled && toggle()"
@@ -22,39 +22,44 @@
       role="checkbox"
       :aria-checked="isChecked"
       :aria-disabled="disabled"
-      :class="checkboxClasses"
-      class="relative flex items-center justify-center w-4 h-4 border-2 rounded focus:outline-none"
+      class="flex items-center gap-2"
       :style="disabled ? '' : 'transition: all 200ms ease-out;'"
     >
-      <!-- Checkmark -->
-      <svg
-        v-show="isChecked"
-        class="w-3 h-3 text-white"
-        fill="currentColor"
-        viewBox="0 0 20 20"
-        xmlns="http://www.w3.org/2000/svg"
+      <!-- Custom checkbox -->
+      <div
+        :class="checkboxClasses"
+        class="relative flex items-center justify-center w-4 h-4 border-2 rounded flex-shrink-0"
       >
-        <path
-          fill-rule="evenodd"
-          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-          clip-rule="evenodd"
-        />
-      </svg>
-    </div>
-    
-    <!-- Label -->
-    <label
-      v-if="label || $slots.default"
-      :for="inputId"
-      :class="labelClasses"
-      class="select-none"
-      :style="disabled ? '' : 'transition: color 200ms ease-out;'"
-    >
-      <slot>{{ label }}</slot>
-    </label>
-  </div>
+        <!-- Checkmark -->
+        <svg
+          v-show="isChecked"
+          class="w-3 h-3 text-white"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </div>
 
-  <p v-if="typeof error === 'string' && error" class="text-xs text-red-500 mt-1">{{ error }}</p>
+      <!-- Label -->
+      <label
+        v-if="label || $slots.default"
+        :for="inputId"
+        :class="labelClasses"
+        class="select-none"
+        :style="disabled ? '' : 'transition: color 200ms ease-out;'"
+      >
+        <slot>{{ label }}</slot>
+      </label>
+    </div>
+
+    <p v-if="typeof error === 'string' && error" class="text-xs text-red-500 mt-1">{{ error }}</p>
+  </div>
 </template>
 
 <script>
