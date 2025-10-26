@@ -67,7 +67,7 @@
                 <FormInputText
                   v-model="form.facebook_page"
                   placeholder="facebook.com/nike"
-                  type="url"
+                  type="text"
                   aria-describedby="facebook-help"
                 />
               </FormInputGroup>
@@ -101,7 +101,7 @@
                 <FormInputText
                   v-model="form.linkedin_page"
                   placeholder="linkedin.com/company/nike"
-                  type="url"
+                  type="text"
                   aria-describedby="linkedin-help"
                 />
               </FormInputGroup>
@@ -135,7 +135,7 @@
                 <FormInputText
                   v-model="form.youtube_channel"
                   placeholder="youtube.com/@nike"
-                  type="url"
+                  type="text"
                   aria-describedby="youtube-help"
                 />
               </FormInputGroup>

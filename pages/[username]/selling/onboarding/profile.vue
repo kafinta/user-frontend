@@ -66,9 +66,10 @@
 
             <FormInput
               label="Business Website"
-              type="url"
+              type="text"
               v-model:inputValue="form.business_website"
               :error="errors.business_website"
+              placeholder="website.com or https://website.com"
             />
 
             <FormTextarea
