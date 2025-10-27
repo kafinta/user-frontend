@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue';
 import { useAuthStore } from '~/stores/auth';
+import { useCustomFetch } from '~/composables/useCustomFetch';
 
 // Updated types for new onboarding system
 export interface OnboardingStep {
@@ -24,6 +25,30 @@ export interface OnboardingProgress {
     optional_total: number
   }
 }
+
+// Fallback progress data (extracted to avoid duplication)
+const FALLBACK_PROGRESS: OnboardingProgress = {
+  can_complete: false,
+  required_steps: [
+    { id: 'email_verification', name: 'Email Verification', completed: false, required: true },
+    { id: 'phone_verification', name: 'Phone Verification', completed: false, required: true },
+    { id: 'profile_completion', name: 'Business Profile', completed: false, required: true },
+    { id: 'agreement_acceptance', name: 'Seller Agreement', completed: false, required: true }
+  ],
+  optional_steps: [
+    { id: 'kyc_verification', name: 'KYC Verification', completed: false, required: false },
+    { id: 'payment_information', name: 'Payment Information', completed: false, required: false },
+    { id: 'social_media', name: 'Social Media', completed: false, required: false }
+  ],
+  missing_required_steps: ['email_verification', 'phone_verification', 'profile_completion', 'agreement_acceptance'],
+  completed_steps: [],
+  completion_summary: {
+    required_completed: 0,
+    required_total: 4,
+    optional_completed: 0,
+    optional_total: 3
+  }
+};
 
 export const useOnboarding = () => {
   const auth = useAuthStore();
@@ -133,6 +158,11 @@ export const useOnboarding = () => {
 
   // Fetch seller progress (simplified - mainly for shared state)
   const fetchProgress = async () => {
+    // Return cached progress if already loaded
+    if (progress.value) {
+      return { status: 'success', data: progress.value };
+    }
+
     isLoading.value = true;
 
     try {
@@ -143,57 +173,16 @@ export const useOnboarding = () => {
       if (response.status === 'success' && response.data) {
         progress.value = response.data;
       } else {
-        // If API fails, create a minimal progress structure for testing
+        // If API fails, use fallback progress data
         console.warn('API failed, using fallback progress data');
-        progress.value = {
-          can_complete: false,
-          required_steps: [
-            { id: 'email_verification', name: 'Email Verification', completed: false, required: true },
-            { id: 'phone_verification', name: 'Phone Verification', completed: false, required: true },
-            { id: 'profile_completion', name: 'Business Profile', completed: false, required: true },
-            { id: 'agreement_acceptance', name: 'Seller Agreement', completed: false, required: true }
-          ],
-          optional_steps: [
-            { id: 'kyc_verification', name: 'KYC Verification', completed: false, required: false },
-            { id: 'payment_information', name: 'Payment Information', completed: false, required: false }
-          ],
-          missing_required_steps: ['email_verification', 'phone_verification', 'profile_completion', 'agreement_acceptance'],
-          completed_steps: [],
-          completion_summary: {
-            required_completed: 0,
-            required_total: 4,
-            optional_completed: 0,
-            optional_total: 2
-          }
-        };
+        progress.value = { ...FALLBACK_PROGRESS };
       }
 
       return response;
     } catch (error) {
       console.error('Failed to fetch seller progress:', error);
-
-      // Create fallback data on error
-      progress.value = {
-        can_complete: false,
-        required_steps: [
-          { id: 'email_verification', name: 'Email Verification', completed: false, required: true },
-          { id: 'phone_verification', name: 'Phone Verification', completed: false, required: true },
-          { id: 'profile_completion', name: 'Business Profile', completed: false, required: true },
-          { id: 'agreement_acceptance', name: 'Seller Agreement', completed: false, required: true }
-        ],
-        optional_steps: [
-          { id: 'kyc_verification', name: 'KYC Verification', completed: false, required: false },
-          { id: 'payment_information', name: 'Payment Information', completed: false, required: false }
-        ],
-        missing_required_steps: ['email_verification', 'phone_verification', 'profile_completion', 'agreement_acceptance'],
-        completed_steps: [],
-        completion_summary: {
-          required_completed: 0,
-          required_total: 4,
-          optional_completed: 0,
-          optional_total: 2
-        }
-      };
+      // Use fallback data on error
+      progress.value = { ...FALLBACK_PROGRESS };
 
       return {
         status: 'error',

@@ -117,6 +117,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useCustomFetch } from '~/composables/useCustomFetch';
 import { useAppToast } from '~/utils/toastify';
+import { useOnboardingNavigation } from '@/composables/useOnboardingNavigation';
 
 definePageMeta({
   middleware: ['auth'],
@@ -134,6 +135,7 @@ useHead({
 const router = useRouter();
 const route = useRoute();
 const toast = useAppToast();
+const navigation = useOnboardingNavigation();
 
 // State variables
 const isLoading = ref(true);
@@ -251,7 +253,7 @@ const submitPaymentInfo = async () => {
 
       // Redirect to onboarding page after a brief delay (consistent with other pages)
       setTimeout(() => {
-        continueOnboarding();
+        navigation.continueOnboarding();
       }, 1500);
     } else {
       toast.error('Error', response.message || 'Failed to update payment information');
@@ -261,13 +263,5 @@ const submitPaymentInfo = async () => {
   } finally {
     isSubmitting.value = false;
   }
-};
-
-// Continue to next onboarding step
-const continueOnboarding = () => {
-  router.push({
-    name: 'username-selling-onboarding',
-    params: { username: route.params.username }
-  });
 };
 </script>

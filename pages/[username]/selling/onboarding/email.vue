@@ -55,6 +55,7 @@ import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/stores/auth';
 import { useAppToast } from '~/utils/toastify';
 import { useOnboarding } from '@/composables/useOnboarding';
+import { useOnboardingNavigation } from '@/composables/useOnboardingNavigation';
 
 definePageMeta({
   middleware: ['auth'],
@@ -74,6 +75,7 @@ const authStore = useAuthStore();
 const { message, status, isVerified } = storeToRefs(authStore);
 const toast = useAppToast();
 const onboardingState = useOnboarding();
+const navigation = useOnboardingNavigation();
 
 // State variables
 const code = ref('');
@@ -126,7 +128,7 @@ const verifyEmail = async () => {
 
       // Redirect to onboarding page after a brief delay
       setTimeout(() => {
-        continueOnboarding();
+        navigation.continueOnboarding();
       }, 1500);
     } else {
       codeError.value = Array.isArray(errors.value?.code) ? errors.value.code.join(' ') : (typeof errors.value?.code === 'string' ? errors.value.code : (message.value || 'Verification failed. Please try again.'));
@@ -195,17 +197,6 @@ const startCooldown = () => {
       cooldownInterval.value = null;
     }
   }, 1000);
-};
-
-// Continue to next onboarding step
-const continueOnboarding = async () => {
-  // Refresh onboarding progress before continuing
-  await onboardingState.fetchProgress();
-
-  router.push({
-    name: 'username-selling-onboarding',
-    params: { username: route.params.username }
-  });
 };
 
 // Clean up interval on component unmount

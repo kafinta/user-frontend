@@ -151,6 +151,7 @@ useHead({
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useOnboarding } from "@/composables/useOnboarding.ts";
+import { useOnboardingNavigation } from "@/composables/useOnboardingNavigation.ts";
 import { useAuthStore } from '~/stores/auth';
 import { useCustomFetch } from '~/composables/useCustomFetch';
 import { useAppToast } from '~/utils/toastify';
@@ -158,6 +159,7 @@ import { useAppToast } from '~/utils/toastify';
 const router = useRouter();
 const auth = useAuthStore();
 const onboarding = useOnboarding();
+const navigation = useOnboardingNavigation();
 const toast = useAppToast();
 
 // Local state
@@ -171,44 +173,23 @@ const missingRequiredSteps = computed(() => onboarding.missingRequiredSteps.valu
 const requiredSteps = computed(() => onboarding.requiredSteps.value);
 const optionalSteps = computed(() => onboarding.optionalSteps.value);
 
-// Fetch progress from API (page handles its own API call)
-async function fetchProgress() {
-  isLoading.value = true;
-
-  try {
-    const response = await useCustomFetch('/api/seller/progress', {
-      method: 'GET'
-    });
-
-    if (response.status === 'success' && response.data) {
-      // Update the onboarding composable state
-      onboarding.progress.value = response.data;
-    } else {
-      // If API fails, show a helpful message
-      toast.error('Error', 'Failed to load onboarding progress. Please refresh the page.');
-    }
-
-    return response;
-  } catch (error) {
-    console.error('Failed to fetch seller progress:', error);
-    toast.error('Error', 'Failed to load onboarding progress');
-  } finally {
-    isLoading.value = false;
-  }
-}
-
 // Initialize auth and fetch progress
 onMounted(async () => {
   // If user is already a seller, they've completed onboarding
   if (auth.isSeller) {
     // Redirect to seller dashboard
-    router.push({
-      name: 'username-selling-dashboard',
-      params: { username: router.currentRoute.value.params.username }
-    });
+    await navigation.goToDashboard();
   } else {
     // Fetch seller progress from the API
-    await fetchProgress();
+    isLoading.value = true;
+    try {
+      await onboarding.fetchProgress();
+    } catch (error) {
+      console.error('Failed to fetch seller progress:', error);
+      toast.error('Error', 'Failed to load onboarding progress');
+    } finally {
+      isLoading.value = false;
+    }
   }
 });
 
@@ -327,10 +308,7 @@ async function completeOnboarding() {
       }
 
       // Redirect to seller dashboard automatically
-      await router.push({
-        name: 'username-selling-dashboard',
-        params: { username: router.currentRoute.value.params.username }
-      });
+      await navigation.goToDashboard();
     } else {
       toast.error('Error', response.message || 'Failed to complete onboarding');
     }

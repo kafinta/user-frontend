@@ -75,6 +75,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useCustomFetch } from '~/composables/useCustomFetch';
 import { useAppToast } from '~/utils/toastify';
 import { useOnboarding } from '@/composables/useOnboarding';
+import { useOnboardingNavigation } from '@/composables/useOnboardingNavigation';
 
 definePageMeta({
   middleware: ['auth'],
@@ -93,6 +94,7 @@ const router = useRouter();
 const route = useRoute();
 const toast = useAppToast();
 const onboarding = useOnboarding();
+const navigation = useOnboardingNavigation();
 
 // State variables
 const step = ref('phone_input');
@@ -182,7 +184,7 @@ const verifyCode = async () => {
 
       // Redirect to onboarding page after a brief delay
       setTimeout(() => {
-        continueOnboarding();
+        navigation.continueOnboarding();
       }, 1500);
     } else {
       codeError.value = Array.isArray(response.errors?.verification_code) ? response.errors.verification_code.join(' ') : (typeof response.errors?.verification_code === 'string' ? response.errors.verification_code : (response.message || 'Verification failed. Please try again.'));
@@ -234,14 +236,6 @@ const startCooldown = () => {
       cooldownInterval.value = null;
     }
   }, 1000);
-};
-
-// Continue to next onboarding step
-const continueOnboarding = () => {
-  router.push({
-    name: 'username-selling-onboarding',
-    params: { username: route.params.username }
-  });
 };
 
 // Clean up interval on component unmount
