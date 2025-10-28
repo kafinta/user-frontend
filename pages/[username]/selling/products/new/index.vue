@@ -268,12 +268,10 @@ const createProduct = async () => {
         // Show success feedback
         toast.success('Product information saved! Moving to specifications...')
 
-        // Small delay for better UX
-        setTimeout(() => {
-          router.push({
-            path: `/${route.params.username}/selling/products/${productSlug}/specifications`
-          })
-        }, 500)
+        // Navigate to next step
+        router.push({
+          path: `/${route.params.username}/selling/products/${productSlug}/specifications`
+        })
       } else {
         console.error('No product slug in response:', response)
         toast.error('Product saved but unable to proceed to next step. Please try again.')
@@ -315,11 +313,9 @@ const saveAsDraft = async () => {
       if (productSlug) {
         toast.success('Product saved as draft! You can continue editing later.')
         // Redirect to product listing
-        setTimeout(() => {
-          router.push({
-            path: `/${route.params.username}/selling/products`
-          })
-        }, 500)
+        router.push({
+          path: `/${route.params.username}/selling/products`
+        })
       } else {
         toast.error('Product saved but unable to redirect. Please try again.')
       }
