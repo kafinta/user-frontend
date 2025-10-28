@@ -6,6 +6,7 @@ import { useAppToast } from '~/utils/toastify'
  * Consolidated composable for seller product management
  * Combines CRUD operations, attributes, images, status, stats, and single product fetching
  * Standardized error handling and return types
+ * Includes caching to reduce redundant API calls
  */
 export function useSellerProducts() {
   const toast = useAppToast()
@@ -20,6 +21,38 @@ export function useSellerProducts() {
    * Populated after fetchMyProducts
    */
   const pagination = ref<any>(null)
+
+  // Cache for single products (by slug and ID)
+  const productCache = new Map<string, any>()
+  const productCacheTimestamp = new Map<string, number>()
+  const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes in milliseconds
+
+  /**
+   * Check if cached data is still valid
+   */
+  function isCacheValid(key: string): boolean {
+    const timestamp = productCacheTimestamp.get(key)
+    if (!timestamp) return false
+    return Date.now() - timestamp < CACHE_DURATION
+  }
+
+  /**
+   * Invalidate cache for a specific product
+   */
+  function invalidateProductCache(slug?: string, id?: string): void {
+    if (slug) productCache.delete(`slug:${slug}`)
+    if (id) productCache.delete(`id:${id}`)
+    if (slug) productCacheTimestamp.delete(`slug:${slug}`)
+    if (id) productCacheTimestamp.delete(`id:${id}`)
+  }
+
+  /**
+   * Invalidate all product cache
+   */
+  function invalidateAllProductCache(): void {
+    productCache.clear()
+    productCacheTimestamp.clear()
+  }
 
   /**
    * Fetch the seller's products (with optional filters/pagination)
@@ -74,6 +107,8 @@ export function useSellerProducts() {
       body: payload
     })
     isLoading.value = false
+    // Invalidate cache for this product
+    invalidateProductCache(undefined, productId)
     return data?.data || null
   }
 
@@ -92,6 +127,8 @@ export function useSellerProducts() {
       error.value = fetchError.value
       return false
     }
+    // Invalidate cache for this product
+    invalidateProductCache(undefined, productId)
     return true
   }
 
@@ -108,6 +145,8 @@ export function useSellerProducts() {
       body: { attributes }
     })
     isLoading.value = false
+    // Invalidate cache for this product
+    invalidateProductCache(undefined, productId)
     return data?.data || null
   }
 
@@ -126,6 +165,8 @@ export function useSellerProducts() {
       body: formData
     })
     isLoading.value = false
+    // Invalidate cache for this product
+    invalidateProductCache(undefined, productId)
     return data?.data || null
   }
 
@@ -144,6 +185,8 @@ export function useSellerProducts() {
       error.value = fetchError.value
       return false
     }
+    // Invalidate cache for this product
+    invalidateProductCache(undefined, productId)
     return true
   }
 
@@ -165,6 +208,8 @@ export function useSellerProducts() {
       error.value = fetchError.value
       return false
     }
+    // Invalidate cache for this product
+    invalidateProductCache(undefined, productId)
     return true
   }
 
@@ -189,14 +234,29 @@ export function useSellerProducts() {
   }
 
   /**
-   * Get single product by ID
+   * Get single product by ID (with caching)
    * @param {number} productId
+   * @param {boolean} forceRefresh - Force fetch from API, bypassing cache
    */
-  async function getProduct(productId: any): Promise<any> {
+  async function getProduct(productId: any, forceRefresh: boolean = false): Promise<any> {
     try {
+      const cacheKey = `id:${productId}`
+
+      // Check cache first
+      if (!forceRefresh && isCacheValid(cacheKey)) {
+        return { status: 'success', data: productCache.get(cacheKey) }
+      }
+
       const response = await useCustomFetch(`/api/products/${productId}`, {
         method: 'GET'
       })
+
+      // Cache the result
+      if (response.status === 'success' && response.data) {
+        productCache.set(cacheKey, response.data)
+        productCacheTimestamp.set(cacheKey, Date.now())
+      }
+
       return response
     } catch (error: any) {
       const errorMessage = error.data?.message || 'Failed to fetch product'
@@ -206,14 +266,29 @@ export function useSellerProducts() {
   }
 
   /**
-   * Get single product by slug
+   * Get single product by slug (with caching)
    * @param {string} slug
+   * @param {boolean} forceRefresh - Force fetch from API, bypassing cache
    */
-  async function getProductBySlug(slug: any): Promise<any> {
+  async function getProductBySlug(slug: any, forceRefresh: boolean = false): Promise<any> {
     try {
+      const cacheKey = `slug:${slug}`
+
+      // Check cache first
+      if (!forceRefresh && isCacheValid(cacheKey)) {
+        return { status: 'success', data: productCache.get(cacheKey) }
+      }
+
       const response = await useCustomFetch(`/api/products/slug/${slug}`, {
         method: 'GET'
       })
+
+      // Cache the result
+      if (response.status === 'success' && response.data) {
+        productCache.set(cacheKey, response.data)
+        productCacheTimestamp.set(cacheKey, Date.now())
+      }
+
       return response
     } catch (error: any) {
       const errorMessage = error.data?.message || 'Failed to fetch product'
@@ -297,6 +372,9 @@ export function useSellerProducts() {
     // Publishing & Status
     publishProduct,
     updateStatus,
-    bulkUpdateStatus
+    bulkUpdateStatus,
+    // Cache management
+    invalidateProductCache,
+    invalidateAllProductCache
   }
 }
