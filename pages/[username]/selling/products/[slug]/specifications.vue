@@ -187,9 +187,7 @@ const handleSubmit = async () => {
   errors.value = {}
   try {
     isLoading.value = true
-    // Fetch product again to get its id (new structure)
-    const response = await getProductBySlug(productSlug)
-    product.value = response?.data || null
+    // Use cached product data from fetchAttributes (no need to fetch again)
     if (!product.value) {
       error.value = 'Product not found.'
       attributes.value = []

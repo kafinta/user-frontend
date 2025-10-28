@@ -153,9 +153,7 @@ function handleStepClick(idx) {
 
 const handlePublish = async () => {
   isLoading.value = true
-  // Fetch product by slug to get its id
-  const response = await getProductBySlug(productSlug)
-  product.value = response?.data?.product || response?.data
+  // Use cached product data from onMounted (no need to fetch again)
   if (!product.value) {
     isLoading.value = false
     return
