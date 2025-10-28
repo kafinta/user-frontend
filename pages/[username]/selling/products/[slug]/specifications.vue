@@ -57,7 +57,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useSellerProducts } from '~/composables/useSellerProducts'
+import { useProductsApi } from '~/composables/useProductsApi'
 import { useAppToast } from '~/utils/toastify'
 import { useCustomFetch } from '@/composables/useCustomFetch'
 import UiIconsArrow from '~/components/Ui/Icons/Arrow.vue'
@@ -67,7 +67,7 @@ import UiButtonsTertiary from '~/components/Ui/Buttons/Tertiary.vue'
 
 const route = useRoute()
 const router = useRouter()
-const { getProductBySlug, setAttributes } = useSellerProducts()
+const { getProductBySlug, setAttributes } = useProductsApi()
 const toast = useAppToast()
 
 const productSlug = route.params.slug

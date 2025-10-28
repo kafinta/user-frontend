@@ -131,7 +131,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useFiltersStore } from '~/stores/filters'
-import { useSellerProducts } from '~/composables/useSellerProducts'
+import { useProductsApi } from '~/composables/useProductsApi'
 import { useAppToast } from '~/utils/toastify'
 import UiStepper from '~/components/Ui/Stepper.vue'
 
@@ -152,7 +152,7 @@ useHead({
 const router = useRouter()
 const route = useRoute()
 const filtersStore = useFiltersStore()
-const { getProductBySlug, updateBasicInfo } = useSellerProducts()
+const { getProductBySlug, updateBasicInfo } = useProductsApi()
 const toast = useAppToast()
 
 // Get product slug from route params

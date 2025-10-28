@@ -75,7 +75,7 @@
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useSellerProducts } from '~/composables/useSellerProducts'
+import { useProductsApi } from '~/composables/useProductsApi'
 import { useAppToast } from '~/utils/toastify'
 import ImageUpload from '~/components/Form/ImageUpload.vue'
 import UiIconsArrow from '~/components/Ui/Icons/Arrow.vue'
@@ -99,7 +99,7 @@ useHead({
 
 const router = useRouter()
 const route = useRoute()
-const { getProductBySlug, uploadImages, deleteImage } = useSellerProducts()
+const { getProductBySlug, uploadImages, deleteImage } = useProductsApi()
 const toast = useAppToast()
 
 const productSlug = computed(() => route.params.slug)

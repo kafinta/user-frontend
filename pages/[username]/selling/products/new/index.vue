@@ -140,7 +140,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useFiltersStore } from '~/stores/filters'
-import { useSellerProducts } from '~/composables/useSellerProducts'
+import { useProductsApi } from '~/composables/useProductsApi'
 import { useAppToast } from '~/utils/toastify'
 import UiStepper from '~/components/Ui/Stepper.vue'
 import UiButtonsTertiary from '~/components/Ui/Buttons/Tertiary.vue'
@@ -162,7 +162,7 @@ useHead({
 const router = useRouter()
 const route = useRoute()
 const filtersStore = useFiltersStore()
-const { createBasicInfo, getProduct } = useSellerProducts()
+const { createBasicInfo, getProduct } = useProductsApi()
 const toast = useAppToast()
 
 // Form data

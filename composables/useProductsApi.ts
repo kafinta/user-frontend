@@ -3,12 +3,13 @@ import { useCustomFetch } from '@/composables/useCustomFetch'
 import { useAppToast } from '~/utils/toastify'
 
 /**
- * Consolidated composable for seller product management
+ * Consolidated composable for all product operations
+ * Handles both seller product management and marketplace product fetching
  * Combines CRUD operations, attributes, images, status, stats, and single product fetching
  * Standardized error handling and return types
  * Includes caching to reduce redundant API calls
  */
-export function useSellerProducts() {
+export function useProductsApi() {
   const toast = useAppToast()
 
   // State

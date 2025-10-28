@@ -194,7 +194,7 @@ useHead({
 
 import { ref, onMounted, watch, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useSellerProducts } from '~/composables/useSellerProducts'
+import { useProductsApi } from '~/composables/useProductsApi'
 import { useAppToast } from '~/utils/toastify'
 import FormSelect from '~/components/Form/Select.vue'
 import FormInput from '~/components/Form/Input.vue'
@@ -215,7 +215,7 @@ const router = useRouter()
 const route = useRoute()
 const toast = useAppToast()
 
-// Use the composable for seller products
+// Use the composable for products
 const {
   products,
   isLoading,
@@ -224,7 +224,7 @@ const {
   deleteProduct: composableDeleteProduct,
   updateStatus,
   pagination
-} = useSellerProducts()
+} = useProductsApi()
 
 const filtersStore = useFiltersStore()
 const { categories, locations, subcategories, isLoading: isFiltersLoading } = storeToRefs(filtersStore)

@@ -48,7 +48,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
-import { useSellerProducts } from '~/composables/useSellerProducts';
+import { useProductsApi } from '~/composables/useProductsApi';
 
 const tabs = [
   { key: 'description', label: 'Description' },
@@ -63,7 +63,7 @@ const isLoading = ref(true);
 const error = ref('');
 
 const route = useRoute();
-const { getProductBySlug } = useSellerProducts();
+const { getProductBySlug } = useProductsApi();
 
 function handleTabClick(key) {
   activeTab.value = key;

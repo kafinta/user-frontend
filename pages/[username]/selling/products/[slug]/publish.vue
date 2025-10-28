@@ -71,7 +71,7 @@
 </template>
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
-import { useSellerProducts } from '~/composables/useSellerProducts'
+import { useProductsApi } from '~/composables/useProductsApi'
 import { ref, onMounted } from 'vue'
 import UiTypographyH3 from '~/components/Ui/Typography/H3.vue'
 import UiTypographyP from '~/components/Ui/Typography/P.vue'
@@ -86,7 +86,7 @@ import '@splidejs/vue-splide/css'
 
 const route = useRoute()
 const router = useRouter()
-const { getProductBySlug, publishProduct } = useSellerProducts()
+const { getProductBySlug, publishProduct } = useProductsApi()
 
 const productSlug = route.params.slug
 const isLoading = ref(false)
