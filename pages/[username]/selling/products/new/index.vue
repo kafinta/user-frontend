@@ -115,14 +115,23 @@
           :rows="10"
         />
 
-        <!-- Submit Button -->
-        <FormButton
-          class="col-span-2"
-          :loading="isLoading"
-          :disabled="isLoading"
-        >
-          Save & Continue
-        </FormButton>
+        <!-- Submit Buttons -->
+        <div class="col-span-2 flex gap-3 w-full">
+          <FormButton
+            class="flex-1"
+            :loading="isLoading"
+            :disabled="isLoading"
+          >
+            Save & Continue
+          </FormButton>
+          <UiButtonsTertiary
+            class="flex-1"
+            :disabled="isLoading"
+            @click="saveAsDraft"
+          >
+            Save as Draft
+          </UiButtonsTertiary>
+        </div>
       </form>
     </div>
   </LayoutsDashboard>
@@ -134,6 +143,7 @@ import { useFiltersStore } from '~/stores/filters'
 import { useSellerProducts } from '~/composables/useSellerProducts'
 import { useAppToast } from '~/utils/toastify'
 import UiStepper from '~/components/Ui/Stepper.vue'
+import UiButtonsTertiary from '~/components/Ui/Buttons/Tertiary.vue'
 
 definePageMeta({
   middleware: ['auth'],
@@ -273,6 +283,51 @@ const createProduct = async () => {
     }
   } catch (error) {
     toast.error('Failed to create product. Please try again.')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const saveAsDraft = async () => {
+  isLoading.value = true
+  errors.value = {}
+  try {
+    // Prepare data for API (allow partial data for draft)
+    const productData = {
+      name: formData.name?.trim() || 'Untitled Product',
+      description: formData.description?.trim() || '',
+      price: formData.price ? parseFloat(formData.price) : 0,
+      subcategory_id: formData.subcategory_id || null,
+      location_id: formData.location_id || null,
+      manage_stock: formData.manage_stock,
+      stock_quantity: formData.manage_stock ? parseInt(formData.stock_quantity || '0') : 0
+    }
+    // Create new product as draft
+    const response = await createBasicInfo(productData)
+    if (response.status === 'success') {
+      errors.value = {}
+      let productId = response.data?.product?.id || response.data?.id
+      let productSlug = response.data?.product?.slug || response.data?.slug
+      if (!productSlug && productId) {
+        const fetchResp = await getProduct(productId)
+        productSlug = fetchResp?.data?.slug || productId
+      }
+      if (productSlug) {
+        toast.success('Product saved as draft! You can continue editing later.')
+        // Redirect to product listing
+        setTimeout(() => {
+          router.push({
+            path: `/${route.params.username}/selling/products`
+          })
+        }, 500)
+      } else {
+        toast.error('Product saved but unable to redirect. Please try again.')
+      }
+    } else {
+      toast.error('Unexpected response from server. Please try again.')
+    }
+  } catch (error) {
+    toast.error('Failed to save product as draft. Please try again.')
   } finally {
     isLoading.value = false
   }
