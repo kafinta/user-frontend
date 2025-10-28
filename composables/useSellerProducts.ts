@@ -1,10 +1,15 @@
 import { ref } from 'vue'
 import { useCustomFetch } from '@/composables/useCustomFetch'
+import { useAppToast } from '~/utils/toastify'
 
 /**
- * Composable for seller product management (CRUD, attributes, images, status, stats)
+ * Consolidated composable for seller product management
+ * Combines CRUD operations, attributes, images, status, stats, and single product fetching
+ * Standardized error handling and return types
  */
 export function useSellerProducts() {
+  const toast = useAppToast()
+
   // State
   const products = ref<any[]>([])
   const stats = ref<any>(null)
@@ -183,21 +188,115 @@ export function useSellerProducts() {
     return true
   }
 
+  /**
+   * Get single product by ID
+   * @param {number} productId
+   */
+  async function getProduct(productId: any): Promise<any> {
+    try {
+      const response = await useCustomFetch(`/api/products/${productId}`, {
+        method: 'GET'
+      })
+      return response
+    } catch (error: any) {
+      const errorMessage = error.data?.message || 'Failed to fetch product'
+      toast.error(errorMessage)
+      throw error
+    }
+  }
+
+  /**
+   * Get single product by slug
+   * @param {string} slug
+   */
+  async function getProductBySlug(slug: any): Promise<any> {
+    try {
+      const response = await useCustomFetch(`/api/products/slug/${slug}`, {
+        method: 'GET'
+      })
+      return response
+    } catch (error: any) {
+      const errorMessage = error.data?.message || 'Failed to fetch product'
+      toast.error(errorMessage)
+      throw error
+    }
+  }
+
+  /**
+   * Delete product image
+   * @param {number} imageId
+   */
+  async function deleteImage(imageId: any): Promise<any> {
+    try {
+      const response = await useCustomFetch(`/api/images/${imageId}`, {
+        method: 'DELETE'
+      })
+
+      if ((response as any).status === 'success') {
+        toast.success((response as any).message || 'Image deleted successfully')
+      }
+
+      return response
+    } catch (error: any) {
+      const errorMessage = error.data?.message || 'Failed to delete image'
+      toast.error(errorMessage)
+      throw error
+    }
+  }
+
+  /**
+   * Alias for createProduct - matches useProductApi naming
+   * @param {object} productData
+   */
+  async function createBasicInfo(productData: any): Promise<any> {
+    return createProduct(productData)
+  }
+
+  /**
+   * Alias for updateProduct - matches useProductApi naming
+   * @param {number} productId
+   * @param {object} productData
+   */
+  async function updateBasicInfo(productId: any, productData: any): Promise<any> {
+    return updateProduct(productId, productData)
+  }
+
+  /**
+   * Alias for updateAttributes - matches useProductApi naming
+   * @param {number} productId
+   * @param {Array} attributeValues
+   */
+  async function setAttributes(productId: any, attributeValues: any): Promise<any> {
+    return updateAttributes(productId, attributeValues)
+  }
+
   return {
+    // State
     products,
     stats,
     isLoading,
     error,
     pagination,
+    // Listing & Stats
     fetchMyProducts,
     fetchMyStats,
+    // Product CRUD
     createProduct,
+    createBasicInfo, // Alias for createProduct
     updateProduct,
+    updateBasicInfo, // Alias for updateProduct
     deleteProduct,
+    getProduct,
+    getProductBySlug,
+    // Attributes
     updateAttributes,
+    setAttributes, // Alias for updateAttributes
+    // Images
     uploadImages,
+    deleteImage,
+    // Publishing & Status
     publishProduct,
     updateStatus,
     bulkUpdateStatus
   }
-} 
+}

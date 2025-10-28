@@ -48,7 +48,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
-import { useProductApi } from '~/composables/useProductApi';
+import { useSellerProducts } from '~/composables/useSellerProducts';
 
 const tabs = [
   { key: 'description', label: 'Description' },
@@ -63,7 +63,7 @@ const isLoading = ref(true);
 const error = ref('');
 
 const route = useRoute();
-const productApi = useProductApi();
+const { getProductBySlug } = useSellerProducts();
 
 function handleTabClick(key) {
   activeTab.value = key;
@@ -87,7 +87,7 @@ async function fetchProductAndAttributes(slug) {
   product.value = null;
   attributes.value = [];
   try {
-    const res = await productApi.getProductBySlug(slug);
+    const res = await getProductBySlug(slug);
     if (res && res.status === 'success' && res.data) {
       product.value = res.data;
       // Fetch attributes

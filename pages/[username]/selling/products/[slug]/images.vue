@@ -75,7 +75,7 @@
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useProductApi } from '~/composables/useProductApi'
+import { useSellerProducts } from '~/composables/useSellerProducts'
 import { useAppToast } from '~/utils/toastify'
 import ImageUpload from '~/components/Form/ImageUpload.vue'
 import UiIconsArrow from '~/components/Ui/Icons/Arrow.vue'
@@ -99,7 +99,7 @@ useHead({
 
 const router = useRouter()
 const route = useRoute()
-const productApi = useProductApi()
+const { getProductBySlug, uploadImages, deleteImage } = useSellerProducts()
 const toast = useAppToast()
 
 const productSlug = computed(() => route.params.slug)
@@ -180,7 +180,7 @@ function createSlot(file = null, previewUrl = '', key = null) {
 onMounted(async () => {
   isInitialLoad.value = true
   try {
-    const response = await productApi.getProductBySlug(productSlug.value)
+    const response = await getProductBySlug(productSlug.value)
     if (response.status === 'success' && response.data) {
       product.value = response.data
       originalImages.value = Array.isArray(product.value.images) ? [...product.value.images] : []
@@ -254,7 +254,7 @@ function removeSlotImage(idx) {
   // If the slot has an id, it's an existing backend image
   if (slot.id) {
     isDeletingImage.value = true
-    productApi.deleteImage(slot.id)
+    deleteImage(slot.id)
       .then(response => {
         if (response.status === 'success') {
           // Remove from product images
@@ -343,7 +343,7 @@ const saveImagesAndContinue = async () => {
         }
         reader.readAsDataURL(file)
       }
-      const response = await productApi.uploadImages(product.value.id, filesToUpload)
+      const response = await uploadImages(product.value.id, filesToUpload)
       if (response.status === 'success' && response.data) {
         product.value = response.data.product || response.data
       }

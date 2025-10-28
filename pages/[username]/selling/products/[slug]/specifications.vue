@@ -57,7 +57,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useProductApi } from '~/composables/useProductApi'
+import { useSellerProducts } from '~/composables/useSellerProducts'
 import { useAppToast } from '~/utils/toastify'
 import { useCustomFetch } from '@/composables/useCustomFetch'
 import UiIconsArrow from '~/components/Ui/Icons/Arrow.vue'
@@ -67,7 +67,7 @@ import UiButtonsTertiary from '~/components/Ui/Buttons/Tertiary.vue'
 
 const route = useRoute()
 const router = useRouter()
-const productApi = useProductApi()
+const { getProductBySlug, setAttributes } = useSellerProducts()
 const toast = useAppToast()
 
 const productSlug = route.params.slug
@@ -141,7 +141,7 @@ const fetchAttributes = async () => {
     isInitialLoad.value = true
     isLoading.value = true
     // Fetch the product by slug (new structure: product in response.data)
-    const response = await productApi.getProductBySlug(productSlug)
+    const response = await getProductBySlug(productSlug)
     product.value = response?.data || null
     if (!product.value) {
       error.value = 'Product not found.'
@@ -188,7 +188,7 @@ const handleSubmit = async () => {
   try {
     isLoading.value = true
     // Fetch product again to get its id (new structure)
-    const response = await productApi.getProductBySlug(productSlug)
+    const response = await getProductBySlug(productSlug)
     product.value = response?.data || null
     if (!product.value) {
       error.value = 'Product not found.'
@@ -229,7 +229,7 @@ const handleSubmit = async () => {
       isLoading.value = false
       return
     }
-    await productApi.setAttributes(product.value.id, attributesPayload)
+    await setAttributes(product.value.id, attributesPayload)
     toast.success('Specifications saved!')
     // Redirect to images step only if product exists
     if (product.value) {

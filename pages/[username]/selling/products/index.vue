@@ -222,6 +222,7 @@ const {
   error,
   fetchMyProducts,
   deleteProduct: composableDeleteProduct,
+  updateStatus,
   pagination
 } = useSellerProducts()
 
@@ -494,7 +495,7 @@ async function updateProductStatus(product, newStatus) {
   if (!product) return
   pausingProductId.value = product.id
   try {
-    const response = await useProductApi().updateProductStatus(product.id, newStatus)
+    const response = await updateStatus(product.id, newStatus)
     if (response && response.status === 'success') {
       product.status = newStatus
       // Optionally show a toast

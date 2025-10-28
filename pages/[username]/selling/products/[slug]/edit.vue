@@ -131,7 +131,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useFiltersStore } from '~/stores/filters'
-import { useProductApi } from '~/composables/useProductApi'
+import { useSellerProducts } from '~/composables/useSellerProducts'
 import { useAppToast } from '~/utils/toastify'
 import UiStepper from '~/components/Ui/Stepper.vue'
 
@@ -152,7 +152,7 @@ useHead({
 const router = useRouter()
 const route = useRoute()
 const filtersStore = useFiltersStore()
-const productApi = useProductApi()
+const { getProductBySlug, updateBasicInfo } = useSellerProducts()
 const toast = useAppToast()
 
 // Get product slug from route params
@@ -225,7 +225,7 @@ const loadProduct = async () => {
   try {
     isInitialLoad.value = true
     // Fetch product by slug directly
-    const response = await productApi.getProductBySlug(productSlug.value)
+    const response = await getProductBySlug(productSlug.value)
     if (response.status === 'success' && response.data) {
       product.value = response.data
 
@@ -342,7 +342,7 @@ const updateProduct = async () => {
     }
 
     // Update product
-    const response = await productApi.updateBasicInfo(product.value.id, productData)
+    const response = await updateBasicInfo(product.value.id, productData)
 
     if (response.status === 'success') {
       // Show success feedback

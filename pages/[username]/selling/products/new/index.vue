@@ -131,7 +131,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useFiltersStore } from '~/stores/filters'
-import { useProductApi } from '~/composables/useProductApi'
+import { useSellerProducts } from '~/composables/useSellerProducts'
 import { useAppToast } from '~/utils/toastify'
 import UiStepper from '~/components/Ui/Stepper.vue'
 
@@ -152,7 +152,7 @@ useHead({
 const router = useRouter()
 const route = useRoute()
 const filtersStore = useFiltersStore()
-const productApi = useProductApi()
+const { createBasicInfo, getProduct } = useSellerProducts()
 const toast = useAppToast()
 
 // Form data
@@ -243,7 +243,7 @@ const createProduct = async () => {
       stock_quantity: formData.manage_stock ? parseInt(formData.stock_quantity || '0') : 0
     }
     // Create new product
-    const response = await productApi.createBasicInfo(productData)
+    const response = await createBasicInfo(productData)
     if (response.status === 'success') {
       errors.value = {}
       // Extract product ID and slug from response
@@ -251,7 +251,7 @@ const createProduct = async () => {
       let productSlug = response.data?.product?.slug || response.data?.slug
       // If slug is missing, fetch product by ID
       if (!productSlug && productId) {
-        const fetchResp = await productApi.getProductById(productId)
+        const fetchResp = await getProduct(productId)
         productSlug = fetchResp?.data?.slug || productId
       }
       if (productSlug) {

@@ -71,7 +71,7 @@
 </template>
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
-import { useProductApi } from '~/composables/useProductApi'
+import { useSellerProducts } from '~/composables/useSellerProducts'
 import { ref, onMounted } from 'vue'
 import UiTypographyH3 from '~/components/Ui/Typography/H3.vue'
 import UiTypographyP from '~/components/Ui/Typography/P.vue'
@@ -86,7 +86,7 @@ import '@splidejs/vue-splide/css'
 
 const route = useRoute()
 const router = useRouter()
-const productApi = useProductApi()
+const { getProductBySlug, publishProduct } = useSellerProducts()
 
 const productSlug = route.params.slug
 const isLoading = ref(false)
@@ -103,7 +103,7 @@ onMounted(() => {
 });
 
 onMounted(async () => {
-  const response = await productApi.getProductBySlug(productSlug)
+  const response = await getProductBySlug(productSlug)
   product.value = response?.data?.product || response?.data || null
 })
 
@@ -154,14 +154,14 @@ function handleStepClick(idx) {
 const handlePublish = async () => {
   isLoading.value = true
   // Fetch product by slug to get its id
-  const response = await productApi.getProductBySlug(productSlug)
+  const response = await getProductBySlug(productSlug)
   product.value = response?.data?.product || response?.data
   if (!product.value) {
     isLoading.value = false
     return
   }
   // Only publish when the user clicks the button
-  const publishResponse = await productApi.publishProduct(product.value.id)
+  const publishResponse = await publishProduct(product.value.id)
   isLoading.value = false
   if (publishResponse && publishResponse.status === 'success') {
     router.push({ path: `/${route.params.username}/selling/products` })
