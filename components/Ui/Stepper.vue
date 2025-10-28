@@ -20,8 +20,8 @@
           type="button"
         >
           <span class="flex items-center">
-            <span v-if="idx < currentStep" class="inline-block w-5 h-5 mr-2 rounded-full bg-success-500 text-white flex items-center justify-center text-xs">&#10003;</span>
-            <span v-else class="inline-block w-5 h-5 mr-2 rounded-full border border-accent-300 flex items-center justify-center text-xs">{{ idx + 1 }}</span>
+            <span v-if="idx < currentStep" class="w-5 h-5 mr-2 rounded-full bg-success-500 text-white flex items-center justify-center text-xs">&#10003;</span>
+            <span v-else class="w-5 h-5 mr-2 rounded-full border border-accent-300 flex items-center justify-center text-xs">{{ idx + 1 }}</span>
             {{ step.label }}
           </span>
         </button>
