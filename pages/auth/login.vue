@@ -111,7 +111,8 @@ async function handleSignin() {
         email: email.value,
         password: password.value,
         remember_me: remember_me.value
-      }
+      },
+      suppressAuthError: true // Suppress session expired toast on login page
     });
 
     if (response.status === 'success') {
@@ -134,7 +135,9 @@ async function handleSignin() {
   } catch (err) {
     console.error('Login error:', err);
     errors.value = err?.data?.errors || {};
-    toast.error('An unexpected error occurred');
+    // Extract backend error message from the error response
+    const errorMessage = err?.data?.message || err?.message || 'An unexpected error occurred';
+    toast.error(errorMessage);
   } finally {
     buttonLoading.value = false;
   }
