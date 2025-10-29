@@ -92,7 +92,7 @@ export function useProductsApi() {
       body: payload
     })
     isLoading.value = false
-    return data?.data || null
+    return data
   }
 
   /**
@@ -110,7 +110,7 @@ export function useProductsApi() {
     isLoading.value = false
     // Invalidate cache for this product
     invalidateProductCache(undefined, productId)
-    return data?.data || null
+    return data
   }
 
   /**

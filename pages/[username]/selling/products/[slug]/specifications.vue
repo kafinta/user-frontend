@@ -8,7 +8,7 @@
     />
     <div class="grid grid-cols-1 place-items-center gap-6 max-w-3xl mx-auto w-full">
       <UiTypographyH3>Product Specifications</UiTypographyH3>
-      <div v-if="isInitialLoad" class="grid grid-cols-1 md:grid-cols-2 gap-6 py-8 w-full">
+      <div v-if="isInitialLoad" class="grid grid-cols-1 md:grid-cols-2 gap-6 py-8 w-full">     
         <UiSkeleton height="3rem" v-for="i in 10" :key="i" class="rounded-md" />
       </div>
       <div v-else-if="!product" class="text-center py-12 flex flex-col items-center justify-center">
@@ -27,7 +27,7 @@
             <FormSelect
               v-if="Array.isArray(attr.values) && attr.values.length"
               :label="attr.name"
-              :options="attr.values.map(v => ({ value: Number(v.id), label: v.name }))"
+              :options="attr.values.map(v => ({ value: Number(v.id), label: v.name }))"        
               :selectedOption="attributeValues[attr.id]"
               @update:selectedOption="val => attributeValues[attr.id] = val"
               :id="'attr-' + attr.id"
@@ -54,6 +54,7 @@
     </div>
   </LayoutsDashboard>
 </template>
+
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -91,16 +92,12 @@ function isStepComplete(idx) {
   if (!product.value) return false;
   switch (idx) {
     case 0:
-      // Details: name, description, price, category, location, subcategory
       return !!(product.value.name && product.value.description && product.value.price && product.value.category?.id && product.value.location?.id && product.value.subcategory?.id);
     case 1:
-      // Specifications: attributes (assume attributes or specifications field or similar)
       return Array.isArray(product.value.attributes) ? product.value.attributes.length > 0 : false;
     case 2:
-      // Images: images array
-      return Array.isArray(product.value.images) ? product.value.images.length > 0 : false;
+      return Array.isArray(product.value.images) ? product.value.images.length > 0 : false;    
     case 3:
-      // Publish: allow if all previous steps are complete
       return isStepComplete(0) && isStepComplete(1) && isStepComplete(2);
     default:
       return false;
@@ -108,9 +105,7 @@ function isStepComplete(idx) {
 }
 
 function isStepEnabled(idx) {
-  // If product is active, allow all steps
   if (product.value?.status === 'active') return true;
-  // Allow navigation to a step only if all previous steps are complete
   for (let i = 0; i < idx; i++) {
     if (!isStepComplete(i)) return false;
   }
@@ -124,11 +119,9 @@ function handleStepClick(idx) {
   }
 }
 
-// Fetch product attributes to preload selected values
 const fetchProductAttributes = async (productId) => {
   try {
     const response = await useCustomFetch(`/api/products/${productId}/attributes`)
-    console.log('RAW product attributes API response:', response)
     return response?.data || []
   } catch (error) {
     console.error('Failed to fetch product attributes:', error)
@@ -140,7 +133,6 @@ const fetchAttributes = async () => {
   try {
     isInitialLoad.value = true
     isLoading.value = true
-    // Fetch the product by slug (new structure: product in response.data)
     const response = await getProductBySlug(productSlug)
     product.value = response?.data || null
     if (!product.value) {
@@ -150,17 +142,17 @@ const fetchAttributes = async () => {
       isInitialLoad.value = false
       return
     }
-    
-    // Always fetch subcategory attributes using the dedicated endpoint
+
+    // Fetch subcategory attributes
     let subcatAttributes = []
     if (product.value && product.value.subcategory?.id) {
       const subcatResponse = await useCustomFetch(`/api/subcategories/${product.value.subcategory.id}`)
-      const subcat = subcatResponse?.data // <-- use .data directly
+      const subcat = subcatResponse?.data
       subcatAttributes = subcat?.attributes || []
     }
     attributes.value = subcatAttributes
-    
-    // Pre-fill values from product attributes if they exist
+
+    // Pre-fill values from product attributes
     attributeValues.value = {}
     originalAttributeValues.value = {}
     if (product.value && product.value.id) {
@@ -172,7 +164,7 @@ const fetchAttributes = async () => {
         }
       }
     }
-    
+
     isLoading.value = false
     isInitialLoad.value = false
   } catch (e) {
@@ -187,19 +179,16 @@ const handleSubmit = async () => {
   errors.value = {}
   try {
     isLoading.value = true
-    // Use cached product data from fetchAttributes (no need to fetch again)
     if (!product.value) {
       error.value = 'Product not found.'
       attributes.value = []
       isLoading.value = false
       return
     }
-    // Transform attributeValues to the required format
     const attributesPayload = Object.entries(attributeValues.value).map(([attribute_id, value_id]) => ({
       attribute_id: Number(attribute_id),
       value_id: value_id ? Number(value_id) : null
     }))
-    // Validation: required attributes must have a value
     const validationErrors = {}
     for (const attr of attributes.value) {
       if (attr.required && (!attributeValues.value[attr.id] || attributeValues.value[attr.id] === '')) {
@@ -212,13 +201,11 @@ const handleSubmit = async () => {
       isLoading.value = false
       return
     }
-    // Check if attributes have changed
     const unchanged = Object.keys(originalAttributeValues.value).length === Object.keys(attributeValues.value).length &&
       Object.entries(attributeValues.value).every(
         ([key, value]) => originalAttributeValues.value[key] === value
       )
     if (unchanged) {
-      // No changes, just navigate to next page if product exists
       if (product.value) {
         router.push({
           path: `/${route.params.username}/selling/products/${productSlug}/images`
@@ -229,7 +216,6 @@ const handleSubmit = async () => {
     }
     await setAttributes(product.value.id, attributesPayload)
     toast.success('Specifications saved!')
-    // Redirect to images step only if product exists
     if (product.value) {
       router.push({
         path: `/${route.params.username}/selling/products/${productSlug}/images`
@@ -243,7 +229,6 @@ const handleSubmit = async () => {
   }
 }
 
-// Go Back handler
 function goBack() {
   router.back()
 }
@@ -253,4 +238,5 @@ onMounted(async () => {
   isLoading.value = false;
   isInitialLoad.value = false;
 })
-</script> 
+</script>
+
