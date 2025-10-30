@@ -146,8 +146,8 @@ function isStepComplete(idx) {
       // Images: images array
       return Array.isArray(product.value.images) ? product.value.images.length > 0 : false;
     case 3:
-      // Publish: allow if all previous steps are complete
-      return isStepComplete(0) && isStepComplete(1) && isStepComplete(2);
+      // Publish: mark as complete if product is already active/published, or if all previous steps are complete
+      return product.value.status === 'active' || (isStepComplete(0) && isStepComplete(1) && isStepComplete(2));
     default:
       return false;
   }
