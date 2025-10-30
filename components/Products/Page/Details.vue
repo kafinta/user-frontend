@@ -31,11 +31,11 @@
         </span>
       </UiTypographyH2>
       <hr class="mt-5" />
-      <form class="grid gap-5 mt-5">
+      <form @submit.prevent="handleAddToCart" class="grid gap-5 mt-5">
         <div class="flex gap-5 items-end">
           <FormQuantityInput v-model="quantity" class="col-span-2" />
-          <FormButton class="col-span-3 gap-5 h-[46px] items-center">
-            <UiIconsCart class="w-5 h-5 block" />Add to cart
+          <FormButton :loading="isAddingToCart" :disabled="isAddingToCart" class="col-span-3 gap-5 h-[46px] items-center">
+            <UiIconsCart class="w-5 h-5 block" />{{ isAddingToCart ? 'Adding...' : 'Add to cart' }}
           </FormButton>
         </div>
       </form>
@@ -43,13 +43,20 @@
   </div>
 </template>
 <script setup>
+import { ref, computed } from 'vue'
+import { useCartApi } from '~/composables/useCartApi'
+import { useAppToast } from '~/utils/toastify'
+
 const props = defineProps({
   product: Object,
   isLoading: Boolean
 });
 
+const { addToCart } = useCartApi()
+const toast = useAppToast()
 
 const quantity = ref(1)
+const isAddingToCart = ref(false)
 
 const breadcrumbItems = computed(() => {
   if (!props.product) return []
@@ -116,4 +123,21 @@ const breadcrumbItems = computed(() => {
 
   return items
 })
+
+async function handleAddToCart() {
+  if (!props.product || !props.product.id) {
+    toast.error('Product information is missing')
+    return
+  }
+
+  isAddingToCart.value = true
+  try {
+    await addToCart(props.product.id, quantity.value)
+    quantity.value = 1
+  } catch (error) {
+    console.error('Error adding to cart:', error)
+  } finally {
+    isAddingToCart.value = false
+  }
+}
 </script>
