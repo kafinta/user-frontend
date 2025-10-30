@@ -135,6 +135,7 @@ const fetchAttributes = async () => {
     isLoading.value = true
     const response = await getProductBySlug(productSlug)
     product.value = response?.data || null
+
     if (!product.value) {
       error.value = 'Product not found.'
       attributes.value = []
@@ -145,10 +146,16 @@ const fetchAttributes = async () => {
 
     // Fetch subcategory attributes
     let subcatAttributes = []
-    if (product.value && product.value.subcategory?.id) {
-      const subcatResponse = await useCustomFetch(`/api/subcategories/${product.value.subcategory.id}`)
-      const subcat = subcatResponse?.data
-      subcatAttributes = subcat?.attributes || []
+    const subcategoryId = product.value.subcategory?.id || product.value.subcategory_id
+
+    if (subcategoryId) {
+      try {
+        const subcatResponse = await useCustomFetch(`/api/subcategories/${subcategoryId}`)
+        const subcat = subcatResponse?.data
+        subcatAttributes = subcat?.attributes || []
+      } catch (fetchError) {
+        console.error('Error fetching subcategory attributes:', fetchError)
+      }
     }
     attributes.value = subcatAttributes
 
@@ -168,6 +175,7 @@ const fetchAttributes = async () => {
     isLoading.value = false
     isInitialLoad.value = false
   } catch (e) {
+    console.error('Error in fetchAttributes:', e)
     error.value = 'Failed to load product attributes.'
     isLoading.value = false
     isInitialLoad.value = false
