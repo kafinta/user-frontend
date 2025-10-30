@@ -40,7 +40,7 @@
           <li>
             <button title="Cart" @click="$emit('cartClicked')" class="p-2 transition-colors duration-200 relative">
               <UiIconsCart class="w-5 h-5 text-secondary hover:text-primary transition-colors duration-200" />
-              <UiBadge value="1" size="small" v-if="hasNotifications" class="h-2 w-2 -top-0.5 -right-0.5 absolute scale-75"></UiBadge>
+              <UiBadge :value="cartItemCount" size="small" v-if="cartItemCount > 0" class="h-5 w-5 -top-1 -right-1 absolute flex items-center justify-center text-xs font-semibold"></UiBadge>
             </button>
           </li>
 
@@ -121,7 +121,13 @@ const props = defineProps({
   },
 
   // UI state
-  keep_button_hovered: Boolean
+  keep_button_hovered: Boolean,
+
+  // Cart item count
+  cartItemCount: {
+    type: Number,
+    default: 0
+  }
 });
 
 // Emits
