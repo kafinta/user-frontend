@@ -59,7 +59,7 @@ export const useCartApi = () => {
         payload.variant_id = variantId
       }
 
-      const response = await useCustomFetch('/api/cart/add', {
+      const response = await useCustomFetch('/api/cart/items', {
         method: 'POST',
         body: payload
       })

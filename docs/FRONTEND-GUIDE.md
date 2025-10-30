@@ -167,7 +167,7 @@ GET /api/subcategories?category_id=1
 GET /api/cart
 
 // Add to cart
-POST /api/cart/add
+POST /api/cart/items
 {
   "product_id": 1,
   "variant_id": 2, // optional

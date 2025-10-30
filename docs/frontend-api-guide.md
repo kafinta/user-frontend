@@ -171,7 +171,7 @@ GET /api/cart
 
 #### Add to Cart
 ```javascript
-POST /api/cart/add
+POST /api/cart/items
 {
   "product_id": 1,
   "variant_id": 2, // optional
