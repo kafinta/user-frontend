@@ -1,5 +1,5 @@
 <template>
-  <LayoutsDashboard mode="seller" page_title="New Product">
+  <LayoutsDashboard mode="seller" :page_title="pageTitle">
     <UiStepper
       :steps="stepperSteps"
       :currentStep="3"
@@ -8,7 +8,7 @@
     />
     <div class="grid grid-cols-1 place-items-center gap-6 max-w-3xl mx-auto w-full relative">
       <UiTypographyP class="mb-4 text-center text-primary-700 bg-primary-50 border border-primary-200 rounded p-3 font-semibold">
-        This is how your product will appear to buyers.
+        {{ isProductActive ? 'Review your product details.' : 'This is how your product will appear to buyers.' }}
       </UiTypographyP>
       <div class="w-full max-w-3xl mx-auto flex flex-col gap-6">
         <!-- Product Image Carousel -->
@@ -57,14 +57,21 @@
         </div>
       </div>
       <UiTypographyP class="mb-2 text-center text-accent-700 bg-accent-50 border border-accent-200 rounded p-3">
-        Please review your product details before publishing. You can go back to edit any section.
+        {{ isProductActive ? 'Your product is currently active. You can edit it and save changes.' : 'Please review your product details before publishing. You can go back to edit any section.' }}
       </UiTypographyP>
       <div class="grid grid-cols-2 gap-4 pt-2 w-full">
         <UiButtonsTertiary @click="goBack" type="button" class="flex items-center gap-2 px-4 py-2 justify-center w-full">
           <UiIconsArrow class="w-4 h-4 -ml-1" />
           Go Back
         </UiButtonsTertiary>
-        <FormButton :loading="isLoading" :disabled="!product" class="w-full justify-center" @click="handlePublish">Publish Product</FormButton>
+        <FormButton
+          :loading="isLoading"
+          :disabled="!product || isProductActive"
+          class="w-full justify-center"
+          @click="handlePublish"
+        >
+          {{ buttonText }}
+        </FormButton>
       </div>
     </div>
   </LayoutsDashboard>
@@ -72,7 +79,7 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import { useProductsApi } from '~/composables/useProductsApi'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import UiTypographyH3 from '~/components/Ui/Typography/H3.vue'
 import UiTypographyP from '~/components/Ui/Typography/P.vue'
 import UiIconsLoading from '~/components/Ui/Icons/Loading.vue'
@@ -92,6 +99,18 @@ const productSlug = route.params.slug
 const isLoading = ref(false)
 const product = ref(null)
 const isDesktop = ref(false)
+
+const isProductActive = computed(() => product.value?.status === 'active')
+
+const pageTitle = computed(() => {
+  if (!product.value) return 'Product'
+  return isProductActive.value ? 'Edit Product' : 'Publish Product'
+})
+
+const buttonText = computed(() => {
+  if (!product.value) return 'Publish Product'
+  return isProductActive.value ? 'Product Already Published' : 'Publish Product'
+})
 
 const handleResize = () => {
   isDesktop.value = window.innerWidth >= 1024;
