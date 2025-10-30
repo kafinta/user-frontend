@@ -9,7 +9,7 @@
         class="w-full h-full object-cover rounded-md"
       />
       <div v-else class="w-full h-full bg-accent-100 rounded-md flex items-center justify-center">
-        <UiIconsImage class="w-8 h-8 text-accent-300" />
+        <UiIconsCamera class="w-8 h-8 text-accent-300" />
       </div>
     </div>
 
@@ -76,7 +76,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import UiIconsImage from '~/components/Ui/Icons/Image.vue'
+import UiIconsCamera from '~/components/Ui/Icons/Camera.vue'
 
 const props = defineProps({
   item: {

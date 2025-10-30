@@ -10,8 +10,8 @@
             </div>
         </div>
     </li>
-    <li v-else class="border border-accent-200 rounded-xl list-none flex flex-col h-full">
-        <NuxtLink :to="`/marketplace/products/${slug}`" class="group block flex-1">
+    <li class="border border-accent-200 rounded-xl cursor-pointer list-none">
+        <NuxtLink :to="`/marketplace/products/${slug}`" class="group block">
             <img :src="image" :alt="name" class="w-full rounded-t-xl aspect-[4/3]" />
             <div class="p-4">
                 <UiTypographyP class="line-clamp-2 group-hover:text-primary duration-300">{{ name }}</UiTypographyp>
@@ -27,37 +27,17 @@
                 </div>
             </div>
         </NuxtLink>
-        <div class="p-4 pt-0">
-            <button
-                @click="handleAddToCart"
-                :disabled="isAddingToCart"
-                class="w-full px-4 py-2 bg-primary text-white rounded-md font-medium hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-                {{ isAddingToCart ? 'Adding...' : 'Add to Cart' }}
-            </button>
-        </div>
     </li>
 </template>
 <script setup>
-import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProductFilters } from '@/composables/useProductFilters';
-import { useCartApi } from '@/composables/useCartApi';
-import { useAppToast } from '~/utils/toastify';
 
 const router = useRouter();
 const route = useRoute();
 const productFilters = useProductFilters();
-const { addToCart } = useCartApi();
-const toast = useAppToast();
-
-const isAddingToCart = ref(false);
 
 const props = defineProps({
-    id: {
-        type: Number,
-        required: true
-    },
     slug: {
         type: String,
         default: 'product-slug'
@@ -74,17 +54,6 @@ const props = defineProps({
 
 function formatPrice(price) {
     return new Intl.NumberFormat('en-NG').format(price);
-}
-
-async function handleAddToCart() {
-    isAddingToCart.value = true;
-    try {
-        await addToCart(props.id, 1);
-    } catch (error) {
-        console.error('Error adding to cart:', error);
-    } finally {
-        isAddingToCart.value = false;
-    }
 }
 </script>
 <style scoped>
