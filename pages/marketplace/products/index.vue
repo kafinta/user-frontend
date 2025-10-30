@@ -80,6 +80,7 @@
             <ProductsCard
               v-for="product in products"
               :key="product.id"
+              :id="product.id"
               :slug="product.slug"
               :name="product.name"
               :price="product.price"
@@ -134,7 +135,7 @@ useHead({
   ]
 });
 
-import { ref, computed, watch, watchEffect, onMounted } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useProductFilters } from "@/composables/useProductFilters";
 import { useFiltersStore } from '~/stores/filters';
