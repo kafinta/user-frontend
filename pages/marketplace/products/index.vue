@@ -224,8 +224,8 @@ const fetchProducts = async () => {
     const res = await useCustomFetch(`/api/products?${params.toString()}`, { method: 'GET' });
 
     if (res && res.status === 'success') {
-      if (res.data && res.data.data) {
-        products.value = res.data.data;
+      if (res.data && res.data.products) {
+        products.value = res.data.products;
       } else {
         products.value = [];
       }
