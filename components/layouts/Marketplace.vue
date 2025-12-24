@@ -58,13 +58,17 @@
 </template>
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useAuthStore } from '~/stores/auth'
 import { useCartStore } from '~/stores/cart'
 import { useCartApi } from '~/composables/useCartApi'
+import { useGuestCart } from '~/composables/useGuestCart'
 import CartItem from '~/components/Cart/Item.vue'
 import UiIconsCart from '~/components/Ui/Icons/Cart.vue'
 
+const authStore = useAuthStore()
 const cartStore = useCartStore()
 const { fetchCart, removeFromCart, updateCartItem } = useCartApi()
+const guestCart = useGuestCart()
 
 const searchBox = ref(false)
 const search_button_hovered = ref(false)
@@ -96,6 +100,17 @@ async function handleRemoveItem(itemId) {
 }
 
 onMounted(async () => {
-  await fetchCart()
+  // Load guest cart from localStorage
+  guestCart.loadCart()
+
+  // If user is authenticated, fetch their cart from server
+  if (authStore.isAuthenticated) {
+    cartStore.setGuestMode(false)
+    await fetchCart()
+  } else {
+    // User is not authenticated, use guest cart
+    cartStore.setGuestMode(true)
+    cartStore.setItems(guestCart.items.value)
+  }
 })
 </script>
