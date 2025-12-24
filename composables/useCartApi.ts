@@ -191,12 +191,42 @@ export const useCartApi = () => {
     }
   }
 
+  /**
+   * Transfer guest cart items to authenticated user's cart
+   * @param guestItems - Array of guest cart items to transfer
+   */
+  async function transferGuestCart(guestItems: any[]): Promise<any> {
+    if (!guestItems || guestItems.length === 0) {
+      return { status: 'success', message: 'No items to transfer' }
+    }
+
+    try {
+      cartStore.setLoading(true)
+      cartStore.setError(null)
+
+      // Transfer each item to the authenticated cart
+      for (const item of guestItems) {
+        await addToCart(item.product_id, item.quantity)
+      }
+
+      return { status: 'success', message: 'Cart items transferred successfully' }
+    } catch (error: any) {
+      const errorMessage = error?.data?.message || error?.message || 'Failed to transfer cart items'
+      cartStore.setError(errorMessage)
+      console.error('Error transferring guest cart:', error)
+      throw error
+    } finally {
+      cartStore.setLoading(false)
+    }
+  }
+
   return {
     fetchCart,
     addToCart,
     updateCartItem,
     removeFromCart,
-    clearCart
+    clearCart,
+    transferGuestCart
   }
 }
 

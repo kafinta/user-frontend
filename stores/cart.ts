@@ -26,6 +26,7 @@ export const useCartStore = defineStore('cart', () => {
   const items = ref<CartItem[]>([])
   const isLoading = ref(false)
   const error = ref<string | null>(null)
+  const isGuestMode = ref(false)
 
   // Computed
   const itemCount = computed(() => items.value.length)
@@ -84,11 +85,16 @@ export const useCartStore = defineStore('cart', () => {
     error.value = errorMessage
   }
 
+  const setGuestMode = (isGuest: boolean) => {
+    isGuestMode.value = isGuest
+  }
+
   return {
     // State
     items,
     isLoading,
     error,
+    isGuestMode,
 
     // Computed
     itemCount,
@@ -104,7 +110,8 @@ export const useCartStore = defineStore('cart', () => {
     updateItemQuantity,
     clearCart,
     setLoading,
-    setError
+    setError,
+    setGuestMode
   }
 })
 
