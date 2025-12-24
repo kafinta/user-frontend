@@ -5,7 +5,7 @@ export interface CarouselProduct {
   id: number
   slug: string
   name: string
-  price: string
+  price: number
   image: string
   rating: number
   reviewCount: number
@@ -93,7 +93,7 @@ export function useProductsCarousel(options: UseProductsCarouselOptions) {
           id: product.id,
           slug: product.slug,
           name: product.name,
-          price: product.price,
+          price: typeof product.price === 'string' ? parseFloat(product.price) : product.price,
           image: product.images?.[0]?.url || '',
           rating: product.average_rating || 0,
           reviewCount: product.review_count || 0,

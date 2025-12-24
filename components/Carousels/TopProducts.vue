@@ -65,7 +65,7 @@
             <UiIconsError class="w-16 h-16 text-red-600" />
           </div>
           <div>
-            <UiTypographyH3 class="text-secondary font-medium mb-2">
+            <UiTypographyH3 class="text-secondary font-medium mb-2 mt-4">
               {{ error || 'No trending products available' }}
             </UiTypographyH3>
             <UiTypographyP v-if="!error" class="text-accent-500 text-sm">

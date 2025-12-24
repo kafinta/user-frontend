@@ -27,13 +27,13 @@
     </Splide>
 
     <!-- Error state -->
-    <div v-else class="text-center mt-8 py-12">
+    <div v-else class="text-center mt-5">
       <div class="max-w-md mx-auto space-y-6">
         <div class="w-20 h-20 mx-auto bg-red-200 rounded-full flex items-center justify-center">
           <UiIconsError class="w-16 h-16 text-red-600" />
         </div>
         <div>
-          <UiTypographyH3 class="text-secondary font-medium mb-2">
+          <UiTypographyH3 class="text-secondary font-medium mb-2 mt-4">
             {{ error || 'No featured products available' }}
           </UiTypographyH3>
           <UiTypographyP v-if="!error" class="text-accent-500 text-sm">
