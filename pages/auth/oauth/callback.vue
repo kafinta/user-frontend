@@ -100,6 +100,23 @@ const processOAuthCallback = async () => {
       // Check if this is a new user (you might need to add this to the backend response)
       isNewUser.value = route.query.is_new_user === 'true'
 
+      // Transfer guest cart items to authenticated user's cart
+      const { useGuestCart } = await import('~/composables/useGuestCart');
+      const { useCartApi } = await import('~/composables/useCartApi');
+      const guestCart = useGuestCart();
+      const cartApi = useCartApi();
+
+      guestCart.loadCart();
+      if (guestCart.items.value.length > 0) {
+        try {
+          await cartApi.transferGuestCart(guestCart.items.value);
+          guestCart.clearCart();
+        } catch (error) {
+          console.error('Failed to transfer guest cart:', error);
+          // Don't block OAuth callback if cart transfer fails
+        }
+      }
+
       // Show success message
       if (isNewUser.value) {
         toast.success(`Welcome! Your account has been created with ${providerName.value}`)

@@ -119,6 +119,24 @@ async function handleSignin() {
       authApi.handleAuthSuccess(response);
       toast.success(response.message);
 
+      // Transfer guest cart items to authenticated user's cart
+      const { useGuestCart } = await import('~/composables/useGuestCart');
+      const { useCartApi } = await import('~/composables/useCartApi');
+      const guestCart = useGuestCart();
+      const cartApi = useCartApi();
+
+      guestCart.loadCart();
+      if (guestCart.items.value.length > 0) {
+        try {
+          await cartApi.transferGuestCart(guestCart.items.value);
+          guestCart.clearCart();
+          toast.success('Your cart items have been transferred');
+        } catch (error) {
+          console.error('Failed to transfer guest cart:', error);
+          // Don't block login if cart transfer fails
+        }
+      }
+
       // Check verification status
       const needsVerification = response.data?.email_verification_required || !authStore.isVerified;
 
