@@ -69,6 +69,15 @@
           <li v-if="showMarketplaceLink">
             <UiButtonsSecondary :url="{path: '/marketplace/'}" class="text-sm whitespace-nowrap">Marketplace</UiButtonsSecondary>
           </li>
+
+          <!-- Cart icon for guests -->
+          <li v-if="showCart">
+            <button title="Cart" @click="$emit('cartClicked')" class="p-2 transition-colors duration-200 relative">
+              <UiIconsCart class="w-5 h-5 text-secondary hover:text-primary transition-colors duration-200" />
+              <UiBadge :value="cartItemCount" size="small" v-if="cartItemCount > 0" class="h-5 w-5 -top-1 -right-1 absolute flex items-center justify-center text-xs font-semibold"></UiBadge>
+            </button>
+          </li>
+
           <li>
             <UiButtonsSecondary :url="{path: '/auth/login'}" class="text-sm whitespace-nowrap">Sign In</UiButtonsSecondary>
           </li>
@@ -116,6 +125,11 @@ import UiDropdownMenu from '~/components/Ui/DropdownMenu.vue'
 // Props with validation - only UI-related props remain
 const props = defineProps({
   showMarketplaceLink: {
+    type: Boolean,
+    default: true
+  },
+
+  showCart: {
     type: Boolean,
     default: true
   },

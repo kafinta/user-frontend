@@ -6,6 +6,12 @@
         <li v-if="showMarketplaceLink">
           <UiButtonsSecondary :url="{path: '/marketplace/'}">Marketplace</UiButtonsSecondary>
         </li>
+        <li v-if="showCart">
+          <UiButtonsTertiary class="flex gap-3 items-center justify-start w-full" :flexdisplay="true" @clicked="$emit('cartClicked')">
+            <UiIconsCart class="w-5 h-5" />
+            <span>Cart</span>
+          </UiButtonsTertiary>
+        </li>
         <li>
           <UiButtonsSecondary :url="{name: 'auth-login'}">Sign In</UiButtonsSecondary>
         </li>
