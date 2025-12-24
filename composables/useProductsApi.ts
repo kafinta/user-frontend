@@ -346,6 +346,22 @@ export function useProductsApi() {
     return updateAttributes(productId, attributeValues)
   }
 
+  /**
+   * Fetch top/trending products for carousel
+   * @param {string} endpoint - '/api/products/top' or '/api/products/featured'
+   */
+  async function fetchCarouselProducts(endpoint: '/api/products/top' | '/api/products/featured'): Promise<any> {
+    try {
+      const response = await useCustomFetch(endpoint, {
+        method: 'GET'
+      })
+      return response
+    } catch (error: any) {
+      console.error(`Error fetching carousel products from ${endpoint}:`, error)
+      throw error
+    }
+  }
+
   return {
     // State
     products,
@@ -374,6 +390,8 @@ export function useProductsApi() {
     publishProduct,
     updateStatus,
     bulkUpdateStatus,
+    // Carousel
+    fetchCarouselProducts,
     // Cache management
     invalidateProductCache,
     invalidateAllProductCache
