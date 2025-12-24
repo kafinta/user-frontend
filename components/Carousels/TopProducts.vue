@@ -13,7 +13,7 @@
         <UiSkeleton
           v-for="n in numVisibleItems"
           :key="n"
-          height="15rem"
+          height="20rem"
           class="flex-1"
         />
       </div>
@@ -31,7 +31,9 @@
                 :name="product.name"
                 :price="product.price"
                 :image="product.image"
-                :discountPrice="product.discountPrice"
+                :rating="product.rating"
+                :reviewCount="product.reviewCount"
+                :salesCount="product.salesCount"
               />
             </div>
           </SplideSlide>
@@ -57,32 +59,48 @@
       </div>
 
       <!-- Error state - only shown when not loading and either there's an error or no products -->
-      <div v-else class="list-none text-center mt-5">
-        <UiTypographyP v-if="error">{{ error }}</UiTypographyP>
-        <UiTypographyP v-else>No trending products available. Check back later.</UiTypographyP>
+      <div v-else class="text-center mt-5">
+        <div class="max-w-md mx-auto space-y-6">
+          <div class="w-20 h-20 mx-auto bg-red-200 rounded-full flex items-center justify-center">
+            <UiIconsError class="w-16 h-16 text-red-600" />
+          </div>
+          <div>
+            <UiTypographyH3 class="text-secondary font-medium mb-2">
+              {{ error || 'No trending products available' }}
+            </UiTypographyH3>
+            <UiTypographyP v-if="!error" class="text-accent-500 text-sm">
+              Check back later for new products.
+            </UiTypographyP>
+          </div>
+          <button
+            @click="fetchProducts"
+            class="w-full py-2 px-4 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors text-sm font-medium"
+          >
+            Try Again
+          </button>
+        </div>
       </div>
     </div>
   </Container>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useWindowSize } from '@vueuse/core'
 import { Splide, SplideSlide } from '@splidejs/vue-splide'
 // Import Splide CSS - only import once if not already imported by another component
 import '@splidejs/vue-splide/css'
 // Import shared carousel styles
 import '~/assets/css/carousel.css'
-import { useRouter } from 'vue-router'
-import { useCustomFetch } from '~/composables/useCustomFetch'
+import { useProductsCarousel } from '~/composables/useProductsCarousel'
+import UiIconsError from '~/components/Ui/Icons/Error.vue'
 
-const router = useRouter()
 const { width } = useWindowSize()
 
-// State management
-const isLoading = ref(true)
-const error = ref(null)
-const products = ref([])
+// Use the carousel composable for top products
+const { products, isLoading, error, fetchProducts } = useProductsCarousel({
+  endpoint: '/api/products/top'
+})
 
 // Define Splide options with optimized settings specific to TopProducts
 const splideOptions = {
@@ -136,46 +154,9 @@ const numVisibleItems = computed(() => {
   return 1
 })
 
-// Fetch products data
-async function fetchTopProducts() {
-  isLoading.value = true
-  error.value = null
-
-  try {
-    // Fetch products from API with limit
-    const response = await useCustomFetch('/api/products', {
-      method: 'GET',
-      query: {
-        per_page: 8,
-        sort: 'trending'
-      }
-    })
-
-    if (response && response.status === 'success') {
-      // Map API response to component format
-      const apiProducts = response.data?.products || response.data || []
-      products.value = apiProducts.map(product => ({
-        id: product.id,
-        slug: product.slug,
-        name: product.name,
-        price: product.price,
-        image: product.images?.[0]?.path || product.images?.[0]?.url || '',
-        discountPrice: product.previous_price || null
-      }))
-    } else {
-      error.value = response?.message || 'Failed to load trending products'
-    }
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : 'Failed to load trending products'
-    console.error('Error fetching top products:', err)
-  } finally {
-    isLoading.value = false
-  }
-}
-
 // Fetch products when component is mounted
 onMounted(() => {
-  fetchTopProducts()
+  fetchProducts()
 })
 </script>
 

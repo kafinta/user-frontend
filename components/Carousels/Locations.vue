@@ -45,9 +45,26 @@
   </div>
 
   <!-- Error state - only shown when not loading and either there's an error or no locations -->
-  <div v-else class="list-none text-center mt-5">
-    <UiTypographyP v-if="error">Error fetching locations. Try again later.</UiTypographyP>
-    <UiTypographyP v-else>No locations available. Try again later.</UiTypographyP>
+  <div v-else class="text-center mt-5">
+    <div class="max-w-md mx-auto space-y-6">
+      <div class="w-20 h-20 mx-auto bg-red-200 rounded-full flex items-center justify-center">
+        <UiIconsError class="w-16 h-16 text-red-600" />
+      </div>
+      <div>
+        <UiTypographyH3 class="text-secondary font-medium mb-2">
+          {{ error || 'No locations available' }}
+        </UiTypographyH3>
+        <UiTypographyP v-if="!error" class="text-accent-500 text-sm">
+          Check back later for new locations.
+        </UiTypographyP>
+      </div>
+      <button
+        @click="retryFetch"
+        class="w-full py-2 px-4 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors text-sm font-medium"
+      >
+        Try Again
+      </button>
+    </div>
   </div>
 </template>
 
@@ -63,6 +80,7 @@ import { Splide, SplideSlide } from '@splidejs/vue-splide'
 import '@splidejs/vue-splide/css'
 // Import shared carousel styles
 import '~/assets/css/carousel.css'
+import UiIconsError from '~/components/Ui/Icons/Error.vue'
 
 // Props
 const props = defineProps({
@@ -141,6 +159,10 @@ async function handleLocationClick(location) {
 
 async function selectLocation(location) {
   await productFilters.selectLocationAndNavigate(location);
+}
+
+async function retryFetch() {
+  await filtersStore.fetchLocations();
 }
 
 // No onMounted needed - data will be fetched when needed by pages

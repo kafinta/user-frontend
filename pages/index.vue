@@ -110,9 +110,26 @@
       </ul>
 
       <!-- Error state - only shown when not loading and either there's an error or no categories -->
-      <div v-else class="col-span-2 text-center py-4">
-        <UiTypographyP v-if="error">Error fetching categories. Try again later.</UiTypographyP>
-        <UiTypographyP v-else>No categories available. Try again later.</UiTypographyP>
+      <div v-else class="col-span-2">
+        <div class="max-w-md mx-auto text-center space-y-6">
+          <div class="w-20 h-20 mx-auto bg-red-200 rounded-full flex items-center justify-center">
+            <UiIconsError class="w-16 h-16 text-red-600" />
+          </div>
+          <div>
+            <UiTypographyH3 class="text-secondary font-medium mb-2">
+              {{ error || 'No categories available' }}
+            </UiTypographyH3>
+            <UiTypographyP v-if="!error" class="text-accent-500 text-sm">
+              Check back later for new categories.
+            </UiTypographyP>
+          </div>
+          <button
+            @click="retryFetchCategories"
+            class="w-full py-2 px-4 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors text-sm font-medium"
+          >
+            Try Again
+          </button>
+        </div>
       </div>
 
     </Container>
@@ -124,7 +141,8 @@ import { ref, onMounted } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
-import { useProductFilters } from '@/composables/useProductFilters';
+import { useProductFilters } from '@/composables/useProductFilters'
+import UiIconsError from '~/components/Ui/Icons/Error.vue'
 const router = useRouter()
 const route = useRoute()
 
@@ -145,6 +163,10 @@ async function selectCategory(item) {
 
 async function selectLocation(locationId) {
   await productFilters.selectLocationAndNavigate(locationId);
+}
+
+async function retryFetchCategories() {
+  await filtersStore.fetchCategories();
 }
 
 // Fetch categories on mount
