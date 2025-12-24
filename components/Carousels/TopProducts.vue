@@ -27,9 +27,11 @@
           <SplideSlide v-for="product in products" :key="product.id">
             <div class="carousel-item-wrapper">
               <ProductsCard
-                :title="product.title"
-                :image="product.image_path"
-                :review="product.rating || 4.5"
+                :slug="product.slug"
+                :name="product.name"
+                :price="product.price"
+                :image="product.image"
+                :discountPrice="product.discountPrice"
               />
             </div>
           </SplideSlide>
@@ -72,6 +74,7 @@ import '@splidejs/vue-splide/css'
 // Import shared carousel styles
 import '~/assets/css/carousel.css'
 import { useRouter } from 'vue-router'
+import { useCustomFetch } from '~/composables/useCustomFetch'
 
 const router = useRouter()
 const { width } = useWindowSize()
@@ -139,63 +142,29 @@ async function fetchTopProducts() {
   error.value = null
 
   try {
-    // In a real app, this would be an API call
-    // const response = await useCustomFetch<{ data: Product[] }>('api/products/trending')
-
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500))
-
-    // Mock data - in production this would come from the API
-    products.value = [
-      {
-        id: 1,
-        title: 'Modern Sofa Set',
-        image_path: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674243546/kafinta/professionals/architecture_pfqxd1.jpg',
-        rating: 4.8
-      },
-      {
-        id: 2,
-        title: 'Dining Table Set',
-        image_path: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674243547/kafinta/professionals/contractors_lh7l0e.jpg',
-        rating: 4.5
-      },
-      {
-        id: 3,
-        title: 'Bedroom Furniture',
-        image_path: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674493506/kafinta/professionals/interior_design_pqrjoi.jpg',
-        rating: 4.7
-      },
-      {
-        id: 4,
-        title: 'Outdoor Furniture',
-        image_path: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674243718/kafinta/professionals/landscape_hu1kew.jpg',
-        rating: 4.3
-      },
-      {
-        id: 5,
-        title: 'Kitchen Cabinets',
-        image_path: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674494156/kafinta/professionals/concrete_2_m4mxvu.jpg',
-        rating: 4.6
-      },
-      {
-        id: 6,
-        title: 'Bathroom Fixtures',
-        image_path: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674243925/kafinta/professionals/swimming_pool_kzttut.jpg',
-        rating: 4.4
-      },
-      {
-        id: 7,
-        title: 'Home Decor',
-        image_path: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674244002/kafinta/professionals/remodeling_fizg3u.jpg',
-        rating: 4.9
-      },
-      {
-        id: 8,
-        title: 'Lighting Fixtures',
-        image_path: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1674244070/kafinta/professionals/dwelling_units_b7fsmx.jpg',
-        rating: 4.2
+    // Fetch products from API with limit
+    const response = await useCustomFetch('/api/products', {
+      method: 'GET',
+      query: {
+        per_page: 8,
+        sort: 'trending'
       }
-    ]
+    })
+
+    if (response && response.status === 'success') {
+      // Map API response to component format
+      const apiProducts = response.data?.products || response.data || []
+      products.value = apiProducts.map(product => ({
+        id: product.id,
+        slug: product.slug,
+        name: product.name,
+        price: product.price,
+        image: product.images?.[0]?.path || product.images?.[0]?.url || '',
+        discountPrice: product.previous_price || null
+      }))
+    } else {
+      error.value = response?.message || 'Failed to load trending products'
+    }
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to load trending products'
     console.error('Error fetching top products:', err)
