@@ -12,8 +12,8 @@
     <div class="mt-16 mb-8 py-6 min-h-screen">
       <slot/>
     </div>
-    <ModalsDrawer :openDialog="openCart" @closeDialog="toggleCart()" :footerButtons="true" :scrollable="true" okText="Checkout">
-      <template #title>My Cart ({{ cartStore.totalItems }} items)</template>
+    <ModalsDrawer :openDialog="openCart" @closeDialog="toggleCart()" :footerButtons="true" :scrollable="true" okText="Checkout" width="md">
+      <template #title>My Cart</template>
 
       <!-- Empty Cart State -->
       <div v-if="cartStore.isEmpty" class="text-center py-12">
@@ -21,35 +21,58 @@
         <p class="text-accent-500">Your cart is empty</p>
       </div>
 
-      <!-- Cart Items -->
-      <ul v-else class="grid gap-4">
-        <CartItem
-          v-for="item in cartStore.items"
-          :key="item.id"
-          :item="item"
-          @update-quantity="handleUpdateQuantity"
-          @remove="handleRemoveItem"
-        />
-      </ul>
+      <!-- Cart Items and Summary -->
+      <div v-else class="flex flex-col h-full">
+        <!-- Items List -->
+        <div class="flex-1 overflow-y-auto">
+          <ul class="space-y-0">
+            <CartItem
+              v-for="item in cartStore.items"
+              :key="item.id"
+              :item="item"
+              @update-quantity="handleUpdateQuantity"
+              @remove="handleRemoveItem"
+            />
+          </ul>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="border-t border-accent-200 pt-4 mt-4 space-y-3">
+          <div class="flex justify-between text-sm">
+            <span class="text-accent-600">Subtotal</span>
+            <span class="text-secondary font-medium">₦{{ formatPrice(cartStore.subtotal) }}</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-accent-600">Shipping</span>
+            <span class="text-secondary font-medium">Calculated at checkout</span>
+          </div>
+          <div class="border-t border-accent-100 pt-3 flex justify-between">
+            <span class="text-secondary font-semibold">Total</span>
+            <span class="text-primary font-bold text-lg">₦{{ formatPrice(cartStore.total) }}</span>
+          </div>
+        </div>
+      </div>
     </ModalsDrawer>
     <NavigationFooter/>
   </div>
 </template>
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { useCartStore } from '~/stores/cart'
 import { useCartApi } from '~/composables/useCartApi'
 import CartItem from '~/components/Cart/Item.vue'
 import UiIconsCart from '~/components/Ui/Icons/Cart.vue'
 
-const router = useRouter()
 const cartStore = useCartStore()
 const { fetchCart, removeFromCart, updateCartItem } = useCartApi()
 
 const searchBox = ref(false)
 const search_button_hovered = ref(false)
 const openCart = ref(false)
+
+function formatPrice(price) {
+  return new Intl.NumberFormat('en-NG').format(price)
+}
 
 function toggleCart() {
   openCart.value = !openCart.value

@@ -1,7 +1,7 @@
 <template>
-  <div class="flex gap-4 p-4 border border-accent-200 rounded-lg bg-white hover:shadow-md transition-shadow">
+  <div class="flex gap-3 pb-4 border-b border-accent-100 last:border-b-0">
     <!-- Product Image -->
-    <div class="flex-shrink-0 w-24 h-24">
+    <div class="flex-shrink-0 w-20 h-20">
       <img
         v-if="productImage"
         :src="productImage"
@@ -9,74 +9,47 @@
         class="w-full h-full object-cover rounded-md"
       />
       <div v-else class="w-full h-full bg-accent-100 rounded-md flex items-center justify-center">
-        <UiIconsCamera class="w-8 h-8 text-accent-300" />
+        <UiIconsCamera class="w-6 h-6 text-accent-300" />
       </div>
     </div>
 
     <!-- Product Details -->
-    <div class="flex-1 flex flex-col justify-between">
+    <div class="flex-1 flex flex-col justify-between min-w-0">
       <div>
         <NuxtLink
           :to="`/marketplace/products/${item.product.slug}`"
-          class="text-secondary font-medium hover:text-primary transition-colors"
+          class="text-secondary font-medium hover:text-primary transition-colors text-sm line-clamp-2"
         >
           {{ item.product.name }}
         </NuxtLink>
-        <div class="text-primary font-semibold mt-1">
+        <div class="text-primary font-semibold mt-1 text-sm">
           ₦{{ formatPrice(item.product.price) }}
         </div>
       </div>
 
-      <!-- Quantity Controls -->
-      <div class="flex items-center gap-2">
-        <button
-          @click="decreaseQuantity"
-          :disabled="isUpdating"
-          class="w-8 h-8 flex items-center justify-center border border-accent-200 rounded hover:bg-accent-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          <span class="text-lg">−</span>
-        </button>
-        <input
-          v-model.number="quantity"
-          type="number"
-          min="1"
-          @change="updateQuantity"
-          :disabled="isUpdating"
-          class="w-12 h-8 text-center border border-accent-200 rounded focus:outline-none focus:border-primary disabled:opacity-50"
-        />
-        <button
-          @click="increaseQuantity"
-          :disabled="isUpdating"
-          class="w-8 h-8 flex items-center justify-center border border-accent-200 rounded hover:bg-accent-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          <span class="text-lg">+</span>
-        </button>
-      </div>
+      <!-- Quantity Input -->
+      <FormQuantityInput
+        v-model="quantity"
+        size="sm"
+        @update:modelValue="updateQuantity"
+      />
     </div>
 
-    <!-- Subtotal and Remove -->
-    <div class="flex flex-col items-end justify-between">
-      <div class="text-right">
-        <div class="text-accent-600 text-sm">Subtotal</div>
-        <div class="text-secondary font-semibold">
-          ₦{{ formatPrice(item.subtotal) }}
-        </div>
-      </div>
-
-      <button
-        @click="removeItem"
-        :disabled="isUpdating"
-        class="text-red-500 hover:text-red-700 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-      >
-        Remove
-      </button>
-    </div>
+    <!-- Remove Button -->
+    <button
+      @click="removeItem"
+      :disabled="isUpdating"
+      class="text-red-500 hover:text-red-700 text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors self-start pt-1"
+    >
+      Remove
+    </button>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
 import UiIconsCamera from '~/components/Ui/Icons/Camera.vue'
+import FormQuantityInput from '~/components/Form/QuantityInput.vue'
 
 const props = defineProps({
   item: {
@@ -102,19 +75,7 @@ function formatPrice(price) {
   return new Intl.NumberFormat('en-NG').format(price)
 }
 
-function increaseQuantity() {
-  quantity.value++
-  updateQuantity()
-}
-
-function decreaseQuantity() {
-  if (quantity.value > 1) {
-    quantity.value--
-    updateQuantity()
-  }
-}
-
-async function updateQuantity() {
+function updateQuantity() {
   if (quantity.value !== props.item.quantity) {
     isUpdating.value = true
     try {

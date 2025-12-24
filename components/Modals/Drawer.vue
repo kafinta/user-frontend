@@ -6,7 +6,7 @@
     </transition>
     <!-- Drawer Panel -->
     <transition name="slide-in-right">
-      <div v-show="openDialog" class="fixed top-0 right-0 h-full w-3/5 md:w-1/3 xl:w-1/4 bg-white z-150 shadow-lg border border-accent-200 flex flex-col">
+      <div v-show="openDialog" :class="drawerWidthClass" class="fixed top-0 right-0 h-full bg-white z-150 shadow-lg border border-accent-200 flex flex-col">
         <div class="flex justify-between items-center border-b border-accent-200 py-3 pl-6 pr-3">
           <UiTypographyP class="uppercase"><strong><slot name="title" /></strong></UiTypographyP>
           <button
@@ -54,6 +54,24 @@ export default {
     okText: {
       type: String,
       default: 'Ok'
+    },
+    width: {
+      type: String,
+      default: 'md', // 'sm', 'md', 'lg', 'xl', 'full'
+      validator: (value) => ['sm', 'md', 'lg', 'xl', 'full'].includes(value)
+    }
+  },
+
+  computed: {
+    drawerWidthClass() {
+      const widthMap = {
+        'sm': 'w-80',
+        'md': 'md:w-1/3 xl:w-1/3 w-3/5',
+        'lg': 'md:w-1/2 xl:w-1/2 w-4/5',
+        'xl': 'md:w-2/3 xl:w-2/3 w-full',
+        'full': 'w-full'
+      }
+      return widthMap[this.width]
     }
   },
 
