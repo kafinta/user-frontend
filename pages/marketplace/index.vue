@@ -12,15 +12,22 @@
             <UiIconsChevron class="transform rotate-90 w-4 h-4" />
           </UiButtonsSecondary>
         </div>
-        <ul class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-3 mt-6">
-          <li v-for="location in locations" :key="location.id">
+
+        <!-- Loading state -->
+        <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-3 mt-6">
+          <UiSkeleton v-for="i in 4" :key="`skeleton-${i}`" height="120px" class="rounded-lg" />
+        </div>
+
+        <!-- Loaded state -->
+        <ul v-else class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-3 mt-6">
+          <li v-for="location in displayedLocations" :key="location.id">
             <button @click="navigateToLocation(location)" class="p-5 flex gap-5 border border-secondary border-opacity-20 items-center rounded-lg hover:border-primary duration-300 ease-in-out w-full">
-              <div class="bg-primary h-20 w-20 rounded-full flex items-center justify-center">
-                <img class="w-14 h-14" alt="" :src="location.imagePath" />
+              <div class="bg-primary h-20 w-20 rounded-full flex items-center justify-center flex-shrink-0">
+                <img class="w-14 h-14" :alt="location.name" :src="location.icon" />
               </div>
 
               <div class="text-left">
-                <h3 class="text-secondary text-lg font-medium">{{ location.title }}</h3>
+                <h3 class="text-secondary text-lg font-medium">{{ location.name }}</h3>
                 <p class="text-secondary text-sm mt-0">{{ location.products }}</p>
               </div>
             </button>
@@ -42,45 +49,62 @@ useHead({
   ]
 });
 
-import { ref } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useProductFilters } from '~/composables/useProductFilters';
+import { useFiltersStore } from '~/stores/filters';
+import { storeToRefs } from 'pinia';
 
 const router = useRouter();
-const { query } = useProductFilters();
-const locations = ref([
-  {
-    id: 1,
-    title: 'Bedroom',
-    imagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1698760299/kafinta/rooms/bedroom_pw1dhq.svg',
+const filtersStore = useFiltersStore();
+const { locations: apiLocations, isLoading } = storeToRefs(filtersStore);
+const productFilters = useProductFilters();
+
+// Map location names to local icon paths and product descriptions
+const locationMetadata = {
+  'Bedroom': {
+    icon: '/images/room_icons/bedroom.svg',
     products: 'Beds, pillows, bedsheets, lamps...'
   },
-  {
-    id: 2,
-    title: 'Living Room',
-    imagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1698760299/kafinta/rooms/living_room_w6gxcb.svg',
+  'Living Room': {
+    icon: '/images/room_icons/living_room.svg',
     products: 'Sofas, couches, tables ...'
   },
-  {
-    id: 3,
-    title: 'Kitchen',
-    imagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1698760299/kafinta/rooms/kitchen_b7petm.svg',
+  'Kitchen': {
+    icon: '/images/room_icons/kitchen.svg',
     products: 'Fixtures, tables, kitchen tops...'
   },
-  {
-    id: 4,
-    title: 'Dining',
-    imagePath: 'https://res.cloudinary.com/dslsh7dej/image/upload/v1698760299/kafinta/rooms/dining_oaajex.svg',
+  'Dining': {
+    icon: '/images/room_icons/dining.svg',
     products: 'Chairs, tables, utensils...'
   },
-]);
+  'Dining Room': {
+    icon: '/images/room_icons/dining.svg',
+    products: 'Chairs, tables, utensils...'
+  }
+};
 
-const navigateToLocation = (location) => {
-  query.location = location.title;
-  router.push({ name: 'marketplace-products', query });
+// Display only the first 4 locations with metadata
+const displayedLocations = computed(() =>
+  apiLocations.value.slice(0, 4).map(location => ({
+    ...location,
+    icon: locationMetadata[location.name]?.icon || location.image_path,
+    products: locationMetadata[location.name]?.products || 'Browse products'
+  }))
+);
+
+const navigateToLocation = async (location) => {
+  await productFilters.selectLocationAndNavigate(location);
 };
 
 const navigateToAllLocations = () => {
   router.push({ name: 'marketplace-locations' });
 };
+
+// Load locations on mount
+onMounted(async () => {
+  if (apiLocations.value.length === 0) {
+    await filtersStore.fetchLocations();
+  }
+});
 </script>
