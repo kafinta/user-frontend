@@ -25,7 +25,7 @@
           <button @click="emitCloseDialogEvent()" class="uppercase font-medium flex-1 px-2 py-3 text-center cursor-pointer bg-white hover:bg-accent-400 hover:text-white transition duration-500 rounded-md border border-accent-200">
             {{cancelText}}
           </button>
-          <button @click="emitOkEvent()" class="uppercase text-white font-medium flex-1 px-2 py-3 text-center cursor-pointer bg-secondary hover:bg-primary transition duration-500 rounded-md">
+          <button @click="emitOkEvent()" :disabled="okDisabled" :class="okDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary'" class="uppercase text-white font-medium flex-1 px-2 py-3 text-center cursor-pointer bg-secondary transition duration-500 rounded-md">
             {{okText}}
           </button>
         </div>
@@ -54,6 +54,10 @@ export default {
     okText: {
       type: String,
       default: 'Ok'
+    },
+    okDisabled: {
+      type: Boolean,
+      default: false
     },
     width: {
       type: String,

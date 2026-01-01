@@ -36,7 +36,11 @@ export const useCartStore = defineStore('cart', () => {
   })
 
   const subtotal = computed(() => {
-    return items.value.reduce((sum, item) => sum + item.subtotal, 0)
+    return items.value.reduce((sum, item) => {
+      // Ensure subtotal is always a number, calculate if missing
+      const itemSubtotal = item.subtotal || (item.quantity * item.product.price)
+      return sum + (Number(itemSubtotal) || 0)
+    }, 0)
   })
 
   const total = computed(() => subtotal.value)

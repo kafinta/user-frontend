@@ -115,7 +115,7 @@
   </nav>
 
   <!-- Cart Drawer for Guests -->
-  <ModalsDrawer v-if="!isAuthenticated && showCart" :openDialog="openCart" @closeDialog="toggleCart()" :footerButtons="true" :scrollable="true" okText="Checkout" width="md" @okClicked="handleGuestCheckout">
+  <ModalsDrawer v-if="!isAuthenticated && showCart" :openDialog="openCart" @closeDialog="toggleCart()" :footerButtons="true" :scrollable="true" okText="Checkout" width="md" :okDisabled="cartStore.isEmpty" @continueAction="handleGuestCheckout">
     <template #title>My Cart</template>
 
     <!-- Loading State -->
@@ -282,7 +282,9 @@ function switchToSelling() {
 }
 
 function formatPrice(price) {
-  return new Intl.NumberFormat('en-NG').format(price)
+  // Handle invalid values
+  const numPrice = Number(price) || 0
+  return new Intl.NumberFormat('en-NG').format(numPrice)
 }
 
 function toggleCart() {
