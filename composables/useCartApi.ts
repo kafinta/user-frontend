@@ -57,7 +57,10 @@ export const useCartApi = () => {
       // For guests, add to guest cart (localStorage)
       if (!authStore.isAuthenticated) {
         if (!product) {
-          throw new Error('Product data is required for guest cart')
+          const errorMessage = 'Product data is required for guest cart'
+          cartStore.setError(errorMessage)
+          toast.error(errorMessage)
+          throw new Error(errorMessage)
         }
         guestCart.addItem(product, quantity)
         cartStore.setGuestMode(true)
@@ -113,6 +116,23 @@ export const useCartApi = () => {
       cartStore.setLoading(true)
       cartStore.setError(null)
 
+      // For guests, update guest cart (localStorage)
+      if (!authStore.isAuthenticated) {
+        // Find the item by ID in guest cart
+        const item = guestCart.items.value.find(i => i.id === itemId)
+        if (item) {
+          guestCart.updateQuantity(item.product_id, quantity)
+          cartStore.setItems(guestCart.items.value)
+          return { status: 'success', message: 'Item updated' }
+        } else {
+          const errorMessage = 'Item not found in cart'
+          cartStore.setError(errorMessage)
+          toast.error(errorMessage)
+          return { status: 'error', message: errorMessage }
+        }
+      }
+
+      // For authenticated users, update server cart
       const response = await useCustomFetch(`/api/cart/items/${itemId}`, {
         method: 'PUT',
         body: { quantity }
@@ -148,6 +168,24 @@ export const useCartApi = () => {
       cartStore.setLoading(true)
       cartStore.setError(null)
 
+      // For guests, remove from guest cart (localStorage)
+      if (!authStore.isAuthenticated) {
+        // Find the item by ID in guest cart
+        const item = guestCart.items.value.find(i => i.id === itemId)
+        if (item) {
+          guestCart.removeItem(item.product_id)
+          cartStore.setItems(guestCart.items.value)
+          toast.success('Item removed from cart')
+          return { status: 'success', message: 'Item removed' }
+        } else {
+          const errorMessage = 'Item not found in cart'
+          cartStore.setError(errorMessage)
+          toast.error(errorMessage)
+          return { status: 'error', message: errorMessage }
+        }
+      }
+
+      // For authenticated users, remove from server cart
       const response = await useCustomFetch(`/api/cart/items/${itemId}`, {
         method: 'DELETE'
       })
