@@ -114,7 +114,7 @@
   </nav>
 
   <!-- Cart Drawer for Guests -->
-  <ModalsDrawer v-if="!isAuthenticated && showCart" :openDialog="openCart" @closeDialog="toggleCart()" :footerButtons="true" :scrollable="true" okText="Checkout" width="md">
+  <ModalsDrawer v-if="!isAuthenticated && showCart" :openDialog="openCart" @closeDialog="toggleCart()" :footerButtons="true" :scrollable="true" okText="Checkout" width="md" @okClicked="handleGuestCheckout">
     <template #title>My Cart</template>
 
     <!-- Loading State -->
@@ -304,6 +304,13 @@ async function handleUpdateQuantity(itemId, quantity) {
 
 async function handleRemoveItem(itemId) {
   await removeFromCart(itemId)
+}
+
+function handleGuestCheckout() {
+  // Close the cart drawer
+  toggleCart()
+  // Redirect to checkout - middleware will handle auth
+  router.push('/checkout')
 }
 
 // This function is kept for future use
