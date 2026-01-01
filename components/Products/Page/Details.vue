@@ -132,7 +132,7 @@ async function handleAddToCart() {
 
   isAddingToCart.value = true
   try {
-    await addToCart(props.product.id, quantity.value)
+    await addToCart(props.product.id, quantity.value, undefined, props.product)
     quantity.value = 1
   } catch (error) {
     console.error('Error adding to cart:', error)

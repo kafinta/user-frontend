@@ -1,10 +1,14 @@
 import { useCustomFetch } from './useCustomFetch'
 import { useCartStore } from '~/stores/cart'
 import { useAppToast } from '~/utils/toastify'
+import { useAuthStore } from '~/stores/auth'
+import { useGuestCart } from './useGuestCart'
 
 export const useCartApi = () => {
   const cartStore = useCartStore()
   const toast = useAppToast()
+  const authStore = useAuthStore()
+  const guestCart = useGuestCart()
 
   /**
    * Fetch the current cart
@@ -45,11 +49,24 @@ export const useCartApi = () => {
    * @param quantity - Quantity to add (default: 1)
    * @param variantId - Optional variant ID
    */
-  async function addToCart(productId: number, quantity: number = 1, variantId?: number): Promise<any> {
+  async function addToCart(productId: number, quantity: number = 1, variantId?: number, product?: any): Promise<any> {
     try {
       cartStore.setLoading(true)
       cartStore.setError(null)
 
+      // For guests, add to guest cart (localStorage)
+      if (!authStore.isAuthenticated) {
+        if (!product) {
+          throw new Error('Product data is required for guest cart')
+        }
+        guestCart.addItem(product, quantity)
+        cartStore.setGuestMode(true)
+        cartStore.setItems(guestCart.items.value)
+        toast.success('Product added to cart')
+        return { status: 'success', message: 'Product added to cart' }
+      }
+
+      // For authenticated users, add to server cart
       const payload: any = {
         product_id: productId,
         quantity
