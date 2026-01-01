@@ -27,6 +27,14 @@
       <div class="hidden md:flex flex-shrink-0">
         <!-- Authenticated User Menu -->
         <ul v-if="isAuthenticated" class="flex gap-2 md:gap-3 lg:gap-5 items-center">
+          <!-- Cart icon (left side) -->
+          <li v-if="showCart">
+            <button title="Cart" @click="handleCartClick" class="p-2 transition-colors duration-200 relative">
+              <UiIconsCart class="w-5 h-5 text-secondary hover:text-primary transition-colors duration-200" />
+              <UiBadge :value="cartItemCount" size="small" v-if="cartItemCount > 0" class="h-5 w-5 -top-1 -right-1 absolute flex items-center justify-center text-xs font-semibold"></UiBadge>
+            </button>
+          </li>
+
           <li v-if="showMarketplaceLink">
             <UiButtonsSecondary :url="{path: '/marketplace/'}" class="text-sm whitespace-nowrap">Marketplace</UiButtonsSecondary>
           </li>
@@ -34,14 +42,6 @@
           <!-- Role-based navigation -->
           <li v-if="isSeller">
             <UiButtonsSecondary @clicked="switchToSelling" class="text-sm whitespace-nowrap">Switch to Selling</UiButtonsSecondary>
-          </li>
-
-          <!-- Cart icon -->
-          <li>
-            <button title="Cart" @click="$emit('cartClicked')" class="p-2 transition-colors duration-200 relative">
-              <UiIconsCart class="w-5 h-5 text-secondary hover:text-primary transition-colors duration-200" />
-              <UiBadge :value="cartItemCount" size="small" v-if="cartItemCount > 0" class="h-5 w-5 -top-1 -right-1 absolute flex items-center justify-center text-xs font-semibold"></UiBadge>
-            </button>
           </li>
 
           <!-- Notification icon -->
@@ -66,16 +66,16 @@
 
         <!-- Unauthenticated User Menu -->
         <ul v-else class="flex gap-2 md:gap-3 lg:gap-5 items-center">
-          <li v-if="showMarketplaceLink">
-            <UiButtonsSecondary :url="{path: '/marketplace/'}" class="text-sm whitespace-nowrap">Marketplace</UiButtonsSecondary>
-          </li>
-
-          <!-- Cart icon for guests -->
+          <!-- Cart icon (left side) -->
           <li v-if="showCart">
-            <button title="Cart" @click="$emit('cartClicked')" class="p-2 transition-colors duration-200 relative">
+            <button title="Cart" @click="toggleCart" class="p-2 transition-colors duration-200 relative">
               <UiIconsCart class="w-5 h-5 text-secondary hover:text-primary transition-colors duration-200" />
               <UiBadge :value="cartItemCount" size="small" v-if="cartItemCount > 0" class="h-5 w-5 -top-1 -right-1 absolute flex items-center justify-center text-xs font-semibold"></UiBadge>
             </button>
+          </li>
+
+          <li v-if="showMarketplaceLink">
+            <UiButtonsSecondary :url="{path: '/marketplace/'}" class="text-sm whitespace-nowrap">Marketplace</UiButtonsSecondary>
           </li>
 
           <li>
@@ -107,20 +107,73 @@
         :menu_revealed="menuRevealed"
         :showMarketplaceLink="showMarketplaceLink"
         :hasNotifications="hasNotifications"
-        @cartClicked="$emit('cartClicked')"
+        @cartClicked="toggleCart"
         @logout="logout"
       />
     </div>
   </nav>
+
+  <!-- Cart Drawer for Guests -->
+  <ModalsDrawer v-if="!isAuthenticated && showCart" :openDialog="openCart" @closeDialog="toggleCart()" :footerButtons="true" :scrollable="true" okText="Checkout" width="md">
+    <template #title>My Cart</template>
+
+    <!-- Loading State -->
+    <div v-if="isLoadingCart" class="space-y-4">
+      <UiSkeleton height="100px" class="rounded-lg" v-for="i in 3" :key="`skeleton-${i}`" />
+    </div>
+
+    <!-- Empty Cart State -->
+    <div v-else-if="cartStore.isEmpty" class="text-center py-12">
+      <UiIconsCart class="w-12 h-12 text-accent-400 mx-auto mb-4" />
+      <p class="text-accent-500">Your cart is empty</p>
+    </div>
+
+    <!-- Cart Items and Summary -->
+    <div v-else class="flex flex-col h-full">
+      <!-- Items List -->
+      <div class="flex-1 overflow-y-auto">
+        <ul class="space-y-0">
+          <CartItem
+            v-for="item in cartStore.items"
+            :key="item.id"
+            :item="item"
+            @update-quantity="handleUpdateQuantity"
+            @remove="handleRemoveItem"
+          />
+        </ul>
+      </div>
+
+      <!-- Summary Section -->
+      <div class="border-t border-accent-200 pt-4 mt-4 space-y-3">
+        <div class="flex justify-between text-sm">
+          <span class="text-accent-600">Subtotal</span>
+          <span class="text-secondary font-medium">₦{{ formatPrice(cartStore.subtotal) }}</span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-accent-600">Shipping</span>
+          <span class="text-secondary font-medium">Calculated at checkout</span>
+        </div>
+        <div class="border-t border-accent-100 pt-3 flex justify-between">
+          <span class="text-secondary font-semibold">Total</span>
+          <span class="text-primary font-bold text-lg">₦{{ formatPrice(cartStore.total) }}</span>
+        </div>
+      </div>
+    </div>
+  </ModalsDrawer>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '~/stores/auth';
+import { useCartStore } from '~/stores/cart';
 import { useAuthApi } from '~/composables/useAuthApi';
+import { useCartApi } from '~/composables/useCartApi';
+import { useGuestCart } from '~/composables/useGuestCart';
 import { useAppToast } from '~/utils/toastify';
 import UiDropdownMenu from '~/components/Ui/DropdownMenu.vue'
+import CartItem from '~/components/Cart/Item.vue'
+import UiIconsCart from '~/components/Ui/Icons/Cart.vue'
 
 // Props with validation - only UI-related props remain
 const props = defineProps({
@@ -159,6 +212,9 @@ const router = useRouter()
 
 // Auth store
 const authStore = useAuthStore()
+const cartStore = useCartStore()
+const { removeFromCart, updateCartItem } = useCartApi()
+const guestCart = useGuestCart()
 
 // Refs
 const input = ref(null)
@@ -169,6 +225,8 @@ const menuRevealed = ref(false)
 const user_options = ref(false)
 const search_input = ref('')
 const hasNotifications = ref(true) // Set to true to show the notification indicator by default
+const openCart = ref(false)
+const isLoadingCart = ref(false)
 
 // Computed properties - directly from auth store
 const isAuthenticated = computed(() => authStore.isAuthenticated)
@@ -216,6 +274,36 @@ function switchToSelling() {
   } catch (error) {
     console.error('Navigation error:', error)
   }
+}
+
+function formatPrice(price) {
+  return new Intl.NumberFormat('en-NG').format(price)
+}
+
+function toggleCart() {
+  openCart.value = !openCart.value
+}
+
+function handleCartClick() {
+  if (authStore.isAuthenticated) {
+    // Redirect to cart page for authenticated users
+    router.push({ name: 'username-buying-cart', params: { username: authStore.user?.username } })
+  } else {
+    // Open cart sidebar for guests
+    toggleCart()
+  }
+}
+
+async function handleUpdateQuantity(itemId, quantity) {
+  if (quantity <= 0) {
+    await handleRemoveItem(itemId)
+  } else {
+    await updateCartItem(itemId, quantity)
+  }
+}
+
+async function handleRemoveItem(itemId) {
+  await removeFromCart(itemId)
 }
 
 // This function is kept for future use
@@ -307,6 +395,17 @@ const userMenuItems = [
 onMounted(async () => {
   if (import.meta.client) {
     document.addEventListener('click', handleClickOutside)
+
+    // Load guest cart from localStorage
+    guestCart.loadCart()
+
+    // Set up cart based on auth status
+    if (authStore.isAuthenticated) {
+      cartStore.setGuestMode(false)
+    } else {
+      cartStore.setGuestMode(true)
+      cartStore.setItems(guestCart.items.value)
+    }
 
     // Check auth status on mount
     await checkAuthStatus()

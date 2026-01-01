@@ -6,6 +6,7 @@
         :keep_button_hovered="search_button_hovered"
         @toggleSearchBox="toggleSearch()"
         :showMarketplaceLink="true"
+        :showCart="true"
       />
       <div class="py-36 lg:py-48 2xl:py-56 hero-bg grid place-items-center">
         <Container class="flex justify-between w-full">
@@ -140,11 +141,8 @@
 import { ref, onMounted } from 'vue'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
-import { useRouter, useRoute } from 'vue-router'
 import { useProductFilters } from '@/composables/useProductFilters'
 import UiIconsError from '~/components/Ui/Icons/Error.vue'
-const router = useRouter()
-const route = useRoute()
 
 const filtersStore = useFiltersStore()
 const { categories, isLoading, error } = storeToRefs(filtersStore)
@@ -152,6 +150,7 @@ const productFilters = useProductFilters();
 
 const searchBox = ref(false);
 const search_button_hovered = ref(false);
+
 const toggleSearch = () => {
   searchBox.value = !searchBox.value;
   search_button_hovered.value = !search_button_hovered.value;
