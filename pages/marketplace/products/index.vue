@@ -58,10 +58,17 @@
             </div>
             <UiTypographyH3 class="text-secondary mb-3">No products found</UiTypographyH3>
             <UiTypographyP class="text-accent-500 mb-6 max-w-md">
-              We couldn't find any products matching your criteria. Try adjusting your filters or search terms.
+              <template v-if="search">
+                No products match your search for "<b>{{ $route.query.query }}</b>". Try different keywords or browse categories.
+              </template>
+              <template v-else>
+                We couldn't find any products in this category. Try adjusting your filters or browse other categories.
+              </template>
             </UiTypographyP>
             <div class="flex gap-3">
-              <UiButtonsSecondary @clicked="clearFilters">Clear Filters</UiButtonsSecondary>
+              <UiButtonsSecondary @clicked="clearFilters">
+                {{ search ? 'Clear Search' : 'Clear Filters' }}
+              </UiButtonsSecondary>
               <UiButtonsPrimary :url="{ path: '/marketplace/subcategories', query: { ...route.query } }">
                 Browse Categories
               </UiButtonsPrimary>
