@@ -23,7 +23,12 @@
                     </span>
                 </p>
                 <div class="flex items-center justify-between mt-3">
-                    <ProductsRating :rating="5" />
+                    <ProductsRating :rating="rating" />
+                    <div v-if="reviewCount || salesCount" class="text-xs text-accent-500 flex gap-2">
+                        <span v-if="reviewCount">{{ reviewCount }} review{{ reviewCount !== 1 ? 's' : '' }}</span>
+                        <span v-if="reviewCount && salesCount">•</span>
+                        <span v-if="salesCount">{{ salesCount }} sold</span>
+                    </div>
                 </div>
             </div>
         </NuxtLink>
@@ -49,7 +54,10 @@ const props = defineProps({
     price: Number,
     discountPrice: Number,
     image: String,
-    skeleton: Boolean
+    skeleton: Boolean,
+    rating: Number,
+    reviewCount: Number,
+    salesCount: Number
 });
 
 function formatPrice(price) {
