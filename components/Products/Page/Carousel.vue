@@ -1,11 +1,24 @@
 <template>
   <div class="w-full">
+    <!-- Loading state -->
     <template v-if="isLoading">
       <UiSkeleton class="w-full mb-4 rounded-xl" height="25rem" />
       <div class="flex gap-2 mt-3 justify-center">
         <UiSkeleton v-for="i in 4" :key="i" class="rounded-md" height="4rem" width="5rem" />
       </div>
     </template>
+
+    <!-- No images state -->
+    <template v-else-if="!hasImages">
+      <div class="w-full bg-accent-50 border border-accent-200 rounded-xl aspect-[4/3] flex flex-col items-center justify-center">
+        <UiIconsImage class="w-20 h-20 text-accent-300 mb-3" />
+        <UiTypographyP class="text-accent-500 text-center">
+          No product images available
+        </UiTypographyP>
+      </div>
+    </template>
+
+    <!-- Images loaded state -->
     <template v-else>
       <Splide
         ref="mainSplide"
@@ -54,6 +67,8 @@ import { Splide, SplideSlide } from '@splidejs/vue-splide';
 import '@splidejs/vue-splide/css';
 import UiSkeleton from '~/components/Ui/Skeleton/Index.vue';
 import UiIconsChevron from '~/components/Ui/Icons/Chevron.vue';
+import UiIconsImage from '~/components/Ui/Icons/Image.vue';
+import UiTypographyP from '~/components/Ui/Typography/P.vue';
 
 const props = defineProps({
   product: Object,
@@ -63,17 +78,15 @@ const props = defineProps({
 const mainSplide = ref(null);
 const currentSlide = ref(0);
 
+const hasImages = computed(() => {
+  return props.product?.images && props.product.images.length > 0;
+});
+
 const images = computed(() => {
-  if (props.product?.images && props.product.images.length > 0) {
+  if (hasImages.value) {
     return props.product.images;
   }
-  // Fallback: show 4 placeholders
-  return [
-    { id: 1, path: '/images/hero-bg.jpg' },
-    { id: 2, path: '/images/login.jpg' },
-    { id: 3, path: '/images/register.jpg' },
-    { id: 4, path: '/images/signup.jpg' },
-  ];
+  return [];
 });
 
 const carouselOptions = {
