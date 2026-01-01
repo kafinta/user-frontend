@@ -7,8 +7,11 @@
           <UiButtonsSecondary :url="{path: '/marketplace/'}">Marketplace</UiButtonsSecondary>
         </li>
         <li v-if="showCart">
-          <UiButtonsTertiary class="flex gap-3 items-center justify-start w-full" :flexdisplay="true" @clicked="$emit('cartClicked')">
-            <UiIconsCart class="w-5 h-5" />
+          <UiButtonsTertiary class="flex gap-3 items-center justify-start w-full relative" :flexdisplay="true" @clicked="$emit('cartClicked')">
+            <div class="relative">
+              <UiIconsCart class="w-5 h-5" />
+              <span v-if="cartItemCountComputed > 0" class="h-2.5 w-2.5 bg-primary border border-white rounded-full top-1 right-1 absolute"></span>
+            </div>
             <span>Cart</span>
           </UiButtonsTertiary>
         </li>
@@ -29,8 +32,11 @@
 
         <!-- Optional features -->
         <li v-if="showCart">
-          <UiButtonsTertiary class="flex gap-3 items-center justify-start w-full" :flexdisplay="true" @clicked="$emit('cartClicked')">
-            <UiIconsCart class="w-5 h-5" />
+          <UiButtonsTertiary class="flex gap-3 items-center justify-start w-full relative" :flexdisplay="true" @clicked="$emit('cartClicked')">
+            <div class="relative">
+              <UiIconsCart class="w-5 h-5" />
+              <span v-if="cartItemCountComputed > 0" class="h-2.5 w-2.5 bg-primary border border-white rounded-full top-1 right-1 absolute"></span>
+            </div>
             <span>Cart</span>
           </UiButtonsTertiary>
         </li>
@@ -69,11 +75,13 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useAuthStore } from '~/stores/auth'
+import { useCartStore } from '~/stores/cart'
 import { useAuthApi } from '~/composables/useAuthApi'
 import { useAppToast } from '~/utils/toastify'
 
 // Auth store
 const authStore = useAuthStore()
+const cartStore = useCartStore()
 
 // Props with validation - only UI-related props remain
 const props = defineProps({
@@ -96,6 +104,10 @@ const props = defineProps({
   hasNotifications: {
     type: Boolean,
     default: true
+  },
+  cartItemCount: {
+    type: Number,
+    default: 0
   }
 })
 
@@ -105,6 +117,11 @@ const username = computed(() => authStore.user?.username || 'user')
 const isSeller = computed(() => authStore.isSeller)
 // isCustomer - all authenticated users are customers by default, sellers get additional role after onboarding
 const isCustomer = computed(() => authStore.isCustomer)
+
+// Cart item count - use store value if available, otherwise use prop
+const cartItemCountComputed = computed(() => {
+  return cartStore.totalItems || props.cartItemCount
+})
 
 // Dashboard route based on user role - all users are customers by default
 const dashboardRoute = computed(() => {

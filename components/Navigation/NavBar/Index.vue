@@ -31,7 +31,7 @@
           <li v-if="showCart">
             <button title="Cart" @click="handleCartClick" class="p-2 transition-colors duration-200 relative">
               <UiIconsCart class="w-5 h-5 text-secondary hover:text-primary transition-colors duration-200" />
-              <UiBadge :value="cartItemCount" size="small" v-if="cartItemCount > 0" class="h-5 w-5 -top-1 -right-1 absolute flex items-center justify-center text-xs font-semibold"></UiBadge>
+              <span v-if="cartItemCountComputed > 0" class="h-2.5 w-2.5 bg-primary border border-white rounded-full top-1 right-1 absolute"></span>
             </button>
           </li>
 
@@ -70,7 +70,7 @@
           <li v-if="showCart">
             <button title="Cart" @click="toggleCart" class="p-2 transition-colors duration-200 relative">
               <UiIconsCart class="w-5 h-5 text-secondary hover:text-primary transition-colors duration-200" />
-              <UiBadge :value="cartItemCount" size="small" v-if="cartItemCount > 0" class="h-5 w-5 -top-1 -right-1 absolute flex items-center justify-center text-xs font-semibold"></UiBadge>
+              <span v-if="cartItemCountComputed > 0" class="h-2.5 w-2.5 bg-primary border border-white rounded-full top-1 right-1 absolute"></span>
             </button>
           </li>
 
@@ -107,6 +107,7 @@
         :menu_revealed="menuRevealed"
         :showMarketplaceLink="showMarketplaceLink"
         :hasNotifications="hasNotifications"
+        :cartItemCount="cartItemCount"
         @cartClicked="toggleCart"
         @logout="logout"
       />
@@ -233,6 +234,10 @@ const isAuthenticated = computed(() => authStore.isAuthenticated)
 const username = computed(() => authStore.user?.username || 'user')
 // isSeller is used in the template for conditional rendering
 const isSeller = computed(() => authStore.isSeller)
+// Cart item count - use store value if available, otherwise use prop
+const cartItemCountComputed = computed(() => {
+  return cartStore.totalItems || props.cartItemCount
+})
 // Methods
 function toggleMenu() {
   menuRevealed.value = !menuRevealed.value
