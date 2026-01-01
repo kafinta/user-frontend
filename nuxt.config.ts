@@ -19,7 +19,9 @@ export default defineNuxtConfig({
 
   // Global CSS imports
   css: [
-    'vue3-toastify/dist/index.css'
+    'vue3-toastify/dist/index.css',
+    '~/assets/css/main.css'
+
   ],
 
   // Add Font Awesome for OAuth icons
@@ -29,6 +31,10 @@ export default defineNuxtConfig({
         {
           rel: 'stylesheet',
           href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
+        },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap'
         }
       ]
     }
