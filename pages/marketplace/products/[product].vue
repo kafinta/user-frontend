@@ -1,35 +1,42 @@
 <template>
   <LayoutsMarketplace>
     <Container :addTopBottomPadding="false">
-      <div v-if="isLoading || product" class="grid grid-cols-1 lg:grid-cols-2 gap-10 relative">
+      <!-- Top Section: Carousel and Details Side by Side -->
+      <div v-if="isLoading || product" class="grid grid-cols-1 lg:grid-cols-2 gap-10 relative mb-12">
         <!-- Left: Product Image Carousel -->
         <div>
           <ProductsPageCarousel :product="product" :isLoading="isLoading" class="relative lg:sticky lg:top-24" />
         </div>
-        <!-- Right: Product Details and Tabs (sticky on desktop) -->
-        <div >
-          <div class="mb-6">
-            <ProductsPageDetails :product="product" :isLoading="isLoading" />
+        <!-- Right: Product Details -->
+        <div>
+          <ProductsPageDetails :product="product" :isLoading="isLoading" />
+        </div>
+      </div>
+
+      <!-- Bottom Section: Tabs, Description, Specs, and Reviews in Full Width -->
+      <div v-if="isLoading || product" class="w-full">
+        <!-- Tabs -->
+        <div class="border-b border-accent-200 flex gap-2 mb-4 bg-white z-10">
+          <button v-for="tab in tabs" :key="tab.key"
+            @click="handleTabClick(tab.key)"
+            :class="['px-4 py-2 font-medium', activeTab === tab.key ? 'border-b-2 border-primary text-primary' : 'text-secondary']">
+            {{ tab.label }}
+          </button>
+          <button @click="scrollToSection('reviews')" class="px-4 py-2 font-medium text-secondary">Reviews</button>
+        </div>
+
+        <!-- Description and Specs Content -->
+        <div class="mb-12">
+          <div v-show="activeTab === 'description'">
+            <ProductsPageDescription :product="product" :isLoading="isLoading" />
           </div>
-          <div class="border-b border-accent-200 flex gap-2 mb-4 bg-white z-10">
-            <button v-for="tab in tabs" :key="tab.key"
-              @click="handleTabClick(tab.key)"
-              :class="['px-4 py-2 font-medium', activeTab === tab.key ? 'border-b-2 border-primary text-primary' : 'text-secondary']">
-              {{ tab.label }}
-            </button>
-            <button @click="scrollToSection('reviews')" class="px-4 py-2 font-medium text-secondary">Reviews</button>
-          </div>
-          <div>
-            <div v-show="activeTab === 'description'">
-              <ProductsPageDescription :product="product" :isLoading="isLoading" />
-            </div>
-            <div v-show="activeTab === 'specs'">
-              <ProductsPageSpecifications :product="product" :attributes="attributes" :isLoading="isLoading" />
-            </div>
+          <div v-show="activeTab === 'specs'">
+            <ProductsPageSpecifications :product="product" :attributes="attributes" :isLoading="isLoading" />
           </div>
         </div>
       </div>
-      <!-- Full-width Reviews below -->
+
+      <!-- Reviews Section -->
       <section ref="reviewsRef" id="reviews" class="py-8">
         <ProductsPageReview :product="product" :isLoading="isLoading" />
       </section>
