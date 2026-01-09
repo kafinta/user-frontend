@@ -1,10 +1,17 @@
 <template>
   <div class="w-full select-none">
-    <!-- Dashboard Navbar -->
+    <!-- Seller Mode: Dashboard Navbar -->
     <NavigationDashboardNavBar
+      v-if="mode === 'seller'"
       :mode="mode"
-      :show-cart="true"
+      :show-cart="false"
       :has-notifications="true"
+    />
+
+    <!-- Buyer Mode: Marketplace Navbar -->
+    <NavigationNavBar
+      v-else
+      :showMarketplaceLink="false"
     />
 
     <!-- Main content area -->
