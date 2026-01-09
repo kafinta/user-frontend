@@ -1,6 +1,11 @@
 <template>
   <LayoutsDashboard mode="buyer" page_title="Shopping Cart">
     <div class="w-full">
+      <!-- Error State -->
+      <div v-if="error" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <p class="text-red-700">{{ error }}</p>
+      </div>
+
       <!-- Empty Cart State -->
       <template v-if="cartStore.isEmpty && !isLoading">
         <div class="text-center py-16 flex flex-col items-center justify-center">
@@ -88,11 +93,14 @@
   </LayoutsDashboard>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '~/stores/auth'
 import { useCartStore } from '~/stores/cart'
 import { useCartApi } from '~/composables/useCartApi'
+import { useGuestCart } from '~/composables/useGuestCart'
+import { useAppToast } from '~/utils/toastify'
 import CartItem from '~/components/Cart/Item.vue'
 import UiIconsCart from '~/components/Ui/Icons/Cart.vue'
 import UiTypographyH3 from '~/components/Ui/Typography/H3.vue'
@@ -100,7 +108,6 @@ import UiTypographyP from '~/components/Ui/Typography/P.vue'
 import UiButtonsPrimary from '~/components/Ui/Buttons/Primary.vue'
 import UiButtonsSecondary from '~/components/Ui/Buttons/Secondary.vue'
 import FormButton from '~/components/Form/Button.vue'
-import UiSkeleton from '~/components/Ui/Skeleton.vue'
 
 definePageMeta({
   middleware: ['auth'],
@@ -116,17 +123,23 @@ useHead({
 })
 
 const router = useRouter()
+const authStore = useAuthStore()
 const cartStore = useCartStore()
+const guestCart = useGuestCart()
+const toast = useAppToast()
 const { fetchCart, removeFromCart, updateCartItem } = useCartApi()
 
-const isLoading = ref(true)
-const isCheckingOut = ref(false)
+const isLoading = ref<boolean>(true)
+const isCheckingOut = ref<boolean>(false)
+const error = ref<string | null>(null)
 
-function formatPrice(price) {
-  return new Intl.NumberFormat('en-NG').format(price)
+function formatPrice(price: number): string {
+  // Handle invalid values
+  const numPrice = Number(price) || 0
+  return new Intl.NumberFormat('en-NG').format(numPrice)
 }
 
-async function handleUpdateQuantity(itemId, quantity) {
+async function handleUpdateQuantity(itemId: number, quantity: number): Promise<void> {
   if (quantity <= 0) {
     await handleRemoveItem(itemId)
   } else {
@@ -134,7 +147,7 @@ async function handleUpdateQuantity(itemId, quantity) {
   }
 }
 
-async function handleRemoveItem(itemId) {
+async function handleRemoveItem(itemId: number): Promise<void> {
   await removeFromCart(itemId)
 }
 
@@ -151,7 +164,28 @@ async function handleCheckout() {
 }
 
 onMounted(async () => {
-  await fetchCart()
-  isLoading.value = false
+  try {
+    isLoading.value = true
+    error.value = null
+
+    // Load guest cart from localStorage if available
+    guestCart.loadCart()
+
+    // If user is authenticated, fetch their cart from server
+    if (authStore.isAuthenticated) {
+      cartStore.setGuestMode(false)
+      await fetchCart()
+    } else {
+      // User is not authenticated, use guest cart
+      cartStore.setGuestMode(true)
+      // Cast guest cart items to CartItem format
+      cartStore.setItems(guestCart.items.value as any)
+    }
+  } catch (err) {
+    console.error('Failed to load cart:', err)
+    error.value = 'Failed to load cart. Please try again.'
+  } finally {
+    isLoading.value = false
+  }
 })
 </script>
