@@ -1,5 +1,5 @@
 <template>
-  <LayoutsDashboard mode="seller" :page_title="pageTitle">
+  <LayoutsDashboard mode="seller">
     <UiStepper
       :steps="stepperSteps"
       :currentStep="3"

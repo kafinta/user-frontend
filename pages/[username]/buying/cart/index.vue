@@ -1,5 +1,5 @@
 <template>
-  <LayoutsDashboard mode="buyer" page_title="Shopping Cart">
+  <LayoutsDashboard mode="buyer">
     <div class="w-full">
       <!-- Error State -->
       <div v-if="error" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -116,7 +116,7 @@ definePageMeta({
 })
 
 useHead({
-  title: 'Shopping Cart | Kafinta',
+  title: 'My Cart| Kafinta',
   meta: [
     { name: 'description', content: 'View and manage items in your shopping cart' }
   ]

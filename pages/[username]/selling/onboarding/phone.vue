@@ -1,5 +1,5 @@
 <template>
-  <LayoutsDashboard mode="seller" pageTitle="Onboarding">
+  <LayoutsDashboard mode="seller">
     <div class="flex justify-center items-center min-h-[calc(100vh-200px)] p-4">
       <main class="w-full max-w-md mx-auto rounded-xl p-8 border border-accent-200 bg-white space-y-6">
         <!-- Success Icon (when verified) -->

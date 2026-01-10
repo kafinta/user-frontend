@@ -1,6 +1,6 @@
 
 <template>
-  <LayoutsDashboard mode="buyer" pageTitle="Orders">
+  <LayoutsDashboard mode="buyer">
     <div class="flex divide-x border w-full border-accent-200 rounded-md mb-5 overflow-x-hidden">
       <button
         v-for="(status, index) in orderStatuses"

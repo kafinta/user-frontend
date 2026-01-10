@@ -1,5 +1,5 @@
 <template>
-  <LayoutsDashboard mode="seller" pageTitle="My Products">
+  <LayoutsDashboard mode="seller">
     <div class="w-full">
       <!-- Filter Button Row -->
       <div class="flex justify-end items-center gap-3 mb-4">

@@ -1,5 +1,5 @@
 <template>
-  <LayoutsDashboard mode="seller" pageTitle="KYC Verification">
+  <LayoutsDashboard mode="seller">
     <div class="flex justify-center items-center min-h-[calc(100vh-200px)] p-4">
       <main :class="[
         'w-full mx-auto rounded-xl p-8 border border-accent-200 bg-white space-y-6',

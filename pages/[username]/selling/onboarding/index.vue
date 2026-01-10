@@ -1,5 +1,5 @@
 <template>
-  <LayoutsDashboard mode="seller" pageTitle="Onboarding">
+  <LayoutsDashboard mode="seller">
     <div class="p-5 border rounded-lg border-accent-200 flex justify-between flex-wrap items-center">
       <div>
         <UiTypographyH3>Seller Onboarding</UiTypographyH3>
