@@ -1,5 +1,5 @@
 <template>
-  <LayoutsDashboard mode="seller">
+  <LayoutsDashboard mode="buyer">
   </LayoutsDashboard>
 </template>
 <script setup>

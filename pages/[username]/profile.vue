@@ -1,5 +1,5 @@
 <template>
-  <LayoutsDashboard mode="seller">
+  <LayoutsDashboard mode="buyer">
     <div class="block lg:flex gap-8">
       <div class="w-full lg:w-2/5 grid gap-5">
         <div class="border border-accent-200 p-6">
