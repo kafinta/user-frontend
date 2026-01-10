@@ -16,7 +16,25 @@
           <UiSkeleton height="15rem" />
         </li>
         <li v-else-if="error" class="col-span-2 md:col-span-3 lg:col-span-4 place-content-center">
-          <UiTypographyP>Error loading subcategories... Try again later.</UiTypographyP>
+          <div class="max-w-md mx-auto text-center space-y-6">
+            <div class="w-20 h-20 mx-auto bg-red-200 rounded-full flex items-center justify-center">
+              <UiIconsError class="w-16 h-16 text-red-600" />
+            </div>
+            <div>
+              <UiTypographyH3 class="text-secondary font-medium mb-2">
+                {{ error || 'Error loading subcategories' }}
+              </UiTypographyH3>
+              <UiTypographyP v-if="!error" class="text-accent-500 text-sm">
+                Check back later for new subcategories.
+              </UiTypographyP>
+            </div>
+            <button
+              @click="retryFetchSubcategories"
+              class="w-full py-2 px-4 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors text-sm font-medium"
+            >
+              Try Again
+            </button>
+          </div>
         </li>
         <li v-else-if="subcategories.length === 0" class="col-span-2 md:col-span-3 lg:col-span-4 place-content-center">
           <div class="text-center py-8">
@@ -134,6 +152,28 @@ const selectionMessage = computed(() => {
 
 async function selectSubcategory(subcategory) {
   await productFilters.selectSubcategoryAndNavigate(subcategory);
+}
+
+// Retry function for failed requests
+async function retryFetchSubcategories() {
+  const categorySlug = route.query.category;
+  const locationSlug = route.query.location;
+
+  if (!categorySlug || !locationSlug) {
+    return;
+  }
+
+  try {
+    const category = filtersStore.categories.find(c => c.slug === categorySlug);
+    const location = filtersStore.locations.find(l => l.slug === locationSlug);
+
+    if (category && location) {
+      filtersStore.clearFailedRequest(`subcategories_${category.id}_${location.id}`)
+      await filtersStore.fetchSubcategories(category.id, location.id);
+    }
+  } catch (error) {
+    console.error('Error retrying subcategories:', error);
+  }
 }
 
 // No onMounted needed - useProductFilters composable handles initialization

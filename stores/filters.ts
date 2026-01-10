@@ -51,6 +51,45 @@ export const useFiltersStore = defineStore('filters', () => {
   const activeRequests = ref<Map<string, Promise<any>>>(new Map())
   const failedRequests = ref<Set<string>>(new Set())
 
+  /**
+   * Convert API errors to user-friendly messages
+   */
+  function getErrorMessage(err: any): string {
+    if (!err) {
+      return 'Unable to connect. Please check your internet connection.'
+    }
+
+    const statusCode = err.response?.status || err.status_code
+
+    if (statusCode === 404) {
+      return 'No items available at the moment.'
+    }
+
+    if (statusCode === 401) {
+      return 'Please log in to view items.'
+    }
+
+    if (statusCode === 403) {
+      return 'You don\'t have access to these items.'
+    }
+
+    if (statusCode === 500) {
+      return 'Something went wrong. Please try again in a moment.'
+    }
+
+    if (statusCode === 503) {
+      return 'Service temporarily unavailable. Please try again soon.'
+    }
+
+    // Network errors
+    if (err.message?.includes('fetch') || err.message?.includes('network')) {
+      return 'Unable to connect. Please check your internet connection.'
+    }
+
+    // Default fallback
+    return 'Unable to load items. Please try again.'
+  }
+
   function saveToStorage(key: string, data: any) {
     try {
       localStorage.setItem(key, JSON.stringify({
@@ -120,7 +159,7 @@ export const useFiltersStore = defineStore('filters', () => {
         failedRequests.value.add(requestKey)
         return false
       } catch (err) {
-        error.value = err instanceof Error ? err.message : 'An unknown error occurred'
+        error.value = getErrorMessage(err)
         failedRequests.value.add(requestKey)
         return false
       } finally {
@@ -175,7 +214,7 @@ export const useFiltersStore = defineStore('filters', () => {
         failedRequests.value.add(requestKey)
         return false
       } catch (err) {
-        error.value = err instanceof Error ? err.message : 'An unknown error occurred'
+        error.value = getErrorMessage(err)
         failedRequests.value.add(requestKey)
         return false
       } finally {
@@ -220,7 +259,7 @@ export const useFiltersStore = defineStore('filters', () => {
         failedRequests.value.add(requestKey)
         return false
       } catch (err) {
-        error.value = err instanceof Error ? err.message : 'An unknown error occurred'
+        error.value = getErrorMessage(err)
         failedRequests.value.add(requestKey)
         return false
       } finally {
@@ -269,7 +308,7 @@ export const useFiltersStore = defineStore('filters', () => {
         failedRequests.value.add(requestKey)
         return false
       } catch (err) {
-        error.value = err instanceof Error ? err.message : 'An unknown error occurred'
+        error.value = getErrorMessage(err)
         failedRequests.value.add(requestKey)
         return false
       } finally {

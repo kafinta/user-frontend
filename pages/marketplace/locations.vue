@@ -13,7 +13,25 @@
           <UiSkeleton height="15rem" />
         </li>
         <li v-else-if="error" class="col-span-2 md:col-span-3 lg:col-span-4 place-content-center">
-          <UiTypographyP>Error loading locations... Try again later.</UiTypographyP>
+          <div class="max-w-md mx-auto text-center space-y-6">
+            <div class="w-20 h-20 mx-auto bg-red-200 rounded-full flex items-center justify-center">
+              <UiIconsError class="w-16 h-16 text-red-600" />
+            </div>
+            <div>
+              <UiTypographyH3 class="text-secondary font-medium mb-2">
+                {{ error || 'Error loading locations' }}
+              </UiTypographyH3>
+              <UiTypographyP v-if="!error" class="text-accent-500 text-sm">
+                Check back later for new locations.
+              </UiTypographyP>
+            </div>
+            <button
+              @click="retryFetchLocations"
+              class="w-full py-2 px-4 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors text-sm font-medium"
+            >
+              Try Again
+            </button>
+          </div>
         </li>
         <li v-else v-for="location in locations" :key="location.id">
           <UiCards @clicked="selectLocation(location)" :title="location.name" :src="location.image_path" class="w-full"/>
@@ -91,6 +109,12 @@ const selectionMessage = computed(() => {
 
 async function selectLocation(location) {
   await productFilters.selectLocationAndNavigate(location);
+}
+
+// Retry function for failed requests
+async function retryFetchLocations() {
+  filtersStore.clearFailedRequest('locations')
+  await filtersStore.fetchLocations()
 }
 
 // No onMounted needed - useProductFilters composable handles initialization
