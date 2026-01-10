@@ -1,83 +1,85 @@
 <template>
-  <transition name="slide-down">
-    <div
-      v-if="menuRevealed"
-      class="md:hidden fixed top-16 left-0 right-0 bg-white border-b border-accent-200 shadow-lg z-40"
-    >
-      <div class="px-4 py-4 space-y-2">
-        <!-- Navigation Links -->
-        <NuxtLink
-          v-for="item in navigationItems"
-          :key="item.route"
-          :to="item.to"
-          class="block px-4 py-3 rounded-lg transition-colors duration-200 text-sm font-medium"
-          :class="[
-            isRouteActive(item.route)
-              ? 'bg-primary text-white'
-              : 'text-secondary hover:bg-accent-100'
-          ]"
-          @click="$emit('navigate')"
-        >
-          {{ item.label }}
-        </NuxtLink>
+  <ClientOnly>
+    <transition name="slide-down">
+      <div
+        v-if="menuRevealed"
+        class="md:hidden fixed top-16 left-0 right-0 bg-white border-b border-accent-200 shadow-lg z-40"
+      >
+        <div class="px-4 py-4 space-y-2">
+          <!-- Navigation Links -->
+          <NuxtLink
+            v-for="item in navigationItems"
+            :key="item.route"
+            :to="item.to"
+            class="block px-4 py-3 rounded-lg transition-colors duration-200 text-sm font-medium"
+            :class="[
+              isRouteActive(item.route)
+                ? 'bg-primary text-white'
+                : 'text-secondary hover:bg-accent-100'
+            ]"
+            @click="$emit('navigate')"
+          >
+            {{ item.label }}
+          </NuxtLink>
 
-        <!-- Become a Seller Button (Buyer mode only, for non-sellers) -->
-        <UiButtonsPrimary
-          v-if="isBuyerMode && !isSeller"
-          :url="{ name: 'username-selling-onboarding', params: { username } }"
-          class="w-full"
-        >
-          Become a Seller
-        </UiButtonsPrimary>
+          <!-- Become a Seller Button (Buyer mode only, for non-sellers) -->
+          <UiButtonsPrimary
+            v-if="isBuyerMode && !isSeller"
+            @clicked="becomeASeller"
+            class="w-full"
+          >
+            Become a Seller
+          </UiButtonsPrimary>
 
-        <!-- Cart Link (Buyer only) -->
-        <NuxtLink
-          v-if="isBuyerMode && showCart"
-          :to="{ name: 'username-buying-cart', params: { username } }"
-          class="block px-4 py-3 rounded-lg transition-colors duration-200 text-sm font-medium text-secondary hover:bg-accent-100 relative"
-          @click="$emit('navigate')"
-        >
-          <div class="flex items-center gap-2">
-            <UiIconsCart class="w-4 h-4" />
-            <span>Cart</span>
-            <span v-if="cartItemCount > 0" class="ml-auto bg-primary text-white text-xs rounded-full px-2 py-0.5">
-              {{ cartItemCount }}
-            </span>
-          </div>
-        </NuxtLink>
+          <!-- Cart Link (Buyer only) -->
+          <NuxtLink
+            v-if="isBuyerMode && showCart"
+            :to="{ name: 'username-buying-cart', params: { username } }"
+            class="block px-4 py-3 rounded-lg transition-colors duration-200 text-sm font-medium text-secondary hover:bg-accent-100 relative"
+            @click="$emit('navigate')"
+          >
+            <div class="flex items-center gap-2">
+              <UiIconsCart class="w-4 h-4" />
+              <span>Cart</span>
+              <span v-if="cartItemCount > 0" class="ml-auto bg-primary text-white text-xs rounded-full px-2 py-0.5">
+                {{ cartItemCount }}
+              </span>
+            </div>
+          </NuxtLink>
 
-        <!-- Divider -->
-        <div class="border-t border-accent-200 my-2"></div>
+          <!-- Divider -->
+          <div class="border-t border-accent-200 my-2"></div>
 
-        <!-- Profile Link -->
-        <NuxtLink
-          :to="{ name: 'username-profile', params: { username } }"
-          class="block px-4 py-3 rounded-lg transition-colors duration-200 text-sm font-medium text-secondary hover:bg-accent-100"
-          @click="$emit('navigate')"
-        >
-          Profile
-        </NuxtLink>
+          <!-- Profile Link -->
+          <NuxtLink
+            :to="{ name: 'username-profile', params: { username } }"
+            class="block px-4 py-3 rounded-lg transition-colors duration-200 text-sm font-medium text-secondary hover:bg-accent-100"
+            @click="$emit('navigate')"
+          >
+            Profile
+          </NuxtLink>
 
-        <!-- Role Switch (if seller) -->
-        <NuxtLink
-          v-if="isSeller"
-          :to="{ name: 'username-selling-dashboard', params: { username } }"
-          class="block w-full text-left px-4 py-3 rounded-lg transition-colors duration-200 text-sm font-medium text-secondary hover:bg-accent-100"
-          @click="$emit('navigate')"
-        >
-          Switch to Selling
-        </NuxtLink>
+          <!-- Role Switch (if seller) -->
+          <NuxtLink
+            v-if="isSeller"
+            :to="{ name: 'username-selling-dashboard', params: { username } }"
+            class="block w-full text-left px-4 py-3 rounded-lg transition-colors duration-200 text-sm font-medium text-secondary hover:bg-accent-100"
+            @click="$emit('navigate')"
+          >
+            Switch to Selling
+          </NuxtLink>
 
-        <!-- Logout -->
-        <button
-          @click="handleLogout"
-          class="w-full text-left px-4 py-3 rounded-lg transition-colors duration-200 text-sm font-medium text-red-600 hover:bg-red-50"
-        >
-          Log out
-        </button>
+          <!-- Logout -->
+          <button
+            @click="handleLogout"
+            class="w-full text-left px-4 py-3 rounded-lg transition-colors duration-200 text-sm font-medium text-red-600 hover:bg-red-50"
+          >
+            Log out
+          </button>
+        </div>
       </div>
-    </div>
-  </transition>
+    </transition>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
@@ -140,6 +142,14 @@ const navigationItems = computed(() => {
 
 function isRouteActive(routeSegment: string): boolean {
   return (route.name && route.name.includes(routeSegment)) || (route.path && route.path.includes(routeSegment))
+}
+
+function becomeASeller(): void {
+  router.push({
+    name: 'username-selling-onboarding',
+    params: { username: props.username }
+  })
+  emit('navigate')
 }
 
 async function handleLogout(): Promise<void> {

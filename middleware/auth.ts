@@ -23,6 +23,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     requiresAuth: to.meta.requiresAuth === true,
     authOnly: to.meta.authOnly === true,
     isVerifyRoute: to.meta.isVerifyRoute === true,
+    isOnboardingRoute: to.meta.isOnboardingRoute === true,
     requiresVerification: to.meta.requiresVerification === true,
     requiresSeller: to.meta.requiresSeller === true,
     requiresCustomer: to.meta.requiresCustomer === true
@@ -100,6 +101,20 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
 
     // If not authenticated and no token, redirect to login
+    if (!authStore.isAuthenticated) {
+      return navigateTo('/auth/login');
+    }
+  }
+
+  // Special case for onboarding pages - allow access even if email not verified
+  // since email verification is part of the onboarding process
+  if (routeRequirements.isOnboardingRoute) {
+    // If user is authenticated, allow access to onboarding
+    if (authStore.isAuthenticated) {
+      return;
+    }
+
+    // If not authenticated, redirect to login
     if (!authStore.isAuthenticated) {
       return navigateTo('/auth/login');
     }

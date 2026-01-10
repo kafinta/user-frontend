@@ -19,83 +19,86 @@
       </div>
 
       <!-- Desktop Right Section -->
-      <div class="hidden md:flex items-center gap-4">
-        <!-- Become a Seller Button (Buyer mode only, for non-sellers) -->
-        <button
-          v-if="isBuyerMode && !isSeller"
-          @click="switchToSelling"
-          class="px-4 py-2 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary hover:text-white transition-colors duration-200"
-        >
-          Become a Seller
-        </button>
-
-        <!-- Cart Icon (Buyer only) -->
-        <button
-          v-if="isBuyerMode && showCart"
-          @click="navigateToCart"
-          class="relative p-2 hover:bg-accent-100 rounded-lg transition-colors duration-200"
-          :aria-label="cartItemCount > 0 ? `Cart (${cartItemCount} items)` : 'Cart'"
-        >
-          <UiIconsCart class="w-5 h-5 text-secondary" />
-          <span
-            v-if="cartItemCount > 0"
-            class="absolute top-1 right-1 h-2 w-2 bg-primary rounded-full"
-          ></span>
-        </button>
-
-        <!-- Notifications -->
-        <button
-          class="relative p-2 hover:bg-accent-100 rounded-lg transition-colors duration-200"
-          aria-label="Notifications"
-        >
-          <UiIconsNotifications class="w-5 h-5 text-secondary" />
-          <span v-if="hasNotifications" class="absolute top-1 right-1 h-2 w-2 bg-primary rounded-full"></span>
-        </button>
-
-        <!-- User Profile Dropdown -->
-        <div class="relative">
-          <button
-            @click="toggleProfileMenu"
-            class="p-2 rounded-lg transition-all duration-200 hover:border hover:border-accent-200"
-            :aria-label="username"
-            :aria-expanded="profileMenuOpen"
+      <ClientOnly>
+        <div class="hidden md:flex items-center gap-4">
+          <!-- Become a Seller Button (Buyer mode only, for non-sellers) -->
+          <UiButtonsPrimary
+            v-if="isBuyerMode && !isSeller"
+            @clicked="becomeASeller"
+            :standout="true"
+            class="text-sm"
           >
-            <UserProfilePicture :username="username" :large_dimensions="false" />
+            Become a Seller
+          </UiButtonsPrimary>
+
+          <!-- Cart Icon (Buyer only) -->
+          <button
+            v-if="isBuyerMode && showCart"
+            @click="navigateToCart"
+            class="relative p-2 hover:bg-accent-100 rounded-lg transition-colors duration-200"
+            :aria-label="cartItemCount > 0 ? `Cart (${cartItemCount} items)` : 'Cart'"
+          >
+            <UiIconsCart class="w-5 h-5 text-secondary" />
+            <span
+              v-if="cartItemCount > 0"
+              class="absolute top-1 right-1 h-2 w-2 bg-primary rounded-full"
+            ></span>
           </button>
 
-          <!-- Profile Dropdown Menu -->
-          <transition name="fade">
-            <div
-              v-if="profileMenuOpen"
-              class="absolute right-0 mt-2 w-48 bg-white border border-accent-200 rounded-lg shadow-lg py-2 z-50"
+          <!-- Notifications -->
+          <button
+            class="relative p-2 hover:bg-accent-100 rounded-lg transition-colors duration-200"
+            aria-label="Notifications"
+          >
+            <UiIconsNotifications class="w-5 h-5 text-secondary" />
+            <span v-if="hasNotifications" class="absolute top-1 right-1 h-2 w-2 bg-primary rounded-full"></span>
+          </button>
+
+          <!-- User Profile Dropdown -->
+          <div class="relative">
+            <button
+              @click="toggleProfileMenu"
+              class="p-2 rounded-lg transition-all duration-200 hover:border hover:border-accent-200"
+              :aria-label="username"
+              :aria-expanded="profileMenuOpen"
             >
-              <button
-                @click="navigateToProfile"
-                class="w-full text-left px-4 py-2 hover:bg-accent-50 transition-colors duration-200 text-sm text-secondary"
-              >
-                Profile
-              </button>
+              <UserProfilePicture :username="username" :large_dimensions="false" />
+            </button>
 
-              <!-- Role Switch (if seller) -->
-              <NuxtLink
-                v-if="isSeller"
-                :to="{ name: 'username-selling-dashboard', params: { username: username } }"
-                class="block w-full text-left px-4 py-2 hover:bg-accent-50 transition-colors duration-200 text-sm text-secondary border-t border-accent-200"
-                @click="profileMenuOpen = false"
+            <!-- Profile Dropdown Menu -->
+            <transition name="fade">
+              <div
+                v-if="profileMenuOpen"
+                class="absolute right-0 mt-2 w-48 bg-white border border-accent-200 rounded-lg shadow-lg py-2 z-50"
               >
-                Switch to Selling
-              </NuxtLink>
+                <button
+                  @click="navigateToProfile"
+                  class="w-full text-left px-4 py-2 hover:bg-accent-50 transition-colors duration-200 text-sm text-secondary"
+                >
+                  Profile
+                </button>
 
-              <button
-                @click="handleLogout"
-                class="w-full text-left px-4 py-2 hover:bg-red-50 transition-colors duration-200 text-sm text-red-600 border-t border-accent-200"
-              >
-                Log out
-              </button>
-            </div>
-          </transition>
+                <!-- Role Switch (if seller) -->
+                <NuxtLink
+                  v-if="isSeller"
+                  :to="{ name: 'username-selling-dashboard', params: { username: username } }"
+                  class="block w-full text-left px-4 py-2 hover:bg-accent-50 transition-colors duration-200 text-sm text-secondary border-t border-accent-200"
+                  @click="profileMenuOpen = false"
+                >
+                  Switch to Selling
+                </NuxtLink>
+
+                <button
+                  @click="handleLogout"
+                  class="w-full text-left px-4 py-2 hover:bg-red-50 transition-colors duration-200 text-sm text-red-600 border-t border-accent-200"
+                >
+                  Log out
+                </button>
+              </div>
+            </transition>
+          </div>
         </div>
-      </div>
+      </ClientOnly>
 
       <!-- Mobile Menu Toggle -->
       <button
@@ -192,7 +195,7 @@ const navigationItems = computed(() => {
 })
 
 function isRouteActive(routeSegment: string): boolean {
-  return (route.name && route.name.includes(routeSegment)) || (route.path && route.path.includes(routeSegment))
+  return (typeof route.name === 'string' && route.name.includes(routeSegment)) || (route.path ? route.path.includes(routeSegment) : false)
 }
 
 function toggleMobileMenu(): void {
@@ -241,6 +244,13 @@ async function handleLogout(): Promise<void> {
 
 function handleMobileNavigation(): void {
   mobileMenuOpen.value = false
+}
+
+function becomeASeller(): void {
+  router.push({
+    name: 'username-selling-onboarding',
+    params: { username: username.value }
+  })
 }
 
 onMounted(() => {

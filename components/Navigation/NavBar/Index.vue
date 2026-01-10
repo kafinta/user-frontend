@@ -268,10 +268,18 @@ function handleLogoClick() {
 }
 
 function switchToSelling() {
-  const route = {
-    name: 'username-selling-dashboard',
-    params: { username: username.value }
-  }
+  // If user is not yet a seller, navigate to onboarding
+  // Otherwise navigate to seller dashboard
+  const route = isSeller.value
+    ? {
+        name: 'username-selling-dashboard',
+        params: { username: username.value }
+      }
+    : {
+        name: 'username-selling-onboarding',
+        params: { username: username.value }
+      }
+
   emit('switchMode', { mode: 'seller', route })
   try {
     router.push(route)

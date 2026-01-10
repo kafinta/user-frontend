@@ -354,7 +354,6 @@ const checkOnboardingRedirect = () => {
 
 // Navigation methods
 const switchToBuying = () => {
-  currentMode.value = 'buyer';
   router.push({
     name: 'username-buying-dashboard',
     params: { username: props.username }
@@ -362,7 +361,6 @@ const switchToBuying = () => {
 };
 
 const switchToSelling = () => {
-  currentMode.value = 'seller';
   router.push({
     name: 'username-selling-dashboard',
     params: { username: props.username }
@@ -370,7 +368,6 @@ const switchToSelling = () => {
 };
 
 const becomeASeller = () => {
-  currentMode.value = 'seller';
   router.push({
     name: 'username-selling-onboarding',
     params: { username: props.username }

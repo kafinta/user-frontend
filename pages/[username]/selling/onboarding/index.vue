@@ -1,5 +1,5 @@
 <template>
-  <LayoutsDashboard mode="seller">
+  <LayoutsDashboard mode="buyer">
     <div class="p-5 border rounded-lg border-accent-200 flex justify-between flex-wrap items-center">
       <div>
         <UiTypographyH3>Seller Onboarding</UiTypographyH3>
@@ -137,8 +137,9 @@
 definePageMeta({
   middleware: ['auth'],
   requiresAuth: true,
-  requiresVerification: true
+  isOnboardingRoute: true
   // Note: We don't require seller role for onboarding since this is where users become sellers
+  // Note: We don't require verification since email verification is part of onboarding
 });
 
 useHead({
@@ -185,8 +186,9 @@ onMounted(async () => {
     try {
       await onboarding.fetchProgress();
     } catch (error) {
-      console.error('Failed to fetch seller progress:', error);
-      toast.error('Error', 'Failed to load onboarding progress');
+      // Silently fail - fallback data will be used
+      // This can happen if the backend doesn't allow non-sellers to access the endpoint
+      console.warn('Failed to fetch seller progress, using fallback data:', error);
     } finally {
       isLoading.value = false;
     }
