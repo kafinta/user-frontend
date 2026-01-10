@@ -9,12 +9,17 @@
     ]"
     :aria-current="isActive ? 'page' : undefined"
   >
-    <component v-if="icon" :is="icon" class="w-4 h-4" />
+    <component v-if="icon && iconComponents[icon]" :is="iconComponents[icon]" class="w-4 h-4" />
     <span>{{ label }}</span>
   </NuxtLink>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import UiIconsHome from '~/components/Ui/Icons/Home.vue'
+import UiIconsCart from '~/components/Ui/Icons/Cart.vue'
+import UiIconsTransactions from '~/components/Ui/Icons/Transactions.vue'
+
 defineProps({
   to: {
     type: Object,
@@ -33,5 +38,11 @@ defineProps({
     default: null
   }
 })
+
+const iconComponents = computed(() => ({
+  'UiIconsHome': UiIconsHome,
+  'UiIconsCart': UiIconsCart,
+  'UiIconsTransactions': UiIconsTransactions
+}))
 </script>
 

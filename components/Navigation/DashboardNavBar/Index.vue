@@ -56,15 +56,11 @@
         <div class="relative">
           <button
             @click="toggleProfileMenu"
-            class="flex items-center gap-2 p-2 hover:bg-accent-100 rounded-lg transition-colors duration-200"
+            class="p-2 rounded-lg transition-all duration-200 hover:border hover:border-accent-200"
             :aria-label="username"
             :aria-expanded="profileMenuOpen"
           >
             <UserProfilePicture :username="username" :large_dimensions="false" />
-            <UiIconsChevron
-              class="w-4 h-4 text-secondary transition-transform duration-300"
-              :class="{ 'rotate-180': profileMenuOpen }"
-            />
           </button>
 
           <!-- Profile Dropdown Menu -->
