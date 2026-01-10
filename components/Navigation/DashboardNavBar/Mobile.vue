@@ -22,13 +22,13 @@
         </NuxtLink>
 
         <!-- Become a Seller Button (Buyer mode only, for non-sellers) -->
-        <button
+        <UiButtonsPrimary
           v-if="isBuyerMode && !isSeller"
-          @click="switchToSelling"
-          class="w-full px-4 py-3 rounded-lg transition-colors duration-200 text-sm font-medium text-primary border border-primary hover:bg-primary hover:text-white"
+          :url="{ name: 'username-selling-onboarding', params: { username } }"
+          class="w-full"
         >
           Become a Seller
-        </button>
+        </UiButtonsPrimary>
 
         <!-- Cart Link (Buyer only) -->
         <NuxtLink
@@ -59,13 +59,14 @@
         </NuxtLink>
 
         <!-- Role Switch (if seller) -->
-        <button
+        <NuxtLink
           v-if="isSeller"
-          @click="switchToSelling"
-          class="w-full text-left px-4 py-3 rounded-lg transition-colors duration-200 text-sm font-medium text-secondary hover:bg-accent-100"
+          :to="{ name: 'username-selling-dashboard', params: { username } }"
+          class="block w-full text-left px-4 py-3 rounded-lg transition-colors duration-200 text-sm font-medium text-secondary hover:bg-accent-100"
+          @click="$emit('navigate')"
         >
           Switch to Selling
-        </button>
+        </NuxtLink>
 
         <!-- Logout -->
         <button
@@ -139,11 +140,6 @@ const navigationItems = computed(() => {
 
 function isRouteActive(routeSegment: string): boolean {
   return (route.name && route.name.includes(routeSegment)) || (route.path && route.path.includes(routeSegment))
-}
-
-function switchToSelling(): void {
-  router.push({ name: 'username-selling-dashboard', params: { username: props.username } })
-  emit('navigate')
 }
 
 async function handleLogout(): Promise<void> {

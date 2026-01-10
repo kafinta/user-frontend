@@ -77,13 +77,14 @@
               </button>
 
               <!-- Role Switch (if seller) -->
-              <button
+              <NuxtLink
                 v-if="isSeller"
-                @click="switchToSelling"
-                class="w-full text-left px-4 py-2 hover:bg-accent-50 transition-colors duration-200 text-sm text-secondary border-t border-accent-200"
+                :to="{ name: 'username-selling-dashboard', params: { username: username } }"
+                class="block w-full text-left px-4 py-2 hover:bg-accent-50 transition-colors duration-200 text-sm text-secondary border-t border-accent-200"
+                @click="profileMenuOpen = false"
               >
                 Switch to Selling
-              </button>
+              </NuxtLink>
 
               <button
                 @click="handleLogout"
@@ -218,12 +219,6 @@ function navigateToCart(): void {
 
 function navigateToProfile(): void {
   router.push({ name: 'username-profile', params: { username: username.value } })
-  mobileMenuOpen.value = false
-  profileMenuOpen.value = false
-}
-
-function switchToSelling(): void {
-  router.push({ name: 'username-selling-dashboard', params: { username: username.value } })
   mobileMenuOpen.value = false
   profileMenuOpen.value = false
 }
