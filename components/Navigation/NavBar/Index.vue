@@ -27,29 +27,28 @@
       <div class="hidden md:flex flex-shrink-0">
         <!-- Authenticated User Menu -->
         <ul v-if="isAuthenticated" class="flex gap-2 md:gap-3 lg:gap-5 items-center">
-          <!-- Cart icon (left side) -->
-          <li v-if="showCart">
-            <button title="Cart" @click="handleCartClick" class="p-2 transition-colors duration-200 relative">
-              <UiIconsCart class="w-5 h-5 text-secondary hover:text-primary transition-colors duration-200" />
-              <span v-if="cartItemCountComputed > 0" class="h-2.5 w-2.5 bg-primary border border-white rounded-full top-1 right-1 absolute"></span>
-            </button>
-          </li>
-
           <li v-if="showMarketplaceLink">
             <UiButtonsSecondary :url="{path: '/marketplace/'}" class="text-sm whitespace-nowrap">Marketplace</UiButtonsSecondary>
           </li>
 
-          <!-- Role-based navigation -->
-          <li v-if="isSeller">
-            <UiButtonsSecondary @clicked="switchToSelling" class="text-sm whitespace-nowrap">Switch to Selling</UiButtonsSecondary>
-          </li>
+          <!-- Cart and Notification Icons (grouped together) -->
+          <li class="flex gap-1 items-center">
+            <!-- Cart icon -->
+            <button v-if="showCart" title="Cart" @click="handleCartClick" class="p-2 transition-colors duration-200 relative">
+              <UiIconsCart class="w-5 h-5 text-secondary hover:text-primary transition-colors duration-200" />
+              <span v-if="cartItemCountComputed > 0" class="h-2 w-2 bg-primary rounded-full top-1 right-1 absolute"></span>
+            </button>
 
-          <!-- Notification icon -->
-          <li>
+            <!-- Notification icon -->
             <button title="Notifications" class="p-2 transition-colors duration-200 relative">
               <UiIconsNotifications class="w-5 h-5 text-secondary hover:text-primary transition-colors duration-200" />
-              <UiBadge value="1" size="small" v-if="hasNotifications" class="h-2 w-2 -top-0.5 -right-0.5 absolute scale-75"></UiBadge>
+              <span v-if="hasNotifications" class="h-2 w-2 bg-primary rounded-full top-1 right-1 absolute"></span>
             </button>
+          </li>
+
+          <!-- Role-based navigation (Become a Seller button) -->
+          <li v-if="!isSeller">
+            <UiButtonsSecondary @clicked="switchToSelling" class="text-sm whitespace-nowrap">Become a Seller</UiButtonsSecondary>
           </li>
 
           <!-- User profile dropdown (common for authenticated users) -->
@@ -66,16 +65,16 @@
 
         <!-- Unauthenticated User Menu -->
         <ul v-else class="flex gap-2 md:gap-3 lg:gap-5 items-center">
-          <!-- Cart icon (left side) -->
+          <li v-if="showMarketplaceLink">
+            <UiButtonsSecondary :url="{path: '/marketplace/'}" class="text-sm whitespace-nowrap">Marketplace</UiButtonsSecondary>
+          </li>
+
+          <!-- Cart icon -->
           <li v-if="showCart">
             <button title="Cart" @click="toggleCart" class="p-2 transition-colors duration-200 relative">
               <UiIconsCart class="w-5 h-5 text-secondary hover:text-primary transition-colors duration-200" />
-              <span v-if="cartItemCountComputed > 0" class="h-2.5 w-2.5 bg-primary border border-white rounded-full top-1 right-1 absolute"></span>
+              <span v-if="cartItemCountComputed > 0" class="h-2 w-2 bg-primary rounded-full top-1 right-1 absolute"></span>
             </button>
-          </li>
-
-          <li v-if="showMarketplaceLink">
-            <UiButtonsSecondary :url="{path: '/marketplace/'}" class="text-sm whitespace-nowrap">Marketplace</UiButtonsSecondary>
           </li>
 
           <li>
@@ -384,26 +383,40 @@ async function checkAuthStatus() {
   // Auth store is initialized on app startup and loads data from localStorage
 }
 
-const userMenuItems = [
-  {
-    label: 'Dashboard',
-    action: () => router.push({ name: 'username-buying-dashboard', params: { username: username.value } }),
-  },
-  {
-    label: 'Profile',
-    action: () => router.push({ name: 'username-profile', params: { username: username.value } }),
-  },
-  {
-    label: 'Orders',
-    action: () => router.push({ name: 'username-buying-orders', params: { username: username.value } }),
-  },
-  { separator: true },
-  {
+const userMenuItems = computed(() => {
+  const items = [
+    {
+      label: 'Dashboard',
+      action: () => router.push({ name: 'username-buying-dashboard', params: { username: username.value } }),
+    },
+    {
+      label: 'Profile',
+      action: () => router.push({ name: 'username-profile', params: { username: username.value } }),
+    },
+    {
+      label: 'Orders',
+      action: () => router.push({ name: 'username-buying-orders', params: { username: username.value } }),
+    },
+  ]
+
+  // Add Switch to Selling for sellers
+  if (isSeller.value) {
+    items.push({ separator: true })
+    items.push({
+      label: 'Switch to Selling',
+      action: switchToSelling,
+    })
+  }
+
+  items.push({ separator: true })
+  items.push({
     label: 'Log out',
     action: logout,
     danger: true,
-  },
-]
+  })
+
+  return items
+})
 
 // Lifecycle hooks
 onMounted(async () => {

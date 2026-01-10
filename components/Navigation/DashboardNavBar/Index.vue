@@ -20,7 +20,7 @@
 
       <!-- Desktop Right Section -->
       <div class="hidden md:flex items-center gap-4">
-        <!-- Become a Seller Button (Buyer only) -->
+        <!-- Become a Seller Button (Buyer mode only, for non-sellers) -->
         <button
           v-if="isBuyerMode && !isSeller"
           @click="switchToSelling"

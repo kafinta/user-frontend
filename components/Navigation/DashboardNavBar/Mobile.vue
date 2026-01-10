@@ -21,7 +21,7 @@
           {{ item.label }}
         </NuxtLink>
 
-        <!-- Become a Seller Button (Buyer only) -->
+        <!-- Become a Seller Button (Buyer mode only, for non-sellers) -->
         <button
           v-if="isBuyerMode && !isSeller"
           @click="switchToSelling"
