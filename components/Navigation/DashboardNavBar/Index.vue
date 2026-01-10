@@ -20,6 +20,15 @@
 
       <!-- Desktop Right Section -->
       <div class="hidden md:flex items-center gap-4">
+        <!-- Become a Seller Button (Buyer only) -->
+        <button
+          v-if="isBuyerMode && !isSeller"
+          @click="switchToSelling"
+          class="px-4 py-2 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary hover:text-white transition-colors duration-200"
+        >
+          Become a Seller
+        </button>
+
         <!-- Cart Icon (Buyer only) -->
         <button
           v-if="isBuyerMode && showCart"
@@ -174,6 +183,7 @@ const navigationItems = computed(() => {
     return [
       { label: 'Dashboard', route: 'dashboard', to: { name: 'username-selling-dashboard', params: { username: username.value } }, icon: 'UiIconsHome' },
       { label: 'Products', route: 'products', to: { name: 'username-selling-products', params: { username: username.value } }, icon: 'UiIconsCart' },
+      { label: 'Orders', route: 'orders', to: { name: 'username-selling-orders', params: { username: username.value } }, icon: 'UiIconsTransactions' },
       { label: 'Earnings', route: 'earnings', to: { name: 'username-selling-earnings', params: { username: username.value } }, icon: 'UiIconsTransactions' }
     ]
   } else {

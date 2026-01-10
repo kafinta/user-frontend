@@ -21,6 +21,15 @@
           {{ item.label }}
         </NuxtLink>
 
+        <!-- Become a Seller Button (Buyer only) -->
+        <button
+          v-if="isBuyerMode && !isSeller"
+          @click="switchToSelling"
+          class="w-full px-4 py-3 rounded-lg transition-colors duration-200 text-sm font-medium text-primary border border-primary hover:bg-primary hover:text-white"
+        >
+          Become a Seller
+        </button>
+
         <!-- Cart Link (Buyer only) -->
         <NuxtLink
           v-if="isBuyerMode && showCart"
@@ -117,6 +126,7 @@ const navigationItems = computed(() => {
     return [
       { label: 'Dashboard', route: 'dashboard', to: { name: 'username-selling-dashboard', params: { username: props.username } } },
       { label: 'Products', route: 'products', to: { name: 'username-selling-products', params: { username: props.username } } },
+      { label: 'Orders', route: 'orders', to: { name: 'username-selling-orders', params: { username: props.username } } },
       { label: 'Earnings', route: 'earnings', to: { name: 'username-selling-earnings', params: { username: props.username } } }
     ]
   } else {
