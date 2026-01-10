@@ -7,7 +7,7 @@
     <slot />
   </NuxtLink>
   <button v-else
-    @click="!disabled && $emit('clicked')"
+    @click="handleClick"
     :class="buttonClasses"
     class="font-medium text-sm xl:text-base 2xl:text-lg select-none outline-none"
     :style="disabled ? '' : 'transition: color 500ms ease-in-out, border-color 500ms ease-in-out;'"
@@ -29,6 +29,14 @@ const props = defineProps({
     default: false
   }
 })
+
+const emit = defineEmits(['clicked'])
+
+const handleClick = () => {
+  if (!props.disabled) {
+    emit('clicked')
+  }
+}
 
 const buttonClasses = computed(() => {
   if (props.disabled) {

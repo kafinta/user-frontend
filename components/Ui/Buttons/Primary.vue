@@ -8,7 +8,7 @@
     <slot />
   </NuxtLink>
   <button v-else
-    @click="!(loading || disabled) && $emit('clicked')"
+    @click="handleClick"
     :class="buttonClasses"
     class="py-2 px-5 text-white font-medium text-base 2xl:text-lg justify-center rounded-md active:bg-primary outline-none"
     :style="(loading || disabled) ? '' : 'transition: background-color 500ms ease-in-out, opacity 500ms ease-in-out;'"
@@ -49,6 +49,14 @@ export default {
     url: {
       type: Object,
       default: null
+    }
+  },
+
+  methods: {
+    handleClick() {
+      if (!(this.loading || this.disabled)) {
+        this.$emit('clicked')
+      }
     }
   },
 
