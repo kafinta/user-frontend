@@ -15,7 +15,7 @@
     />
 
     <!-- Main content area -->
-    <main class="w-full pt-16 px-6 md:px-8 lg:px-10 py-6 mx-auto min-h-screen">
+    <main class="w-full pt-20 md:pt-24 px-6 md:px-8 lg:px-10 py-6 mx-auto min-h-screen">
       <slot />
     </main>
   </div>
