@@ -2,6 +2,9 @@ import { ref } from 'vue'
 import { useCustomFetch } from '@/composables/useCustomFetch'
 import { useAppToast } from '~/utils/toastify'
 
+// Singleton instance so multiple callers share state (products page + filter sidebar)
+let productsApiSingleton: any = null
+
 /**
  * Consolidated composable for all product operations
  * Handles both seller product management and marketplace product fetching
@@ -10,6 +13,7 @@ import { useAppToast } from '~/utils/toastify'
  * Includes caching to reduce redundant API calls
  */
 export function useProductsApi() {
+  if (productsApiSingleton) return productsApiSingleton
   const toast = useAppToast()
 
   // State
@@ -374,7 +378,7 @@ export function useProductsApi() {
     }
   }
 
-  return {
+  const api = {
     // State
     products,
     stats,
@@ -410,4 +414,7 @@ export function useProductsApi() {
     invalidateProductCache,
     invalidateAllProductCache
   }
+
+  productsApiSingleton = api
+  return productsApiSingleton
 }
