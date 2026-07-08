@@ -3,7 +3,6 @@ import { defu } from 'defu';
 import { unref } from 'vue';
 import { useAuthStore } from '~/stores/auth';
 import { useAppToast } from '~/utils/toastify';
-import { navigateTo } from '#app';
 
 // Singleton for CSRF token management
 const csrfManager = {
@@ -160,15 +159,6 @@ export async function useCustomFetch<T>(
       csrfManager.tokenPromise = null;
       const authStore = useAuthStore();
       authStore.clearAuthData();
-
-      if (!suppressAuthError) {
-        const toast = useAppToast();
-        if (toast?.sessionExpired) {
-          toast.sessionExpired();
-        } else if (toast?.error) {
-          toast.error('Session expired. Please log in again.');
-        }
-      }
     }
 
     throw error;
