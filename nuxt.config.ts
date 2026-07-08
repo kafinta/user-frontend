@@ -1,11 +1,7 @@
 import { defineNuxtConfig } from 'nuxt/config';
 
 export default defineNuxtConfig({
-  modules:[
-    '@nuxtjs/tailwindcss',
-    '@pinia/nuxt',
-    '@nuxt/image',
-  ],
+  modules:['@nuxtjs/tailwindcss', '@pinia/nuxt', '@nuxt/image'],
 
   // Server configuration
   devServer: {
