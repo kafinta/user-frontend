@@ -9,6 +9,7 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@nuxt/image": "^2.0.0",
     "@nuxtjs/tailwindcss": "^6.2.0",
     "nuxt": "^3.12.4",
     "sass": "^1.69.5"
@@ -19,5 +20,12 @@
     "@vueuse/core": "^10.8.0",
     "pinia": "^2.1.7",
     "vue3-toastify": "^0.1.14"
+  },
+  "allowScripts": {
+    "@parcel/watcher@2.5.6": true,
+    "vue-demi@0.14.7": true,
+    "vue-demi@0.14.6": true,
+    "sharp@0.34.5": true,
+    "esbuild@0.28.1": true
   }
 }
