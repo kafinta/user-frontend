@@ -144,10 +144,25 @@ useHead({
 
 import { ref, computed, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import type { LocationQuery } from "vue-router";
 import { useProductFilters } from "@/composables/useProductFilters";
 import { useFiltersStore } from '~/stores/filters';
 import { useMarketplaceBreadcrumbs } from '@/composables/useMarketplaceBreadcrumbs';
 import { useProductsApi } from '~/composables/useProductsApi';
+
+interface ProductFilterInput {
+  query?: string;
+  location_id?: string | number;
+  min_price?: string | number;
+  max_price?: string | number;
+  attributes?: Record<string, string>;
+}
+
+interface ProductsApiResponse {
+  status?: string;
+  message?: string;
+  data?: unknown;
+}
 
 const route = useRoute();
 const router = useRouter();
@@ -162,7 +177,7 @@ const search = computed(() => route.query.query ? String(route.query.query) : ''
 const currentPage = computed(() => Number(route.query.page || 1));
 const hasProducts = computed(() => products.value && products.value.length > 0);
 
-function parseAttributesFromQuery(query) {
+function parseAttributesFromQuery(query: LocationQuery) {
   const selected: Record<string, string> = {};
   Object.entries(query).forEach(([key, value]) => {
     if (typeof key === 'string' && key.startsWith('attributes[') && typeof value === 'string') {
@@ -173,8 +188,8 @@ function parseAttributesFromQuery(query) {
   return selected;
 }
 
-function buildQueryFromFilters(filters) {
-  const query = {
+function buildQueryFromFilters(filters: ProductFilterInput) {
+  const query: Record<string, any> = {
     ...route.query,
     page: 1
   };
@@ -215,12 +230,12 @@ function buildQueryFromFilters(filters) {
   return query;
 }
 
-async function onFilterChanged(filters) {
+async function onFilterChanged(filters: ProductFilterInput) {
   const query = buildQueryFromFilters(filters);
   await router.push({ query });
 }
 
-async function onPageChanged(page) {
+async function onPageChanged(page: number) {
   const query = { ...route.query, page };
   await router.push({ query });
 }
@@ -275,10 +290,9 @@ const loadProducts = async () => {
       if (subcategory) {
         params.subcategory_id = subcategory.id;
       } else {
-        error.value = 'Subcategory not found. Please select a valid subcategory.';
-        products.value = [];
-        pagination.value = null;
-        return;
+        // Could not resolve subcategory slug to an ID from the store.
+        // Continue without subcategory_id so the API can still return available filters.
+        console.warn('Subcategory slug not found in store:', subcategorySlug);
       }
     }
 
@@ -304,16 +318,17 @@ const loadProducts = async () => {
       params[`attributes[${name}]`] = value;
     });
 
-    const response = await fetchProductsApi(params);
+    const response = await fetchProductsApi(params) as ProductsApiResponse | undefined;
     if (!response || response.status !== 'success') {
       error.value = response?.message || 'Unable to load products at this time.';
     }
-  } catch (e) {
+  } catch (e: unknown) {
     console.error('Error loading products:', e);
-    if (e?.data?.message) {
-      error.value = e.data.message;
-    } else if (e?.message) {
-      error.value = e.message;
+    const err = e as { data?: { message?: string }; message?: string };
+    if (err?.data?.message) {
+      error.value = err.data.message;
+    } else if (err?.message) {
+      error.value = err.message;
     } else {
       error.value = 'Network error. Please check your connection and try again.';
     }
