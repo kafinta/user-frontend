@@ -9,10 +9,10 @@
         <UiSkeleton height="15rem" />
       </div>
 
-      <div v-else-if="subcategoryDetails && subcategoryDetails.attributes && subcategoryDetails.attributes.length > 0">
+      <div v-else-if="attributes && attributes.length > 0">
         <AccordionIndex :allowMultiple="true">
           <AccordionItem
-            v-for="attribute in subcategoryDetails.attributes"
+            v-for="attribute in attributes"
             :key="attribute.id"
             :active="true"
             container_class="border-b border-accent-200 pb-2 mb-2"
@@ -58,15 +58,29 @@ import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import AccordionIndex from '~/components/Accordion/Index.vue'
 import AccordionItem from '~/components/Accordion/Item.vue'
+import { useProductsApi } from '~/composables/useProductsApi'
 
 const filtersStore = useFiltersStore()
 const { selectedSubcategory, isLoading, error } = storeToRefs(filtersStore)
+const productsApi = useProductsApi()
+const { filters: apiFilters } = productsApi
 
 // Selected attribute values - Map of attributeId -> { id, name }
 const selectedAttributes = ref(new Map())
 
 // Get subcategory details
 const subcategoryDetails = computed(() => selectedSubcategory.value)
+
+// Attributes to render: prefer selected subcategory attributes, fallback to API-provided available_attributes
+const attributes = computed(() => {
+  if (selectedSubcategory.value && Array.isArray(selectedSubcategory.value.attributes) && selectedSubcategory.value.attributes.length) {
+    return selectedSubcategory.value.attributes
+  }
+  if (apiFilters.value && Array.isArray(apiFilters.value.available_attributes) && apiFilters.value.available_attributes.length) {
+    return apiFilters.value.available_attributes
+  }
+  return []
+})
 
 // Check if an attribute value is selected
 function isAttributeValueSelected(attributeId, valueId) {
@@ -96,7 +110,7 @@ function emitSelectedAttributes() {
 
   selectedAttributes.value.forEach((selectedValue, attributeId) => {
     // Find the attribute name
-    const attribute = subcategoryDetails.value?.attributes.find(attr => attr.id === attributeId)
+    const attribute = attributes.value?.find(attr => attr.id === attributeId)
     if (attribute) {
       result[attribute.name] = {
         id: selectedValue.id,
@@ -112,8 +126,8 @@ function emitSelectedAttributes() {
 // Define emits
 const emit = defineEmits(['filter-changed'])
 
-// Reset selected attributes when subcategory changes
-watch(subcategoryDetails, () => {
+// Reset selected attributes when available attributes or subcategory changes
+watch([subcategoryDetails, attributes], () => {
   selectedAttributes.value = new Map()
 })
 </script>
