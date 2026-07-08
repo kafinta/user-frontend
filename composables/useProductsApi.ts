@@ -15,11 +15,12 @@ export function useProductsApi() {
   // State
   const products = ref<any[]>([])
   const stats = ref<any>(null)
+  const filters = ref<any>(null)
   const isLoading = ref(false)
   const error = ref<any>(null)
   /**
    * Pagination object (current_page, total, per_page, last_page, etc.)
-   * Populated after fetchMyProducts
+   * Populated after fetchMyProducts or fetchProducts
    */
   const pagination = ref<any>(null)
 
@@ -66,6 +67,17 @@ export function useProductsApi() {
     products.value = data?.data?.products || []
     pagination.value = data?.data?.pagination || null
     isLoading.value = false
+  }
+
+  async function fetchProducts(params: any = {}): Promise<any> {
+    isLoading.value = true
+    error.value = null
+    const response: any = await useCustomFetch<any>('/api/products', { params })
+    products.value = response?.data?.products || []
+    pagination.value = response?.data?.pagination || null
+    filters.value = response?.data?.filters || null
+    isLoading.value = false
+    return response
   }
 
   /**
@@ -366,11 +378,13 @@ export function useProductsApi() {
     // State
     products,
     stats,
+    filters,
     isLoading,
     error,
     pagination,
     // Listing & Stats
     fetchMyProducts,
+    fetchProducts,
     fetchMyStats,
     // Product CRUD
     createProduct,

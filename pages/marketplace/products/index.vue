@@ -106,13 +106,14 @@
             <UiIconsArrow class="w-4"/>
           </button>
           <button
-            v-for="item in 5"
-            :key="item"
-            ref="pagination"
-            :disabled="isLoading"
-            class="text-white bg-secondary h-10 w-10 grid place-items-center hover:bg-accent-400 duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+            v-for="page in pageNumbers"
+            :key="page"
+            @click="onPageChanged(page)"
+            :disabled="isLoading || page === currentPage"
+            class="text-white h-10 w-10 grid place-items-center hover:bg-accent-400 duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+            :class="page === currentPage ? 'bg-accent-400' : 'bg-secondary'"
           >
-            {{ item }}
+            {{ page }}
           </button>
           <button
             @click="next"
@@ -133,7 +134,7 @@
     </ModalsDrawer>
   </LayoutsMarketplace>
 </template>
-<script setup>
+<script setup lang="ts">
 useHead({
   title: 'Browse Products | Kafinta',
   meta: [
@@ -145,107 +146,170 @@ import { ref, computed, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useProductFilters } from "@/composables/useProductFilters";
 import { useFiltersStore } from '~/stores/filters';
-import { useCustomFetch } from '@/composables/useCustomFetch';
+import { useMarketplaceBreadcrumbs } from '@/composables/useMarketplaceBreadcrumbs';
+import { useProductsApi } from '~/composables/useProductsApi';
 
 const route = useRoute();
 const router = useRouter();
 const filtersStore = useFiltersStore();
 const productFilters = useProductFilters();
+const productsApi = useProductsApi();
+const { products, pagination, filters: apiFilters, isLoading, error, fetchProducts: fetchProductsApi } = productsApi;
 const openDialog = ref(false);
-const search = computed(() => !!route.query.query);
-
-const products = ref([]);
-const isLoading = ref(true);
-const error = ref('');
 const selectedAttributes = ref({});
 
+const search = computed(() => route.query.query ? String(route.query.query) : '');
+const currentPage = computed(() => Number(route.query.page || 1));
 const hasProducts = computed(() => products.value && products.value.length > 0);
 
-function onFilterChanged(attrs) {
-  selectedAttributes.value = attrs;
+function parseAttributesFromQuery(query) {
+  const selected: Record<string, string> = {};
+  Object.entries(query).forEach(([key, value]) => {
+    if (typeof key === 'string' && key.startsWith('attributes[') && typeof value === 'string') {
+      const attributeName = key.replace(/^attributes\[(.*)\]$/, '$1');
+      selected[attributeName] = value;
+    }
+  });
+  return selected;
 }
 
-// Retry function for failed requests
-async function retryFetch() {
-  await fetchProducts();
-}
+function buildQueryFromFilters(filters) {
+  const query = {
+    ...route.query,
+    page: 1
+  };
 
-// Clear filters function
-function clearFilters() {
-  selectedAttributes.value = {};
-  // Also clear search query if present
-  if (route.query.query) {
-    const newQuery = { ...route.query };
-    delete newQuery.query;
-    router.push({ query: newQuery });
+  // Always preserve the current category/subcategory context
+  if (route.query.category) query.category = route.query.category;
+  if (route.query.subcategory) query.subcategory = route.query.subcategory;
+
+  // Search
+  if (filters.query) query.query = filters.query;
+  else delete query.query;
+
+  // Location filter
+  if (filters.location_id) query.location_id = filters.location_id;
+  else delete query.location_id;
+
+  // Price filters
+  if (filters.min_price) query.min_price = filters.min_price;
+  else delete query.min_price;
+  if (filters.max_price) query.max_price = filters.max_price;
+  else delete query.max_price;
+
+  // Remove old attribute filters
+  Object.keys(query).forEach((key) => {
+    if (key.startsWith('attributes[')) {
+      delete query[key];
+    }
+  });
+
+  if (filters.attributes) {
+    Object.entries(filters.attributes).forEach(([attributeName, value]) => {
+      if (value) {
+        query[`attributes[${attributeName}]`] = value;
+      }
+    });
   }
+
+  return query;
 }
 
-const fetchProducts = async () => {
+async function onFilterChanged(filters) {
+  const query = buildQueryFromFilters(filters);
+  await router.push({ query });
+}
+
+async function onPageChanged(page) {
+  const query = { ...route.query, page };
+  await router.push({ query });
+}
+
+function getInitialFilters() {
+  return {
+    query: search.value,
+    location_id: route.query.location_id || '',
+    min_price: route.query.min_price || '',
+    max_price: route.query.max_price || '',
+    attributes: parseAttributesFromQuery(route.query)
+  };
+}
+
+function clearFilters() {
+  const query = {
+    ...(route.query.category ? { category: route.query.category } : {}),
+    ...(route.query.subcategory ? { subcategory: route.query.subcategory } : {})
+  };
+  return router.push({ query });
+}
+
+async function retryFetch() {
+  await loadProducts();
+}
+
+const loadProducts = async () => {
   isLoading.value = true;
   error.value = '';
 
   try {
-    const params = new URLSearchParams();
-    params.append('per_page', 30);
+    const params: Record<string, any> = {
+      per_page: 30,
+      page: currentPage.value
+    };
 
-    // API requires either search query OR subcategory_id
-    if (route.query.query) {
-      // Search mode - use search query
-      params.append('search', route.query.query);
-    } else if (route.query.subcategory) {
-      // Subcategory mode - find subcategory ID from slug
-      const subcategorySlug = route.query.subcategory;
-      let subcategory = filtersStore.subcategories.find(s => s.slug === subcategorySlug);
+    if (search.value) {
+      params.search = search.value;
+    }
 
-      if (!subcategory) {
-        // If subcategory not found in store, ensure data is loaded first
-        await ensureDataLoaded();
-        subcategory = filtersStore.subcategories.find(s => s.slug === subcategorySlug);
-      }
-
-      if (subcategory) {
-        params.append('subcategory_id', subcategory.id);
-      } else {
-        // Still no subcategory found, this is an error
-        error.value = 'Subcategory not found. Please select a valid subcategory.';
-        products.value = [];
-        isLoading.value = false;
-        return;
-      }
-    } else {
-      // No search query or subcategory - this shouldn't happen on products page
-      error.value = 'No subcategory or search query specified.';
+    if (!search.value && !route.query.subcategory) {
       products.value = [];
-      isLoading.value = false;
+      pagination.value = null;
       return;
     }
 
-    // Add attribute filters
-    for (const [attrName, attrObj] of Object.entries(selectedAttributes.value)) {
-      if (attrObj && attrObj.name) {
-        params.append(`attributes[${attrName}]`, attrObj.name);
+    if (route.query.subcategory) {
+      await ensureDataLoaded();
+
+      const subcategorySlug = String(route.query.subcategory);
+      const subcategory = filtersStore.subcategories.find(s => s.slug === subcategorySlug);
+      if (subcategory) {
+        params.subcategory_id = subcategory.id;
+      } else {
+        error.value = 'Subcategory not found. Please select a valid subcategory.';
+        products.value = [];
+        pagination.value = null;
+        return;
       }
     }
 
-    const res = await useCustomFetch(`/api/products?${params.toString()}`, { method: 'GET' });
-
-    if (res && res.status === 'success') {
-      if (res.data && res.data.products) {
-        products.value = res.data.products;
-      } else {
-        products.value = [];
+    if (route.query.location_id) {
+      params.location_id = route.query.location_id;
+    } else if (route.query.location) {
+      const locationSlug = String(route.query.location);
+      const location = filtersStore.locations.find(l => l.slug === locationSlug);
+      if (location) {
+        params.location_id = location.id;
       }
-    } else {
-      // Handle API error responses
-      const errorMessage = res?.message || 'Unable to load products at this time.';
-      error.value = errorMessage;
-      products.value = [];
+    }
+
+    if (route.query.min_price) {
+      params.min_price = route.query.min_price;
+    }
+    if (route.query.max_price) {
+      params.max_price = route.query.max_price;
+    }
+
+    const attributes = parseAttributesFromQuery(route.query);
+    Object.entries(attributes).forEach(([name, value]) => {
+      params[`attributes[${name}]`] = value;
+    });
+
+    const response = await fetchProductsApi(params);
+    if (!response || response.status !== 'success') {
+      error.value = response?.message || 'Unable to load products at this time.';
     }
   } catch (e) {
-    // Handle network or other errors
-    console.error('Error fetching products:', e);
-
+    console.error('Error loading products:', e);
     if (e?.data?.message) {
       error.value = e.data.message;
     } else if (e?.message) {
@@ -253,8 +317,8 @@ const fetchProducts = async () => {
     } else {
       error.value = 'Network error. Please check your connection and try again.';
     }
-
     products.value = [];
+    pagination.value = null;
   } finally {
     isLoading.value = false;
   }
@@ -327,6 +391,10 @@ const ensureDataLoaded = async () => {
       const foundSubcategory = filtersStore.subcategories.find(s => s.slug === subcategorySlug);
       if (foundSubcategory) {
         productFilters.selectSubcategory(foundSubcategory);
+        // Ensure we have detailed subcategory (with attributes) for filters
+        if (typeof productFilters.fetchSubcategoryDetails === 'function') {
+          await productFilters.fetchSubcategoryDetails(foundSubcategory.id);
+        }
       }
     }
   } catch (error) {
@@ -335,11 +403,11 @@ const ensureDataLoaded = async () => {
 };
 
 // Refetch products when URL parameters or attribute filters change
-watch([
-  () => route.query.subcategory,
-  () => route.query.query,
-  selectedAttributes
-], fetchProducts, { immediate: true });
+watch(
+  () => route.query,
+  loadProducts,
+  { immediate: true, deep: true }
+);
 
 // No need to handle subcategory_id, category_id, or location_id in query params anymore
 
@@ -372,13 +440,29 @@ const breadcrumbItems = computed(() => {
   return productsBreadcrumbs.value
 })
 // Pagination functions
-const prev = () => {
-  // Implement previous page logic
-  console.log('Previous page');
+const pageNumbers = computed(() => {
+  if (!pagination.value || typeof pagination.value.current_page !== 'number') {
+    return [];
+  }
+
+  const current = pagination.value.current_page;
+  const last = pagination.value.last_page || 1;
+  const start = Math.max(1, current - 2);
+  const end = Math.min(last, current + 2);
+  const pages = [];
+  for (let page = start; page <= end; page += 1) {
+    pages.push(page);
+  }
+  return pages;
+});
+
+const prev = async () => {
+  if (!pagination.value || pagination.value.current_page <= 1) return;
+  await onPageChanged(pagination.value.current_page - 1);
 };
 
-const next = () => {
-  // Implement next page logic
-  console.log('Next page');
+const next = async () => {
+  if (!pagination.value || pagination.value.current_page >= pagination.value.last_page) return;
+  await onPageChanged(pagination.value.current_page + 1);
 };
 </script>
