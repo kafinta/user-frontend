@@ -158,17 +158,16 @@ export async function useCustomFetch<T>(
     if (error.response?.status === 401 && import.meta.client) {
       csrfManager.tokenObtained = false;
       csrfManager.tokenPromise = null;
-      // Global sign out and redirect logic
       const authStore = useAuthStore();
-      const toast = useAppToast();
       authStore.clearAuthData();
+
       if (!suppressAuthError) {
+        const toast = useAppToast();
         if (toast?.sessionExpired) {
           toast.sessionExpired();
         } else if (toast?.error) {
           toast.error('Session expired. Please log in again.');
         }
-        navigateTo({ path: '/auth/login', query: { redirect: window.location.pathname } });
       }
     }
 

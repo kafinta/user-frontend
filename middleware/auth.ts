@@ -22,6 +22,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const routeRequirements = {
     requiresAuth: to.meta.requiresAuth === true,
     authOnly: to.meta.authOnly === true,
+    guestOnly: to.meta.guestOnly === true,
     isVerifyRoute: to.meta.isVerifyRoute === true,
     isOnboardingRoute: to.meta.isOnboardingRoute === true,
     requiresVerification: to.meta.requiresVerification === true,
@@ -73,13 +74,19 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   // MAIN MIDDLEWARE LOGIC
 
-  // Special case for auth pages (login/signup)
+  // Special case for auth-only pages like login/signup
   if (routeRequirements.authOnly) {
-    // If user is already authenticated and verified, redirect to dashboard
     if (authStore.isAuthenticated && authStore.isVerified) {
       return navigateToDashboard();
     }
-    // Otherwise allow access to auth pages
+    return;
+  }
+
+  // Special case for guest-only pages like OAuth callback
+  if (routeRequirements.guestOnly) {
+    if (authStore.isAuthenticated && authStore.isVerified) {
+      return navigateToDashboard();
+    }
     return;
   }
 
