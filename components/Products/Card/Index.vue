@@ -10,7 +10,7 @@
             </div>
         </div>
     </li>
-    <li class="border border-accent-200 rounded-xl cursor-pointer list-none">
+    <li v-else class="border border-accent-200 rounded-xl cursor-pointer list-none">
         <NuxtLink :to="`/marketplace/products/${slug}`" class="group block">
             <img :src="image" :alt="name" class="w-full rounded-t-xl aspect-[4/3]" />
             <div class="p-4">
