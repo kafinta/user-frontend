@@ -12,7 +12,13 @@
     </li>
     <li v-else class="border border-accent-200 rounded-xl cursor-pointer list-none">
         <NuxtLink :to="`/marketplace/products/${slug}`" class="group block">
-            <img :src="image" :alt="name" class="w-full rounded-t-xl aspect-[4/3]" />
+                    <template v-if="image">
+                <img :src="image" :alt="name" class="w-full rounded-t-xl aspect-[4/3] object-cover" />
+            </template>
+            <div v-else class="w-full rounded-t-xl aspect-[4/3] bg-gray-200 flex flex-col items-center justify-center gap-2 text-center">
+                <UiIconsCamera class="w-10 h-10 text-accent-400" />
+                <span class="text-sm text-accent-500">No image available</span>
+            </div>
             <div class="p-4">
                 <UiTypographyP class="line-clamp-2 group-hover:text-primary duration-300">{{ name }}</UiTypographyp>
                 <div v-if="discountPrice" class="uppercase bg-red-600 py-0.5 px-1 rounded-sm text-xs text-white w-fit mt-2">Sale</div>
@@ -37,6 +43,7 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router';
 import { useProductFilters } from '@/composables/useProductFilters';
+import UiIconsCamera from '@/components/Ui/Icons/Camera.vue';
 
 const router = useRouter();
 const route = useRoute();
