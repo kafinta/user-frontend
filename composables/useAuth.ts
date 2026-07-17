@@ -30,26 +30,12 @@ export function useAuth() {
   const authStore = useAuthStore();
   const toast = useAppToast();
   const router = useRouter();
+  const authApi = useAuthApi();
 
   /**
-   * Handle successful authentication response
+   * Handle successful authentication response through the shared auth API helper.
    */
-  const handleAuthSuccess = async (response: ApiResponse) => {
-    if (response.data?.user) {
-      authStore.setUser(response.data.user);
-      authStore.setVerified(!!response.data.user.email_verified_at);
-    }
-    
-    // Set roles if included in response (preferred approach)
-    if (response.data?.roles) {
-      authStore.setRoles(response.data.roles);
-    } else if (response.data?.user?.roles) {
-      // If roles are nested in user object
-      authStore.setRoles(response.data.user.roles);
-    }
-    
-    return response;
-  };
+  const handleAuthSuccess = (response: ApiResponse) => authApi.handleAuthSuccess(response);
 
   /**
    * Login user with email and password

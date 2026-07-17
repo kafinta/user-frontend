@@ -83,8 +83,7 @@ export function useOAuth() {
         }
 
         // Navigate to appropriate page
-        const authApi = useAuthApi()
-        await authApi.navigateToDashboard()
+          await authApi.navigateToDashboard()
 
         return response
       } else {
