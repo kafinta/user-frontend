@@ -30,9 +30,9 @@
                 </p>
                 <div class="flex items-center justify-between mt-3">
                     <ProductsRating :rating="rating" />
-                    <div v-if="reviewCount || salesCount" class="text-xs text-accent-500 flex gap-2">
-                        <span v-if="reviewCount">{{ reviewCount }} review{{ reviewCount !== 1 ? 's' : '' }}</span>
-                        <span v-if="reviewCount && salesCount">•</span>
+                    <div v-if="reviewCount !== undefined || salesCount" class="text-xs text-accent-500 flex gap-2">
+                        <span>{{ reviewCount || 0 }} review{{ (reviewCount || 0) !== 1 ? 's' : '' }}</span>
+                        <span v-if="salesCount">•</span>
                         <span v-if="salesCount">{{ salesCount }} sold</span>
                     </div>
                 </div>
