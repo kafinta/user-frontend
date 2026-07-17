@@ -65,26 +65,10 @@ export function useAuthApi() {
     navigateToDashboard: async () => {
       const authStore = useAuthStore();
 
-      // If not authenticated, go to home page
-      if (!authStore.isAuthenticated) {
-        console.log('Not authenticated, redirecting to home');
-        return navigateTo('/');
-      }
-
-      // If no username, fetch user profile first
-      if (!authStore.user?.username) {
-        console.log('No username found, fetching user profile...');
-        try {
-          await authStore.validateSession();
-        } catch (error) {
-          console.error('Failed to fetch user profile:', error);
-          return navigateTo('/');
-        }
-      }
-
-      // Check again after potential profile fetch
-      if (!authStore.user?.username) {
-        console.error('Still no username after profile fetch, redirecting to home');
+      // If not authenticated or missing username, go to home page.
+      // Auth responses should already include the user payload, so we avoid a profile refetch here.
+      if (!authStore.isAuthenticated || !authStore.user?.username) {
+        console.log('Cannot navigate to dashboard without an authenticated user and username');
         return navigateTo('/');
       }
 
