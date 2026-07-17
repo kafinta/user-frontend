@@ -4,6 +4,8 @@ import { useAppToast } from '~/utils/toastify'
 
 // Singleton instance so multiple callers share state (products page + filter sidebar)
 let productsApiSingleton: any = null
+let inFlightFetchKey: string | null = null
+let lastFetchKey: string | null = null
 
 /**
  * Consolidated composable for all product operations
@@ -74,14 +76,31 @@ export function useProductsApi() {
   }
 
   async function fetchProducts(params: any = {}): Promise<any> {
+    const fetchKey = JSON.stringify(params || {})
+
+    if (inFlightFetchKey === fetchKey) {
+      return { status: 'success', data: { products: products.value, pagination: pagination.value, filters: filters.value } }
+    }
+
+    if (lastFetchKey === fetchKey && products.value.length > 0) {
+      return { status: 'success', data: { products: products.value, pagination: pagination.value, filters: filters.value } }
+    }
+
     isLoading.value = true
     error.value = null
-    const response: any = await useCustomFetch<any>('/api/products', { params })
-    products.value = response?.data?.products || []
-    pagination.value = response?.data?.pagination || null
-    filters.value = response?.data?.filters || null
-    isLoading.value = false
-    return response
+
+    inFlightFetchKey = fetchKey
+    try {
+      const response: any = await useCustomFetch<any>('/api/products', { params })
+      products.value = response?.data?.products || []
+      pagination.value = response?.data?.pagination || null
+      filters.value = response?.data?.filters || null
+      lastFetchKey = fetchKey
+      return response
+    } finally {
+      isLoading.value = false
+      inFlightFetchKey = null
+    }
   }
 
   /**

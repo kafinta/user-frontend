@@ -398,18 +398,10 @@ const ensureDataLoaded = async () => {
         await filtersStore.fetchSubcategories(category.id, location.id);
       }
 
-      // Update the composable state to match URL
-      productFilters.selectCategory(category);
-      productFilters.selectLocation(location);
-
-      // Set subcategory if found
+      // Load subcategory details for the filter sidebar without re-syncing the route.
       const foundSubcategory = filtersStore.subcategories.find(s => s.slug === subcategorySlug);
-      if (foundSubcategory) {
-        productFilters.selectSubcategory(foundSubcategory);
-        // Ensure we have detailed subcategory (with attributes) for filters
-        if (typeof productFilters.fetchSubcategoryDetails === 'function') {
-          await productFilters.fetchSubcategoryDetails(foundSubcategory.id);
-        }
+      if (foundSubcategory && typeof productFilters.fetchSubcategoryDetails === 'function') {
+        await productFilters.fetchSubcategoryDetails(foundSubcategory.id);
       }
     }
   } catch (error) {
