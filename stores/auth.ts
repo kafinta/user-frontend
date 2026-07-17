@@ -96,6 +96,8 @@ export const useAuthStore = defineStore('auth', () => {
   const error = ref<string | null>(null)
   const initialized = ref(false)
   const rolesLoaded = ref(false)
+  let initializePromise: Promise<void> | null = null
+  let validateSessionPromise: Promise<User> | null = null
 
   // Getters
   const isAuthenticated = computed(() => !!user.value)
@@ -154,50 +156,56 @@ export const useAuthStore = defineStore('auth', () => {
    * Initialize the auth store - load from localStorage first, then sync with backend
    */
   async function initialize() {
-    if (initialized.value) return;
+    if (initialized.value) return
+    if (initializePromise) return initializePromise
 
-    try {
-      // First, load from localStorage to ensure roles are available immediately
-      const storedUser = loadFromStorage<User>(STORAGE_KEYS.USER);
-      const storedRoles = loadFromStorage<string[]>(STORAGE_KEYS.ROLES);
-      const storedVerified = loadFromStorage<boolean>(STORAGE_KEYS.VERIFIED);
+    initializePromise = (async () => {
+      try {
+        // First, load from localStorage to ensure roles are available immediately
+        const storedUser = loadFromStorage<User>(STORAGE_KEYS.USER)
+        const storedRoles = loadFromStorage<string[]>(STORAGE_KEYS.ROLES)
+        const storedVerified = loadFromStorage<boolean>(STORAGE_KEYS.VERIFIED)
 
-      if (storedUser) {
-        setUser(storedUser);
-        setVerified(storedVerified || false);
-        if (storedRoles && storedRoles.length > 0) {
-          setRoles(storedRoles);
+        if (storedUser) {
+          setUser(storedUser)
+          setVerified(storedVerified || false)
+          if (storedRoles && storedRoles.length > 0) {
+            setRoles(storedRoles)
+          }
         }
-      }
 
-      // Then, fetch the current user profile from the backend to sync
-      const response = await useCustomFetch<ApiResponse>('/api/user/profile', {
-        method: 'GET',
-        suppressAuthError: true // Prevent session expired toast/redirect on app launch
-      });
+        // Then, fetch the current user profile from the backend to sync
+        const response = await useCustomFetch<ApiResponse>('/api/user/profile', {
+          method: 'GET',
+          suppressAuthError: true // Prevent session expired toast/redirect on app launch
+        })
 
-      if (response.status === 'success' && response.data?.user) {
-        setUser(response.data.user);
-        setVerified(!!response.data.user.email_verified_at);
-        if (response.data.roles) {
-          setRoles(response.data.roles);
-        } else if (response.data.user.roles) {
-          setRoles(response.data.user.roles);
+        if (response.status === 'success' && response.data?.user) {
+          setUser(response.data.user)
+          setVerified(!!response.data.user.email_verified_at)
+          if (response.data.roles) {
+            setRoles(response.data.roles)
+          } else if (response.data.user.roles) {
+            setRoles(response.data.user.roles)
+          }
+          // Save to localStorage
+          saveToStorage(STORAGE_KEYS.USER, response.data.user)
+          saveToStorage(STORAGE_KEYS.ROLES, response.data.roles || response.data.user.roles || [])
+          saveToStorage(STORAGE_KEYS.VERIFIED, !!response.data.user.email_verified_at)
+        } else {
+          // If not authenticated or no user, clear auth data
+          clearAuthData()
         }
-        // Save to localStorage
-        saveToStorage(STORAGE_KEYS.USER, response.data.user);
-        saveToStorage(STORAGE_KEYS.ROLES, response.data.roles || response.data.user.roles || []);
-        saveToStorage(STORAGE_KEYS.VERIFIED, !!response.data.user.email_verified_at);
-      } else {
-        // If not authenticated or no user, clear auth data
-        clearAuthData();
+      } catch (error) {
+        // On error (e.g., not authenticated), clear auth data
+        clearAuthData()
+      } finally {
+        initialized.value = true
+        initializePromise = null
       }
-    } catch (error) {
-      // On error (e.g., not authenticated), clear auth data
-      clearAuthData();
-    }
+    })()
 
-    initialized.value = true;
+    return initializePromise
   }
 
   /**
@@ -410,28 +418,36 @@ export const useAuthStore = defineStore('auth', () => {
    * Updates the store and returns the user if authenticated, otherwise throws.
    */
   async function validateSession() {
-    try {
-      const response = await useCustomFetch<ApiResponse>('/api/user/profile', {
-        method: 'GET',
-        suppressAuthError: true
-      });
-      if (response.status === 'success' && response.data?.user) {
-        setUser(response.data.user);
-        setVerified(!!response.data.user.email_verified_at);
-        if (response.data.roles) {
-          setRoles(response.data.roles);
-        } else if (response.data.user.roles) {
-          setRoles(response.data.user.roles);
+    if (validateSessionPromise) return validateSessionPromise
+
+    validateSessionPromise = (async () => {
+      try {
+        const response = await useCustomFetch<ApiResponse>('/api/user/profile', {
+          method: 'GET',
+          suppressAuthError: true
+        })
+        if (response.status === 'success' && response.data?.user) {
+          setUser(response.data.user)
+          setVerified(!!response.data.user.email_verified_at)
+          if (response.data.roles) {
+            setRoles(response.data.roles)
+          } else if (response.data.user.roles) {
+            setRoles(response.data.user.roles)
+          }
+          return response.data.user
         }
-        return response.data.user;
-      } else {
-        clearAuthData();
-        throw new Error('Not authenticated');
+
+        clearAuthData()
+        throw new Error('Not authenticated')
+      } catch (error) {
+        clearAuthData()
+        throw error
+      } finally {
+        validateSessionPromise = null
       }
-    } catch (error) {
-      clearAuthData();
-      throw error;
-    }
+    })()
+
+    return validateSessionPromise
   }
 
   return {
