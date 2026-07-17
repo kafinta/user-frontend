@@ -13,7 +13,8 @@ export interface CarouselProduct {
 }
 
 export interface UseProductsCarouselOptions {
-  endpoint: '/api/products/top' | '/api/products/featured'
+  endpoint: '/api/products/top' | '/api/products/trending' | '/api/products/featured'
+  hideEmpty?: boolean
 }
 
 export function useProductsCarousel(options: UseProductsCarouselOptions) {
@@ -85,7 +86,7 @@ export function useProductsCarousel(options: UseProductsCarouselOptions) {
         const apiProducts = response.data?.products || []
 
         if (!apiProducts || apiProducts.length === 0) {
-          error.value = 'No products available at the moment. Check back soon!'
+          products.value = []
           return
         }
 

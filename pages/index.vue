@@ -26,8 +26,31 @@
       </div>
     </header>
 
-    <section>
-      <CarouselsTopProducts  />
+    <section class="py-8 sm:py-10">
+      <Container>
+        <div class="space-y-6">
+          <CarouselsProductShowcase
+            endpoint="/api/products/top"
+            tag="Best Sellers"
+            title="Top Products"
+            subtitle="All-time best sellers chosen by customer demand and repeat purchases."
+          />
+
+          <CarouselsProductShowcase
+            endpoint="/api/products/trending"
+            tag="Trending Now"
+            title="Hot Right Now"
+            subtitle="Products picking up momentum from recent sales activity."
+          />
+
+          <CarouselsProductShowcase
+            endpoint="/api/products/featured"
+            tag="Curated"
+            title="Featured Picks"
+            subtitle="A curated mix of standout products and highlighted selections."
+          />
+        </div>
+      </Container>
     </section>
 
     <section class="bg-primary bg-opacity-10">

@@ -36,9 +36,30 @@
       </div>
     </Container>
 
-    <div class="mt-10">
-      <CarouselsTopProducts />
-    </div>
+    <section class="py-10">
+      <Container class="space-y-8">
+        <CarouselsProductShowcase
+          endpoint="/api/products/top"
+          tag="Best Sellers"
+          title="All-Time Top Products"
+          subtitle="The products our customers return to most often."
+        />
+
+        <CarouselsProductShowcase
+          endpoint="/api/products/trending"
+          tag="Trending"
+          title="Trending Products"
+          subtitle="What’s gaining traction right now based on recent buying activity."
+        />
+
+        <CarouselsProductShowcase
+          endpoint="/api/products/featured"
+          tag="Featured"
+          title="Featured Products"
+          subtitle="A curated selection of highlighted products from the marketplace."
+        />
+      </Container>
+    </section>
   </LayoutsMarketplace>
 </template>
 <script setup>
