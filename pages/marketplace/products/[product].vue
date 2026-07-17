@@ -40,11 +40,22 @@
       <section ref="reviewsRef" id="reviews" class="py-8">
         <ProductsPageReview :product="product" :isLoading="isLoading" />
       </section>
-      <div v-if="error || !product" class="text-center py-12 flex flex-col items-center justify-center">
+      <div v-if="error" class="text-center py-12 flex flex-col items-center justify-center">
         <div class="rounded-full p-4 flex items-center justify-center mb-4 bg-red-200 w-20 h-20">
           <UiIconsError class="w-16 h-16 text-red-600" />
         </div>
         <UiTypographyP class="text-red-600 mb-2">{{ error }}</UiTypographyP>
+        <UiButtonsPrimary :url="{ name: 'marketplace-products' }" class="mt-2">
+          Back to Products
+        </UiButtonsPrimary>
+      </div>
+
+      <div v-else-if="!isLoading && !product" class="text-center py-12 flex flex-col items-center justify-center">
+        <div class="rounded-full p-4 flex items-center justify-center mb-4 bg-accent-100 w-20 h-20">
+          <UiIconsSearch class="w-16 h-16 text-accent-400" />
+        </div>
+        <UiTypographyH3 class="mb-2 text-secondary">Product not found</UiTypographyH3>
+        <UiTypographyP class="text-accent-500 mb-4">We couldn't load this product. It may have been removed or the link is invalid.</UiTypographyP>
         <UiButtonsPrimary :url="{ name: 'marketplace-products' }" class="mt-2">
           Back to Products
         </UiButtonsPrimary>
@@ -71,6 +82,13 @@ const error = ref('');
 
 const route = useRoute();
 const { getProductBySlug } = useProductsApi();
+
+function formatPrice(value) {
+  return new Intl.NumberFormat('en-NG', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  }).format(Number(value || 0));
+}
 
 function handleTabClick(key) {
   activeTab.value = key;
@@ -101,7 +119,7 @@ async function fetchProductAndAttributes(slug) {
       try {
         const attrRes = await useCustomFetch(`/api/products/${product.value.id}/attributes`, { method: 'GET' });
         if (attrRes && attrRes.status === 'success') {
-          attributes.value = attrRes.data;
+          attributes.value = Array.isArray(attrRes.data) ? attrRes.data : (attrRes.data?.attributes || []);
         }
       } catch (e) {
         attributes.value = [];
