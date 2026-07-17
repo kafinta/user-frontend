@@ -92,6 +92,9 @@
               :price="product.price"
               :discountPrice="product.previous_price"
               :image="product.images && product.images.length ? product.images[0].url : ''"
+              :rating="product.average_rating || product.rating"
+              :reviewCount="product.review_count || product.reviews_count || 0"
+              :salesCount="product.sales_count || 0"
               :skeleton="false"
             />
           </ul>
