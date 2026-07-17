@@ -38,6 +38,15 @@ export interface Subcategory {
   slug?: string // Add slug for URL/query
 }
 
+function normalizeSlug(value: string): string {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
 export const useFiltersStore = defineStore('filters', () => {
   // State
   const categories = ref<Category[]>([])
@@ -128,7 +137,10 @@ export const useFiltersStore = defineStore('filters', () => {
     // Check for cached data first
     const storedCategories = loadFromStorage('categories')
     if (storedCategories) {
-      categories.value = storedCategories
+      categories.value = storedCategories.map((category: Category) => ({
+        ...category,
+        slug: category.slug || normalizeSlug(category.name)
+      }))
       return storedCategories
     }
 
@@ -150,7 +162,10 @@ export const useFiltersStore = defineStore('filters', () => {
         const response = await useCustomFetch<{ data: Category[] }>('api/categories/')
 
         if (response.data) {
-          categories.value = response.data
+          categories.value = response.data.map(category => ({
+            ...category,
+            slug: category.slug || normalizeSlug(category.name)
+          }))
           saveToStorage('categories', response.data)
           failedRequests.value.delete(requestKey) // Clear failed status on success
           return response.data
@@ -183,7 +198,10 @@ export const useFiltersStore = defineStore('filters', () => {
     // Check for cached data first
     const storedLocations = loadFromStorage('locations')
     if (storedLocations) {
-      locations.value = storedLocations
+      locations.value = storedLocations.map((location: Location) => ({
+        ...location,
+        slug: location.slug || normalizeSlug(location.name)
+      }))
       return storedLocations
     }
 
@@ -205,7 +223,10 @@ export const useFiltersStore = defineStore('filters', () => {
         const response = await useCustomFetch<{ data: Location[] }>('api/locations/')
 
         if (response.data) {
-          locations.value = response.data
+          locations.value = response.data.map(location => ({
+            ...location,
+            slug: location.slug || normalizeSlug(location.name)
+          }))
           saveToStorage('locations', response.data)
           failedRequests.value.delete(requestKey) // Clear failed status on success
           return response.data
@@ -251,7 +272,10 @@ export const useFiltersStore = defineStore('filters', () => {
         )
 
         if (response.data?.subcategories) {
-          subcategories.value = response.data.subcategories
+          subcategories.value = response.data.subcategories.map(subcategory => ({
+            ...subcategory,
+            slug: subcategory.slug || normalizeSlug(subcategory.name)
+          }))
           failedRequests.value.delete(requestKey) // Clear failed status on success
           return true
         }
@@ -300,7 +324,10 @@ export const useFiltersStore = defineStore('filters', () => {
         }>(`api/subcategories/${subcategory_id}`)
 
         if (response.data?.subcategory) {
-          selectedSubcategory.value = response.data.subcategory
+          selectedSubcategory.value = {
+            ...response.data.subcategory,
+            slug: response.data.subcategory.slug || normalizeSlug(response.data.subcategory.name)
+          }
           failedRequests.value.delete(requestKey) // Clear failed status on success
           return true
         }
