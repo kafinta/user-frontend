@@ -172,6 +172,7 @@ const productsApi = useProductsApi();
 const { products, pagination, filters: apiFilters, isLoading, error, fetchProducts: fetchProductsApi } = productsApi;
 const openDialog = ref(false);
 const selectedAttributes = ref({});
+const isBootstrapping = ref(true);
 
 const search = computed(() => route.query.query ? String(route.query.query) : '');
 const currentPage = computed(() => Number(route.query.page || 1));
@@ -259,10 +260,10 @@ function clearFilters() {
 }
 
 async function retryFetch() {
-  await loadProducts();
+  await loadProducts(true);
 }
 
-const loadProducts = async () => {
+const loadProducts = async (ensureData = true) => {
   isLoading.value = true;
   error.value = '';
 
@@ -282,7 +283,7 @@ const loadProducts = async () => {
       return;
     }
 
-    if (route.query.subcategory) {
+    if (ensureData && route.query.subcategory) {
       await ensureDataLoaded();
 
       const subcategorySlug = String(route.query.subcategory);
@@ -360,10 +361,8 @@ onMounted(async () => {
     return;
   }
 
-  // If we have a subcategory, ensure the required data is loaded
-  if (hasSubcategory) {
-    await ensureDataLoaded();
-  }
+  await loadProducts(true);
+  isBootstrapping.value = false;
 });
 
 // Function to ensure all required data is loaded for subcategory mode
@@ -412,8 +411,11 @@ const ensureDataLoaded = async () => {
 // Refetch products when URL parameters or attribute filters change
 watch(
   () => route.query,
-  loadProducts,
-  { immediate: true, deep: true }
+  async () => {
+    if (isBootstrapping.value) return;
+    await loadProducts(true);
+  },
+  { deep: true }
 );
 
 // No need to handle subcategory_id, category_id, or location_id in query params anymore
