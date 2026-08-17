@@ -75,8 +75,8 @@ export function useProductsApi() {
     isLoading.value = false
   }
 
-  async function fetchProducts(params: any = {}): Promise<any> {
-    const fetchKey = JSON.stringify(params || {})
+  async function fetchProductsFromEndpoint(endpoint: string, params: any = {}): Promise<any> {
+    const fetchKey = `${endpoint}:${JSON.stringify(params || {})}`
 
     if (inFlightFetchKey === fetchKey) {
       return { status: 'success', data: { products: products.value, pagination: pagination.value, filters: filters.value } }
@@ -91,7 +91,7 @@ export function useProductsApi() {
 
     inFlightFetchKey = fetchKey
     try {
-      const response: any = await useCustomFetch<any>('/api/products', { params })
+      const response: any = await useCustomFetch<any>(endpoint, { params })
       products.value = response?.data?.products || []
       pagination.value = response?.data?.pagination || null
       filters.value = response?.data?.filters || null
@@ -101,6 +101,10 @@ export function useProductsApi() {
       isLoading.value = false
       inFlightFetchKey = null
     }
+  }
+
+  async function fetchProducts(params: any = {}): Promise<any> {
+    return fetchProductsFromEndpoint('/api/products', params)
   }
 
   /**
@@ -408,6 +412,7 @@ export function useProductsApi() {
     // Listing & Stats
     fetchMyProducts,
     fetchProducts,
+    fetchProductsFromEndpoint,
     fetchMyStats,
     // Product CRUD
     createProduct,
