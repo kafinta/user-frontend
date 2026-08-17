@@ -43,21 +43,24 @@
           tag="Best Sellers"
           title="All-Time Top Products"
           subtitle="The products our customers return to most often."
-        />
+          :seeAllUrl="{ path: '/marketplace/products', query: { sort: 'top' } }"
+          />
 
         <CarouselsProductShowcase
           endpoint="/api/products/trending"
           tag="Trending"
           title="Trending Products"
           subtitle="What’s gaining traction right now based on recent buying activity."
-        />
+          :seeAllUrl="{ path: '/marketplace/products', query: { sort: 'trending' } }"
+          />
 
         <CarouselsProductShowcase
           endpoint="/api/products/featured"
           tag="Featured"
           title="Featured Products"
           subtitle="A curated selection of highlighted products from the marketplace."
-        />
+          :seeAllUrl="{ path: '/marketplace/products', query: { sort: 'featured' } }"
+          />
       </Container>
     </section>
   </LayoutsMarketplace>
@@ -122,8 +125,12 @@ const navigateToAllLocations = () => {
   router.push({ name: 'marketplace-locations' });
 };
 
-// Load locations on mount
+// Load the category and location data needed by the marketplace landing page
 onMounted(async () => {
+  if (filtersStore.categories.length === 0) {
+    await filtersStore.fetchCategories();
+  }
+
   if (apiLocations.value.length === 0) {
     await filtersStore.fetchLocations();
   }

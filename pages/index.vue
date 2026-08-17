@@ -26,32 +26,31 @@
       </div>
     </header>
 
-    <section class="py-8 sm:py-10">
-      <Container>
-        <div class="space-y-6">
-          <CarouselsProductShowcase
-            endpoint="/api/products/top"
-            tag="Best Sellers"
-            title="Top Products"
-            subtitle="All-time best sellers chosen by customer demand and repeat purchases."
-          />
+    <Container class="space-y-6">
+      <CarouselsProductShowcase
+        endpoint="/api/products/top"
+        tag="Best Sellers"
+        title="Top Products"
+        subtitle="All-time best sellers chosen by customer demand and repeat purchases."
+        :seeAllUrl="{ path: '/marketplace/products', query: { sort: 'top' } }"
+      />
 
-          <CarouselsProductShowcase
-            endpoint="/api/products/trending"
-            tag="Trending Now"
-            title="Hot Right Now"
-            subtitle="Products picking up momentum from recent sales activity."
-          />
+      <CarouselsProductShowcase
+        endpoint="/api/products/trending"
+        tag="Trending Now"
+        title="Hot Right Now"
+        subtitle="Products picking up momentum from recent sales activity."
+        :seeAllUrl="{ path: '/marketplace/products', query: { sort: 'trending' } }"
+      />
 
-          <CarouselsProductShowcase
-            endpoint="/api/products/featured"
-            tag="Curated"
-            title="Featured Picks"
-            subtitle="A curated mix of standout products and highlighted selections."
-          />
-        </div>
-      </Container>
-    </section>
+      <CarouselsProductShowcase
+        endpoint="/api/products/featured"
+        tag="Curated"
+        title="Featured Picks"
+        subtitle="A curated mix of standout products and highlighted selections."
+        :seeAllUrl="{ path: '/marketplace/products', query: { sort: 'featured' } }"
+      />
+    </Container>
 
     <section class="bg-primary bg-opacity-10">
       <Container class="max-w-7xl mx-auto lg:flex items-center justify-center gap-10">
@@ -191,10 +190,14 @@ async function retryFetchCategories() {
   await filtersStore.fetchCategories();
 }
 
-// Fetch categories on mount
+// Fetch categories and locations on mount
 onMounted(async () => {
-  if (filtersStore.categories.length === 0 ) {
+  if (filtersStore.categories.length === 0) {
     await filtersStore.fetchCategories();
+  }
+
+  if (filtersStore.locations.length === 0) {
+    await filtersStore.fetchLocations();
   }
 })
 </script>

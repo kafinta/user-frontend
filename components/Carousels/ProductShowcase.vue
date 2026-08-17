@@ -1,8 +1,6 @@
 <template>
-  <section v-if="showSection" class="relative overflow-hidden rounded-3xl border border-accent-200 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.04)]">
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(26,59,51,0.08),_transparent_35%),radial-gradient(circle_at_bottom_left,_rgba(183,119,58,0.10),_transparent_30%)] pointer-events-none"></div>
-
-    <div class="relative px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+  <section v-if="showSection" class="relative rounded-3xl bg-white">
+    <div class="py-4 sm:py-6 lg:py-8">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div class="max-w-2xl space-y-2">
           <div class="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
@@ -88,8 +86,7 @@ const { products, isLoading, error, fetchProducts } = useProductsCarousel({
 const showSection = computed(() => isLoading.value || products.value.length > 0 || !!error.value)
 
 const skeletonCount = computed(() => {
-  if (width.value >= 1536) return 4
-  if (width.value >= 1024) return 3
+  if (width.value >= 1024) return 4
   if (width.value >= 640) return 2
   return 1
 })

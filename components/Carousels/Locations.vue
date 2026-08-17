@@ -69,7 +69,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useWindowSize } from '@vueuse/core'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
@@ -165,7 +165,11 @@ async function retryFetch() {
   await filtersStore.fetchLocations();
 }
 
-// No onMounted needed - data will be fetched when needed by pages
+onMounted(async () => {
+  if (filtersStore.locations.length === 0) {
+    await filtersStore.fetchLocations();
+  }
+})
 </script>
 
 <style scoped>

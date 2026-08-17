@@ -3,12 +3,20 @@
     <div class="flex justify-between items-center flex-wrap gap-6">
       <div>
         <UiTypographyH2 v-if="search">Search results for <b>{{ $route.query.query }}</b></UiTypographyH2>
+        <UiTypographyH2 v-else-if="sortMode">Browse {{ headingName }}</UiTypographyH2>
         <UiTypographyH2 v-else>Browse {{ headingName }}</UiTypographyH2>
         <UiBreadcrumbs :model="breadcrumbItems" />
       </div>
 
-      <div class="flex gap-2 lg:flex-col justify-stretch items-end">
-        <UiButtonsPrimary @clicked="productFilters.changeSubcategory">Change subcategory</UiButtonsPrimary>
+      <div class="flex flex-col gap-3 w-full max-w-xs lg:max-w-sm lg:items-end">
+        <FormSelect
+          label="Sort by"
+          :options="sortOptions"
+          :selectedOption="selectedSortOption"
+          @update:selectedOption="onSortChanged"
+          extraClass="w-full"
+        />
+          <UiButtonsPrimary v-if="!sortMode" @clicked="productFilters.changeSubcategory">Change subcategory</UiButtonsPrimary>
         <UiButtonsPrimary @clicked="openDialog=true" class="lg:hidden">
           <div class="flex gap-5">
             <p>Filters</p>
@@ -178,6 +186,27 @@ const selectedAttributes = ref({});
 const isBootstrapping = ref(true);
 
 const search = computed(() => route.query.query ? String(route.query.query) : '');
+const sortMode = computed(() => {
+  const sort = route.query.sort;
+  return sort === 'top' || sort === 'trending' || sort === 'featured' ? sort : '';
+});
+const selectedSortOption = computed(() => sortMode.value || 'default');
+const sortOptions = [
+  { label: 'Default browsing', value: 'default' },
+  { label: 'Top products', value: 'top' },
+  { label: 'Trending products', value: 'trending' },
+  { label: 'Featured products', value: 'featured' }
+];
+const categoryOptions = computed(() => [
+  { label: 'All categories', value: '' },
+  ...filtersStore.categories.map((category) => ({ label: category.name, value: category.slug || String(category.id) }))
+]);
+const locationOptions = computed(() => [
+  { label: 'All locations', value: '' },
+  ...filtersStore.locations.map((location) => ({ label: location.name, value: location.slug || String(location.id) }))
+]);
+const selectedCategoryOption = computed(() => route.query.category || '');
+const selectedLocationOption = computed(() => route.query.location || '');
 const currentPage = computed(() => Number(route.query.page || 1));
 const hasProducts = computed(() => products.value && products.value.length > 0);
 
@@ -244,6 +273,59 @@ async function onPageChanged(page: number) {
   await router.push({ query });
 }
 
+async function onCategorySelectChanged(value: string) {
+  const query: Record<string, any> = { ...route.query, page: 1 };
+  delete query.subcategory;
+  delete query.sort;
+
+  if (value) {
+    query.category = value;
+  } else {
+    delete query.category;
+  }
+
+  await router.push({ query });
+}
+
+async function onLocationSelectChanged(value: string) {
+  const query: Record<string, any> = { ...route.query, page: 1 };
+  delete query.subcategory;
+  delete query.sort;
+
+  if (value) {
+    query.location = value;
+  } else {
+    delete query.location;
+  }
+
+  await router.push({ query });
+}
+
+async function onSortChanged(value: string) {
+  const query: Record<string, any> = { ...route.query, page: 1 };
+
+  delete query.query;
+  delete query.category;
+  delete query.subcategory;
+  delete query.location;
+  delete query.location_id;
+
+  Object.keys(query).forEach((key) => {
+    if (key.startsWith('attributes[')) {
+      delete query[key];
+    }
+  });
+
+  if (value === 'default') {
+    delete query.sort;
+    await router.push({ query });
+    return;
+  }
+
+  query.sort = value;
+  await router.push({ query });
+}
+
 function getInitialFilters() {
   return {
     query: search.value,
@@ -275,6 +357,20 @@ const loadProducts = async (ensureData = true) => {
       per_page: 30,
       page: currentPage.value
     };
+
+    if (sortMode.value) {
+      const endpointMap: Record<string, string> = {
+        top: '/api/products/top',
+        trending: '/api/products/trending',
+        featured: '/api/products/featured'
+      };
+
+      const response = await productsApi.fetchProductsFromEndpoint(endpointMap[sortMode.value], params) as ProductsApiResponse | undefined;
+      if (!response || response.status !== 'success') {
+        error.value = response?.message || 'Unable to load products at this time.';
+      }
+      return;
+    }
 
     if (search.value) {
       params.search = search.value;
@@ -347,8 +443,9 @@ const loadProducts = async (ensureData = true) => {
 onMounted(async () => {
   const hasSubcategory = route.query.subcategory;
   const hasSearchQuery = route.query.query;
+  const hasSortMode = sortMode.value;
 
-  if (!hasSubcategory && !hasSearchQuery) {
+  if (!hasSubcategory && !hasSearchQuery && !hasSortMode) {
     // No valid parameters, redirect to subcategories page
     const categorySlug = route.query.category;
     const locationSlug = route.query.location;
@@ -427,6 +524,10 @@ const headingName = computed(() => {
   if (search.value) {
     return `Search results for ${route.query.query}`;
   }
+
+  if (sortMode.value === 'top') return 'Top Products';
+  if (sortMode.value === 'trending') return 'Trending Products';
+  if (sortMode.value === 'featured') return 'Featured Products';
 
   // Get subcategory name from URL and store
   const subcategorySlug = route.query.subcategory;
