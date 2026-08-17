@@ -28,7 +28,7 @@
 
     <div class="mt-10 relative flex flex-col lg:flex-row gap-6">
       <!-- Fixed sidebar for filters -->
-      <div class="hidden lg:block w-1/4 2xl:w-1/5">
+      <div v-if="hasFilterSidebar" class="hidden lg:block w-1/4 2xl:w-1/5">
         <div class="sticky top-20 h-screen overflow-y-auto max-h-[calc(100vh - 140px)]">
           <Filter @filter-changed="onFilterChanged" />
         </div>
@@ -137,7 +137,7 @@
       </div>
     </div>
 
-    <ModalsDrawer okText="Apply" :scrollable="true" :footerButtons="true" :openDialog="openDialog" @closeDialog="openDialog=false">
+    <ModalsDrawer v-if="hasFilterSidebar" okText="Apply" :scrollable="true" :footerButtons="true" :openDialog="openDialog" @closeDialog="openDialog=false">
       <template #title>Filters</template>
       <div class="h-full">
         <Filter @filter-changed="onFilterChanged" />
@@ -209,6 +209,13 @@ const selectedCategoryOption = computed(() => route.query.category || '');
 const selectedLocationOption = computed(() => route.query.location || '');
 const currentPage = computed(() => Number(route.query.page || 1));
 const hasProducts = computed(() => products.value && products.value.length > 0);
+const hasFilterSidebar = computed(() => {
+  const availableAttributes = apiFilters.value?.available_attributes;
+  const subcategoryAttributes = filtersStore.selectedSubcategory?.attributes;
+  const hasAttributes = Array.isArray(availableAttributes) ? availableAttributes.length > 0 : false;
+  const hasSubcategoryAttributes = Array.isArray(subcategoryAttributes) ? subcategoryAttributes.length > 0 : false;
+  return !sortMode.value && (hasAttributes || hasSubcategoryAttributes);
+});
 
 function parseAttributesFromQuery(query: LocationQuery) {
   const selected: Record<string, string> = {};
@@ -254,8 +261,8 @@ function buildQueryFromFilters(filters: ProductFilterInput) {
 
   if (filters.attributes) {
     Object.entries(filters.attributes).forEach(([attributeName, value]) => {
-      if (value) {
-        query[`attributes[${attributeName}]`] = value;
+      if (value !== undefined && value !== null && value !== '') {
+        query[`attributes[${attributeName}]`] = String(value);
       }
     });
   }

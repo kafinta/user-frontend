@@ -54,12 +54,14 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useFiltersStore } from '~/stores/filters'
 import { storeToRefs } from 'pinia'
 import AccordionIndex from '~/components/Accordion/Index.vue'
 import AccordionItem from '~/components/Accordion/Item.vue'
 import { useProductsApi } from '~/composables/useProductsApi'
 
+const route = useRoute()
 const filtersStore = useFiltersStore()
 const { selectedSubcategory, isLoading, error } = storeToRefs(filtersStore)
 const productsApi = useProductsApi()
@@ -104,30 +106,58 @@ function toggleAttributeValue(attributeId, valueId, valueName) {
   emitSelectedAttributes()
 }
 
+function getSelectedAttributesFromRoute() {
+  const map = new Map()
+  if (!route.query) return map
+
+  Object.entries(route.query).forEach(([key, value]) => {
+    if (typeof key !== 'string' || !key.startsWith('attributes[') || typeof value !== 'string') {
+      return
+    }
+
+    const attributeName = key.replace(/^attributes\[(.*)\]$/, '$1')
+    const attribute = attributes.value?.find(item => item.name === attributeName)
+    if (!attribute) return
+
+    const matchingValue = attribute.values.find(option => String(option.id) === String(value))
+    if (matchingValue) {
+      map.set(attribute.id, { id: matchingValue.id, name: matchingValue.name })
+    }
+  })
+
+  return map
+}
+
+function syncSelectedAttributes() {
+  selectedAttributes.value = getSelectedAttributesFromRoute()
+}
+
 // Emit selected attributes as an object
 function emitSelectedAttributes() {
   const result = {}
 
   selectedAttributes.value.forEach((selectedValue, attributeId) => {
-    // Find the attribute name
     const attribute = attributes.value?.find(attr => attr.id === attributeId)
     if (attribute) {
-      result[attribute.name] = {
-        id: selectedValue.id,
-        name: selectedValue.name
-      }
+      result[attribute.name] = String(selectedValue.id)
     }
   })
 
-  // Emit the selected attributes
-  emit('filter-changed', result)
+  emit('filter-changed', { attributes: result })
 }
 
 // Define emits
 const emit = defineEmits(['filter-changed'])
 
-// Reset selected attributes when available attributes or subcategory changes
 watch([subcategoryDetails, attributes], () => {
-  selectedAttributes.value = new Map()
-})
+  syncSelectedAttributes()
+}, { immediate: true })
+
+watch(
+  () => route.query,
+  () => {
+    syncSelectedAttributes()
+  },
+  { deep: true }
+)
 </script>
