@@ -134,21 +134,23 @@
 
       <!-- Error state - only shown when not loading and either there's an error or no categories -->
       <div v-else class="col-span-2">
-        <div class="max-w-md mx-auto text-center space-y-6">
-          <div class="w-20 h-20 mx-auto bg-red-200 rounded-full flex items-center justify-center">
-            <UiIconsError class="w-16 h-16 text-red-600" />
+        <div class="mx-auto max-w-md rounded-3xl border border-accent-200 bg-white p-8 text-center shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+          <div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary/5 text-primary">
+            <UiIconsError class="h-10 w-10" />
           </div>
-          <div>
-            <UiTypographyH3 class="text-secondary font-medium mb-2">
-              {{ error || 'No categories available' }}
-            </UiTypographyH3>
-            <UiTypographyP v-if="!error" class="text-accent-500 text-sm">
-              Check back later for new categories.
-            </UiTypographyP>
+          <div class="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
+            <span class="h-2 w-2 rounded-full bg-primary"></span>
+            Categories
           </div>
+          <UiTypographyH3 class="mt-5 text-secondary">
+            {{ error || 'No categories available' }}
+          </UiTypographyH3>
+          <UiTypographyP v-if="!error" class="mt-2 text-accent-600">
+            Check back later for new categories.
+          </UiTypographyP>
           <button
             @click="retryFetchCategories"
-            class="w-full py-2 px-4 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors text-sm font-medium"
+            class="mt-6 w-full rounded-full bg-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90"
           >
             Try Again
           </button>

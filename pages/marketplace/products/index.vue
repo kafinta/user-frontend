@@ -45,13 +45,17 @@
 
         <!-- Error state -->
         <template v-else-if="error">
-          <div class="text-center py-16 flex flex-col items-center justify-center">
-            <div class="rounded-full p-6 flex items-center justify-center mb-6 bg-red-50 border border-red-200 w-24 h-24">
-              <UiIconsError class="w-12 h-12 text-red-500" />
+          <div class="flex flex-col items-center justify-center py-16 text-center">
+            <div class="mb-6 flex h-24 w-24 items-center justify-center rounded-full border border-accent-200 bg-accent-50 text-primary">
+              <UiIconsError class="h-10 w-10" />
             </div>
-            <UiTypographyH3 class="text-red-600 mb-3">Oops! Something went wrong</UiTypographyH3>
-            <UiTypographyP class="text-red-500 mb-6 max-w-md">{{ error }}</UiTypographyP>
-            <UiButtonsPrimary @clicked="retryFetch" class="flex items-center gap-2">
+            <div class="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
+              <span class="h-2 w-2 rounded-full bg-primary"></span>
+              Error
+            </div>
+            <UiTypographyH3 class="mt-5 text-secondary">Something went wrong</UiTypographyH3>
+            <UiTypographyP class="mt-2 max-w-md text-accent-600">{{ error }}</UiTypographyP>
+            <UiButtonsPrimary @clicked="retryFetch" class="mt-6 flex items-center gap-2">
               <UiIconsRefresh class="w-4 h-4" />
               Try Again
             </UiButtonsPrimary>
@@ -60,12 +64,16 @@
 
         <!-- No products state -->
         <template v-else-if="!hasProducts">
-          <div class="text-center py-16 flex flex-col items-center justify-center">
-            <div class="rounded-full p-6 flex items-center justify-center mb-6 bg-accent-50 border border-accent-200 w-24 h-24">
-              <UiIconsSearch class="w-12 h-12 text-accent-400" />
+          <div class="flex flex-col items-center justify-center py-16 text-center">
+            <div class="mb-6 flex h-24 w-24 items-center justify-center rounded-full border border-accent-200 bg-accent-50 text-primary">
+              <UiIconsSearch class="h-10 w-10" />
             </div>
-            <UiTypographyH3 class="text-secondary mb-3">No products found</UiTypographyH3>
-            <UiTypographyP class="text-accent-500 mb-6 max-w-md">
+            <div class="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
+              <span class="h-2 w-2 rounded-full bg-primary"></span>
+              No results
+            </div>
+            <UiTypographyH3 class="mt-5 text-secondary">No products found</UiTypographyH3>
+            <UiTypographyP class="mt-2 max-w-md text-accent-600">
               <template v-if="search">
                 No products match your search for "<b>{{ $route.query.query }}</b>". Try different keywords or browse categories.
               </template>
@@ -73,7 +81,7 @@
                 We couldn't find any products in this category. Try adjusting your filters or browse other categories.
               </template>
             </UiTypographyP>
-            <div class="flex gap-3">
+            <div class="mt-6 flex flex-wrap justify-center gap-3">
               <UiButtonsSecondary @clicked="clearFilters">
                 {{ search ? 'Clear Search' : 'Clear Filters' }}
               </UiButtonsSecondary>

@@ -45,8 +45,12 @@
         {{ error }}
       </div>
 
-      <div v-else class="text-secondary">
-        No filters available for this selection.
+      <div v-else class="rounded-2xl border border-accent-200 bg-white p-5 text-center text-secondary shadow-[0_10px_30px_rgba(15,23,42,0.02)]">
+        <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-primary/5 text-primary">
+          <UiIconsFilter class="h-6 w-6" />
+        </div>
+        <p class="font-medium">No filters available</p>
+        <p class="mt-1 text-sm text-accent-600">This selection doesn’t have any filter options yet.</p>
       </div>
     </div>
   </aside>
